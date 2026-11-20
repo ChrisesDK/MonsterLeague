@@ -25,13 +25,21 @@ export default tseslint.config(
       'no-restricted-imports': [
         'error',
         {
+          paths: ['fs', 'path', 'os', 'crypto', 'util', 'child_process', 'events', 'buffer'].map(
+            (name) => ({ name, message: 'The engine must not use Node APIs.' }),
+          ),
           patterns: [
+            { group: ['node:*'], message: 'The engine must not use Node APIs.' },
             {
-              group: ['node:*', 'fs', 'path', 'os', 'crypto', 'util', 'child_process'],
-              message: 'The engine must not use Node APIs.',
-            },
-            {
-              group: ['react', 'react-*', 'maplibre-gl', 'pmtiles', 'idb-keyval', 'h3-js'],
+              group: [
+                'react',
+                'react-dom',
+                'react/*',
+                'maplibre-gl',
+                'pmtiles',
+                'idb-keyval',
+                'h3-js',
+              ],
               message: 'The engine must not depend on UI or map code.',
             },
           ],
