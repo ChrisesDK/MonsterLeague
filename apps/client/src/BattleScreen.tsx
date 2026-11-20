@@ -17,14 +17,23 @@ import {
 import { creatureName, eventText } from './eventText';
 import { applyChoice, collectChoices, type PostBattleChoice } from './postBattle';
 import type { Translate } from './i18n';
-import { clearBattle, saveBattle } from './storage';
 import { applyEvent, viewFromState, type BattleView, type CreatureView } from './view';
+
+export type Speed = 'normal' | 'fast';
 
 interface Props {
   initial: BattleState;
   t: Translate;
-  /** stillRunning = the battle was paused (and saved) rather than finished. */
-  onExit: (stillRunning: boolean) => void;
+  /** Text/animation speed; fast halves delays and animation lengths. */
+  speed?: Speed;
+  /** Called with every state the player can resume from (initial, then after each turn). */
+  onSave: (state: BattleState) => void;
+  /** stillRunning = paused (state saved) rather than finished; `state` is the latest state. */
+  onExit: (stillRunning: boolean, state: BattleState) => void;
+  /** Called for every action the player submits (for playtest counters). */
+  onAction?: (action: Action, state: BattleState) => void;
+  /** Label of the button shown when the battle is over (default "New battle"). */
+  endLabel?: string;
 }
 
 type Panel = 'main' | 'switch' | 'bag' | 'target';
@@ -36,6 +45,16 @@ interface Anim {
 
 const TEXT_MS = 750;
 const SILENT_MS = 220;
+/** Fast speed: about half the delays (and half-length animations via CSS). */
+const FAST_FACTOR = 0.5;
+
+function prefersReducedMotion(): boolean {
+  try {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  } catch {
+    return false;
+  }
+}
 
 function animFor(e: BattleEvent): { uid: string; cls: string } | null {
   switch (e.type) {
@@ -60,9 +79,17 @@ function animFor(e: BattleEvent): { uid: string; cls: string } | null {
   }
 }
 
-const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-export function BattleScreen({ initial, t, onExit }: Props) {
+export function BattleScreen({
+  initial,
+  t,
+  speed = 'normal',
+  onSave,
+  onExit,
+  onAction,
+  endLabel,
+}: Props) {
   const [state, setState] = useState(initial);
   const [view, setView] = useState<BattleView>(() => viewFromState(initial));
   const [log, setLog] = useState<string>('');
@@ -80,11 +107,24 @@ export function BattleScreen({ initial, t, onExit }: Props) {
 
   useEffect(() => {
     alive.current = true;
-    saveBattle(initial);
+    if (initial.result === 'ongoing') onSave(initial);
     return () => {
       alive.current = false;
     };
+    // Save once per battle; onSave identity changes must not re-save.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initial]);
+
+  const reducedMotion = prefersReducedMotion();
+  const factor = speed === 'fast' ? FAST_FACTOR : 1;
+  const textMs = TEXT_MS * factor;
+  const silentMs = reducedMotion ? 0 : SILENT_MS * factor;
+
+  /** Waits, and holds playback while the app is in the background (GDD: battles pause). */
+  async function wait(ms: number) {
+    await sleep(ms);
+    while (alive.current && typeof document !== 'undefined' && document.hidden) await sleep(250);
+  }
 
   const replacing = inReplacementPhase(state) && state.sides[0].needsReplacement;
   const over = state.result !== 'ongoing';
@@ -116,7 +156,7 @@ export function BattleScreen({ initial, t, onExit }: Props) {
       if (text) setLog(text);
       const a = animFor(event);
       if (a) setAnim({ ...a, n: ++animCounter.current });
-      if (!skip.current) await wait(text ? TEXT_MS : SILENT_MS);
+      if (!skip.current) await wait(text ? textMs : silentMs);
     }
     if (!alive.current) return;
     const final = viewFromState(result.state);
@@ -126,8 +166,7 @@ export function BattleScreen({ initial, t, onExit }: Props) {
     ]);
     setState(result.state);
     setChoices((prevChoices) => collectChoices(result.events, prevChoices));
-    if (result.state.result === 'ongoing') saveBattle(result.state);
-    else clearBattle();
+    if (result.state.result === 'ongoing') onSave(result.state);
     setPanel('main');
     setPendingItem(null);
     setBusy(false);
@@ -135,6 +174,7 @@ export function BattleScreen({ initial, t, onExit }: Props) {
 
   function submit(action: Action) {
     if (busy || over || !isLegal(action)) return;
+    onAction?.(action, state);
     const tier = state.sides[1].ai ?? 'wild';
     const result = resolveTurn(state, [action, chooseAiAction(state, 1, tier)]);
     void play(state, result);
@@ -311,8 +351,8 @@ export function BattleScreen({ initial, t, onExit }: Props) {
     controls = (
       <div className="list-panel">
         <p className="result">{t(`ui.result.${state.result}`)}</p>
-        <button className="btn primary" onClick={() => onExit(false)}>
-          {t('ui.newBattle')}
+        <button className="btn primary" onClick={() => onExit(false, state)}>
+          {endLabel ?? t('ui.newBattle')}
         </button>
       </div>
     );
@@ -354,12 +394,16 @@ export function BattleScreen({ initial, t, onExit }: Props) {
   }
 
   return (
-    <main className="battle">
+    <main className={`battle${speed === 'fast' ? ' fast' : ''}`}>
       <div className="topbar">
         <span className="muted small">
           {state.kind === 'wild' ? '' : t(`trainer.${state.sides[1].name ?? ''}.name`)}
         </span>
-        <button className="btn small-btn" disabled={busy || over} onClick={() => onExit(true)}>
+        <button
+          className="btn small-btn"
+          disabled={busy || over}
+          onClick={() => onExit(true, state)}
+        >
           {t('ui.pause')}
         </button>
       </div>

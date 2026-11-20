@@ -13,6 +13,7 @@
   "dependencies": {
     "@oml/data": "workspace:*",
     "@oml/engine": "workspace:*",
+    "@oml/playtest": "workspace:*",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
@@ -20,6 +21,7 @@
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",
-    "vite": "^5.4.11"
+    "vite": "^5.4.11",
+    "vite-plugin-pwa": "^0.20.5"
   }
 }
