@@ -27,6 +27,8 @@ export function eventText(event: BattleEvent, state: BattleState, t: Translate):
       });
     case 'cant_act':
       return t(`event.cant_act.${event.reason}`, { name: nameOf(event.uid) });
+    case 'disobey':
+      return t('event.disobey', { name: nameOf(event.uid) });
     case 'miss':
       return t('event.miss', { name: nameOf(event.uid) });
     case 'damage':

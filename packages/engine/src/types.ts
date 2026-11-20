@@ -23,6 +23,8 @@ export interface CreatureInstance {
   statusTurns: number;
   moves: MoveSlot[];
   nickname?: string;
+  /** Field ability taught to this creature (GDD: it takes one of the 4 move slots). */
+  fieldAbility?: string;
 }
 
 export interface Stats {
@@ -51,6 +53,11 @@ export interface Side {
   itemsUsed: number;
   /** Failed run attempts this battle (each adds 25% to the next attempt). */
   runAttempts: number;
+  /**
+   * Creatures above this level ignore orders 50% of the time (GDD obedience). null = always
+   * obey (leaders, trainers, wild creatures).
+   */
+  obedienceLevel?: number | null;
 }
 
 export interface BattleState {
@@ -72,6 +79,8 @@ export interface SideConfig {
   ai?: AiTier | null;
   /** Defaults to true for side 0 and false for side 1. */
   gainsXp?: boolean;
+  /** Obedience level for this side (the player's: 15 + 5 per badge). Omit = always obey. */
+  obedienceLevel?: number | null;
 }
 
 export interface BattleConfig {
@@ -94,6 +103,8 @@ export type BattleEvent =
   | { type: 'turn_start'; turn: number }
   | ({ type: 'move_used'; moveId: string } & Who)
   | ({ type: 'cant_act'; reason: 'sleep' | 'paralysis' } & Who)
+  /** The creature is above the side's obedience level and ignored the order. */
+  | ({ type: 'disobey' } & Who)
   | ({ type: 'miss' } & Who)
   | ({
       type: 'damage';

@@ -28,6 +28,7 @@ export {
   isFainted,
   isLegalAction,
   resolveTurn,
+  DISOBEY_CHANCE,
   MAX_TEAM_SIZE,
   MAX_TURNS,
 } from './battle';

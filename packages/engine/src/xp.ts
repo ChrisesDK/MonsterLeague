@@ -75,7 +75,9 @@ export function gainXp(
       if (creature.moves.some((m) => m.moveId === entry.moveId)) continue;
       const move = dex.moves[entry.moveId];
       if (!move) continue;
-      if (creature.moves.length < MAX_MOVES) {
+      // A taught field ability occupies one of the 4 slots (GDD).
+      const slots = MAX_MOVES - (creature.fieldAbility ? 1 : 0);
+      if (creature.moves.length < slots) {
         creature.moves.push({ moveId: move.id, pp: move.pp });
         events.push({ type: 'move_learned', side, uid, moveId: move.id });
       } else if (autoLearn) {

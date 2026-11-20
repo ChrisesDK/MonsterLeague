@@ -72,7 +72,9 @@ export function learnMove(
   const moves = creature.moves.map((m) => ({ ...m }));
   const slot = { moveId, pp: move.pp };
   if (forgetIndex === null) {
-    if (moves.length >= MAX_MOVES) throw new Error('Already knows 4 moves: choose one to forget');
+    const slots = MAX_MOVES - (creature.fieldAbility ? 1 : 0);
+    if (moves.length >= slots)
+      throw new Error(`Already knows ${slots} moves: choose one to forget`);
     moves.push(slot);
   } else {
     if (!moves[forgetIndex]) throw new Error(`No move at index ${forgetIndex}`);

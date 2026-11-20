@@ -26,6 +26,8 @@ import { gainXp, xpForLevel, xpYield } from './xp';
 export const MAX_TURNS = 150;
 /** Party size; a creature caught with a full party goes to storage. */
 export const MAX_TEAM_SIZE = 6;
+/** GDD: a creature above the obedience level ignores orders 50% of the time. */
+export const DISOBEY_CHANCE = 50;
 export const RUN_BASE_CHANCE = 50;
 export const RUN_CHANCE_PER_FAILURE = 25;
 export const PARALYSIS_SKIP_CHANCE = 25;
@@ -150,6 +152,7 @@ export function createBattle(config: BattleConfig, seed: number, dex: Dex = cont
       needsReplacement: false,
       itemsUsed: 0,
       runAttempts: 0,
+      obedienceLevel: sc.obedienceLevel ?? null,
     };
   }) as [Side, Side];
   if (config.kind === 'wild' && sides[1].team.length !== 1)
@@ -453,6 +456,13 @@ function executeMove(ctx: Ctx, side: SideIndex, index: number): void {
   }
   if (attacker.status === 'paralysis' && rng.chance(PARALYSIS_SKIP_CHANCE)) {
     ctx.events.push({ type: 'cant_act', side, uid: attacker.uid, reason: 'paralysis' });
+    return;
+  }
+  // GDD obedience: above the side's obedience level, orders are ignored 50% of the time.
+  // The roll only happens for disobedient-level creatures, so other battles are unchanged.
+  const obedience = s.sides[side].obedienceLevel;
+  if (obedience != null && attacker.level > obedience && rng.chance(DISOBEY_CHANCE)) {
+    ctx.events.push({ type: 'disobey', side, uid: attacker.uid });
     return;
   }
   // The target fainted earlier this turn: nothing to aim at.
