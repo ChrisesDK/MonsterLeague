@@ -37,11 +37,18 @@ const hazards: { kind: 'rail' | 'road'; coords: [number, number][] }[] = [];
 for (const f of geo.features) {
   const tags = (f.properties ?? {}) as Record<string, string | undefined>;
   const kind =
-    tags.railway === 'rail' ? 'rail' : /^(motorway|trunk)(_link)?$/.test(tags.highway ?? '') ? 'road' : null;
+    tags.railway === 'rail'
+      ? 'rail'
+      : /^(motorway|trunk)(_link)?$/.test(tags.highway ?? '')
+        ? 'road'
+        : null;
   if (!kind || f.geometry?.type !== 'LineString') continue;
   hazards.push({
     kind,
-    coords: f.geometry.coordinates.map(([x, y]) => [Math.round(x! * 1e6) / 1e6, Math.round(y! * 1e6) / 1e6]),
+    coords: f.geometry.coordinates.map(([x, y]) => [
+      Math.round(x! * 1e6) / 1e6,
+      Math.round(y! * 1e6) / 1e6,
+    ]),
   });
 }
 const water = await basemapWater(BASEMAP, REGION.bbox);
