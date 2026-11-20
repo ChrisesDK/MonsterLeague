@@ -1,0 +1,97 @@
+{
+  "types": [
+    {
+      "id": "folk",
+      "color": "#a8a29e"
+    },
+    {
+      "id": "fire",
+      "color": "#ea580c"
+    },
+    {
+      "id": "water",
+      "color": "#0284c7"
+    },
+    {
+      "id": "grove",
+      "color": "#16a34a"
+    },
+    {
+      "id": "stone",
+      "color": "#78716c"
+    },
+    {
+      "id": "storm",
+      "color": "#ca8a04"
+    },
+    {
+      "id": "spirit",
+      "color": "#7c3aed"
+    }
+  ],
+  "chart": {
+    "folk": {
+      "folk": 1,
+      "fire": 1,
+      "water": 1,
+      "grove": 1,
+      "stone": 0.5,
+      "storm": 1,
+      "spirit": 0
+    },
+    "fire": {
+      "folk": 1,
+      "fire": 0.5,
+      "water": 0.5,
+      "grove": 2,
+      "stone": 0.5,
+      "storm": 1,
+      "spirit": 1
+    },
+    "water": {
+      "folk": 1,
+      "fire": 2,
+      "water": 0.5,
+      "grove": 0.5,
+      "stone": 2,
+      "storm": 1,
+      "spirit": 1
+    },
+    "grove": {
+      "folk": 1,
+      "fire": 0.5,
+      "water": 2,
+      "grove": 0.5,
+      "stone": 2,
+      "storm": 0.5,
+      "spirit": 1
+    },
+    "stone": {
+      "folk": 1,
+      "fire": 2,
+      "water": 1,
+      "grove": 0.5,
+      "stone": 1,
+      "storm": 2,
+      "spirit": 1
+    },
+    "storm": {
+      "folk": 1,
+      "fire": 1,
+      "water": 2,
+      "grove": 0.5,
+      "stone": 0,
+      "storm": 0.5,
+      "spirit": 1
+    },
+    "spirit": {
+      "folk": 0,
+      "fire": 1,
+      "water": 1,
+      "grove": 1,
+      "stone": 1,
+      "storm": 1,
+      "spirit": 2
+    }
+  }
+}

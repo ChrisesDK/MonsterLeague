@@ -1,0 +1,66 @@
+{
+  "trainers": [
+    {
+      "id": "trainer_student",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "torvdue",
+          "level": 7
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 8
+        },
+        {
+          "speciesId": "mosbille",
+          "level": 8
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "trainer_fisher",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "grimaelling",
+          "level": 9
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 10
+        }
+      ],
+      "items": {
+        "small_tonic": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "leader_water",
+      "tier": "leader",
+      "team": [
+        {
+          "speciesId": "grimaelling",
+          "level": 12
+        },
+        {
+          "speciesId": "soeormling",
+          "level": 13
+        },
+        {
+          "speciesId": "stroemodder",
+          "level": 14
+        }
+      ],
+      "items": {
+        "large_tonic": 2
+      },
+      "placeholder": true
+    }
+  ]
+}

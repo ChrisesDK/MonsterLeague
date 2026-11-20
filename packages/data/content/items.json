@@ -1,0 +1,39 @@
+{
+  "items": [
+    {
+      "id": "small_tonic",
+      "kind": "heal",
+      "amount": 20,
+      "placeholder": true
+    },
+    {
+      "id": "large_tonic",
+      "kind": "heal",
+      "amount": 60,
+      "placeholder": true
+    },
+    {
+      "id": "clear_drops",
+      "kind": "cure",
+      "placeholder": true
+    },
+    {
+      "id": "basic_charm",
+      "kind": "charm",
+      "catchBonus": 1,
+      "placeholder": true
+    },
+    {
+      "id": "good_charm",
+      "kind": "charm",
+      "catchBonus": 1.5,
+      "placeholder": true
+    },
+    {
+      "id": "great_charm",
+      "kind": "charm",
+      "catchBonus": 2,
+      "placeholder": true
+    }
+  ]
+}

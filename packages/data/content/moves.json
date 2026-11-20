@@ -1,0 +1,498 @@
+{
+  "moves": [
+    {
+      "id": "nimble_jab",
+      "type": "folk",
+      "power": 40,
+      "accuracy": 100,
+      "pp": 30,
+      "priority": 1,
+      "effects": [],
+      "placeholder": true
+    },
+    {
+      "id": "shoulder_shove",
+      "type": "folk",
+      "power": 40,
+      "accuracy": 100,
+      "pp": 35,
+      "priority": 0,
+      "effects": [],
+      "placeholder": true
+    },
+    {
+      "id": "cobbler_kick",
+      "type": "folk",
+      "power": 65,
+      "accuracy": 95,
+      "pp": 20,
+      "priority": 0,
+      "effects": [],
+      "placeholder": true
+    },
+    {
+      "id": "stern_glare",
+      "type": "folk",
+      "power": 0,
+      "accuracy": 100,
+      "pp": 30,
+      "priority": 0,
+      "effects": [
+        {
+          "kind": "stat",
+          "target": "target",
+          "stat": "def",
+          "stages": -1,
+          "chance": 100
+        }
+      ],
+      "placeholder": true
+    },
+    {
+      "id": "lullaby_hum",
+      "type": "folk",
+      "power": 0,
+      "accuracy": 60,
+      "pp": 15,
+      "priority": 0,
+      "effects": [
+        {
+          "kind": "status",
+          "status": "sleep",
+          "chance": 100
+        }
+      ],
+      "placeholder": true
+    },
+    {
+      "id": "hearty_meal",
+      "type": "folk",
+      "power": 0,
+      "accuracy": null,
+      "pp": 10,
+      "priority": 0,
+      "effects": [
+        {
+          "kind": "heal",
+          "percent": 50
+        }
+      ],
+      "placeholder": true
+    },
+    {
+      "id": "hearth_spark",
+      "type": "fire",
+      "power": 40,
+      "accuracy": 100,
+      "pp": 25,
+      "priority": 0,
+      "effects": [
+        {
+          "kind": "status",
+          "status": "burn",
+          "chance": 10
+        }
+      ],
+      "placeholder": true
+    },
+    {
+      "id": "kiln_blast",
+      "type": "fire",
+      "power": 85,
+      "accuracy": 85,
+      "pp": 10,
+      "priority": 0,
+      "effects": [
+        {
+          "kind": "status",
+          "status": "burn",
+          "chance": 20
+        }
+      ],
+      "placeholder": true
+    },
+    {
+      "id": "cinder_brand",
+      "type": "fire",
+      "power": 0,
+      "accuracy": 85,
+      "pp": 15,
+      "priority": 0,
+      "effects": [
+        {
+          "kind": "status",
+          "status": "burn",
+          "chance": 100
+        }
+      ],
+      "placeholder": true
+    },
+    {
+      "id": "stoke_up",
+      "type": "fire",
+      "power": 0,
+      "accuracy": null,
+      "pp": 20,
+      "priority": 0,
+      "effects": [
+        {
+          "kind": "stat",
+          "target": "self",
+          "stat": "atk",
+          "stages": 2,
+          "chance": 100
+        }
+      ],
+      "placeholder": true
+    },
+    {
+      "id": "brook_spout",
+      "type": "water",
+      "power": 40,
+      "accuracy": 100,
+      "pp": 25,
+      "priority": 0,
+      "effects": [],
+      "placeholder": true
+    },
+    {
+      "id": "harbour_wave",
+      "type": "water",
+      "power": 80,
+      "accuracy": 90,
+      "pp": 10,
+      "priority": 0,
+      "effects": [],
+      "placeholder": true
+    },
+    {
+      "id": "sea_fog",
+      "type": "water",
+      "power": 0,
+      "accuracy": 100,
+      "pp": 20,
+      "priority": 0,
+      "effects": [
+        {
+          "kind": "stat",
+          "target": "target",
+          "stat": "atk",
+          "stages": -1,
+          "chance": 100
+        }
+      ],
+      "placeholder": true
+    },
+    {
+      "id": "rinse_and_mend",
+      "type": "water",
+      "power": 0,
+      "accuracy": null,
+      "pp": 10,
+      "priority": 0,
+      "effects": [
+        {
+          "kind": "heal",
+          "percent": 40
+        }
+      ],
+      "placeholder": true
+    },
+    {
+      "id": "beech_lash",
+      "type": "grove",
+      "power": 40,
+      "accuracy": 100,
+      "pp": 25,
+      "priority": 0,
+      "effects": [],
+      "placeholder": true
+    },
+    {
+      "id": "root_snare",
+      "type": "grove",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 20,
+      "priority": 0,
+      "effects": [
+        {
+          "kind": "stat",
+          "target": "target",
+          "stat": "spd",
+          "stages": -1,
+          "chance": 30
+        }
+      ],
+      "placeholder": true
+    },
+    {
+      "id": "drowsy_pollen",
+      "type": "grove",
+      "power": 0,
+      "accuracy": 75,
+      "pp": 15,
+      "priority": 0,
+      "effects": [
+        {
+          "kind": "status",
+          "status": "sleep",
+          "chance": 100
+        }
+      ],
+      "placeholder": true
+    },
+    {
+      "id": "sap_draw",
+      "type": "grove",
+      "power": 50,
+      "accuracy": 100,
+      "pp": 15,
+      "priority": 0,
+      "effects": [
+        {
+          "kind": "heal",
+          "percent": 25
+        }
+      ],
+      "placeholder": true
+    },
+    {
+      "id": "nettle_sting",
+      "type": "grove",
+      "power": 45,
+      "accuracy": 100,
+      "pp": 25,
+      "priority": 0,
+      "effects": [
+        {
+          "kind": "status",
+          "status": "poison",
+          "chance": 30
+        }
+      ],
+      "placeholder": true
+    },
+    {
+      "id": "bark_skin",
+      "type": "grove",
+      "power": 0,
+      "accuracy": null,
+      "pp": 20,
+      "priority": 0,
+      "effects": [
+        {
+          "kind": "stat",
+          "target": "self",
+          "stat": "def",
+          "stages": 2,
+          "chance": 100
+        }
+      ],
+      "placeholder": true
+    },
+    {
+      "id": "cobble_toss",
+      "type": "stone",
+      "power": 50,
+      "accuracy": 90,
+      "pp": 25,
+      "priority": 0,
+      "effects": [],
+      "placeholder": true
+    },
+    {
+      "id": "rampart_slam",
+      "type": "stone",
+      "power": 100,
+      "accuracy": 85,
+      "pp": 10,
+      "priority": -1,
+      "effects": [
+        {
+          "kind": "recoil",
+          "percent": 25
+        }
+      ],
+      "placeholder": true
+    },
+    {
+      "id": "grit_spray",
+      "type": "stone",
+      "power": 30,
+      "accuracy": 100,
+      "pp": 20,
+      "priority": 0,
+      "effects": [
+        {
+          "kind": "stat",
+          "target": "target",
+          "stat": "spd",
+          "stages": -1,
+          "chance": 100
+        }
+      ],
+      "placeholder": true
+    },
+    {
+      "id": "hunker_down",
+      "type": "stone",
+      "power": 0,
+      "accuracy": null,
+      "pp": 20,
+      "priority": 0,
+      "effects": [
+        {
+          "kind": "stat",
+          "target": "self",
+          "stat": "def",
+          "stages": 1,
+          "chance": 100
+        },
+        {
+          "kind": "heal",
+          "percent": 20
+        }
+      ],
+      "placeholder": true
+    },
+    {
+      "id": "squall_slap",
+      "type": "storm",
+      "power": 40,
+      "accuracy": 100,
+      "pp": 30,
+      "priority": 0,
+      "effects": [],
+      "placeholder": true
+    },
+    {
+      "id": "sky_crackle",
+      "type": "storm",
+      "power": 75,
+      "accuracy": 90,
+      "pp": 15,
+      "priority": 0,
+      "effects": [
+        {
+          "kind": "status",
+          "status": "paralysis",
+          "chance": 20
+        }
+      ],
+      "placeholder": true
+    },
+    {
+      "id": "prickle_charge",
+      "type": "storm",
+      "power": 0,
+      "accuracy": 90,
+      "pp": 20,
+      "priority": 0,
+      "effects": [
+        {
+          "kind": "status",
+          "status": "paralysis",
+          "chance": 100
+        }
+      ],
+      "placeholder": true
+    },
+    {
+      "id": "gale_step",
+      "type": "storm",
+      "power": 0,
+      "accuracy": null,
+      "pp": 20,
+      "priority": 0,
+      "effects": [
+        {
+          "kind": "stat",
+          "target": "self",
+          "stat": "spd",
+          "stages": 2,
+          "chance": 100
+        }
+      ],
+      "placeholder": true
+    },
+    {
+      "id": "wisp_flicker",
+      "type": "spirit",
+      "power": 40,
+      "accuracy": 100,
+      "pp": 25,
+      "priority": 0,
+      "effects": [],
+      "placeholder": true
+    },
+    {
+      "id": "hollow_wail",
+      "type": "spirit",
+      "power": 70,
+      "accuracy": 95,
+      "pp": 15,
+      "priority": 0,
+      "effects": [
+        {
+          "kind": "stat",
+          "target": "target",
+          "stat": "atk",
+          "stages": -1,
+          "chance": 20
+        }
+      ],
+      "placeholder": true
+    },
+    {
+      "id": "moonless_stare",
+      "type": "spirit",
+      "power": 0,
+      "accuracy": 100,
+      "pp": 20,
+      "priority": 0,
+      "effects": [
+        {
+          "kind": "stat",
+          "target": "target",
+          "stat": "spd",
+          "stages": -2,
+          "chance": 100
+        }
+      ],
+      "placeholder": true
+    },
+    {
+      "id": "blight_touch",
+      "type": "spirit",
+      "power": 30,
+      "accuracy": 100,
+      "pp": 20,
+      "priority": 0,
+      "effects": [
+        {
+          "kind": "status",
+          "status": "poison",
+          "chance": 50
+        }
+      ],
+      "placeholder": true
+    },
+    {
+      "id": "desperate_swing",
+      "type": "folk",
+      "power": 40,
+      "accuracy": null,
+      "pp": 1,
+      "priority": 0,
+      "effects": [
+        {
+          "kind": "recoil",
+          "percent": 25
+        }
+      ],
+      "typeless": true,
+      "placeholder": true
+    }
+  ]
+}
