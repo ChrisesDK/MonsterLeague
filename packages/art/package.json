@@ -1,0 +1,19 @@
+{
+  "name": "@oml/art",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./assets.json": "./assets.json"
+  },
+  "scripts": {
+    "build": "tsx scripts/build.ts",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@oml/data": "workspace:*",
+    "zod": "^3.23.8"
+  }
+}

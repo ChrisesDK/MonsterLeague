@@ -19,7 +19,8 @@
     "sim:report": "tsx tools/sim/src/report-cli.ts",
     "gate2:report": "tsx tools/gate2/src/cli.ts",
     "region:build": "pnpm --filter @oml/region-builder build",
-    "spawn:report": "pnpm --filter @oml/spawn report"
+    "spawn:report": "pnpm --filter @oml/spawn report",
+    "art:build": "pnpm --filter @oml/art build"
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",
