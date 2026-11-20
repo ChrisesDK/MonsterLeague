@@ -33,10 +33,10 @@ Nov 20, 2026 · @Christian
 2. **Battle.** A wild encounter or trainer opens the battle screen. Battles pause automatically if the app is backgrounded.
 3. **Grow.** Winning gives XP; wild creatures can be caught. The team is up to 6 creatures; extras go to storage.
 4. **Recover.** Rest stops fully heal the team and restock a few basic items once per hour.
-5. **Challenge.** The arena is a fixed leader team with a type theme. Losing sends the player back with a clear lesson ("her creatures resist Fire").
+5. **Challenge.** The arena is a fixed leader team with a type theme. Losing leaves the whole team fainted, so the player must walk to a rest stop (or use items) before battling again, and comes back with a clear lesson ("her creatures resist Fire").
 6. **Unlock.** A badge raises the level cap for obedience, unlocks one field ability and opens the next district.
 
-**First 15 minutes (onboarding):** choose one of three starter creatures at the first rest stop, walk \~200 m to a guaranteed first wild encounter, a tutorial catch, then a first trainer battle within 500 m. The player should have fought three battles and seen the arena marker before minute 15.
+**First 15 minutes (onboarding):** choose one of three starter creatures wherever the player opens the game; a personal tutorial creature (visible only to that player, not a shared spawn) appears 100–200 m away on a spawnable spot for a guided first battle and catch; then the map points the way to district 1, its nearest rest stop and first trainer. The player should have fought three battles and seen the arena marker before minute 15.
 
 ## World: Odense districts and progression
 
@@ -315,7 +315,7 @@ The battle engine is the heart of the game and has no dependency on the browser,
 | Spatial | `h3-js`, `@turf/turf`, `osmtogeojson` |
 | Validation | Zod |
 | Tests | Vitest; property tests with `fast-check` for the engine; Worker tests with the Workers Vitest integration |
-| CI / hosting | GitHub Actions; static client on GitHub Pages; Worker deployed with Wrangler |
+| CI / hosting | GitHub Actions; static client on GitHub Pages; the Worker is deployed from CI on every push that changes spawn code or data, and each spawn response reports its region-data and spawn-rules versions so drift is caught |
 | Later (multiplayer phase) | Accounts, friends, trades and battle relay on Cloudflare (Workers, D1, Durable Objects) |
 
 ## Data model
@@ -479,6 +479,7 @@ M1.7 (done, 148 tests): field abilities are data in `field-abilities.json`; a fr
 
 | Version | Date | Changes |
 | --- | --- | --- |
+| 1.5 | 2026-11-21 | M2a done and live; Worker auto-deploy and version check; onboarding: starter chosen anywhere plus a personal tutorial creature; losing faints the whole team until a rest stop or items |
 | 1.4 | 2026-11-20 | Accepted P8–P11 from M2a: field-ability name in the spawn example, Meadow/field biome and buffered rivers, no-spawn cells at 25% coverage plus never placing spawns inside no-spawn areas, light rail excluded from railway; M2a built, waiting for the spawn service deploy |
 | 1.3 | 2026-11-20 | Gate 2 qualitative pass; single-player game first, multiplayer as M5; server-authoritative shared spawns (spawn service, coarse-cell privacy, visible spawns you tap); creature art pipeline A1–A3; new roadmap M2a/M2b, Gate 3, M3 full Odense, M4 field test, M5 multiplayer; new Multiplayer and social section |
 | 1.2 | 2026-11-20 | Accepted P1–P7 from M1.6: original field-ability names (Forager, Angler, Runereader, Nightseer, Sealbreaker, Homing), Catch and Run in the turn order, data model defers field names to code, leader teams 2–6, Grove defensive strength tracked in BALANCE.md, "Bag" button; M1.6 marked done, Gate 2 checklist added |
