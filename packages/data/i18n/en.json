@@ -162,5 +162,7 @@
   "ui.evolve.yes": "Evolve",
   "ui.evolve.no": "Not now",
   "ui.evolve.done": "{name} evolved into {into}!",
-  "ui.evolve.declined": "{name} did not evolve."
+  "ui.evolve.declined": "{name} did not evolve.",
+  "item.revive_leaf.name": "Revive Leaf",
+  "item.revive_leaf.desc": "Revives a fainted creature at 50% HP."
 }

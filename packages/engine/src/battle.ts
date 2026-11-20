@@ -217,6 +217,11 @@ export function getLegalActions(
         if (item.kind === 'cure' && c.status === null) return;
         actions.push({ type: 'item', itemId, target });
       });
+    } else if (item.kind === 'revive') {
+      // Only fainted bench creatures (a fainted active one is replaced before anyone acts).
+      side.team.forEach((c, target) => {
+        if (c.hp <= 0) actions.push({ type: 'item', itemId, target });
+      });
     } else if (item.kind === 'charm' && state.kind === 'wild' && sideIndex === 0) {
       actions.push({ type: 'catch', itemId });
     }
@@ -368,7 +373,16 @@ function executeAction(ctx: Ctx, side: SideIndex, action: Action): void {
       sideState.itemsUsed += 1;
       ctx.events.push({ type: 'item_used', side, uid: target.uid, itemId: item.id });
       if (item.kind === 'heal') heal(ctx, side, target, item.amount);
-      else if (item.kind === 'cure' && target.status) {
+      else if (item.kind === 'revive') {
+        target.status = null;
+        target.statusTurns = 0;
+        heal(
+          ctx,
+          side,
+          target,
+          Math.max(1, Math.floor((getMaxHp(target, dex) * item.percent) / 100)),
+        );
+      } else if (item.kind === 'cure' && target.status) {
         ctx.events.push({ type: 'status_cured', side, uid: target.uid, status: target.status });
         target.status = null;
         target.statusTurns = 0;

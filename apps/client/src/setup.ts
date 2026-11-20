@@ -23,6 +23,7 @@ export const PLAYER_BAG: Record<string, number> = {
   basic_charm: 5,
   good_charm: 2,
   great_charm: 1,
+  revive_leaf: 1,
 };
 
 function trainerSide(

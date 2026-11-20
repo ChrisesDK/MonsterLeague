@@ -47,7 +47,8 @@ export const SpeciesSchema = z
     id,
     types: z.array(TypeIdSchema).min(1).max(2),
     baseStats: BaseStatsSchema,
-    catchRate: z.number().int().min(1).max(255),
+    /** GDD: catch rate 3–255. */
+    catchRate: z.number().int().min(3).max(255),
     baseXp: z.number().int().min(1),
     learnset: z
       .array(z.object({ level: z.number().int().min(1).max(100), moveId: id }).strict())
@@ -108,6 +109,10 @@ export const ItemSchema = z.discriminatedUnion('kind', [
   z
     .object({ id, kind: z.literal('charm'), catchBonus: z.number().positive(), placeholder })
     .strict(),
+  /** Revives a fainted creature at `percent` of max HP (GDD: Revive Leaf, 50%). */
+  z
+    .object({ id, kind: z.literal('revive'), percent: z.number().min(1).max(100), placeholder })
+    .strict(),
 ]);
 export type Item = z.infer<typeof ItemSchema>;
 
@@ -160,6 +165,33 @@ export const MovesFileSchema = z.object({ moves: z.array(MoveSchema) }).strict()
 export const ItemsFileSchema = z.object({ items: z.array(ItemSchema) }).strict();
 export const TrainersFileSchema = z.object({ trainers: z.array(TrainerSchema) }).strict();
 export const PlayerTeamsFileSchema = z.object({ playerTeams: z.array(PlayerTeamSchema) }).strict();
+
+/** GDD "Encounters and spawning": biome shares computed per H3 cell by the region builder. */
+export const BIOMES = [
+  'water',
+  'forest',
+  'park',
+  'urban',
+  'industrial',
+  'farmland',
+  'historic',
+] as const;
+export const BiomeSchema = z.enum(BIOMES);
+
+/** One spawn-table entry (GDD "Example spawn table entry"). Used from M2 on. */
+export const SpawnSchema = z
+  .object({
+    species: id,
+    district: z.number().int().min(1).max(8),
+    weight: z.number().positive(),
+    biomes: z.record(BiomeSchema, z.number().min(0)),
+    time: z.enum(['any', 'day', 'night']),
+    /** Field-ability id required to see this spawn (ability names are still open). */
+    requires: id.optional(),
+  })
+  .strict();
+export type Spawn = z.infer<typeof SpawnSchema>;
+export const SpawnsFileSchema = z.object({ spawns: z.array(SpawnSchema) }).strict();
 
 export const I18nSchema = z.record(z.string(), z.string());
 export type I18nTable = z.infer<typeof I18nSchema>;

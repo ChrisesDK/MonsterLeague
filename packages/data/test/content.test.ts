@@ -11,7 +11,7 @@ describe('content', () => {
     expect(content.typeIds).toHaveLength(7);
     expect(Object.keys(content.species)).toHaveLength(15);
     expect(Object.keys(content.moves).length).toBeGreaterThanOrEqual(30);
-    expect(Object.keys(content.items)).toHaveLength(6);
+    expect(Object.keys(content.items)).toHaveLength(7);
     expect(Object.keys(content.trainers)).toHaveLength(4);
     expect(Object.keys(content.playerTeams)).toHaveLength(2);
     for (const s of Object.values(content.species)) expect(s.placeholder).toBe(true);
@@ -66,5 +66,32 @@ describe('arenas and player-team presets', () => {
     expect(errors).toMatch(/species "ghost"/);
     delete broken.trainers.leader_water!.arena;
     expect(checkContent(broken).join('\n')).toMatch(/leaders need an arena/);
+  });
+});
+
+describe('GDD audit checks (M1.6)', () => {
+  it('rejects catch rates below 3 and levels above the Odense cap', () => {
+    const species = structuredClone((rawContent.species as { species: unknown[] }).species);
+    (species[0] as { catchRate: number }).catchRate = 2;
+    expect(() => parseContent({ ...rawContent, species: { species } })).toThrow();
+    const broken = structuredClone(content);
+    broken.trainers.leader_water!.team[0]!.level = 51;
+    broken.playerTeams.arena2!.team[0]!.level = 51;
+    broken.spawns.push({ species: 'ghost', district: 1, weight: 1, biomes: {}, time: 'any' });
+    const errors = checkContent(broken).join('\n');
+    expect(errors).toMatch(/level 51 above the Odense cap 50/);
+    expect(errors).toMatch(/player team arena2: level 51/);
+    expect(errors).toMatch(/spawn 0: species "ghost"/);
+  });
+
+  it('validates spawn entries', () => {
+    expect(() =>
+      parseContent({
+        ...rawContent,
+        spawns: {
+          spawns: [{ species: 'torvdue', district: 9, weight: 1, biomes: {}, time: 'any' }],
+        },
+      }),
+    ).toThrow();
   });
 });

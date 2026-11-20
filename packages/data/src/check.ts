@@ -5,6 +5,9 @@ import { TYPE_IDS } from './schemas';
 /** The fallback move every creature uses when it is out of PP. */
 export const FALLBACK_MOVE_ID = 'desperate_swing';
 
+/** GDD "XP": level cap 50 in Odense. Content (trainers, presets) must stay at or below it. */
+export const ODENSE_LEVEL_CAP = 50;
+
 /** Cross-reference checks the Zod schemas cannot express. Returns a list of errors. */
 export function checkContent(dex: Dex): string[] {
   const errors: string[] = [];
@@ -54,6 +57,8 @@ export function checkContent(dex: Dex): string[] {
   for (const t of Object.values(dex.trainers)) {
     const where = `trainer ${t.id}`;
     for (const member of t.team) {
+      if (member.level > ODENSE_LEVEL_CAP)
+        errors.push(`${where}: level ${member.level} above the Odense cap ${ODENSE_LEVEL_CAP}`);
       const sp = dex.species[member.speciesId];
       if (!sp) errors.push(`${where}: species "${member.speciesId}" does not exist`);
       for (const mv of member.moves ?? []) {
@@ -76,6 +81,8 @@ export function checkContent(dex: Dex): string[] {
 
   for (const p of Object.values(dex.playerTeams)) {
     for (const m of p.team) {
+      if (m.level > ODENSE_LEVEL_CAP)
+        errors.push(`player team ${p.id}: level ${m.level} above the cap`);
       if (!dex.species[m.speciesId])
         errors.push(`player team ${p.id}: species "${m.speciesId}" does not exist`);
     }
@@ -90,6 +97,10 @@ export function checkContent(dex: Dex): string[] {
         `player team ${p.id}: must have one creature more than ${leader} (starter + ${dex.trainers[leader]!.team.length})`,
       );
   }
+
+  dex.spawns.forEach((sp, i) => {
+    if (!dex.species[sp.species]) errors.push(`spawn ${i}: species "${sp.species}" does not exist`);
+  });
 
   return errors;
 }

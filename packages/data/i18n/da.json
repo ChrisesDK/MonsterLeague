@@ -162,5 +162,7 @@
   "ui.evolve.yes": "Udvikl",
   "ui.evolve.no": "Ikke nu",
   "ui.evolve.done": "{name} udviklede sig til {into}!",
-  "ui.evolve.declined": "{name} udviklede sig ikke."
+  "ui.evolve.declined": "{name} udviklede sig ikke.",
+  "item.revive_leaf.name": "Livsblad",
+  "item.revive_leaf.desc": "Vækker et besvimet væsen med 50% HP."
 }

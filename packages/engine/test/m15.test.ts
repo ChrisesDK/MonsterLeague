@@ -239,3 +239,30 @@ describe('set-up AI', () => {
     expect(boosts).toBeLessThan(0.6);
   });
 });
+
+describe('revive leaf (M1.6, GDD items)', () => {
+  it('revives a fainted bench creature at 50% HP and clears its status', () => {
+    const fainted = mk('mosbille', 10, ['t_wait'], { hp: 0, status: 'poison' });
+    const s = battle(
+      { team: [mk('torvdue', 10, ['t_wait']), fainted], items: { revive_leaf: 1 } },
+      [mk('rendsnude', 10, ['t_wait'])],
+    );
+    const legal = getLegalActions(s, 0, dex);
+    expect(legal).toContainEqual({ type: 'item', itemId: 'revive_leaf', target: 1 });
+    expect(legal).not.toContainEqual({ type: 'item', itemId: 'revive_leaf', target: 0 });
+    const r = turn(s, { type: 'item', itemId: 'revive_leaf', target: 1 }, move());
+    const revived = r.state.sides[0].team[1]!;
+    expect(revived.hp).toBe(Math.floor(getMaxHp(revived, dex) / 2));
+    expect(revived.status).toBe(null);
+    expect(types(r.events).slice(1, 3)).toEqual(['item_used', 'heal']);
+    expect(r.state.sides[0].items.revive_leaf).toBe(0);
+    expect(getLegalActions(r.state, 0, dex)).toContainEqual({ type: 'switch', index: 1 });
+  });
+
+  it('is not offered when nobody has fainted', () => {
+    const s = battle({ team: [mk('torvdue', 10)], items: { revive_leaf: 1 } }, [
+      mk('rendsnude', 10),
+    ]);
+    expect(getLegalActions(s, 0, dex).some((a) => a.type === 'item')).toBe(false);
+  });
+});
