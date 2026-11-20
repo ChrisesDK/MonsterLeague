@@ -107,4 +107,6 @@ by `tools/sim/test/balance.test.ts`. If a content change breaks them, re-tune wi
 - Write engine code test-first where practical; property tests use fast-check.
 - When a rule is ambiguous, choose the simplest reasonable interpretation and record it
   in `docs/DECISIONS.md`. When the GDD itself seems wrong, write a proposal instead.
-- Keep `docs/PLAN.md` checkboxes current. Commit in small steps; never push.
+- Keep `docs/PLAN.md` checkboxes current. Commit in small steps. Never push unless the
+  owner asks in that milestone; the only remote is `origin` =
+  github.com/chrisesdk/OdenseMonsterLeague (public). Never touch the owner's other repos.

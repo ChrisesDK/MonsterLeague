@@ -3,6 +3,23 @@
 A free, walk-to-play, location-based monster-collecting RPG set in Odense, Denmark
 (working title). It ships first as a mobile web app (PWA) and runs entirely on the phone.
 
+**Play the battle playtest:** <https://chrisesdk.github.io/OdenseMonsterLeague/>
+(open it once on Wi-Fi; after that it also works offline).
+
+## About this project
+
+- **An original game.** Creatures, moves, items, arenas and the world are our own,
+  inspired by Danish folklore and H.C. Andersen. The project contains no Pokémon content
+  (no names, creatures, moves, items, terms, art, sounds or data), and a test in CI blocks
+  franchise terms from the game text.
+- **Current stage:** a battle prototype for an outdoor playtest ("Gate 2"). The map, GPS
+  and spawning come later. Nothing is sent anywhere: playtest results stay on the phone
+  until the tester chooses to share them, and the app has no location data.
+- **Source available, all rights reserved.** The code and content are published so the
+  playtest can be hosted and followed openly. No licence is granted (no open-source
+  licence yet): you may read the code, but not copy, modify or redistribute it without
+  permission. © 2026 the Odense Monster League author.
+
 This repository contains M0–M1.6: the battle engine, balance tooling and a Gate 2
 playtest build. Map, GPS and spawning arrive in M2. Game design lives in
 [docs/GDD.md](docs/GDD.md); deployment steps in [docs/DEPLOY.md](docs/DEPLOY.md).
