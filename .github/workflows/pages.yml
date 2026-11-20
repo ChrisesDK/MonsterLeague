@@ -1,0 +1,55 @@
+name: Deploy client to GitHub Pages
+
+# Builds apps/client and publishes it to GitHub Pages, so testers can open the playtest
+# on their own phones. Requires Settings → Pages → Source: "GitHub Actions" (see docs/DEPLOY.md).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm validate
+      - run: pnpm test
+      - name: Build client
+        run: |
+          # Project sites live at /<repo>/; a user site (<name>.github.io) lives at /.
+          if [ "${{ github.event.repository.name }}" = "${{ github.repository_owner }}.github.io" ]; then
+            export VITE_BASE=/
+          else
+            export VITE_BASE=/${{ github.event.repository.name }}/
+          fi
+          export APP_VERSION=${GITHUB_SHA::7}
+          pnpm --filter @oml/client build
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: apps/client/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

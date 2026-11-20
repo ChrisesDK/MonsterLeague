@@ -182,3 +182,89 @@ Numbers below come from `pnpm sim:report` (docs/BALANCE.md). Before/after summar
   - evolve: evolve or not now.
     They apply `learnMove` / `evolveCreature` (pure engine helpers) to a post-battle copy of
     the team. Nothing persists that team yet: there's no collection until a later milestone.
+
+## M1.6: GDD sync and Gate 2 playtest kit
+
+- **D42. GDD audit.** docs/GDD.md (v1.1) is the design source of truth.
+  - Plain mismatches fixed:
+    - catch rate range 3–255 (schema);
+    - the Revive Leaf item (D43);
+    - a spawn-table schema, which the GDD's M0 checklist lists (D45);
+    - a validation rule that trainer and preset levels stay ≤ 50 (D44);
+    - battle playback holds while the app is in the background (D53).
+  - Everything else that differs went to docs/GDD-PROPOSALS.md (P1–P7).
+  - Not implemented yet, by plan (M2+): obedience, rest stops, trainer rewards and lines,
+    the save game, spawning and field abilities.
+- **D43. Revive Leaf** (`kind: revive`, `percent: 50`).
+  - Usable in battle on a fainted **bench** creature. A fainted active creature is always
+    replaced before anyone acts, so it can't be a target.
+  - Restores `max(1, floor(maxHp × 50%))` HP and clears the status.
+  - Emits `item_used` + `heal`. AIs don't use it.
+  - It is in the developer page's bag, but not in any preset or trainer bag, so the
+    balance results are unaffected.
+- **D44. Level cap.** The engine supports levels 1–100 (`MAX_LEVEL`). The GDD's "level cap
+  50 in Odense" is enforced on content: validate rejects trainer or preset levels above 50,
+  and learnsets were already capped at 50.
+- **D45. Spawn schema.**
+  - Fields: `{species, district 1–8, weight > 0, biomes {water, forest, park, urban,
+industrial, farmland, historic}, time any|day|night, requires?}`.
+  - `content/spawns.json` is empty until M2.
+  - `requires` is a free id: field-ability names are pending (P1), so none are encoded.
+- **D46. GDD v1.1 Storm → Grove = 2** applied. All six arena results were identical before
+  and after (no storm attacker meets grove in either leader fight), so no retuning was
+  needed. Before/after is in the BALANCE.md change log.
+- **D47. BALANCE.md change log.** `pnpm sim:report` regenerates the file but keeps a
+  hand-written `## Change log` section, placed before the matrices.
+- **D48. Playtest mode** (default route; the M1 developer battle page moved to `#/dev`).
+  - **Session plan:**
+    1. wild 1;
+    2. wild 2;
+    3. route trainer (`trainer_fisher`, the stronger of the two arena 1 trainers);
+    4. arena 1 leader;
+    5. arena 2 leader (optional).
+  - **Teams:** each battle uses a fresh, full-HP copy of the arena's player-team preset,
+    with the tester's starter first. Arena 1's preset is used for the wild battles and the
+    route trainer, arena 2's for its leader.
+  - **Bag:** preset items + 5 Basic Charms (the GDD rest-stop restock), so catching can be
+    tested.
+  - **Wild opponents:** a random species with catch rate ≥ 100 (commons and biome
+    specials; no starter lines, no rares) at a random level from 8–10, with a random battle
+    seed. All randomness is client-side `Math.random`; the engine stays seeded.
+  - **Record keeping:**
+    - A record is stored when the battle ends (rating null), then updated by the rating
+      screen. Ratings are required to continue; length and comment are optional.
+    - `switches` counts voluntary switches only (forced replacements are excluded).
+    - `attempt` numbers redos of a slot within the session.
+  - **Tester codes:** 1–12 of A–Z, 0–9, `-`, `_`, upper-cased. That excludes spaces and
+    `@`, so no names or emails. Codes are only an identifier.
+  - Export and "Delete my results" cover **all** playtest data on the phone (all testers
+    who used it); in Gate 2 each tester normally uses their own phone.
+- **D49. Active time** (`packages/playtest` timer):
+  - Runs while the battle screen is shown.
+  - Pauses on the Pause button, `visibilitychange` → hidden and `pagehide`.
+  - If the app is closed mid-battle, only time up to the last save counts (the state is
+    saved after every turn and on hide).
+  - Wall-clock start and end times are stored as well.
+- **D50. Export format v1** (`packages/playtest`, shared by the client and
+  `pnpm gate2:report`):
+  - JSON: `{format: "oml-gate2", version: 1, exportedAt, records[]}`.
+  - CSV: a fixed column order, CRLF line ends, RFC 4180 quoting.
+  - Free text that starts with `= + - @` gets a leading `'` so spreadsheets don't run it
+    as a formula; the importer strips it again.
+  - Both formats are validated with Zod on import, and duplicates merge by `recordId`.
+  - There are no location fields; a test checks this.
+- **D51. Speed setting.**
+  - _Fast_ halves the text and event delays and shortens the CSS animations and HP-bar
+    transitions to about half.
+  - With `prefers-reduced-motion`, animations are off and non-text events have no delay.
+  - Tapping the log still skips the rest of a turn.
+- **D52. App version.** `__APP_VERSION__` is the short git hash at build time (CI sets
+  `APP_VERSION` from `GITHUB_SHA`), or `dev`.
+- **D53. Background.** Battle playback waits while the document is hidden (GDD: battles
+  pause when the app is backgrounded); turn state is unaffected.
+- **D54. Offline and deploy.**
+  - vite-plugin-pwa (`generateSW`, `autoUpdate`) precaches the whole app, so it works
+    offline after the first load (verified by reloading offline).
+  - The base path comes from `VITE_BASE`; the Pages workflow derives it from the repo name.
+  - The manifest uses an SVG icon only. PNG icons, which some Android versions need for an
+    install prompt, can come with real art (M3).

@@ -47,10 +47,21 @@
 - [x] Turn cap 150
 - [x] Balance regression tests
 
+## M1.6 — GDD sync and Gate 2 playtest kit ✅
+
+- [x] docs/GDD.md as the design source of truth; CLAUDE.md rules; docs/GDD-PROPOSALS.md
+- [x] GDD audit: fixes (catch rate 3–255, Revive Leaf, spawn schema, level cap 50, background pause) + proposals P1–P7
+- [x] GDD v1.1 Storm → Grove = 2; sim:report before/after (no retuning needed)
+- [x] Playtest mode: tester code, session plan, active-time records, rating, export (share/JSON/CSV/copy), delete
+- [x] Speed setting (normal / fast, respects reduce-motion)
+- [x] PWA offline; GitHub Pages workflow (prepared, not published); docs/DEPLOY.md
+- [x] docs/GATE2.md facilitator script; `pnpm gate2:report <folder>`
+
+## Next: Gate 2 (outdoor battle test) — owner runs it; see docs/GATE2.md
+
 ## Open questions (before/during M2)
 
-- Grove is the strongest defensive type (resists water, grove, stone, storm; weak only to
-  fire), so grove creatures top the 1v1 matrix. Add a second grove weakness?
+- Field-ability names collide with Pokémon HM names (GDD-PROPOSALS P1).
 - The AI never uses heal moves or target-lowering stat moves.
 - Leader fights take 30–42 turns (median). Fine for a leader, but too long for wild
   battles outdoors?

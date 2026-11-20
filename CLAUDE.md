@@ -49,11 +49,13 @@ M2 (map, GPS, spawning) has not started. See [docs/PLAN.md](docs/PLAN.md) and
 
 ```
 packages/data     JSON content + Zod schemas + loader (`content`) + i18n + validate CLI
-packages/engine   pure battle engine (rng, stats, damage, battle, ai, catch, xp)
+packages/engine   pure battle engine (rng, stats, damage, battle, ai, catch, xp, moves)
+packages/playtest Gate 2 record format, active-time timer, JSON/CSV export, summaries
 packages/spawn    (M2) spawn rules — stub
-tools/sim         CLI that runs N AI-vs-AI battles and prints stats
+tools/sim         CLI that runs N AI-vs-AI battles and prints stats; sim:report
+tools/gate2       merges exported playtest files and prints the Gate 2 report
 tools/region-builder (M2) OSM → region data — stub
-apps/client       Vite + React mobile-first battle test page
+apps/client       Vite + React PWA: playtest mode (default) and the dev battle page (#/dev)
 ```
 
 - Workspace packages are consumed **as TypeScript source** (`exports` → `src/index.ts`);
@@ -82,7 +84,8 @@ pnpm validate      # content JSON vs Zod schemas + cross-references + i18n keys
 pnpm sim --a starter_fire:12 --b leader_water --n 10000
 pnpm sim --player-team arena2 --starter grove --b leader_water   # expected player team
 pnpm sim:report    # regenerates docs/BALANCE.md (~15 s); run after any content/rule change
-pnpm dev           # client dev server (http://localhost:5173)
+pnpm dev           # client dev server (http://localhost:5173; #/dev = developer battle page)
+pnpm gate2:report <folder>   # Gate 2 summary from exported playtest .json/.csv files
 ```
 
 Sim side specs: a trainer id (`leader_water`), `speciesId:level` (`gnistkat:12`), a
