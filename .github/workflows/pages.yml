@@ -42,6 +42,8 @@ jobs:
           fi
           export APP_VERSION=${GITHUB_SHA::7}
           pnpm --filter @oml/client build
+          # Fail the deploy if any built URL ignores the base path.
+          pnpm --filter @oml/client check:base
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

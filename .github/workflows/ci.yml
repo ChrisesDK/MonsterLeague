@@ -22,5 +22,9 @@ jobs:
       - run: pnpm test
       - run: pnpm coverage
       - run: pnpm build
+      - name: Base-path check (GitHub Pages sub-path build)
+        run: pnpm --filter @oml/client build && pnpm --filter @oml/client check:base
+        env:
+          VITE_BASE: /OdenseMonsterLeague/
       - name: Sim smoke test
         run: pnpm sim --a starter_fire:12 --b leader_water --n 1000
