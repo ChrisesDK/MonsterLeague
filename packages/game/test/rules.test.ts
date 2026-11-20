@@ -137,7 +137,7 @@ describe('onboarding and the tutorial catch', () => {
 
 describe('district 1 run: trainers, losing, rest stops, arena 1, badge', () => {
   it('plays through to badge 1 and district 2', () => {
-    let save = { ...chooseStarter(newSave(SEED), 'boegling'), onboarding: 'done' as const };
+    let save: SaveGame = { ...chooseStarter(newSave(SEED), 'boegling'), onboarding: 'done' };
 
     // Route trainer at the expected level: a win, a reward, marked beaten.
     save = boost(save, 12);
