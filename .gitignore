@@ -1,6 +1,24 @@
+# Dependencies and build output
 node_modules/
 dist/
+dev-dist/
 coverage/
-*.log
 .vite/
+*.tsbuildinfo
+
+# Environment and secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Gate 2 playtest exports (tester data stays out of the repo)
+oml-gate2-*.json
+oml-gate2-*.csv
+/gate2/
+
+# Local tool and editor files
+.claude/settings.local.json
+*.log
 .DS_Store
+Thumbs.db
