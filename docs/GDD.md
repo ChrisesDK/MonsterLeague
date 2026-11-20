@@ -1,6 +1,6 @@
 # Odense Monster League — Game Design Document
 
-Version 1.1 · 2026-11-20 · Christian. Mirror of the Claude doc; do not edit here, propose changes in docs/GDD-PROPOSALS.md.
+Version 1.2 · 2026-11-20 · Christian. Mirror of the Claude doc; do not edit here, propose changes in docs/GDD-PROPOSALS.md.
 
 ## Overview
 
@@ -45,12 +45,12 @@ Version 1.1 · 2026-11-20 · Christian. Mirror of the Claude doc; do not edit he
 | # | District (draft) | Arena location | Arena theme | Wild levels | Field ability earned |
 | --- | --- | --- | --- | --- | --- |
 | 1 | Centrum / station | Kongens Have | Folk | 3–8 | — |
-| 2 | Munkemose and the river | Munkemose | Water | 8–14 | Cut |
-| 3 | H.C. Andersen quarter | H.C. Andersens Hus | Spirit | 13–20 | Fish |
-| 4 | Old town and cathedral square | Skt. Knuds square | Stone | 19–26 | Rock Smash |
-| 5 | Harbour | Havnebadet | Storm | 25–32 | Night Sight |
-| 6 | Fruens Bøge | Fruens Bøge forest | Grove | 31–38 | Strength |
-| 7 | Zoo and river south | Odense Zoo (outside) | Mixed | 37–44 | Fly (heal only) |
+| 2 | Munkemose and the river | Munkemose | Water | 8–14 | Forager |
+| 3 | H.C. Andersen quarter | H.C. Andersens Hus | Spirit | 13–20 | Angler |
+| 4 | Old town and cathedral square | Skt. Knuds square | Stone | 19–26 | Runereader |
+| 5 | Harbour | Havnebadet | Storm | 25–32 | Nightseer |
+| 6 | Fruens Bøge | Fruens Bøge forest | Grove | 31–38 | Sealbreaker |
+| 7 | Zoo and river south | Odense Zoo (outside) | Mixed | 37–44 | Homing (heal only) |
 | 8 | Den Fynske Landsby | Den Fynske Landsby | Fire | 43–50 | — |
 
 Rules:
@@ -75,7 +75,7 @@ Type chart (attacker down, defender across; 2 = super effective, ½ = not very e
 | Storm |  |  | 2 | 2 | ½ | ½ |  |
 | Spirit | 0 |  |  |  |  |  | 2 |
 
-The only immunities are Folk ↔ Spirit. Changes since v1.0: Storm → Stone went from 0 to ½ (M1.5), and Storm → Grove went from ½ to 2 (v1.1), so Grove has two weaknesses (Fire, Storm) and is no longer the best defensive type.
+The only immunities are Folk ↔ Spirit. Changes since v1.0: Storm → Stone went from 0 to ½ (M1.5), and Storm → Grove went from ½ to 2 (v1.1), so Grove has two weaknesses (Fire, Storm). Whether Grove is still the strongest defensive type is tracked in docs/BALANCE.md; as of M1.6, Bøgevætte still wins the most 1v1s (accepted proposal P6).
 
 **Stats:** HP, Attack, Defence, Speed. Each species has base stats with a total of 240–400. Stat at level L = floor(base × 2 × L / 100) + 5. HP = floor(base × 3 × L / 100) + 2L + 10 (raised in M1.5 so battles last long enough to make decisions). There are no individual values or natures in v1. Stat stages run from −6 to +6, ×1.5 per stage up and ÷1.5 per stage down.
 
@@ -100,8 +100,8 @@ Every species needs: an ID, name, types, base stats, a learnset by level, catch 
 
 **Each turn:**
 
-1. Both sides choose an action: *Move* (one of up to 4), *Switch*, *Item*, or *Run* (wild battles only). The AI chooses at the same time.
-2. Order: Switch and Item go first, then moves by move priority, then by Speed; ties are broken by the seeded RNG.
+1. Both sides choose an action: *Move* (one of up to 4), *Switch*, *Item*, or *Run* (wild battles only), or Catch (throw a charm, wild battles only). The AI chooses at the same time.
+2. Order: Switch, Item, Catch and Run go first, then moves by move priority, then by Speed; ties are broken by the seeded RNG.
 3. Each move: accuracy roll → damage or effect → faint check. A fainted creature's pending move is cancelled.
 4. End of turn: status damage (Burn, Poison) and status countdowns.
 5. If a creature fainted, its owner picks a replacement (the AI picks immediately). A side with no usable creatures loses.
@@ -211,7 +211,7 @@ Guarantees: at least one encounter per 300 m walked (pity counter), no encounter
 | Rest stop | 40 m | Full heal, item restock once an hour | Yes |
 | Hidden item | 30 m | Pick up an item; some need a field ability | Once |
 
-**Arena leaders.** Each has a name, a personality tied to the place, a 3–6 creature team on its type theme, one signature tactic (for example the Water leader sets up rain-like Speed boosts) and a short pre- and post-battle line. Losing keeps all XP gained.
+**Arena leaders.** Each has a name, a personality tied to the place, a 2–6 creature team on its type theme (see Arena difficulty), one signature tactic (for example the Water leader sets up rain-like Speed boosts) and a short pre- and post-battle line. Losing keeps all XP gained.
 
 **Arena difficulty.** The leader team grows by about +6 levels per arena and +1 creature every two arenas. The *expected player team* (used by the sim and by level design) is one creature more than the leader, at the same levels.
 
@@ -230,16 +230,18 @@ Guarantees: at least one encounter per 300 m walked (pity counter), no encounter
 
 **Field abilities** are taught to a team member and take one of its 4 move slots. A creature must be *in the team* for the ability to work.
 
-| Ability | Requirement | Effect |
+| Ability (en / da) | Requirement | Effect |
 | --- | --- | --- |
-| Cut | Badge 2, Grove or Folk creature | Forest/park cells add rare Grove spawns; hedge items |
-| Fish | Badge 3, Water creature | Encounter button in water-adjacent cells, Water spawns |
-| Rock Smash | Badge 4, Stone or Folk creature | Historic-cell spawns and stone-landmark items |
-| Night Sight | Badge 5, Spirit or Storm creature | Night spawn table unlocked after sunset |
-| Strength | Badge 6, Stone or Folk creature | Unlocks sealed trainers and the arena-7 junior gauntlet |
-| Fly | Badge 7, Storm creature | Teleport to *heal* at a visited rest stop; never to battle or catch |
+| Forager / Sanker | Badge 2, Grove or Folk creature | Forest/park cells add rare Grove spawns; hedge items |
+| Angler / Lystfisker | Badge 3, Water creature | Encounter button in water-adjacent cells, Water spawns |
+| Runereader / Runelæser | Badge 4, Stone or Folk creature | Historic-cell spawns and stone-landmark items (a nod to Danish rune stones) |
+| Nightseer / Natteøje | Badge 5, Spirit or Storm creature | Night spawn table unlocked after sunset |
+| Sealbreaker / Seglbryder | Badge 6, Stone or Folk creature | Unlocks sealed trainers and the arena-7 junior gauntlet |
+| Homing / Hjemfinder | Badge 7, Storm creature | Return to *heal* at a visited rest stop; never to battle or catch |
 
-Locked layers are shown on the map (rustling trees, rings on water, a stone glyph) with the label "needs Cut" etc.
+Field-ability names are original. The names used by the Pokémon games for their field moves (Cut, Fly, Strength, Rock Smash, Surf, Flash and similar) are never used in code, data or text (accepted proposal P1).
+
+Locked layers are shown on the map (rustling trees, rings on water, a stone glyph) with the label "needs Forager" etc.
 
 ## Screens and UX
 
@@ -248,7 +250,7 @@ Locked layers are shown on the map (rustling trees, rings on water, a stone glyp
 | Screen | Purpose | Key elements |
 | --- | --- | --- |
 | Map | Main screen while walking | Player dot + accuracy ring, district border, POI markers, encounter toast, team HP strip, menu button |
-| Battle | Turn-based fight | Both creatures with HP bars and status; 2×2 move grid in the bottom third; Switch / Item / Run row; event text line |
+| Battle | Turn-based fight | Both creatures with HP bars and status; 2×2 move grid in the bottom third; Switch / Bag / Run row; event text line |
 | Team | View and order up to 6 creatures | Cards with HP, level, types; tap for details, moves, field ability |
 | Creature detail | Stats and moves | Stats, types, XP bar, moves with type/power/PP, evolution hint |
 | Storage | Creatures beyond 6 | Grid, swap into team |
@@ -298,6 +300,8 @@ The battle engine is the heart of the game and has no dependency on the browser,
 
 **All game content is data (JSON validated by Zod schemas); all player progress is one versioned save object stored on the device.**
 
+The table says what each file must hold. **The exact field names live in code** and win over this doc: content schemas in `packages/data/src/schemas.ts`, engine and save types in `packages/engine/src/types.ts` (accepted proposals P3 and P4). Change the GDD only when the *meaning* changes, not for a renamed field.
+
 | File / type | Holds | Key fields |
 | --- | --- | --- |
 | `types.json` | The type chart | types\[\], matrix\[attacker\]\[defender\] |
@@ -309,18 +313,7 @@ The battle engine is the heart of the game and has no dependency on the browser,
 | `region.<id>.json` | Built by the region builder | cells {h3Id: {district, biomes, noSpawn}}, pois \[{id, kind, lat, lng, radius}\], districts |
 | `odense.pmtiles` | Map tiles | Extract of the Protomaps basemap for the Odense area |
 
-**Runtime types (TypeScript):**
-
-```ts
-interface CreatureInstance { uid: string; speciesId: string; level: number; xp: number;
-  hp: number; status: Status | null; moves: { moveId: string; pp: number }[]; nickname?: string }
-interface BattleState { turn: number; rngState: number; sides: [Side, Side];
-  kind: 'wild' | 'trainer' | 'leader'; log: BattleEvent[]; result: 'ongoing' | 'p1' | 'p2' | 'caught' | 'ran' }
-interface SaveGame { version: number; playerSeed: number; team: CreatureInstance[];
-  storage: CreatureInstance[]; bag: Record<string, number>; badges: number[];
-  defeatedTrainers: string[]; seen: string[]; caught: string[];
-  lastRestock: Record<string, number>; activeBattle?: BattleState }
-```
+**Runtime state:** a battle state holds the turn number, the RNG state, both sides (team, active creature, stat stages, statuses, items) and the result. A creature instance holds its species, level, XP, HP, status, moves with PP, and an optional nickname. The save holds the player seed, team, storage, bag, badges, defeated trainers, seen and caught lists, rest-stop restock times and any active battle. See the code for exact types.
 
 The save never stores a location history: only progress. It is versioned so migrations are explicit.
 
@@ -344,8 +337,8 @@ The save never stores a location history: only progress. It is versioned so migr
 | M0 — Foundations | 1–2 | Monorepo, tooling, schemas, placeholder content | `pnpm test` and `pnpm build` pass in CI; 15 species, 30 moves and the type chart validate | Done |
 | M1 — Battle engine + battle prototype | 3–5 | A full battle playable on a phone | Engine coverage ≥ 90%; 10,000 simulated battles without errors; battle test page on a phone | Done (99.9% coverage) |
 | M1.5 — Balance pass | 3–5 | Battles long enough to decide; arenas on target | Neutral 1v1 median 4–6 turns; arena win-rate targets met and tested in CI | Done |
-| M1.6 — GDD sync + playtest kit | 5 | Shared GDD in the repo; tools to run Gate 2 outdoors | `docs/GDD.md` matches this doc; v1.1 type change re-balanced; testers can play on their own phones and export timings and ratings | Next |
-| Gate 2 — Outdoor battle test | 5–6 | Are battles fun standing on a street? | Testers rate battles 4+/5; wild under 2 min, trainer under 3 min, arena under 8 min | After M1.6 |
+| M1.6 — GDD sync + playtest kit | 5 | Shared GDD in the repo; tools to run Gate 2 outdoors | `docs/GDD.md` matches this doc; v1.1 type change re-balanced; testers can play on their own phones and export timings and ratings | Done (142 tests) |
+| Gate 2 — Outdoor battle test | 5–6 | Are battles fun standing on a street? | Testers rate battles 4+/5; wild under 2 min, trainer under 3 min, arena under 8 min | Next |
 | M2 — District slice | 6–9 | Walkable district with spawns, trainers, an arena | A tester can walk the district, catch, beat 4 trainers and the arena; works offline after first load | After Gate 2 |
 | M3 — Field-test build | 10–12 | Stable, installable build for 15–25 testers | Installable PWA, opt-in telemetry, feedback button, no blocker bugs for 3 days | Planned |
 
@@ -377,12 +370,23 @@ The save never stores a location history: only progress. It is versioned so migr
 
 **M1.6 — GDD sync and playtest kit**
 
-- [ ] Add `docs/GDD.md` (export of this doc) and make CLAUDE.md point to it as the design source of truth
-- [ ] Apply v1.1: Storm → Grove = 2; re-run `sim:report`; keep all arena targets green
-- [ ] Playtest mode: tester code, per-battle real-time timer and turn count, a 1–5 rating plus optional comment after each battle, stored locally
-- [ ] Export results as JSON/CSV (share or copy button); no location data
-- [ ] Text and animation speed setting (normal / fast)
-- [ ] Deploy the client to a static host so testers can open it on their own phones outdoors
+- [x] Add `docs/GDD.md` (export of this doc) and make CLAUDE.md point to it as the design source of truth
+- [x] Apply v1.1: Storm → Grove = 2; re-run `sim:report`; keep all arena targets green
+- [x] Playtest mode: tester code, per-battle real-time timer and turn count, a 1–5 rating plus optional comment after each battle, stored locally
+- [x] Export results as JSON/CSV (share or copy button); no location data
+- [x] Text and animation speed setting (normal / fast)
+- [x] Deploy the client to a static host so testers can open it on their own phones outdoors
+
+M1.6 also added the GDD audit with proposals P1–P7 (all accepted in v1.2), Revive Leaf, auto-pause in the background, offline support after the first load, a hidden developer battle page at `#/dev`, `docs/GATE2.md` (facilitator script) and `pnpm gate2:report`. The deploy workflow is prepared but not yet published.
+
+**Gate 2 — Outdoor battle test** (follow `docs/GATE2.md`)
+
+- [ ] Sync GDD v1.2 into the repo and apply the P1 rename and term guard (prompt M1.7)
+- [ ] Choose hosting: public GitHub Pages (code becomes public) or a private repo on Cloudflare Pages / Netlify
+- [ ] Deploy and open the link on 2–3 phones, Android and iOS
+- [ ] Recruit 6–10 testers; schedule sessions in daylight and one after dark
+- [ ] Run the sessions, collect exports, run `pnpm gate2:report`
+- [ ] Decide: pass (go to M2), tune timings, or rework battles
 
 **M2 — District slice**
 
@@ -392,7 +396,7 @@ The save never stores a location history: only progress. It is versioned so migr
 - [ ] Map screen with GPS, accuracy filter, speed filter, and a **dev GPS simulator** (replay a GPX walk)
 - [ ] Spawn rolls per cell + time window, pity counter, encounter toast
 - [ ] Save/load in IndexedDB; team, bag, storage, field guide screens
-- [ ] Trainers, rest stops, arena leader, badge, Cut as the first field ability
+- [ ] Trainers, rest stops, arena leader, badge, Forager as the first field ability
 
 **M3 — Field-test build**
 
@@ -421,5 +425,6 @@ The save never stores a location history: only progress. It is versioned so migr
 
 | Version | Date | Changes |
 | --- | --- | --- |
+| 1.2 | 2026-11-20 | Accepted P1–P7 from M1.6: original field-ability names (Forager, Angler, Runereader, Nightseer, Sealbreaker, Homing), Catch and Run in the turn order, data model defers field names to code, leader teams 2–6, Grove defensive strength tracked in BALANCE.md, "Bag" button; M1.6 marked done, Gate 2 checklist added |
 | 1.1 | 2026-11-20 | Folded in M1 and M1.5: HP formula, Storm → Stone ½, Storm → Grove 2 (new), coverage moves, auto-learn rule, AI set-up rule, running, full-team catch, turn cap 150, arena difficulty table and win-rate targets, balance tooling, M1.6 and Gate 2 added to the plan |
 | 1.0 | 2026-11-20 | First version |
