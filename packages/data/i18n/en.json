@@ -149,5 +149,18 @@
   "event.evolution_ready": "{name} is ready to evolve!",
   "event.needs_replacement": "Choose who to send out next.",
   "event.battle_end": "The battle is over.",
-  "trainer.leader_folk.name": "Market Leader Søren"
+  "trainer.leader_folk.name": "Market Leader Søren",
+  "event.run_failed": "Couldn't get away!",
+  "event.sent_to_storage": "Your team is full, so {name} was sent to storage.",
+  "ui.learn.title": "{name} wants to learn {move}.",
+  "ui.learn.prompt": "It already knows four moves. Forget one?",
+  "ui.learn.forget": "Forget {move}",
+  "ui.learn.skip": "Don't learn {move}",
+  "ui.learn.done": "{name} forgot {old} and learned {move}!",
+  "ui.learn.skipped": "{name} did not learn {move}.",
+  "ui.evolve.title": "{name} is ready to evolve into {into}!",
+  "ui.evolve.yes": "Evolve",
+  "ui.evolve.no": "Not now",
+  "ui.evolve.done": "{name} evolved into {into}!",
+  "ui.evolve.declined": "{name} did not evolve."
 }

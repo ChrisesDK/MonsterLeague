@@ -32,12 +32,28 @@
 - [x] Client battle test page (team picker, HP bars, 2×2 moves, Switch/Bag/Run, log,
       event-driven CSS animations, pause/resume via localStorage, da/en)
 
+## M1.5 — Balance pass ✅
+
+- [x] `pnpm sim:report` → docs/BALANCE.md (1v1 matrices L10/L25, player team vs trainers, flags)
+- [x] HP formula retuned: neutral 1v1 median 5 turns, super-effective KO in 3 hits
+- [x] storm → stone ½ (only immunities: folk ↔ spirit)
+- [x] Starter coverage moves (L11–12); auto-learn keeps the strongest move per type
+- [x] Arena 1 folk leader (2 creatures, L9–10); leader_water = arena 2 (3 creatures, L13–15)
+- [x] Player-team presets per arena (`--player-team`); all six leader targets met
+- [x] Leader/trainer set-up AI rule
+- [x] Run odds (faster = always; else 50% + 25% per failure)
+- [x] Full team → storage (`sent_to_storage`)
+- [x] Client post-battle modals: learn move / evolve
+- [x] Turn cap 150
+- [x] Balance regression tests
+
 ## Open questions (before/during M2)
 
-- Balance: a lone level-12 starter cannot beat the water leader (see sim output); decide
-  intended team size/levels per arena.
-- Move-learn choice and evolution UI live outside battle — design them with the
-  collection screens.
-- Should run ever fail? Should the player be able to catch with a full team?
+- Grove is the strongest defensive type (resists water, grove, stone, storm; weak only to
+  fire), so grove creatures top the 1v1 matrix. Add a second grove weakness?
+- The AI never uses heal moves or target-lowering stat moves.
+- Leader fights take 30–42 turns (median). Fine for a leader, but too long for wild
+  battles outdoors?
+- Collection/storage persistence for caught creatures and post-battle learn/evolve results.
 
 ## M2 — Map, GPS, spawning (not started)

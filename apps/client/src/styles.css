@@ -444,3 +444,32 @@ input {
   font-weight: 800;
   text-align: center;
 }
+
+/* ---------- post-battle modals ---------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: end center;
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 10;
+}
+.modal-card {
+  width: 100%;
+  max-width: 448px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border-radius: var(--radius);
+  background: var(--panel);
+  border: 1px solid #2f5541;
+}
+.modal-card h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.modal-card p {
+  margin: 0;
+}

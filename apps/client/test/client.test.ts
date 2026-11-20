@@ -1,8 +1,9 @@
 import { i18n } from '@oml/data';
-import { chooseAiAction, resolveTurn, type BattleEvent } from '@oml/engine';
+import { chooseAiAction, createCreature, resolveTurn, type BattleEvent } from '@oml/engine';
 import { describe, expect, it } from 'vitest';
 import { eventText } from '../src/eventText';
 import { makeT } from '../src/i18n';
+import { applyChoice, collectChoices } from '../src/postBattle';
 import { buildConfig, startBattle } from '../src/setup';
 import { applyEvent, viewFromState } from '../src/view';
 
@@ -87,6 +88,8 @@ describe('event playback', () => {
       { type: 'catch_attempt', ...w, itemId: 'basic_charm', chance: 0.5, success: false },
       { type: 'caught', ...w },
       { type: 'ran', side: 0 },
+      { type: 'run_failed', side: 0, attempts: 1 },
+      { type: 'sent_to_storage', ...w },
       { type: 'xp_gain', ...w, amount: 5, xp: 10 },
       { type: 'level_up', ...w, level: 13, hp: 4, maxHp: 4 },
       { type: 'move_learned', ...w, moveId: 'stoke_up' },
@@ -103,5 +106,38 @@ describe('event playback', () => {
         expect(text).not.toMatch(/\{\w+\}/);
       }
     }
+  });
+});
+
+describe('post-battle choices', () => {
+  it('collects side-0 learn and evolve prompts without duplicates', () => {
+    const events: BattleEvent[] = [
+      { type: 'move_learn_choice', side: 0, uid: 'p0', moveId: 'kiln_blast' },
+      { type: 'evolution_ready', side: 0, uid: 'p0', speciesId: 'gnistkat', into: 'baalkat' },
+      { type: 'evolution_ready', side: 0, uid: 'p0', speciesId: 'gnistkat', into: 'baalkat' },
+      { type: 'move_learn_choice', side: 1, uid: 'o0', moveId: 'kiln_blast' },
+      { type: 'turn_start', turn: 3 },
+    ];
+    const choices = collectChoices(events);
+    expect(choices).toEqual([
+      { kind: 'learn', uid: 'p0', moveId: 'kiln_blast' },
+      { kind: 'evolve', uid: 'p0', into: 'baalkat' },
+    ]);
+    expect(collectChoices(events, choices)).toEqual(choices);
+  });
+
+  it('applies forget/skip and evolve/decline outside battle', () => {
+    const team = [createCreature('gnistkat', 16, 'p0'), createCreature('torvdue', 5, 'p1')];
+    const learned = applyChoice(team, { kind: 'learn', uid: 'p0', moveId: 'kiln_blast' }, 1);
+    expect(learned[0]!.moves[1]!.moveId).toBe('kiln_blast');
+    expect(learned[1]).toBe(team[1]);
+    expect(applyChoice(team, { kind: 'learn', uid: 'p0', moveId: 'kiln_blast' }, null)).toEqual(
+      team,
+    );
+    const evolved = applyChoice(team, { kind: 'evolve', uid: 'p0', into: 'baalkat' }, true);
+    expect(evolved[0]!.speciesId).toBe('baalkat');
+    expect(
+      applyChoice(team, { kind: 'evolve', uid: 'p0', into: 'baalkat' }, false)[0]!.speciesId,
+    ).toBe('gnistkat');
   });
 });

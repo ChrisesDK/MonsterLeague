@@ -86,6 +86,10 @@ export function eventText(event: BattleEvent, state: BattleState, t: Translate):
       return t('event.caught', { name: nameOf(event.uid) });
     case 'ran':
       return t('event.ran');
+    case 'run_failed':
+      return t('event.run_failed');
+    case 'sent_to_storage':
+      return t('event.sent_to_storage', { name: nameOf(event.uid) });
     case 'xp_gain':
       return t('event.xp_gain', { name: nameOf(event.uid), amount: event.amount });
     case 'level_up':

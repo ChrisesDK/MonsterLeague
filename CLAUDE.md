@@ -6,7 +6,8 @@ real landmarks, wild creatures that spawn from real surroundings (OpenStreetMap 
 and turn-based battles in the style of handheld monster RPGs. It ships first as a mobile
 web app (PWA). Everything runs on the phone; there is no game server in v1.
 
-Status: milestones M0 (foundations) and M1 (battle engine + battle prototype) are done.
+Status: milestones M0 (foundations), M1 (battle engine + battle prototype) and M1.5
+(balance pass, see docs/BALANCE.md) are done.
 M2 (map, GPS, spawning) has not started. See [docs/PLAN.md](docs/PLAN.md) and
 [docs/DECISIONS.md](docs/DECISIONS.md).
 
@@ -66,11 +67,18 @@ pnpm coverage      # engine coverage (threshold 90%)
 pnpm build         # builds apps/client
 pnpm validate      # content JSON vs Zod schemas + cross-references + i18n keys
 pnpm sim --a starter_fire:12 --b leader_water --n 10000
+pnpm sim --player-team arena2 --starter grove --b leader_water   # expected player team
+pnpm sim:report    # regenerates docs/BALANCE.md (~15 s); run after any content/rule change
 pnpm dev           # client dev server (http://localhost:5173)
 ```
 
-Sim side specs: a trainer id (`leader_water`), `speciesId:level` (`gnistkat:12`), or a
-starter alias (`starter_fire`, `starter_water`, `starter_grove`). Join several with `,`.
+Sim side specs: a trainer id (`leader_water`), `speciesId:level` (`gnistkat:12`), a
+starter alias (`starter_fire`, `starter_water`, `starter_grove`), several joined with `,`,
+or a player-team preset `team:<preset>:<starter>`.
+
+Balance: leader targets (neutral 40–60%, advantage 75–90%, disadvantage 15–30%) are guarded
+by `tools/sim/test/balance.test.ts`. If a content change breaks them, re-tune with
+`pnpm sim:report` and record the change in docs/DECISIONS.md.
 
 ## Working conventions
 

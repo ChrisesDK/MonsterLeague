@@ -10,10 +10,12 @@ import {
   type Action,
   type BattleEvent,
   type BattleState,
+  type CreatureInstance,
   type SideIndex,
   type TurnResult,
 } from '@oml/engine';
 import { creatureName, eventText } from './eventText';
+import { applyChoice, collectChoices, type PostBattleChoice } from './postBattle';
 import type { Translate } from './i18n';
 import { clearBattle, saveBattle } from './storage';
 import { applyEvent, viewFromState, type BattleView, type CreatureView } from './view';
@@ -68,6 +70,10 @@ export function BattleScreen({ initial, t, onExit }: Props) {
   const [busy, setBusy] = useState(false);
   const [panel, setPanel] = useState<Panel>('main');
   const [pendingItem, setPendingItem] = useState<string | null>(null);
+  /** Move-learn and evolution decisions, shown as modals once the battle is over. */
+  const [choices, setChoices] = useState<PostBattleChoice[]>([]);
+  /** The player's team after post-battle decisions (outside the battle state). */
+  const [team, setTeam] = useState<CreatureInstance[] | null>(null);
   const alive = useRef(true);
   const skip = useRef(false);
   const animCounter = useRef(0);
@@ -119,6 +125,7 @@ export function BattleScreen({ initial, t, onExit }: Props) {
       { ...final[1], caught: v[1].caught },
     ]);
     setState(result.state);
+    setChoices((prevChoices) => collectChoices(result.events, prevChoices));
     if (result.state.result === 'ongoing') saveBattle(result.state);
     else clearBattle();
     setPanel('main');
@@ -232,6 +239,73 @@ export function BattleScreen({ initial, t, onExit }: Props) {
     );
   };
 
+  const answer = (value: number | boolean | null) => {
+    const choice = choices[0]!;
+    const current = team ?? state.sides[0].team;
+    const before = current.find((c) => c.uid === choice.uid)!;
+    const next = applyChoice(current, choice, value);
+    const after = next.find((c) => c.uid === choice.uid)!;
+    const name = creatureName(before, t);
+    if (choice.kind === 'learn') {
+      const move = t(`move.${choice.moveId}.name`);
+      setLog(
+        typeof value === 'number'
+          ? t('ui.learn.done', { name, old: t(`move.${before.moves[value]!.moveId}.name`), move })
+          : t('ui.learn.skipped', { name, move }),
+      );
+    } else {
+      setLog(
+        after.speciesId !== before.speciesId
+          ? t('ui.evolve.done', { name, into: t(`species.${after.speciesId}.name`) })
+          : t('ui.evolve.declined', { name }),
+      );
+    }
+    setTeam(next);
+    setChoices(choices.slice(1));
+  };
+
+  const modal = (() => {
+    if (!over || busy || choices.length === 0) return null;
+    const choice = choices[0]!;
+    const creature = (team ?? state.sides[0].team).find((c) => c.uid === choice.uid);
+    if (!creature) return null;
+    const name = creatureName(creature, t);
+    if (choice.kind === 'learn') {
+      const move = t(`move.${choice.moveId}.name`);
+      return (
+        <div className="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+          <div className="modal-card">
+            <h2 id="modal-title">{t('ui.learn.title', { name, move })}</h2>
+            <p className="muted">{t('ui.learn.prompt')}</p>
+            {creature.moves.map((m, i) => (
+              <button key={m.moveId} className="btn list-btn" onClick={() => answer(i)}>
+                {t('ui.learn.forget', { move: t(`move.${m.moveId}.name`) })}
+              </button>
+            ))}
+            <button className="btn" onClick={() => answer(null)}>
+              {t('ui.learn.skip', { move })}
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div className="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div className="modal-card">
+          <h2 id="modal-title">
+            {t('ui.evolve.title', { name, into: t(`species.${choice.into}.name`) })}
+          </h2>
+          <button className="btn primary" onClick={() => answer(true)}>
+            {t('ui.evolve.yes')}
+          </button>
+          <button className="btn" onClick={() => answer(false)}>
+            {t('ui.evolve.no')}
+          </button>
+        </div>
+      </div>
+    );
+  })();
+
   let controls: ReactNode;
   if (over && !busy) {
     controls = (
@@ -297,6 +371,7 @@ export function BattleScreen({ initial, t, onExit }: Props) {
         {log}
       </p>
       <section className="controls">{controls}</section>
+      {modal}
     </main>
   );
 }

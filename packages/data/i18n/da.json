@@ -149,5 +149,18 @@
   "event.evolution_ready": "{name} er klar til at udvikle sig!",
   "event.needs_replacement": "Vælg, hvem der skal ud nu.",
   "event.battle_end": "Kampen er slut.",
-  "trainer.leader_folk.name": "Torveleder Søren"
+  "trainer.leader_folk.name": "Torveleder Søren",
+  "event.run_failed": "Du kunne ikke slippe væk!",
+  "event.sent_to_storage": "Dit hold er fuldt, så {name} blev sendt på lager.",
+  "ui.learn.title": "{name} vil lære {move}.",
+  "ui.learn.prompt": "Den kan allerede fire angreb. Skal den glemme et?",
+  "ui.learn.forget": "Glem {move}",
+  "ui.learn.skip": "Lær ikke {move}",
+  "ui.learn.done": "{name} glemte {old} og lærte {move}!",
+  "ui.learn.skipped": "{name} lærte ikke {move}.",
+  "ui.evolve.title": "{name} er klar til at udvikle sig til {into}!",
+  "ui.evolve.yes": "Udvikl",
+  "ui.evolve.no": "Ikke nu",
+  "ui.evolve.done": "{name} udviklede sig til {into}!",
+  "ui.evolve.declined": "{name} udviklede sig ikke."
 }
