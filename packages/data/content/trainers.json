@@ -47,11 +47,11 @@
       "tier": "leader",
       "team": [
         {
-          "speciesId": "torvdue",
+          "speciesId": "rendsnude",
           "level": 9
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "loftnisse",
           "level": 10
         }
       ],
@@ -68,15 +68,18 @@
       "team": [
         {
           "speciesId": "grimaelling",
-          "level": 13
+          "level": 13,
+          "moves": ["shoulder_shove", "brook_spout", "hearth_spark", "sea_fog"]
         },
         {
           "speciesId": "aaodder",
-          "level": 14
+          "level": 14,
+          "moves": ["nimble_jab", "brook_spout", "hearth_spark", "rinse_and_mend"]
         },
         {
           "speciesId": "stroemodder",
-          "level": 15
+          "level": 15,
+          "moves": ["shoulder_shove", "harbour_wave", "cobble_toss", "rinse_and_mend"]
         }
       ],
       "items": {

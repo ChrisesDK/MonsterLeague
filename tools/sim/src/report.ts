@@ -62,6 +62,14 @@ export interface ReportResult {
   flags: string[];
 }
 
+/** Highest type multiplier either species' own types deal to the other (e.g. "×2"). */
+function relation(a: readonly TypeId[], b: readonly TypeId[], dex: Dex): number {
+  return Math.max(
+    ...a.map((t) => typeEffectiveness(t, b, dex)),
+    ...b.map((t) => typeEffectiveness(t, a, dex)),
+  );
+}
+
 function pairIsNeutral(a: readonly TypeId[], b: readonly TypeId[], dex: Dex): boolean {
   return (
     a.every((t) => typeEffectiveness(t, b, dex) === 1) &&
@@ -181,14 +189,20 @@ export function buildReport(opts: ReportOptions): ReportResult {
 
   // ---- (c) flags ----------------------------------------------------------
   const shortFights: string[] = [];
+  let neutralShort = 0;
   const extremes: string[] = [];
   for (const level of REPORT_LEVELS) {
     const m = matrices[level]!;
     for (let i = 0; i < ids.length; i++) {
       for (let j = i + 1; j < ids.length; j++) {
         const c = m[i]![j]!;
-        if (c.medianTurns < 4)
-          shortFights.push(`L${level} ${ids[i]} vs ${ids[j]}: median ${c.medianTurns}`);
+        if (c.medianTurns < 4) {
+          const rel = relation(dex.species[ids[i]!]!.types, dex.species[ids[j]!]!.types, dex);
+          if (rel <= 1) neutralShort++;
+          shortFights.push(
+            `L${level} ${ids[i]} vs ${ids[j]}: median ${c.medianTurns} (best type relation ×${rel})`,
+          );
+        }
         if (c.win === 0 || c.win === 100)
           extremes.push(`L${level} ${ids[i]} vs ${ids[j]}: ${fmtPct(c.win)}`);
       }
@@ -204,7 +218,9 @@ export function buildReport(opts: ReportOptions): ReportResult {
       extremes.push(`${t.preset}/${t.starter} vs ${t.trainer}: ${fmtPct(t.win)}`);
   }
   if (shortFights.length)
-    flags.push(`${shortFights.length} 1v1 pair(s) with a median below 4 turns`);
+    flags.push(
+      `${shortFights.length} 1v1 pair(s) with a median below 4 turns (${neutralShort} without a super-effective type relation)`,
+    );
   if (extremes.length) flags.push(`${extremes.length} match-up(s) at 0% or 100%`);
 
   // ---- markdown -----------------------------------------------------------

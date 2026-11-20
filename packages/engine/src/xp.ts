@@ -2,7 +2,9 @@ import type { Dex } from '@oml/data';
 import { calcHp, MAX_LEVEL } from './stats';
 import type { BattleEvent, CreatureInstance, SideIndex } from './types';
 
-export const MAX_MOVES = 4;
+import { autoMoveset, MAX_MOVES } from './moves';
+
+export { MAX_MOVES };
 export const TRAINER_XP_MULTIPLIER = 1.5;
 
 /** Total XP needed to reach level n: n³. */
@@ -35,12 +37,16 @@ export function xpYield(
 /**
  * Adds XP to a creature (mutates the given draft), handling level-ups, stat/HP recalculation
  * (damage taken is kept), learnset moves and evolution readiness. Returns the events.
+ *
+ * With 4 moves known, a human (`autoLearn` false) gets a `move_learn_choice` event; an AI
+ * side (`autoLearn` true) keeps whatever `autoMoveset` prefers.
  */
 export function gainXp(
   creature: CreatureInstance,
   amount: number,
   side: SideIndex,
   dex: Dex,
+  autoLearn = false,
 ): BattleEvent[] {
   const events: BattleEvent[] = [];
   const species = dex.species[creature.speciesId];
@@ -72,6 +78,14 @@ export function gainXp(
       if (creature.moves.length < MAX_MOVES) {
         creature.moves.push({ moveId: move.id, pp: move.pp });
         events.push({ type: 'move_learned', side, uid, moveId: move.id });
+      } else if (autoLearn) {
+        const keep = autoMoveset([...creature.moves.map((m) => m.moveId), move.id], dex);
+        const dropIndex = creature.moves.findIndex((m) => !keep.includes(m.moveId));
+        if (dropIndex >= 0 && keep.includes(move.id)) {
+          const replaced = creature.moves[dropIndex]!.moveId;
+          creature.moves[dropIndex] = { moveId: move.id, pp: move.pp };
+          events.push({ type: 'move_learned', side, uid, moveId: move.id, replaced });
+        }
       } else {
         events.push({ type: 'move_learn_choice', side, uid, moveId: move.id });
       }

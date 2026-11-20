@@ -80,7 +80,7 @@
       "fire": 1,
       "water": 2,
       "grove": 0.5,
-      "stone": 0,
+      "stone": 0.5,
       "storm": 0.5,
       "spirit": 1
     },

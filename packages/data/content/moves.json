@@ -285,7 +285,7 @@
           "kind": "stat",
           "target": "self",
           "stat": "def",
-          "stages": 2,
+          "stages": 1,
           "chance": 100
         }
       ],

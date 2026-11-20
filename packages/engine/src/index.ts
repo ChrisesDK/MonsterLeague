@@ -13,6 +13,7 @@ export {
 export { computeDamage, expectedDamage, typeEffectiveness, CRIT_CHANCE } from './damage';
 export { catchChance } from './catch';
 export { gainXp, levelForXp, xpForLevel, xpYield, MAX_MOVES } from './xp';
+export { autoMoveset, canEvolve, evolveCreature, learnMove, moveStrength } from './moves';
 export {
   createBattle,
   createCreature,
@@ -27,7 +28,8 @@ export {
   isFainted,
   isLegalAction,
   resolveTurn,
+  MAX_TEAM_SIZE,
   MAX_TURNS,
 } from './battle';
-export { chooseAiAction, chooseReplacement, expectedMoveDamage } from './ai';
+export { chooseAiAction, chooseReplacement, expectedMoveDamage, setupAction } from './ai';
 export type { CreateCreatureOptions } from './battle';

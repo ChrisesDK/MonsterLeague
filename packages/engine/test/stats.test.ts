@@ -9,14 +9,15 @@ describe('stats', () => {
     expect(calcStat(1, 1)).toBe(5);
   });
 
-  it('uses floor(base × 2 × L / 100) + L + 10 for HP', () => {
-    expect(calcHp(70, 12)).toBe(16 + 12 + 10);
-    expect(calcHp(100, 100)).toBe(310);
+  it('uses floor(base × 3 × L / 100) + 2L + 10 for HP (M1.5)', () => {
+    expect(calcHp(70, 12)).toBe(Math.floor((70 * 3 * 12) / 100) + 24 + 10); // 59
+    expect(calcHp(70, 12)).toBe(59);
+    expect(calcHp(100, 100)).toBe(510);
   });
 
   it('calcStats combines all four', () => {
     expect(calcStats({ hp: 70, atk: 80, def: 60, spd: 90 }, 12)).toEqual({
-      hp: 38,
+      hp: 59,
       atk: 24,
       def: 19,
       spd: 26,

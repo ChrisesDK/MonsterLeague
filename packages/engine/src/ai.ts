@@ -17,6 +17,58 @@ import type { Action, AiTier, BattleState, CreatureInstance, SideIndex, TypeId }
 export const TRAINER_RANDOM_CHANCE = 0.2;
 export const LEADER_HEAL_THRESHOLD = 0.3;
 export const LEADER_MAX_HEALS = 2;
+export const SETUP_HP_THRESHOLD = 0.7;
+export const TRAINER_SETUP_CHANCE = 0.5;
+
+/**
+ * Set-up rule (leaders always, trainers 50% of the time):
+ * 1. a stat-boost move, if HP > 70%, none of the stats it raises is boosted yet, and the
+ *    opponent cannot KO us next turn (its best expected damage is below our HP);
+ * 2. otherwise a status-inflicting move, if the target has no status.
+ */
+export function setupAction(
+  state: BattleState,
+  side: SideIndex,
+  legal: Action[],
+  dex: Dex = content,
+): Action | null {
+  const active = getActive(state, side);
+  const oppSide: SideIndex = side === 0 ? 1 : 0;
+  const opponent = getActive(state, oppSide);
+  if (isFainted(opponent) || active.moves.every((m) => m.pp <= 0)) return null;
+  const stages = state.sides[side].stages;
+  const candidates = legal.flatMap((a) =>
+    a.type === 'move' ? [{ action: a, move: getMove(active.moves[a.index]!.moveId, dex) }] : [],
+  );
+
+  const healthy = active.hp / getMaxHp(active, dex) > SETUP_HP_THRESHOLD;
+  if (healthy) {
+    const threat = Math.max(
+      0,
+      ...opponent.moves
+        .filter((m) => m.pp > 0)
+        .map((m) => expectedMoveDamage(state, oppSide, m.moveId, dex)),
+    );
+    if (threat < active.hp) {
+      const boost = candidates.find(({ move }) => {
+        if (move.power !== 0) return false;
+        const raises = move.effects.flatMap((e) =>
+          e.kind === 'stat' && e.target === 'self' && e.stages > 0 ? [e] : [],
+        );
+        return raises.length > 0 && raises.every((e) => stages[e.stat] <= 0);
+      });
+      if (boost) return boost.action;
+    }
+  }
+
+  if (opponent.status === null) {
+    const status = candidates.find(
+      ({ move }) => move.power === 0 && move.effects.some((e) => e.kind === 'status'),
+    );
+    if (status) return status.action;
+  }
+  return null;
+}
 
 /**
  * An RNG stream derived from (but not advancing) the battle RNG, so AI choices are
@@ -136,6 +188,10 @@ export function chooseAiAction(
 
   if (tier === 'trainer') {
     if (rng.next() < TRAINER_RANDOM_CHANCE) return rng.pick(moves);
+    if (rng.next() < TRAINER_SETUP_CHANCE) {
+      const setup = setupAction(state, side, moves, dex);
+      if (setup) return setup;
+    }
     return bestDamageMove(state, side, moves, dex);
   }
 
@@ -174,5 +230,5 @@ export function chooseAiAction(
     }
   }
 
-  return bestDamageMove(state, side, moves, dex);
+  return setupAction(state, side, moves, dex) ?? bestDamageMove(state, side, moves, dex);
 }

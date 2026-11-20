@@ -19,10 +19,15 @@ import type {
   TurnResult,
 } from './types';
 import { clone } from './util';
-import { gainXp, MAX_MOVES, xpForLevel, xpYield } from './xp';
+import { autoMoveset } from './moves';
+import { gainXp, xpForLevel, xpYield } from './xp';
 
 /** Safety valve: a battle still running after this many turns is decided on remaining HP. */
-export const MAX_TURNS = 300;
+export const MAX_TURNS = 150;
+/** Party size; a creature caught with a full party goes to storage. */
+export const MAX_TEAM_SIZE = 6;
+export const RUN_BASE_CHANCE = 50;
+export const RUN_CHANCE_PER_FAILURE = 25;
 export const PARALYSIS_SKIP_CHANCE = 25;
 export const BURN_DAMAGE_FRACTION = 1 / 16;
 export const POISON_DAMAGE_FRACTION = 1 / 8;
@@ -104,7 +109,7 @@ export function createCreature(
       if (entry.level > level || known.includes(entry.moveId)) continue;
       known.push(entry.moveId);
     }
-    moveIds = known.slice(-MAX_MOVES);
+    moveIds = autoMoveset(known, dex);
   }
   const creature: CreatureInstance = {
     uid,
@@ -144,6 +149,7 @@ export function createBattle(config: BattleConfig, seed: number, dex: Dex = cont
       gainsXp: sc.gainsXp ?? i === 0,
       needsReplacement: false,
       itemsUsed: 0,
+      runAttempts: 0,
     };
   }) as [Side, Side];
   if (config.kind === 'wild' && sides[1].team.length !== 1)
@@ -369,10 +375,19 @@ function executeAction(ctx: Ctx, side: SideIndex, action: Action): void {
       }
       return;
     }
-    case 'run':
-      ctx.events.push({ type: 'ran', side });
-      endBattle(ctx, 'ran');
+    case 'run': {
+      // Always escapes when faster; otherwise 50% + 25% per earlier failed attempt.
+      const faster = effectiveStat(s, side, 'spd', dex) > effectiveStat(s, other(side), 'spd', dex);
+      const chance = RUN_BASE_CHANCE + RUN_CHANCE_PER_FAILURE * sideState.runAttempts;
+      if (faster || ctx.rng.chance(chance)) {
+        ctx.events.push({ type: 'ran', side });
+        endBattle(ctx, 'ran');
+      } else {
+        sideState.runAttempts += 1;
+        ctx.events.push({ type: 'run_failed', side, attempts: sideState.runAttempts });
+      }
       return;
+    }
     case 'catch': {
       const item = dex.items[action.itemId]!;
       const bonus = item.kind === 'charm' ? item.catchBonus : 1;
@@ -397,7 +412,11 @@ function executeAction(ctx: Ctx, side: SideIndex, action: Action): void {
         success,
       });
       if (success) {
+        const destination = sideState.team.length >= MAX_TEAM_SIZE ? 'storage' : 'team';
         ctx.events.push({ type: 'caught', side: wildSide, uid: wild.uid });
+        if (destination === 'storage')
+          ctx.events.push({ type: 'sent_to_storage', side, uid: wild.uid });
+        s.caught = { creature: clone(wild), destination };
         endBattle(ctx, 'caught');
       }
       return;
@@ -625,7 +644,8 @@ function checkFaint(ctx: Ctx, side: SideIndex): void {
       participants.length,
       s.kind !== 'wild',
     );
-    for (const c of participants) ctx.events.push(...gainXp(c, amount, winnerSide, dex));
+    for (const c of participants)
+      ctx.events.push(...gainXp(c, amount, winnerSide, dex, winners.ai !== null));
   }
 
   if (!hasUsable(s.sides[side])) endBattle(ctx, side === 0 ? 'p2' : 'p1');

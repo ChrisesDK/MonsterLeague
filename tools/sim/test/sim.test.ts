@@ -29,3 +29,15 @@ describe('sim', () => {
     expect(median([4, 1, 2, 3])).toBe(2.5);
   });
 });
+
+describe('player-team presets', () => {
+  it('builds the starter plus the preset team', () => {
+    const side = parseSide('team:arena2:grove');
+    expect(side.tier).toBe('leader');
+    const team = side.build('p').team;
+    expect(team[0]!.speciesId).toBe('boegling');
+    expect(team).toHaveLength(4);
+    expect(() => parseSide('team:nope:fire')).toThrow();
+    expect(() => parseSide('team:arena1:lava')).toThrow();
+  });
+});

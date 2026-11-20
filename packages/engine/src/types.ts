@@ -49,6 +49,8 @@ export interface Side {
   needsReplacement: boolean;
   /** Number of items this side has used this battle. */
   itemsUsed: number;
+  /** Failed run attempts this battle (each adds 25% to the next attempt). */
+  runAttempts: number;
 }
 
 export interface BattleState {
@@ -59,6 +61,8 @@ export interface BattleState {
   result: BattleResult;
   /** creature uid → uids of opposing creatures that were on the field against it. */
   participation: Record<string, string[]>;
+  /** Set when a wild creature was caught: where it goes after the battle. */
+  caught?: { creature: CreatureInstance; destination: 'team' | 'storage' };
 }
 
 export interface SideConfig {
@@ -112,9 +116,13 @@ export type BattleEvent =
   | ({ type: 'catch_attempt'; itemId: string; chance: number; success: boolean } & Who)
   | ({ type: 'caught' } & Who)
   | { type: 'ran'; side: SideIndex }
+  | { type: 'run_failed'; side: SideIndex; attempts: number }
+  /** The player's team was full: the caught creature went to storage. */
+  | ({ type: 'sent_to_storage' } & Who)
   | ({ type: 'xp_gain'; amount: number; xp: number } & Who)
   | ({ type: 'level_up'; level: number; hp: number; maxHp: number } & Who)
-  | ({ type: 'move_learned'; moveId: string } & Who)
+  /** `replaced` = the move an AI side forgot to make room (auto-learn). */
+  | ({ type: 'move_learned'; moveId: string; replaced?: string } & Who)
   | ({ type: 'move_learn_choice'; moveId: string } & Who)
   | ({ type: 'evolution_ready'; speciesId: string; into: string } & Who)
   | { type: 'needs_replacement'; side: SideIndex }

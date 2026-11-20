@@ -27,7 +27,7 @@ describe('type chart', () => {
       water: { fire: 2, water: 0.5, grove: 0.5, stone: 2 },
       grove: { fire: 0.5, water: 2, grove: 0.5, stone: 2, storm: 0.5 },
       stone: { fire: 2, grove: 0.5, storm: 2 },
-      storm: { water: 2, grove: 0.5, stone: 0, storm: 0.5 },
+      storm: { water: 2, grove: 0.5, stone: 0.5, storm: 0.5 }, // M1.5: was stone 0
       spirit: { folk: 0, spirit: 2 },
     };
     for (const a of content.typeIds) {
@@ -37,9 +37,16 @@ describe('type chart', () => {
     }
   });
 
+  it('the only immunities are folk ↔ spirit', () => {
+    const zeros = content.typeIds.flatMap((a) =>
+      content.typeIds.filter((d) => eff(a, d) === 0).map((d) => `${a}→${d}`),
+    );
+    expect(zeros.sort()).toEqual(['folk→spirit', 'spirit→folk']);
+  });
+
   it('multiplies dual types', () => {
     expect(eff('grove', 'stone', 'water')).toBe(4);
-    expect(eff('storm', 'stone', 'water')).toBe(0);
+    expect(eff('storm', 'stone', 'water')).toBe(1);
     expect(eff('spirit', 'folk', 'spirit')).toBe(0);
     expect(eff('fire', 'stone', 'water')).toBe(0.25);
   });

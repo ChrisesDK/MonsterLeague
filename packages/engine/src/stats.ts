@@ -10,9 +10,12 @@ export function calcStat(base: number, level: number): number {
   return Math.floor((base * 2 * level) / 100) + 5;
 }
 
-/** HP at level L: floor(base × 2 × L / 100) + L + 10 */
+/**
+ * HP at level L: floor(base × 3 × L / 100) + 2L + 10
+ * (M1.5: raised from floor(base × 2 × L / 100) + L + 10 so even fights last 4–6 turns.)
+ */
 export function calcHp(base: number, level: number): number {
-  return Math.floor((base * 2 * level) / 100) + level + 10;
+  return Math.floor((base * 3 * level) / 100) + 2 * level + 10;
 }
 
 export function calcStats(base: BaseStats, level: number): Stats {

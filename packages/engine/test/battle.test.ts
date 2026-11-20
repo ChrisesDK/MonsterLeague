@@ -19,19 +19,22 @@ const ofType = <T extends BattleEvent['type']>(events: BattleEvent[], type: T) =
   events.filter((e): e is Extract<BattleEvent, { type: T }> => e.type === type);
 
 describe('creation', () => {
-  it('createCreature knows the last 4 learnset moves up to its level, full HP, xp = L³', () => {
+  it('createCreature auto-learns the strongest move per type, full HP, xp = L³', () => {
+    // L12 known: shoulder_shove, stern_glare, hearth_spark, stoke_up, squall_slap.
+    // One damaging move per type (folk, fire, storm) + the newest support move.
     const c = createCreature('gnistkat', 12, 'x', dex);
     expect(c.moves.map((m) => m.moveId)).toEqual([
       'shoulder_shove',
-      'stern_glare',
       'hearth_spark',
       'stoke_up',
+      'squall_slap',
     ]);
     expect(c.moves[0]!.pp).toBe(dex.moves.shoulder_shove!.pp);
     expect(c.hp).toBe(getMaxHp(c, dex));
     expect(c.xp).toBe(12 ** 3);
+    // L30: kiln_blast beats hearth_spark, cobbler_kick beats shoulder_shove.
     expect(createCreature('gnistkat', 30, 'y', dex).moves.map((m) => m.moveId)).toEqual([
-      'stoke_up',
+      'squall_slap',
       'cinder_brand',
       'cobbler_kick',
       'kiln_blast',
@@ -453,7 +456,7 @@ describe('catching and running', () => {
     expect(outcomes).toContain('ongoing');
   });
 
-  it('run always ends a wild battle', () => {
+  it('run always succeeds when faster', () => {
     const r = turn(wild(1), { type: 'run' }, move());
     expect(r.state.result).toBe('ran');
     expect(r.events.map((e) => e.type)).toEqual(['turn_start', 'ran', 'battle_end']);
@@ -533,7 +536,7 @@ describe('xp in battle', () => {
   it('splits xp between participants and gives none to the AI side', () => {
     const s = battle(
       [mk('torvdue', 10, ['t_wait']), mk('torvdue', 10, ['t_big'])],
-      [mk('mosbille', 10, ['t_wait'])],
+      [mk('mosbille', 10, ['t_wait'], { hp: 1 })],
       'wild',
     );
     const r1 = turn(s, sw(1), move());

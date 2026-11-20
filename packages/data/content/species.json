@@ -5,8 +5,8 @@
       "types": ["fire"],
       "baseStats": {
         "hp": 70,
-        "atk": 80,
-        "def": 60,
+        "atk": 75,
+        "def": 55,
         "spd": 90
       },
       "catchRate": 45,
@@ -27,6 +27,10 @@
         {
           "level": 9,
           "moveId": "stoke_up"
+        },
+        {
+          "level": 12,
+          "moveId": "squall_slap"
         },
         {
           "level": 13,
@@ -72,6 +76,10 @@
           "moveId": "stoke_up"
         },
         {
+          "level": 12,
+          "moveId": "squall_slap"
+        },
+        {
           "level": 13,
           "moveId": "cinder_brand"
         },
@@ -94,9 +102,9 @@
       "id": "aaodder",
       "types": ["water"],
       "baseStats": {
-        "hp": 80,
+        "hp": 85,
         "atk": 70,
-        "def": 75,
+        "def": 80,
         "spd": 75
       },
       "catchRate": 45,
@@ -117,6 +125,10 @@
         {
           "level": 9,
           "moveId": "nimble_jab"
+        },
+        {
+          "level": 11,
+          "moveId": "cobble_toss"
         },
         {
           "level": 13,
@@ -162,6 +174,10 @@
           "moveId": "sea_fog"
         },
         {
+          "level": 11,
+          "moveId": "cobble_toss"
+        },
+        {
           "level": 13,
           "moveId": "rinse_and_mend"
         },
@@ -184,10 +200,10 @@
       "id": "boegling",
       "types": ["grove"],
       "baseStats": {
-        "hp": 85,
+        "hp": 80,
         "atk": 70,
-        "def": 85,
-        "spd": 60
+        "def": 80,
+        "spd": 70
       },
       "catchRate": 45,
       "baseXp": 65,
@@ -198,14 +214,18 @@
         },
         {
           "level": 1,
-          "moveId": "bark_skin"
-        },
-        {
-          "level": 5,
           "moveId": "beech_lash"
         },
         {
-          "level": 9,
+          "level": 11,
+          "moveId": "bark_skin"
+        },
+        {
+          "level": 12,
+          "moveId": "cobble_toss"
+        },
+        {
+          "level": 13,
           "moveId": "drowsy_pollen"
         },
         {
@@ -231,10 +251,10 @@
       "id": "boegevaette",
       "types": ["grove"],
       "baseStats": {
-        "hp": 110,
+        "hp": 100,
         "atk": 95,
-        "def": 110,
-        "spd": 80
+        "def": 95,
+        "spd": 95
       },
       "catchRate": 45,
       "baseXp": 150,
@@ -252,7 +272,11 @@
           "moveId": "nettle_sting"
         },
         {
-          "level": 9,
+          "level": 12,
+          "moveId": "cobble_toss"
+        },
+        {
+          "level": 13,
           "moveId": "drowsy_pollen"
         },
         {
