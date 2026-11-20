@@ -300,3 +300,43 @@ industrial, farmland, historic}, time any|day|night, requires?}`.
   - **P1:** no old ability names in code, content or i18n (the guard enforces it).
 - **D58. Pages workflow skips private repos.** Pushes to a private repo don't run the
   GitHub Pages job (option B uses Cloudflare Pages); manual runs still work.
+
+## M1.8: Publish to GitHub Pages
+
+- **D59. Public repo** `github.com/chrisesdk/OdenseMonsterLeague`, created with `gh repo
+create … --public --source . --remote origin`.
+  - Notices: "Source available, all rights reserved", no open-source licence (README;
+    `"license": "UNLICENSED"` in package.json).
+  - Before the first push, tracked files and the full history were checked for secrets,
+    `.env` files, local paths and emails. Nothing was found besides the owner's first name
+    in the GDD byline, which is the owner's own document.
+  - All commits use the GitHub noreply address.
+  - `.gitignore` covers `.env*`, key files, playtest exports (`oml-gate2-*.json/csv`, a
+    root `/gate2/` folder) and local tool settings.
+- **D60. Sub-path build.** GitHub Pages serves the project at `/OdenseMonsterLeague/`.
+  - The deploy workflow sets `VITE_BASE` from the repo name; dev and local preview stay
+    at `/`.
+  - Vite rewrites `index.html` URLs. The PWA manifest uses relative `start_url`/`scope`
+    (`.`), and the service worker registers at `<base>sw.js` with scope `<base>`.
+  - `apps/client/scripts/check-base.ts` (unit-tested) fails the build if `dist/` HTML,
+    CSS, the manifest or the SW registration reference a root-absolute URL outside the
+    base. It runs in CI and in the deploy job.
+  - Verified locally with a static server that serves `dist/` only under the prefix
+    (root = 404), then live.
+- **D61. Custom domain inherited.** The owner's user site `chrisesdk.github.io` has the
+  custom domain `www.christianrasmussen.dk`, so GitHub serves this project at
+  `https://www.christianrasmussen.dk/OdenseMonsterLeague/` and 301-redirects the github.io
+  URL there, over **http://**, since HTTPS isn't enforced on the user site.
+  - The tester link is therefore the HTTPS custom-domain URL. Service workers and Web
+    Share need a secure context.
+  - Changing the portfolio's settings is the owner's call; this project never touches
+    that repo. No CNAME file was added here.
+- **D62. Live verification** (phone-sized headless Edge, live HTTPS site):
+  - the page and all assets return 200;
+  - start → wild battle → rating → JSON export works;
+  - the service-worker scope is `/OdenseMonsterLeague/`;
+  - the app reloads offline (including `#/dev`);
+  - no failed requests and no console errors.
+
+  The portfolio root still returns 200 (unchanged). The first deploy run succeeded without
+  a re-run, because Pages was enabled while the job was still queued.

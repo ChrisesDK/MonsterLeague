@@ -64,9 +64,17 @@
 - [x] Franchise-term guard test (content names, ids, all da/en strings)
 - [x] DEPLOY.md: option B, private repo + Cloudflare Pages
 
+## M1.8 — Publish to GitHub Pages ✅
+
+- [x] Public repo github.com/chrisesdk/OdenseMonsterLeague (source available, all rights reserved)
+- [x] Build under the sub-path `/OdenseMonsterLeague/` (VITE_BASE in the workflow) + `check:base` guard in CI and deploy
+- [x] Public-repo hygiene: no secrets/local paths in files or history; .gitignore for .env* and playtest exports; noreply commit email
+- [x] Pages from GitHub Actions; deploy green; live site verified (battle, rating, export, offline, no console errors)
+
 ## Next: Gate 2 (outdoor battle test) — owner runs it; see docs/GATE2.md
 
-- [ ] Choose hosting (DEPLOY.md option A public / option B private) and deploy
+- [x] Choose hosting and deploy (option A, live)
+- [ ] Optional: tick "Enforce HTTPS" in the portfolio repo's Pages settings (github.io link redirects to http://)
 - [ ] Open the link on 2–3 phones (Android and iOS)
 - [ ] Run 6–10 tester sessions, collect exports, `pnpm gate2:report`
 - [ ] Decide: pass (go to M2), tune timings, or rework battles

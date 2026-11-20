@@ -8,8 +8,11 @@ web app (PWA). Everything runs on the phone; there is no game server in v1.
 
 Status: milestones M0 (foundations), M1 (battle engine + battle prototype), M1.5 (balance
 pass, see docs/BALANCE.md), M1.6 (GDD sync + Gate 2 playtest kit) and M1.7 (GDD v1.2:
-field abilities as data, franchise-term guard) are done. **Next: Gate 2**, the outdoor
-battle test the owner runs with docs/GATE2.md. M2 (map, GPS, spawning) has not started. See [docs/PLAN.md](docs/PLAN.md) and
+field abilities as data, franchise-term guard) and M1.8 (published to GitHub Pages) are
+done. **Live playtest:** https://www.christianrasmussen.dk/OdenseMonsterLeague/ (deployed
+from `main` by `.github/workflows/pages.yml`; Vite base `/OdenseMonsterLeague/`, see
+docs/DEPLOY.md). **Next: Gate 2**, the outdoor battle test the owner runs with
+docs/GATE2.md. M2 (map, GPS, spawning) has not started. See [docs/PLAN.md](docs/PLAN.md) and
 [docs/DECISIONS.md](docs/DECISIONS.md).
 
 ## Design source of truth

@@ -12,31 +12,56 @@ created yet: these are the steps for you. Either way, testers get a public URL; 
 | Vite base | `/<repo>/` (set by the workflow)                             | `/` (the default)              |
 | Cost      | Free                                                         | Free (500 builds/month)        |
 
-## Option A: public repo + GitHub Pages
+## Option A: public repo + GitHub Pages (**live since M1.8**)
 
-The workflow validates content, runs the tests, builds `apps/client` with the right base
-path and publishes it on every push to `main` (or a manual run). In a private repo it skips
-pushes automatically, so it stays harmless if you choose option B.
+**Live:**
 
-1. **Create the GitHub repository** (empty: no README, licence or .gitignore), e.g.
-   `odense-monster-league`.
-   - GitHub Pages on a **private** repo needs a paid plan (Pro/Team). On a free account the
-     repo must be **public**, which makes the code public. Decide before pushing.
-2. **Push the local repo** from the project folder:
-   ```sh
-   git remote add origin https://github.com/<you>/odense-monster-league.git
-   git push -u origin main
-   ```
-3. **Enable Pages:** repo → _Settings_ → _Pages_ → _Build and deployment_ → _Source_:
-   **GitHub Actions**.
-4. **Run the deploy:** the push in step 2 already started _Deploy client to GitHub Pages_
-   (_Actions_ tab). It fails at "configure-pages" if step 3 wasn't done yet; in that case
-   open the run and click _Re-run all jobs_ (or _Actions_ → the workflow → _Run workflow_).
-5. When it's green, the URL appears on the run and under _Settings → Pages_:
-   `https://<you>.github.io/odense-monster-league/`
+- **Link for testers:** <https://www.christianrasmussen.dk/OdenseMonsterLeague/>
+- Repo: <https://github.com/chrisesdk/OdenseMonsterLeague> (public, source available,
+  all rights reserved).
+- `https://chrisesdk.github.io/OdenseMonsterLeague/` also works, but redirects: the
+  user site `chrisesdk.github.io` (the portfolio repo) has the custom domain
+  `www.christianrasmussen.dk`, and GitHub serves every project site under it.
 
-The base path comes from the repo name. A repo named `<you>.github.io` is served at `/`, and
-the workflow handles that too.
+> **Use the https:// link.** GitHub's redirect from github.io goes to **http://**,
+> because "Enforce HTTPS" is off in the portfolio repo's Pages settings. Most current
+> browsers upgrade to HTTPS automatically, but not all do. On plain HTTP the app still
+> runs, but offline mode (service worker) and the Share button don't work. To fix it for
+> every link, tick _Enforce HTTPS_ in the **portfolio** repo → _Settings_ → _Pages_
+> (the owner's call; this project never changes that repo).
+
+**How it's set up:**
+
+- **Workflow:** [.github/workflows/pages.yml](../.github/workflows/pages.yml) runs on
+  every push to `main` (and manually via _Actions → Deploy client to GitHub Pages → Run
+  workflow_). It validates content, runs all tests, builds the client, checks the base
+  path, and deploys. In a private repo it skips pushes (see option B).
+- **Base path:** the workflow sets `VITE_BASE=/<repo name>/` = `/OdenseMonsterLeague/`.
+  The repo name's casing matters: the URL path is case-sensitive. Locally `VITE_BASE` is
+  unset, so `pnpm dev` and `pnpm --filter @oml/client preview` keep serving at `/`.
+- **Everything follows the base:**
+  - built asset, icon, manifest and service-worker URLs;
+  - the manifest's `start_url`/`scope` are relative (`.`);
+  - the service worker registers at `<base>sw.js` with scope `<base>`;
+  - hash routing (`#/dev`) needs no 404 fallback.
+- **Guard:** `pnpm --filter @oml/client check:base` (`apps/client/scripts/check-base.ts`)
+  fails if the built `dist/` references a root-absolute URL outside the base. It runs in
+  the deploy job and in CI (a build with `VITE_BASE=/OdenseMonsterLeague/`).
+- **Pages settings:** _Source: GitHub Actions_ (set via
+  `gh api -X POST repos/chrisesdk/OdenseMonsterLeague/pages -f build_type=workflow`).
+  No CNAME file and no account-level changes.
+
+**Redeploying:** push to `main`, or re-run the workflow. Phones pick up the new version on
+their next launch (service-worker auto-update). Each result's `appVersion` is the deployed
+commit.
+
+**Setting this up again from scratch** (e.g. under another name):
+
+1. `gh repo create <owner>/<Repo> --public --source . --remote origin`
+2. `git push -u origin main`
+3. `gh api -X POST repos/<owner>/<Repo>/pages -f build_type=workflow` (use `-X PUT` if
+   Pages already exists)
+4. Re-run the deploy workflow if it ran before Pages was enabled.
 
 ## Option B: private repo + Cloudflare Pages
 
