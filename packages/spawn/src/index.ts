@@ -1,2 +1,3 @@
-// M2: spawn rules (biome → species tables). Intentionally empty in M1.
-export {};
+export * from './region';
+export * from './spawns';
+export * from './sun';

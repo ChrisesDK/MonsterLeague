@@ -5,5 +5,15 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "report": "tsx scripts/report.ts"
+  },
+  "dependencies": {
+    "@oml/data": "workspace:*",
+    "@oml/engine": "workspace:*",
+    "h3-js": "^4.1.0"
   }
 }

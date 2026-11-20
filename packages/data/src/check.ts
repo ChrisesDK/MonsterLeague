@@ -110,6 +110,15 @@ export function checkContent(dex: Dex): string[] {
 
   dex.spawns.forEach((sp, i) => {
     if (!dex.species[sp.species]) errors.push(`spawn ${i}: species "${sp.species}" does not exist`);
+    if (sp.district < 1 || sp.district > 8) errors.push(`spawn ${i}: district ${sp.district}`);
+    if (!Object.values(sp.biomes).some((v) => v > 0))
+      errors.push(`spawn ${i}: needs a positive biome preference`);
+    const sp2 = dex.species[sp.species];
+    if (
+      sp2?.evolution === undefined &&
+      Object.values(dex.species).some((o) => o.evolution?.into === sp.species)
+    )
+      errors.push(`spawn ${i}: "${sp.species}" is an evolved form; wild spawns use first stages`);
     if (sp.requires && !dex.fieldAbilities[sp.requires])
       errors.push(`spawn ${i}: field ability "${sp.requires}" does not exist`);
   });

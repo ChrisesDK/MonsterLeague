@@ -1,1 +1,181 @@
-{ "spawns": [] }
+{
+  "spawns": [
+    {
+      "species": "torvdue",
+      "district": 1,
+      "weight": 30,
+      "biomes": {
+        "urban": 1,
+        "park": 1,
+        "historic": 0.6,
+        "meadow": 0.5,
+        "farmland": 0.6
+      },
+      "time": "any"
+    },
+    {
+      "species": "rendsnude",
+      "district": 1,
+      "weight": 25,
+      "biomes": {
+        "urban": 1,
+        "industrial": 1.5,
+        "historic": 0.6
+      },
+      "time": "any"
+    },
+    {
+      "species": "mosbille",
+      "district": 1,
+      "weight": 15,
+      "biomes": {
+        "park": 1,
+        "forest": 1.5,
+        "meadow": 1,
+        "farmland": 0.6
+      },
+      "time": "any"
+    },
+    {
+      "species": "grimaelling",
+      "district": 1,
+      "weight": 10,
+      "biomes": {
+        "water": 2,
+        "park": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "brokrabbe",
+      "district": 1,
+      "weight": 8,
+      "biomes": {
+        "historic": 2,
+        "urban": 0.3,
+        "water": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "kulingmaage",
+      "district": 1,
+      "weight": 6,
+      "biomes": {
+        "water": 1,
+        "industrial": 0.5,
+        "urban": 0.2
+      },
+      "time": "any"
+    },
+    {
+      "species": "lygtling",
+      "district": 1,
+      "weight": 10,
+      "biomes": {
+        "park": 1,
+        "forest": 1,
+        "historic": 1,
+        "water": 1
+      },
+      "time": "night"
+    },
+    {
+      "species": "loftnisse",
+      "district": 1,
+      "weight": 2,
+      "biomes": {
+        "historic": 2,
+        "urban": 0.2
+      },
+      "time": "any",
+      "requires": "runereader"
+    },
+    {
+      "species": "grimaelling",
+      "district": 2,
+      "weight": 25,
+      "biomes": {
+        "water": 2,
+        "park": 0.5,
+        "meadow": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "mosbille",
+      "district": 2,
+      "weight": 20,
+      "biomes": {
+        "forest": 1,
+        "park": 1,
+        "meadow": 1,
+        "farmland": 0.5
+      },
+      "time": "any"
+    },
+    {
+      "species": "torvdue",
+      "district": 2,
+      "weight": 15,
+      "biomes": {
+        "urban": 1,
+        "park": 0.6,
+        "farmland": 0.5,
+        "historic": 0.4
+      },
+      "time": "any"
+    },
+    {
+      "species": "rendsnude",
+      "district": 2,
+      "weight": 10,
+      "biomes": {
+        "urban": 1,
+        "industrial": 1
+      },
+      "time": "any"
+    },
+    {
+      "species": "kulingmaage",
+      "district": 2,
+      "weight": 10,
+      "biomes": {
+        "water": 1,
+        "meadow": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "brokrabbe",
+      "district": 2,
+      "weight": 6,
+      "biomes": {
+        "historic": 1.5,
+        "water": 0.5
+      },
+      "time": "any"
+    },
+    {
+      "species": "lygtling",
+      "district": 2,
+      "weight": 10,
+      "biomes": {
+        "forest": 1,
+        "water": 1,
+        "park": 0.5
+      },
+      "time": "night"
+    },
+    {
+      "species": "soeormling",
+      "district": 2,
+      "weight": 2,
+      "biomes": {
+        "water": 2
+      },
+      "time": "any",
+      "requires": "angler"
+    }
+  ]
+}
