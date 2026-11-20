@@ -1,6 +1,6 @@
 import { content } from '@oml/data';
 import { describe, expect, it } from 'vitest';
-import { buildReport, classify } from '../src/report';
+import { buildReport, classify, mergeChangeLog } from '../src/report';
 
 describe('balance report', () => {
   it('classifies starter vs leader theme', () => {
@@ -20,5 +20,23 @@ describe('balance report', () => {
     const n = Object.keys(content.species).length;
     expect(r.matrices[10]).toHaveLength(n);
     expect(r.flags.some((f) => f.startsWith('ERROR'))).toBe(false);
+  });
+});
+
+describe('mergeChangeLog', () => {
+  const fresh = '# Balance report\n\n## Summary\n\nx\n\n## 1v1 matrix, level 10\n\nm\n';
+  it('keeps the previous change log before the matrices', () => {
+    const prev = '# old\n\n## Change log\n\n### v1.1\n- a\n\n## 1v1 matrix, level 10\n\nold\n';
+    const merged = mergeChangeLog(prev, fresh);
+    expect(merged).toBe(
+      '# Balance report\n\n## Summary\n\nx\n\n## Change log\n\n### v1.1\n- a\n\n## 1v1 matrix, level 10\n\nm\n',
+    );
+  });
+  it('is a no-op without a previous file or section', () => {
+    expect(mergeChangeLog(null, fresh)).toBe(fresh);
+    expect(mergeChangeLog('# nothing', fresh)).toBe(fresh);
+    expect(mergeChangeLog('## Change log\n- z', 'no anchor')).toBe(
+      'no anchor\n\n## Change log\n- z\n',
+    );
   });
 });

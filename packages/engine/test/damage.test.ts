@@ -27,7 +27,7 @@ describe('type chart', () => {
       water: { fire: 2, water: 0.5, grove: 0.5, stone: 2 },
       grove: { fire: 0.5, water: 2, grove: 0.5, stone: 2, storm: 0.5 },
       stone: { fire: 2, grove: 0.5, storm: 2 },
-      storm: { water: 2, grove: 0.5, stone: 0.5, storm: 0.5 }, // M1.5: was stone 0
+      storm: { water: 2, grove: 2, stone: 0.5, storm: 0.5 }, // M1.5 stone 0→½; v1.1 grove ½→2
       spirit: { folk: 0, spirit: 2 },
     };
     for (const a of content.typeIds) {

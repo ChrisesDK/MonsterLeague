@@ -1,7 +1,7 @@
-import { writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { parseArgs } from 'node:util';
 import { fileURLToPath } from 'node:url';
-import { buildReport } from './report';
+import { buildReport, mergeChangeLog } from './report';
 
 const { values } = parseArgs({
   options: {
@@ -21,7 +21,8 @@ const report = buildReport({
   teamN: Number(values['team-n']),
   seed: Number(values.seed),
 });
-writeFileSync(values.out, report.markdown);
+const previous = existsSync(values.out) ? readFileSync(values.out, 'utf8') : null;
+writeFileSync(values.out, mergeChangeLog(previous, report.markdown));
 const summary = report.markdown.split('## Flags')[0]!.split('## Summary')[1]!.trim();
 console.log(summary);
 console.log(`\nFlags:\n${report.flags.map((f) => `  - ${f}`).join('\n') || '  none'}`);

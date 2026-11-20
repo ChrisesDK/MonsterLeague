@@ -287,3 +287,22 @@ export function buildReport(opts: ReportOptions): ReportResult {
   lines.push('');
   return { markdown: lines.join('\n'), matrices, teams, neutralMedianTurns, hits, flags };
 }
+
+const CHANGE_LOG = '## Change log';
+
+/**
+ * Carries the hand-written "## Change log" section of the previous BALANCE.md over into a
+ * freshly generated report (placed before the 1v1 matrices), so regenerating never loses
+ * the recorded before/after history.
+ */
+export function mergeChangeLog(previous: string | null, next: string): string {
+  if (!previous) return next;
+  const start = previous.indexOf(CHANGE_LOG);
+  if (start < 0) return next;
+  const rest = previous.slice(start + CHANGE_LOG.length);
+  const end = rest.search(/\n## /);
+  const section = (CHANGE_LOG + (end < 0 ? rest : rest.slice(0, end))).trimEnd();
+  const anchor = next.indexOf('## 1v1 matrix');
+  if (anchor < 0) return `${next.trimEnd()}\n\n${section}\n`;
+  return `${next.slice(0, anchor)}${section}\n\n${next.slice(anchor)}`;
+}
