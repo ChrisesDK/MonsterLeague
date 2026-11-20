@@ -95,3 +95,44 @@ describe('GDD audit checks (M1.6)', () => {
     ).toThrow();
   });
 });
+
+describe('field abilities (M1.7, GDD v1.2 / P1)', () => {
+  it('has the six GDD abilities with badges 2–7 and learner types', () => {
+    const fa = content.fieldAbilities;
+    expect(Object.keys(fa)).toEqual([
+      'forager',
+      'angler',
+      'runereader',
+      'nightseer',
+      'sealbreaker',
+      'homing',
+    ]);
+    expect(Object.values(fa).map((f) => f.badge)).toEqual([2, 3, 4, 5, 6, 7]);
+    expect(fa.forager!.types).toEqual(['grove', 'folk']);
+    expect(fa.homing!.types).toEqual(['storm']);
+    expect(i18n.da['fieldAbility.runereader.name']).toBe('Runelæser');
+    expect(i18n.en['fieldAbility.nightseer.name']).toBe('Nightseer');
+  });
+
+  it('rejects duplicate badges, unknown types and unknown spawn requirements', () => {
+    const broken = structuredClone(content);
+    broken.fieldAbilities.angler!.badge = 2;
+    broken.spawns.push({
+      species: 'torvdue',
+      district: 1,
+      weight: 1,
+      biomes: {},
+      time: 'any',
+      requires: 'nope',
+    });
+    const errors = checkContent(broken).join('\n');
+    expect(errors).toMatch(/badge 2 already unlocks "forager"/);
+    expect(errors).toMatch(/field ability "nope" does not exist/);
+    expect(() =>
+      parseContent({
+        ...rawContent,
+        fieldAbilities: { fieldAbilities: [{ id: 'x', badge: 2, types: ['lava'] }] },
+      }),
+    ).toThrow();
+  });
+});

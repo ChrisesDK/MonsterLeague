@@ -213,5 +213,11 @@
   "pt.export.failed": "That did not work here. Try another button.",
   "pt.delete": "Delete my results",
   "pt.deleteConfirm": "Tap again to delete everything",
-  "pt.deleted": "Results deleted."
+  "pt.deleted": "Results deleted.",
+  "fieldAbility.forager.name": "Forager",
+  "fieldAbility.angler.name": "Angler",
+  "fieldAbility.runereader.name": "Runereader",
+  "fieldAbility.nightseer.name": "Nightseer",
+  "fieldAbility.sealbreaker.name": "Sealbreaker",
+  "fieldAbility.homing.name": "Homing"
 }

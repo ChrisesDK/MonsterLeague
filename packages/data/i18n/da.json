@@ -213,5 +213,11 @@
   "pt.export.failed": "Det virkede ikke her. Prøv en anden knap.",
   "pt.delete": "Slet mine resultater",
   "pt.deleteConfirm": "Tryk igen for at slette alt",
-  "pt.deleted": "Resultater slettet."
+  "pt.deleted": "Resultater slettet.",
+  "fieldAbility.forager.name": "Sanker",
+  "fieldAbility.angler.name": "Lystfisker",
+  "fieldAbility.runereader.name": "Runelæser",
+  "fieldAbility.nightseer.name": "Natteøje",
+  "fieldAbility.sealbreaker.name": "Seglbryder",
+  "fieldAbility.homing.name": "Hjemfinder"
 }

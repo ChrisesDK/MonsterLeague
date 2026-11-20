@@ -98,8 +98,20 @@ export function checkContent(dex: Dex): string[] {
       );
   }
 
+  // GDD: each badge (2–7) unlocks exactly one field ability.
+  const badges = new Map<number, string>();
+  for (const f of Object.values(dex.fieldAbilities)) {
+    const other = badges.get(f.badge);
+    if (other) errors.push(`field ability ${f.id}: badge ${f.badge} already unlocks "${other}"`);
+    badges.set(f.badge, f.id);
+    if (new Set(f.types).size !== f.types.length)
+      errors.push(`field ability ${f.id}: duplicate type`);
+  }
+
   dex.spawns.forEach((sp, i) => {
     if (!dex.species[sp.species]) errors.push(`spawn ${i}: species "${sp.species}" does not exist`);
+    if (sp.requires && !dex.fieldAbilities[sp.requires])
+      errors.push(`spawn ${i}: field ability "${sp.requires}" does not exist`);
   });
 
   return errors;
@@ -114,6 +126,7 @@ export function checkI18n(dex: Dex, tables: Record<string, I18nTable>): string[]
     ...Object.keys(dex.moves).map((m) => `move.${m}.name`),
     ...Object.keys(dex.items).flatMap((i) => [`item.${i}.name`, `item.${i}.desc`]),
     ...Object.keys(dex.trainers).map((t) => `trainer.${t}.name`),
+    ...Object.keys(dex.fieldAbilities).map((f) => `fieldAbility.${f}.name`),
   ];
   const locales = Object.keys(tables);
   for (const locale of locales) {

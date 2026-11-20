@@ -23,7 +23,8 @@ function main(): number {
   console.log(
     `✓ content valid: ${dex.typeIds.length} types, ${Object.keys(dex.species).length} species, ` +
       `${Object.keys(dex.moves).length} moves, ${Object.keys(dex.items).length} items, ` +
-      `${Object.keys(dex.trainers).length} trainers, ${Object.keys(i18n.en).length} i18n keys × 2 locales`,
+      `${Object.keys(dex.trainers).length} trainers, ${Object.keys(dex.fieldAbilities).length} field abilities, ` +
+      `${Object.keys(i18n.en).length} i18n keys × 2 locales`,
   );
   return 0;
 }

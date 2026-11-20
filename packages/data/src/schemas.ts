@@ -166,6 +166,24 @@ export const ItemsFileSchema = z.object({ items: z.array(ItemSchema) }).strict()
 export const TrainersFileSchema = z.object({ trainers: z.array(TrainerSchema) }).strict();
 export const PlayerTeamsFileSchema = z.object({ playerTeams: z.array(PlayerTeamSchema) }).strict();
 
+/**
+ * GDD "Field abilities": taught to a team member, unlocked by a badge, learnable by
+ * creatures of the listed types. Names are i18n keys `fieldAbility.<id>.name`.
+ * Effects arrive in M2; this is data only.
+ */
+export const FieldAbilitySchema = z
+  .object({
+    id,
+    badge: z.number().int().min(1).max(8),
+    types: z.array(TypeIdSchema).min(1),
+    placeholder,
+  })
+  .strict();
+export type FieldAbility = z.infer<typeof FieldAbilitySchema>;
+export const FieldAbilitiesFileSchema = z
+  .object({ fieldAbilities: z.array(FieldAbilitySchema) })
+  .strict();
+
 /** GDD "Encounters and spawning": biome shares computed per H3 cell by the region builder. */
 export const BIOMES = [
   'water',
@@ -186,7 +204,7 @@ export const SpawnSchema = z
     weight: z.number().positive(),
     biomes: z.record(BiomeSchema, z.number().min(0)),
     time: z.enum(['any', 'day', 'night']),
-    /** Field-ability id required to see this spawn (ability names are still open). */
+    /** Field-ability id required to see this spawn (see field-abilities.json). */
     requires: id.optional(),
   })
   .strict();

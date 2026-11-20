@@ -5,6 +5,7 @@ import itemsJson from '../content/items.json';
 import trainersJson from '../content/trainers.json';
 import playerTeamsJson from '../content/player-teams.json';
 import spawnsJson from '../content/spawns.json';
+import fieldAbilitiesJson from '../content/field-abilities.json';
 import enJson from '../i18n/en.json';
 import daJson from '../i18n/da.json';
 import {
@@ -12,6 +13,7 @@ import {
   ItemsFileSchema,
   PlayerTeamsFileSchema,
   SpawnsFileSchema,
+  FieldAbilitiesFileSchema,
   MovesFileSchema,
   SpeciesFileSchema,
   TrainersFileSchema,
@@ -21,6 +23,7 @@ import {
   type Move,
   type PlayerTeam,
   type Spawn,
+  type FieldAbility,
   type Species,
   type Trainer,
   type TypeId,
@@ -43,6 +46,7 @@ export interface Dex {
   playerTeams: Record<string, PlayerTeam>;
   /** Spawn tables (empty until M2). */
   spawns: Spawn[];
+  fieldAbilities: Record<string, FieldAbility>;
 }
 
 export interface RawContent {
@@ -53,6 +57,7 @@ export interface RawContent {
   trainers: unknown;
   playerTeams: unknown;
   spawns: unknown;
+  fieldAbilities: unknown;
 }
 
 function indexById<T extends { id: string }>(list: T[], what: string): Record<string, T> {
@@ -79,6 +84,10 @@ export function parseContent(raw: RawContent): Dex {
     trainers: indexById(TrainersFileSchema.parse(raw.trainers).trainers, 'trainer'),
     playerTeams: indexById(PlayerTeamsFileSchema.parse(raw.playerTeams).playerTeams, 'player team'),
     spawns: SpawnsFileSchema.parse(raw.spawns).spawns,
+    fieldAbilities: indexById(
+      FieldAbilitiesFileSchema.parse(raw.fieldAbilities).fieldAbilities,
+      'field ability',
+    ),
   };
 }
 
@@ -90,6 +99,7 @@ export const rawContent: RawContent = {
   trainers: trainersJson,
   playerTeams: playerTeamsJson,
   spawns: spawnsJson,
+  fieldAbilities: fieldAbilitiesJson,
 };
 
 /** The default, validated game content. */

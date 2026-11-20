@@ -1,0 +1,10 @@
+{
+  "fieldAbilities": [
+    { "id": "forager", "badge": 2, "types": ["grove", "folk"], "placeholder": true },
+    { "id": "angler", "badge": 3, "types": ["water"], "placeholder": true },
+    { "id": "runereader", "badge": 4, "types": ["stone", "folk"], "placeholder": true },
+    { "id": "nightseer", "badge": 5, "types": ["spirit", "storm"], "placeholder": true },
+    { "id": "sealbreaker", "badge": 6, "types": ["stone", "folk"], "placeholder": true },
+    { "id": "homing", "badge": 7, "types": ["storm"], "placeholder": true }
+  ]
+}
