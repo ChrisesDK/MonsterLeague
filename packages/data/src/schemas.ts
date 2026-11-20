@@ -128,15 +128,38 @@ export const TrainerSchema = z
       .min(1)
       .max(6),
     items: z.record(id, z.number().int().min(0)).default({}),
+    /** Arena number this trainer belongs to (leaders run the arena). */
+    arena: z.number().int().min(1).max(8).optional(),
+    /** Leader theme type, used by balance tooling to classify match-ups. */
+    theme: TypeIdSchema.optional(),
     placeholder,
   })
   .strict();
 export type Trainer = z.infer<typeof TrainerSchema>;
 
+/**
+ * Balance-tooling preset: the team a typical player is expected to bring to an arena.
+ * The starter slot is filled with the chosen starter at `starterLevel`.
+ */
+export const PlayerTeamSchema = z
+  .object({
+    id,
+    arena: z.number().int().min(1).max(8),
+    starterLevel: z.number().int().min(1).max(100),
+    team: z
+      .array(z.object({ speciesId: id, level: z.number().int().min(1).max(100) }).strict())
+      .max(5),
+    items: z.record(id, z.number().int().min(0)).default({}),
+    placeholder,
+  })
+  .strict();
+export type PlayerTeam = z.infer<typeof PlayerTeamSchema>;
+
 export const SpeciesFileSchema = z.object({ species: z.array(SpeciesSchema) }).strict();
 export const MovesFileSchema = z.object({ moves: z.array(MoveSchema) }).strict();
 export const ItemsFileSchema = z.object({ items: z.array(ItemSchema) }).strict();
 export const TrainersFileSchema = z.object({ trainers: z.array(TrainerSchema) }).strict();
+export const PlayerTeamsFileSchema = z.object({ playerTeams: z.array(PlayerTeamSchema) }).strict();
 
 export const I18nSchema = z.record(z.string(), z.string());
 export type I18nTable = z.infer<typeof I18nSchema>;

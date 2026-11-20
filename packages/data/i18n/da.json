@@ -148,5 +148,6 @@
   "event.move_learn_choice": "{name} vil lære {move}, men kan allerede fire angreb.",
   "event.evolution_ready": "{name} er klar til at udvikle sig!",
   "event.needs_replacement": "Vælg, hvem der skal ud nu.",
-  "event.battle_end": "Kampen er slut."
+  "event.battle_end": "Kampen er slut.",
+  "trainer.leader_folk.name": "Torveleder Søren"
 }

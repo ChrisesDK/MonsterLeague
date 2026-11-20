@@ -148,5 +148,6 @@
   "event.move_learn_choice": "{name} wants to learn {move}, but already knows four moves.",
   "event.evolution_ready": "{name} is ready to evolve!",
   "event.needs_replacement": "Choose who to send out next.",
-  "event.battle_end": "The battle is over."
+  "event.battle_end": "The battle is over.",
+  "trainer.leader_folk.name": "Market Leader Søren"
 }

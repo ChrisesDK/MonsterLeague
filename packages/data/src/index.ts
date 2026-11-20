@@ -3,11 +3,13 @@ import speciesJson from '../content/species.json';
 import movesJson from '../content/moves.json';
 import itemsJson from '../content/items.json';
 import trainersJson from '../content/trainers.json';
+import playerTeamsJson from '../content/player-teams.json';
 import enJson from '../i18n/en.json';
 import daJson from '../i18n/da.json';
 import {
   I18nSchema,
   ItemsFileSchema,
+  PlayerTeamsFileSchema,
   MovesFileSchema,
   SpeciesFileSchema,
   TrainersFileSchema,
@@ -15,6 +17,7 @@ import {
   type I18nTable,
   type Item,
   type Move,
+  type PlayerTeam,
   type Species,
   type Trainer,
   type TypeId,
@@ -33,6 +36,8 @@ export interface Dex {
   moves: Record<string, Move>;
   items: Record<string, Item>;
   trainers: Record<string, Trainer>;
+  /** Balance-tooling presets (expected player team per arena). */
+  playerTeams: Record<string, PlayerTeam>;
 }
 
 export interface RawContent {
@@ -41,6 +46,7 @@ export interface RawContent {
   moves: unknown;
   items: unknown;
   trainers: unknown;
+  playerTeams: unknown;
 }
 
 function indexById<T extends { id: string }>(list: T[], what: string): Record<string, T> {
@@ -65,6 +71,7 @@ export function parseContent(raw: RawContent): Dex {
     moves: indexById(MovesFileSchema.parse(raw.moves).moves, 'move'),
     items: indexById(ItemsFileSchema.parse(raw.items).items, 'item'),
     trainers: indexById(TrainersFileSchema.parse(raw.trainers).trainers, 'trainer'),
+    playerTeams: indexById(PlayerTeamsFileSchema.parse(raw.playerTeams).playerTeams, 'player team'),
   };
 }
 
@@ -74,6 +81,7 @@ export const rawContent: RawContent = {
   moves: movesJson,
   items: itemsJson,
   trainers: trainersJson,
+  playerTeams: playerTeamsJson,
 };
 
 /** The default, validated game content. */

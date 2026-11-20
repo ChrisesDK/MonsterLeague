@@ -65,6 +65,32 @@ export function checkContent(dex: Dex): string[] {
     }
   }
 
+  const arenas = new Map<number, string>();
+  for (const t of Object.values(dex.trainers)) {
+    if (t.tier !== 'leader') continue;
+    if (t.arena === undefined) errors.push(`trainer ${t.id}: leaders need an arena`);
+    else if (arenas.has(t.arena))
+      errors.push(`trainer ${t.id}: arena ${t.arena} already has a leader`);
+    else arenas.set(t.arena, t.id);
+  }
+
+  for (const p of Object.values(dex.playerTeams)) {
+    for (const m of p.team) {
+      if (!dex.species[m.speciesId])
+        errors.push(`player team ${p.id}: species "${m.speciesId}" does not exist`);
+    }
+    for (const itemId of Object.keys(p.items)) {
+      if (!dex.items[itemId]) errors.push(`player team ${p.id}: item "${itemId}" does not exist`);
+    }
+    const leader = arenas.get(p.arena);
+    if (!leader) errors.push(`player team ${p.id}: arena ${p.arena} has no leader`);
+    // Starter + preset team = one creature more than the leader.
+    else if (p.team.length !== dex.trainers[leader]!.team.length)
+      errors.push(
+        `player team ${p.id}: must have one creature more than ${leader} (starter + ${dex.trainers[leader]!.team.length})`,
+      );
+  }
+
   return errors;
 }
 

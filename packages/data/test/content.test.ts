@@ -12,7 +12,8 @@ describe('content', () => {
     expect(Object.keys(content.species)).toHaveLength(15);
     expect(Object.keys(content.moves).length).toBeGreaterThanOrEqual(30);
     expect(Object.keys(content.items)).toHaveLength(6);
-    expect(Object.keys(content.trainers)).toHaveLength(3);
+    expect(Object.keys(content.trainers)).toHaveLength(4);
+    expect(Object.keys(content.playerTeams)).toHaveLength(2);
     for (const s of Object.values(content.species)) expect(s.placeholder).toBe(true);
   });
 
@@ -48,5 +49,22 @@ describe('content', () => {
   it('rejects schema-invalid content', () => {
     const bad = { ...rawContent, moves: { moves: [{ id: 'x', type: 'lava' }] } };
     expect(() => parseContent(bad)).toThrow();
+  });
+});
+
+describe('arenas and player-team presets', () => {
+  it('requires one leader per arena and presets one creature larger than the leader', () => {
+    const broken = structuredClone(content);
+    broken.trainers.leader_folk!.arena = 2;
+    broken.playerTeams.arena1!.team.push({ speciesId: 'torvdue', level: 9 });
+    broken.playerTeams.arena1!.items = { nope: 1 };
+    broken.playerTeams.arena1!.team[0]!.speciesId = 'ghost';
+    const errors = checkContent(broken).join('\n');
+    expect(errors).toMatch(/arena 2 already has a leader/);
+    expect(errors).toMatch(/arena 1 has no leader/);
+    expect(errors).toMatch(/item "nope"/);
+    expect(errors).toMatch(/species "ghost"/);
+    delete broken.trainers.leader_water!.arena;
+    expect(checkContent(broken).join('\n')).toMatch(/leaders need an arena/);
   });
 });

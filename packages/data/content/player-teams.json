@@ -1,0 +1,47 @@
+{
+  "playerTeams": [
+    {
+      "id": "arena1",
+      "arena": 1,
+      "starterLevel": 10,
+      "team": [
+        {
+          "speciesId": "torvdue",
+          "level": 9
+        },
+        {
+          "speciesId": "mosbille",
+          "level": 10
+        }
+      ],
+      "items": {
+        "small_tonic": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "arena2",
+      "arena": 2,
+      "starterLevel": 15,
+      "team": [
+        {
+          "speciesId": "torvdue",
+          "level": 13
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 14
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 14
+        }
+      ],
+      "items": {
+        "small_tonic": 2,
+        "large_tonic": 1
+      },
+      "placeholder": true
+    }
+  ]
+}

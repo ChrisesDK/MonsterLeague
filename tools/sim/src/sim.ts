@@ -31,6 +31,10 @@ export interface SideSpec {
  * (`starter_fire:12`), or several species specs joined with `,`.
  */
 export function parseSide(spec: string, dex: Dex = content, defaultLevel = 10): SideSpec {
+  if (spec.startsWith('team:')) {
+    const [, presetId = '', starter = 'fire'] = spec.split(':');
+    return playerTeamSide(presetId, starter, dex);
+  }
   const trainer = dex.trainers[spec];
   if (trainer) {
     return {
@@ -65,6 +69,29 @@ export function parseSide(spec: string, dex: Dex = content, defaultLevel = 10): 
     tier: 'trainer',
     build: (prefix) => ({
       team: members.map((m, i) => createCreature(m.speciesId, m.level, `${prefix}${i}`, dex)),
+    }),
+  };
+}
+
+export const STARTERS = ['fire', 'water', 'grove'] as const;
+export type Starter = (typeof STARTERS)[number];
+
+/**
+ * The expected player team for an arena (a `playerTeams` preset) with the chosen starter.
+ * Played by the leader-tier AI, as a stand-in for a competent human.
+ */
+export function playerTeamSide(presetId: string, starter: string, dex: Dex = content): SideSpec {
+  const preset = dex.playerTeams[presetId];
+  if (!preset) throw new Error(`Unknown player team preset "${presetId}"`);
+  const starterId = STARTER_ALIASES[`starter_${starter}`];
+  if (!starterId) throw new Error(`Unknown starter "${starter}" (fire, water or grove)`);
+  const members = [{ speciesId: starterId, level: preset.starterLevel }, ...preset.team];
+  return {
+    label: `${preset.id}/${starter} [${members.map((m) => `${m.speciesId} L${m.level}`).join(', ')}]`,
+    tier: 'leader',
+    build: (prefix) => ({
+      team: members.map((m, i) => createCreature(m.speciesId, m.level, `${prefix}${i}`, dex)),
+      items: { ...preset.items },
     }),
   };
 }

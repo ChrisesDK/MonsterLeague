@@ -20,7 +20,8 @@
       "items": {
         "small_tonic": 1
       },
-      "placeholder": true
+      "placeholder": true,
+      "arena": 1
     },
     {
       "id": "trainer_fisher",
@@ -38,6 +39,27 @@
       "items": {
         "small_tonic": 2
       },
+      "placeholder": true,
+      "arena": 1
+    },
+    {
+      "id": "leader_folk",
+      "tier": "leader",
+      "team": [
+        {
+          "speciesId": "torvdue",
+          "level": 9
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 10
+        }
+      ],
+      "items": {
+        "small_tonic": 2
+      },
+      "arena": 1,
+      "theme": "folk",
       "placeholder": true
     },
     {
@@ -46,21 +68,23 @@
       "team": [
         {
           "speciesId": "grimaelling",
-          "level": 12
-        },
-        {
-          "speciesId": "soeormling",
           "level": 13
         },
         {
-          "speciesId": "stroemodder",
+          "speciesId": "aaodder",
           "level": 14
+        },
+        {
+          "speciesId": "stroemodder",
+          "level": 15
         }
       ],
       "items": {
         "large_tonic": 2
       },
-      "placeholder": true
+      "placeholder": true,
+      "arena": 2,
+      "theme": "water"
     }
   ]
 }

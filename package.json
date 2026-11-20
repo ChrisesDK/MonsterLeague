@@ -15,7 +15,8 @@
     "typecheck": "pnpm -r --if-present typecheck",
     "validate": "tsx packages/data/src/validate.ts",
     "sim": "tsx tools/sim/src/cli.ts",
-    "dev": "pnpm --filter @oml/client dev"
+    "dev": "pnpm --filter @oml/client dev",
+    "sim:report": "tsx tools/sim/src/report-cli.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",
