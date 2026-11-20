@@ -72,6 +72,8 @@ describe('active timer', () => {
 describe('tester codes', () => {
   it('accepts short codes and rejects names/emails', () => {
     expect(normaliseTesterCode(' t03 ')).toBe('T03');
+    expect(normaliseTesterCode('ræv7')).toBe('RÆV7');
+    expect(normaliseTesterCode('Ørn-2')).toBe('ØRN-2');
     expect(normaliseTesterCode('Anna Jensen')).toBe(null);
     expect(normaliseTesterCode('a@b.dk')).toBe(null);
     expect(normaliseTesterCode('')).toBe(null);

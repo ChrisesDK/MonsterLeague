@@ -11,8 +11,9 @@
 ## Before the day
 
 - **Recruit 6–10 testers.** Aim for 12+ players of handheld monster RPGs with a mix of
-  Android and iOS phones, and at least 2 who don't play these games. Give each a code (T01,
-  T02, …); no names go into the app. Keep the code ↔ person list on paper, not in the app.
+  Android and iOS phones, and at least 2 who don't play these games. Testers make up their
+  own short code in the app (e.g. T03 or FOX7); they don't need one from you, and no
+  names go into the app. Note which code each person chose on paper, not in the app.
 - **Consent.** Tell them what is recorded: tester code, battle times, turns, ratings,
   comments. Nothing about location. They can delete their results in the app.
 - **Deploy and check** the build (see [DEPLOY.md](DEPLOY.md)). Send the link and ask

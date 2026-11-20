@@ -56,8 +56,8 @@ export const ExportFileSchema = z
   .strict();
 export type ExportFile = z.infer<typeof ExportFileSchema>;
 
-/** Tester codes: 1–12 letters, digits, "-" or "_" (so no names with spaces, no emails). */
-export const TESTER_CODE = /^[A-Za-z0-9_-]{1,12}$/;
+/** Tester codes: 1–12 letters (incl. Æ Ø Å), digits, "-" or "_" (so no names with spaces, no emails). */
+export const TESTER_CODE = /^[A-Za-z0-9ÆØÅæøå_-]{1,12}$/;
 export function normaliseTesterCode(input: string): string | null {
   const code = input.trim().toUpperCase();
   return TESTER_CODE.test(code) ? code : null;
