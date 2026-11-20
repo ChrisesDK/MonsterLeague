@@ -3,3 +3,8 @@ dist
 coverage
 pnpm-lock.yaml
 docs/GDD.md
+
+# Generated files: their generators own the format
+packages/data/region/
+packages/art/generated/
+packages/art/assets.json
