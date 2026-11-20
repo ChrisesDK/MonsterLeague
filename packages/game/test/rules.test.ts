@@ -1,0 +1,326 @@
+import { content } from '@oml/data';
+import {
+  chooseAiAction,
+  createCreature,
+  getMaxHp,
+  resolveTurn,
+  type Action,
+  type BattleEvent,
+  type BattleState,
+} from '@oml/engine';
+import { describe, expect, it } from 'vitest';
+import {
+  answerPending,
+  canRestock,
+  canTeach,
+  chooseStarter,
+  finishBattle,
+  isDistrictUnlocked,
+  moveToStorage,
+  moveToTeam,
+  newSave,
+  obedienceLevel,
+  RESTOCK_SECONDS,
+  spawnStatus,
+  startTrainerBattle,
+  startTutorialBattle,
+  startWildBattle,
+  swapWithStorage,
+  teachFieldAbility,
+  trainerStatus,
+  tutorialDex,
+  useItem,
+  visitRestStop,
+  type SaveGame,
+} from '../src/index';
+
+const SEED = 'feedfacefeedfacefeedfacefeedface';
+const poi = (id: string) => content.pois[id]!;
+
+/** Plays a battle to the end: the player uses the engine AI's choice, or `player` if given. */
+function play(
+  save: SaveGame,
+  player?: (s: BattleState) => Action | null,
+  dex = content,
+): { state: BattleState; events: BattleEvent[] } {
+  let state = save.battle!.state;
+  const events: BattleEvent[] = [];
+  const tier = state.kind === 'wild' ? 'wild' : (state.sides[1].ai ?? 'trainer');
+  while (state.result === 'ongoing') {
+    const mine = (!state.sides[0].needsReplacement && player?.(state)) || null;
+    const a0 = mine ?? chooseAiAction(state, 0, 'leader', dex);
+    const r = resolveTurn(state, [a0, chooseAiAction(state, 1, tier, dex)], dex);
+    state = r.state;
+    events.push(...r.events);
+  }
+  return { state, events };
+}
+
+/** Dev-style boost: the whole team at `level` (fresh creatures of the same species). */
+function boost(save: SaveGame, level: number): SaveGame {
+  return {
+    ...save,
+    team: save.team.map((c) => ({
+      ...createCreature(c.speciesId, level, c.uid),
+      fieldAbility: c.fieldAbility,
+    })),
+  };
+}
+
+function weaken(save: SaveGame): SaveGame {
+  return { ...save, team: save.team.map((c) => ({ ...c, hp: 1 })) };
+}
+
+describe('badges, obedience and districts', () => {
+  it('obedience is 15 + 5 per badge; badge n unlocks district n + 1', () => {
+    expect(obedienceLevel([])).toBe(15);
+    expect(obedienceLevel([1])).toBe(20);
+    expect(obedienceLevel([1, 2, 3])).toBe(30);
+    expect(isDistrictUnlocked([], 1)).toBe(true);
+    expect(isDistrictUnlocked([], 2)).toBe(false);
+    expect(isDistrictUnlocked([1], 2)).toBe(true);
+  });
+
+  it('battles carry the obedience level; trainers in locked districts refuse', () => {
+    const save = chooseStarter(newSave(SEED), 'gnistkat');
+    const battle = startTrainerBattle(save, 'trainer_lise', 'route1_lise', 1).battle!;
+    expect(battle.state.sides[0].obedienceLevel).toBe(15);
+    expect(battle.state.sides[1].obedienceLevel).toBeNull();
+    const locked = { ...poi('trainer_lise'), district: 2 };
+    expect(trainerStatus(save, locked)).toEqual({ kind: 'locked', badge: 1 });
+  });
+});
+
+describe('spawn status', () => {
+  const save = chooseStarter(newSave(SEED), 'boegling');
+  const spawn = { id: 's1', district: 1, requires: null };
+  it('ok, used, too wild, needs an ability, fainted team', () => {
+    expect(spawnStatus(newSave(SEED), spawn)).toBe('noTeam');
+    expect(spawnStatus(save, spawn)).toBe('ok');
+    expect(spawnStatus({ ...save, usedSpawns: { s1: 9 } }, spawn)).toBe('used');
+    expect(spawnStatus(save, { ...spawn, district: 2 })).toBe('tooWild');
+    expect(spawnStatus(save, { ...spawn, requires: 'forager' })).toBe('needsAbility');
+    expect(spawnStatus(weaken(save), spawn)).toBe('ok');
+    expect(spawnStatus({ ...save, team: save.team.map((c) => ({ ...c, hp: 0 })) }, spawn)).toBe(
+      'teamFainted',
+    );
+  });
+});
+
+describe('onboarding and the tutorial catch', () => {
+  it('starter at level 5 with charms; the tutorial creature has an easy catch rate', () => {
+    const save = chooseStarter({ ...newSave(SEED), onboarding: 'starter' }, 'aaodder');
+    expect(save.team).toHaveLength(1);
+    expect(save.team[0]!.level).toBe(5);
+    expect(save.bag.basic_charm).toBe(5);
+    expect(save.onboarding).toBe('tutorial');
+    expect(() => chooseStarter(save, 'gnistkat')).toThrow();
+    expect(tutorialDex().species.torvdue!.catchRate).toBe(255);
+    expect(content.species.torvdue!.catchRate).toBe(255);
+  });
+
+  it('a guided tutorial battle ends in a catch that joins the team', () => {
+    let save = chooseStarter(newSave(SEED), 'gnistkat');
+    save = startTutorialBattle(save, 3);
+    const dex = tutorialDex();
+    const { state, events } = play(save, () => ({ type: 'catch', itemId: 'basic_charm' }), dex);
+    expect(state.result).toBe('caught');
+    const out = finishBattle(save, state, events);
+    expect(out.caughtTo).toBe('team');
+    expect(out.save.team.map((c) => c.speciesId)).toEqual(['gnistkat', 'torvdue']);
+    expect(out.save.onboarding).toBe('done');
+    expect(out.save.caught.torvdue).toEqual([1]);
+    expect(out.save.battle).toBeNull();
+    expect(out.save.bag.basic_charm).toBeLessThan(5);
+  });
+});
+
+describe('district 1 run: trainers, losing, rest stops, arena 1, badge', () => {
+  it('plays through to badge 1 and district 2', () => {
+    let save = { ...chooseStarter(newSave(SEED), 'boegling'), onboarding: 'done' as const };
+
+    // Route trainer at the expected level: a win, a reward, marked beaten.
+    save = boost(save, 12);
+    expect(trainerStatus(save, poi('trainer_ole'))).toEqual({
+      kind: 'ready',
+      trainerId: 'route1_ole',
+    });
+    save = startTrainerBattle(save, 'trainer_ole', 'route1_ole', 11);
+    let r = play(save);
+    let out = finishBattle(save, r.state, r.events);
+    expect(out.won).toBe(true);
+    expect(out.reward).toEqual({ itemId: 'clear_drops', count: 1 });
+    save = out.save;
+    expect(save.defeatedTrainers).toContain('route1_ole');
+    expect(save.bag.clear_drops).toBe(1);
+    expect(trainerStatus(save, poi('trainer_ole'))!.kind).toBe('beaten');
+
+    // A loss: the team stays fainted, XP is kept, the trainer can be fought again.
+    save = weaken(save);
+    const xpBefore = save.team[0]!.xp;
+    save = startTrainerBattle(save, 'trainer_niels', 'route1_niels', 5);
+    r = play(save);
+    out = finishBattle(save, r.state, r.events);
+    expect(out.won).toBe(false);
+    save = out.save;
+    expect(save.team.every((c) => c.hp === 0)).toBe(true);
+    expect(save.team[0]!.xp).toBeGreaterThanOrEqual(xpBefore);
+    expect(save.defeatedTrainers).not.toContain('route1_niels');
+    expect(trainerStatus(save, poi('trainer_niels'))).toEqual({ kind: 'teamFainted' });
+
+    // Rest stop: full heal and restock.
+    const rest = visitRestStop(save, poi('rest_library'), 1_000_000);
+    save = rest.save;
+    expect(rest.healed).toBe(true);
+    expect(rest.restocked).toEqual({ basic_charm: 5, small_tonic: 2 });
+    for (const c of save.team) expect(c.hp).toBe(getMaxHp(c));
+
+    // Arena: junior before leader, then the badge.
+    expect(trainerStatus(save, poi('arena1'))).toEqual({
+      kind: 'ready',
+      trainerId: 'arena1_junior',
+    });
+    save = startTrainerBattle(save, 'arena1', 'arena1_junior', 21);
+    r = play(save);
+    out = finishBattle(save, r.state, r.events);
+    expect(out.won).toBe(true);
+    expect(out.badge).toBeNull();
+    save = visitRestStop(out.save, poi('rest_library'), 1_000_100).save;
+    // Obedience is 15 before badge 1: a bigger team at 15, not an over-levelled one.
+    save = {
+      ...save,
+      team: [
+        ...save.team,
+        createCreature('gnistkat', 15, 'pa'),
+        createCreature('aaodder', 15, 'pb'),
+      ],
+    };
+    save = boost(save, 15);
+    expect(trainerStatus(save, poi('arena1'))).toEqual({ kind: 'ready', trainerId: 'leader_folk' });
+    save = startTrainerBattle(save, 'arena1', 'leader_folk', 31);
+    r = play(save);
+    out = finishBattle(save, r.state, r.events);
+    expect(out.won).toBe(true);
+    expect(out.badge).toBe(1);
+    expect(out.reward).toEqual({ itemId: 'revive_leaf', count: 1 });
+    save = out.save;
+    expect(save.badges).toEqual([1]);
+    expect(obedienceLevel(save.badges)).toBe(20);
+    expect(isDistrictUnlocked(save.badges, 2)).toBe(true);
+    expect(trainerStatus(save, poi('arena1'))!.kind).toBe('beaten');
+  });
+});
+
+describe('rest stop restock timer', () => {
+  it('once per hour per stop; a clock set backwards does not restock', () => {
+    let save = chooseStarter(newSave(SEED), 'gnistkat');
+    const t = 5_000_000;
+    save = visitRestStop(save, poi('rest_library'), t).save;
+    expect(canRestock(save, 'rest_library', t + 10)).toBe(false);
+    expect(canRestock(save, 'rest_jernbanegade', t + 10)).toBe(true);
+    expect(canRestock(save, 'rest_library', t + RESTOCK_SECONDS)).toBe(true);
+    expect(canRestock(save, 'rest_library', t - 10 * RESTOCK_SECONDS)).toBe(false);
+    const again = visitRestStop(save, poi('rest_library'), t + 60);
+    expect(again.restocked).toBeNull();
+    expect(again.save.bag.basic_charm).toBe(save.bag.basic_charm);
+  });
+});
+
+describe('items outside battle', () => {
+  it('tonic heals, clear drops cure, revive leaf revives at 50%', () => {
+    let save = chooseStarter(newSave(SEED), 'gnistkat');
+    const uid = save.team[0]!.uid;
+    const max = getMaxHp(save.team[0]!);
+    save = { ...save, bag: { small_tonic: 1, clear_drops: 1, revive_leaf: 1 } };
+    save = { ...save, team: [{ ...save.team[0]!, hp: 1, status: 'poison' }] };
+    save = useItem(save, 'small_tonic', uid);
+    expect(save.team[0]!.hp).toBe(Math.min(max, 21));
+    save = useItem(save, 'clear_drops', uid);
+    expect(save.team[0]!.status).toBeNull();
+    expect(() => useItem(save, 'small_tonic', uid)).toThrow(); // none left
+    save = { ...save, team: [{ ...save.team[0]!, hp: 0 }] };
+    save = useItem(save, 'revive_leaf', uid);
+    expect(save.team[0]!.hp).toBe(Math.floor(max / 2));
+    expect(save.bag).toEqual({ small_tonic: 0, clear_drops: 0, revive_leaf: 0 });
+  });
+});
+
+describe('catching with a full team, storage and post-battle choices', () => {
+  it('the 7th creature goes to storage; storage swaps keep the team at 6', () => {
+    let save = chooseStarter(newSave(SEED), 'gnistkat');
+    save = {
+      ...save,
+      team: [...save.team, ...[1, 2, 3, 4, 5].map((i) => createCreature('torvdue', 3, `px${i}`))],
+    };
+    save = boost(save, 20);
+    const spawn = { id: 'sp', speciesId: 'rendsnude', level: 3, expiresAt: 9e9, district: 1 };
+    save = startWildBattle(save, spawn, 4);
+    expect(spawnStatus(save, { id: 'sp', district: 1, requires: null })).toBe('used');
+    // A worn-down wild creature (1 HP, asleep) is a sure catch with a charm.
+    const wild = save.battle!.state.sides[1].team[0]!;
+    wild.hp = 1;
+    wild.status = 'sleep';
+    wild.statusTurns = 5;
+    save = { ...save, bag: { ...save.bag, great_charm: 3 } };
+    save.battle!.state.sides[0].items.great_charm = 3;
+    const r = play(save, () => ({ type: 'catch', itemId: 'great_charm' }));
+    expect(r.state.result).toBe('caught');
+    const out = finishBattle(save, r.state, r.events);
+    expect(out.caughtTo).toBe('storage');
+    save = out.save;
+    expect(save.team).toHaveLength(6);
+    expect(save.storage).toHaveLength(1);
+    const stored = save.storage[0]!.uid;
+    save = swapWithStorage(save, save.team[1]!.uid, stored);
+    expect(save.team[1]!.uid).toBe(stored);
+    save = moveToStorage(save, stored);
+    expect(save.team).toHaveLength(5);
+    save = moveToTeam(save, stored);
+    expect(save.team).toHaveLength(6);
+  });
+
+  it('learn and evolve choices are saved and answered', () => {
+    let save = chooseStarter(newSave(SEED), 'gnistkat');
+    const uid = save.team[0]!.uid;
+    save = {
+      ...save,
+      team: [createCreature('gnistkat', 16, uid)],
+      pending: [{ kind: 'evolve', uid, into: 'baalkat' }],
+    };
+    save = answerPending(save, true);
+    expect(save.team[0]!.speciesId).toBe('baalkat');
+    expect(save.caught.baalkat).toEqual([1]);
+    expect(save.pending).toEqual([]);
+  });
+});
+
+describe('field abilities', () => {
+  it('Forager: dev unlock, grove/folk only, takes a move slot, opens forager spawns', () => {
+    let save = chooseStarter(newSave(SEED), 'boegling');
+    const c = save.team[0]!;
+    expect(canTeach(save, c, 'forager')).toBe('locked');
+    save = { ...save, devAbilities: ['forager'] };
+    expect(canTeach(save, c, 'forager')).toBe(c.moves.length >= 4 ? 'needsForget' : 'ok');
+    expect(canTeach(save, createCreature('gnistkat', 5, 'x'), 'forager')).toBe('wrongType');
+    save = teachFieldAbility(save, c.uid, 'forager', c.moves.length >= 4 ? 0 : null);
+    expect(save.team[0]!.fieldAbility).toBe('forager');
+    expect(save.team[0]!.moves.length).toBeLessThanOrEqual(3);
+    expect(spawnStatus(save, { id: 'f', district: 1, requires: 'forager' })).toBe('ok');
+
+    // with 4 moves the player must forget one
+    const full = {
+      ...save,
+      team: [{ ...createCreature('boegling', 30, 'q'), fieldAbility: undefined }],
+    };
+    delete full.team[0]!.fieldAbility;
+    if (full.team[0]!.moves.length === 4) {
+      expect(() => teachFieldAbility(full, 'q', 'forager', null)).toThrow();
+      const taught = teachFieldAbility(full, 'q', 'forager', 1);
+      expect(taught.team[0]!.moves).toHaveLength(3);
+    }
+    // a badge also unlocks it
+    expect(
+      canTeach({ ...newSave(SEED), badges: [2] }, createCreature('torvdue', 5, 'z'), 'forager'),
+    ).not.toBe('locked');
+  });
+});

@@ -73,6 +73,7 @@ export default tseslint.config(
   },
   { files: ['packages/engine/src/**/*.ts'], ...purity([...UI, 'h3-js']) },
   { files: ['packages/spawn/src/**/*.ts'], ...purity(UI) },
+  { files: ['packages/game/src/**/*.ts'], ...purity(UI) },
   {
     files: ['apps/client/**/*.{ts,tsx}'],
     languageOptions: { globals: { ...globals.browser } },
