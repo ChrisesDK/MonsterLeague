@@ -12,9 +12,15 @@
     "check:base": "tsx scripts/check-base.ts"
   },
   "dependencies": {
+    "@oml/art": "workspace:^",
     "@oml/data": "workspace:*",
     "@oml/engine": "workspace:*",
     "@oml/playtest": "workspace:*",
+    "@oml/spawn": "workspace:^",
+    "h3-js": "^4.1.0",
+    "idb-keyval": "^6.2.1",
+    "maplibre-gl": "^4.7.1",
+    "pmtiles": "^3.2.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import type { BattleState } from '@oml/engine';
 import { BattleScreen } from './BattleScreen';
 import { makeT, type Locale } from './i18n';
@@ -6,13 +6,29 @@ import { PlaytestApp } from './playtest/PlaytestApp';
 import { SetupScreen } from './SetupScreen';
 import { clearBattle, loadBattle, loadLocale, saveBattle, saveLocale } from './storage';
 
-/** `#/dev` opens the developer battle page; everything else is Gate 2 playtest mode. */
-function useRoute(): 'dev' | 'playtest' {
-  const read = (): 'dev' | 'playtest' =>
-    window.location.hash.startsWith('#/dev') ? 'dev' : 'playtest';
-  const [route, setRoute] = useState(read);
+// The map pulls in MapLibre; load it only when a map route is opened.
+const MapScreen = lazy(() => import('./map/MapScreen').then((m) => ({ default: m.MapScreen })));
+const BiomeDebug = lazy(() => import('./map/BiomeDebug').then((m) => ({ default: m.BiomeDebug })));
+
+type Route = 'map' | 'playtest' | 'dev' | 'dev-map' | 'dev-biomes';
+
+/**
+ * Hash routes: #/ map game · #/playtest Gate 2 playtest · #/dev battle test page ·
+ * #/dev/map map with GPS simulator · #/dev/biomes biome debug view.
+ */
+export function routeOf(hash: string): Route {
+  const h = hash.replace(/^#/, '');
+  if (h.startsWith('/playtest')) return 'playtest';
+  if (h.startsWith('/dev/map')) return 'dev-map';
+  if (h.startsWith('/dev/biomes')) return 'dev-biomes';
+  if (h.startsWith('/dev')) return 'dev';
+  return 'map';
+}
+
+function useRoute(): Route {
+  const [route, setRoute] = useState(() => routeOf(window.location.hash));
   useEffect(() => {
-    const onHash = () => setRoute(read());
+    const onHash = () => setRoute(routeOf(window.location.hash));
     window.addEventListener('hashchange', onHash);
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
@@ -34,8 +50,17 @@ export function App() {
     document.documentElement.lang = locale;
   }, [locale]);
 
+  if (route === 'playtest') return <PlaytestApp t={t} locale={locale} onLocale={changeLocale} />;
   if (route === 'dev') return <DevBattlePage t={t} locale={locale} onLocale={changeLocale} />;
-  return <PlaytestApp t={t} locale={locale} onLocale={changeLocale} />;
+  return (
+    <Suspense fallback={<main className="setup" />}>
+      {route === 'dev-biomes' ? (
+        <BiomeDebug t={t} />
+      ) : (
+        <MapScreen key={route} t={t} devTools={route === 'dev-map' || import.meta.env.DEV} />
+      )}
+    </Suspense>
+  );
 }
 
 function DevBattlePage({

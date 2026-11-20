@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { spriteUrl } from '@oml/art';
 import { content } from '@oml/data';
 import {
   chooseAiAction,
@@ -462,12 +463,8 @@ function Combatant({
   t: Translate;
 }) {
   const species = content.species[view.speciesId]!;
-  const colors = species.types.map((ty) => content.typeColors[ty]);
-  const background =
-    colors.length > 1 ? `linear-gradient(135deg, ${colors[0]} 50%, ${colors[1]} 50%)` : colors[0];
   const hpPct = Math.max(0, Math.min(100, (100 * view.hp) / view.maxHp));
   const hpClass = hpPct > 50 ? 'ok' : hpPct > 20 ? 'warn' : 'low';
-  const shape = ['round', 'blob', 'square'][view.speciesId.length % 3];
   const animCls = anim && anim.uid === view.uid ? anim.cls : '';
   return (
     <div className={`combatant side-${side}`}>
@@ -499,11 +496,18 @@ function Combatant({
       </div>
       <div
         key={`${view.uid}-${anim && anim.uid === view.uid ? anim.n : 0}`}
-        className={`sprite ${shape} ${animCls} ${view.fainted ? 'fainted' : ''} ${view.caught ? 'caught' : ''}`}
-        style={{ background }}
+        className={`sprite art ${animCls} ${view.fainted ? 'fainted' : ''} ${view.caught ? 'caught' : ''}`}
+        role="img"
         aria-label={t(`species.${view.speciesId}.name`)}
       >
-        <span>{species.types.map((ty) => t(`type.${ty}.icon`)).join('/')}</span>
+        <img src={spriteUrl(view.speciesId)} alt="" draggable={false} />
+        <span className="type-tag">
+          {species.types.map((ty) => (
+            <span key={ty} style={{ background: content.typeColors[ty] }}>
+              {t(`type.${ty}.icon`)}
+            </span>
+          ))}
+        </span>
       </div>
     </div>
   );

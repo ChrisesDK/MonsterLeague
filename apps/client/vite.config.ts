@@ -44,7 +44,9 @@ export default defineConfig({
       },
       workbox: {
         // Everything the app needs is precached, so it works offline after the first load.
-        globPatterns: ['**/*.{js,css,html,svg,webmanifest}'],
+        globPatterns: ['**/*.{js,css,html,svg,webmanifest}', 'fonts/**/*.pbf'],
+        // The region file is only used by the dev biome view; don't precache it for players.
+        globIgnores: ['**/region.odense-*.js'],
         navigateFallback: 'index.html',
         cleanupOutdatedCaches: true,
       },

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Dev sample walk: Odense station → Kongens Have → Kongensgade → Klosterbakken → Munke Mose → along Odense Å.
+     Approximate waypoints for the GPS simulator (not surveyed). -->
+<gpx version="1.1" creator="Odense Monster League dev tools" xmlns="http://www.topografix.com/GPX/1/1">
+  <trk>
+    <name>Kongens Have to Munke Mose</name>
+    <trkseg>
+      <trkpt lat="55.40120" lon="10.38660"/>
+      <trkpt lat="55.40060" lon="10.38580"/>
+      <trkpt lat="55.39990" lon="10.38500"/>
+      <trkpt lat="55.39920" lon="10.38380"/>
+      <trkpt lat="55.39880" lon="10.38320"/>
+      <trkpt lat="55.39780" lon="10.38180"/>
+      <trkpt lat="55.39650" lon="10.38080"/>
+      <trkpt lat="55.39600" lon="10.38250"/>
+      <trkpt lat="55.39580" lon="10.38400"/>
+      <trkpt lat="55.39500" lon="10.38680"/>
+      <trkpt lat="55.39350" lon="10.38770"/>
+      <trkpt lat="55.39150" lon="10.38700"/>
+      <trkpt lat="55.39080" lon="10.38460"/>
+      <trkpt lat="55.39020" lon="10.38280"/>
+      <trkpt lat="55.38960" lon="10.38100"/>
+      <trkpt lat="55.38900" lon="10.37930"/>
+    </trkseg>
+  </trk>
+</gpx>
