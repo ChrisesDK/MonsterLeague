@@ -16,7 +16,8 @@
     "validate": "tsx packages/data/src/validate.ts",
     "sim": "tsx tools/sim/src/cli.ts",
     "dev": "pnpm --filter @oml/client dev",
-    "sim:report": "tsx tools/sim/src/report-cli.ts"
+    "sim:report": "tsx tools/sim/src/report-cli.ts",
+    "gate2:report": "tsx tools/gate2/src/cli.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",

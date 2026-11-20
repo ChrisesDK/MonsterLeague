@@ -86,7 +86,19 @@ importers:
         specifier: ^3.23.1
         version: 3.23.2
 
+  packages/playtest:
+    dependencies:
+      zod:
+        specifier: ^3.23.8
+        version: 3.25.76
+
   packages/spawn: {}
+
+  tools/gate2:
+    dependencies:
+      '@oml/playtest':
+        specifier: workspace:*
+        version: link:../../packages/playtest
 
   tools/region-builder: {}
 
