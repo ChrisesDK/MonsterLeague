@@ -209,7 +209,7 @@ Numbers below come from `pnpm sim:report` (docs/BALANCE.md). Before/after summar
   - Fields: `{species, district 1–8, weight > 0, biomes {water, forest, park, urban,
 industrial, farmland, historic}, time any|day|night, requires?}`.
   - `content/spawns.json` is empty until M2.
-  - `requires` is a free id: field-ability names are pending (P1), so none are encoded.
+  - `requires` was a free id until M1.7; it must now name a field ability (D55).
 - **D46. GDD v1.1 Storm → Grove = 2** applied. All six arena results were identical before
   and after (no storm attacker meets grove in either leader fight), so no retuning was
   needed. Before/after is in the BALANCE.md change log.
@@ -268,3 +268,35 @@ industrial, farmland, historic}, time any|day|night, requires?}`.
   - The base path comes from `VITE_BASE`; the Pages workflow derives it from the repo name.
   - The manifest uses an SVG icon only. PNG icons, which some Android versions need for an
     install prompt, can come with real art (M3).
+
+## M1.7: GDD v1.2 sync
+
+- **D55. Field abilities as data.** `content/field-abilities.json` holds
+  `{id, badge, types[]}` for forager (2; grove, folk), angler (3; water), runereader (4;
+  stone, folk), nightseer (5; spirit, storm), sealbreaker (6; stone, folk) and homing (7;
+  storm). Names are i18n keys `fieldAbility.<id>.name` (en from the GDD, da Sanker,
+  Lystfisker, Runelæser, Natteøje, Seglbryder, Hjemfinder).
+  - Validation checks the schema, that each badge unlocks at most one ability, that every
+    ability has a name in both locales, and that a spawn's `requires` names an existing
+    ability.
+  - Effects and teaching come in M2.
+- **D56. Franchise-term guard.** `packages/data/test/franchise-terms.ts` holds a short,
+  hand-written deny-list: Pokémon brand words and the field-move names Cut, Fly, Surf,
+  Strength, Rock Smash, Flash, Waterfall, Whirlpool, Dive, Defog, Rock Climb and HM.
+  - **Names:** species, move, item and field-ability ids and their da/en names must not
+    _equal_ a term (case-insensitive; `_` in ids reads as a space).
+  - **i18n:** every da/en string must not _contain_ a term as a whole word (Unicode
+    letters count as word characters, so "Shortcut" and "flygt" pass).
+  - **Side effect:** the Danish word "fly" (aeroplane) can't be used on its own.
+  - **Scope:** docs aren't scanned; they discuss the terms on purpose.
+  - **First run:** no hits.
+- **D57. Proposals P1–P7 accepted in GDD v1.2.** Code was checked against the new text:
+  - **P2** (Switch, Item, Catch and Run before moves) is how the engine has worked since
+    M1 (D9).
+  - **P7:** the battle button is "Bag" / "Taske".
+  - **P5:** leader teams of 2–6; the schema allows 1–6.
+  - **P3/P4:** the GDD now defers field names to the code.
+  - **P6:** grove strength is tracked in BALANCE.md.
+  - **P1:** no old ability names in code, content or i18n (the guard enforces it).
+- **D58. Pages workflow skips private repos.** Pushes to a private repo don't run the
+  GitHub Pages job (option B uses Cloudflare Pages); manual runs still work.

@@ -6,9 +6,10 @@ real landmarks, wild creatures that spawn from real surroundings (OpenStreetMap 
 and turn-based battles in the style of handheld monster RPGs. It ships first as a mobile
 web app (PWA). Everything runs on the phone; there is no game server in v1.
 
-Status: milestones M0 (foundations), M1 (battle engine + battle prototype) and M1.5
-(balance pass, see docs/BALANCE.md) are done.
-M2 (map, GPS, spawning) has not started. See [docs/PLAN.md](docs/PLAN.md) and
+Status: milestones M0 (foundations), M1 (battle engine + battle prototype), M1.5 (balance
+pass, see docs/BALANCE.md), M1.6 (GDD sync + Gate 2 playtest kit) and M1.7 (GDD v1.2:
+field abilities as data, franchise-term guard) are done. **Next: Gate 2**, the outdoor
+battle test the owner runs with docs/GATE2.md. M2 (map, GPS, spawning) has not started. See [docs/PLAN.md](docs/PLAN.md) and
 [docs/DECISIONS.md](docs/DECISIONS.md).
 
 ## Design source of truth
@@ -31,7 +32,10 @@ M2 (map, GPS, spawning) has not started. See [docs/PLAN.md](docs/PLAN.md) and
    copy from `pokemon-showdown`, `@pkmn/*` or any Pokémon dataset. General genre knowledge
    (turn-based, types, levels) is fine. Use our vocabulary: **creature, arena, leader,
    charm** (catch item), **field guide, field ability**. Check new move/species names
-   against well-known monster games before adding them.
+   against well-known monster games before adding them. Field abilities have original
+   names (forager, angler, runereader, nightseer, sealbreaker, homing). The test
+   `packages/data/test/franchise-terms.test.ts` fails CI if a content name or any da/en
+   string uses a denied term; its list lives in `packages/data/test/franchise-terms.ts`.
 2. **The engine is pure.** `packages/engine` must not import from the browser, React, the
    map or Node APIs. Deterministic: same state + actions + seed → same result. All
    randomness comes from the seeded RNG whose state lives in `BattleState.rngState`.
@@ -48,7 +52,8 @@ M2 (map, GPS, spawning) has not started. See [docs/PLAN.md](docs/PLAN.md) and
 ## Architecture
 
 ```
-packages/data     JSON content + Zod schemas + loader (`content`) + i18n + validate CLI
+packages/data     JSON content (types, species, moves, items, trainers, player-teams,
+                  spawns, field-abilities) + Zod schemas + loader + i18n + validate CLI
 packages/engine   pure battle engine (rng, stats, damage, battle, ai, catch, xp, moves)
 packages/playtest Gate 2 record format, active-time timer, JSON/CSV export, summaries
 packages/spawn    (M2) spawn rules — stub

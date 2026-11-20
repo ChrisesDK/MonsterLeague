@@ -1,7 +1,8 @@
 name: Deploy client to GitHub Pages
 
 # Builds apps/client and publishes it to GitHub Pages, so testers can open the playtest
-# on their own phones. Requires Settings → Pages → Source: "GitHub Actions" (see docs/DEPLOY.md).
+# on their own phones. Requires Settings → Pages → Source: "GitHub Actions" (see docs/DEPLOY.md,
+# option A). In a private repo (option B, Cloudflare Pages) pushes skip this workflow.
 on:
   push:
     branches: [main]
@@ -18,6 +19,8 @@ concurrency:
 
 jobs:
   build:
+    # Private repos deploy with Cloudflare Pages instead; manual runs are always allowed.
+    if: github.event_name == 'workflow_dispatch' || !github.event.repository.private
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

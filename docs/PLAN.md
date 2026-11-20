@@ -57,11 +57,22 @@
 - [x] PWA offline; GitHub Pages workflow (prepared, not published); docs/DEPLOY.md
 - [x] docs/GATE2.md facilitator script; `pnpm gate2:report <folder>`
 
+## M1.7 — GDD v1.2 sync ✅
+
+- [x] GDD v1.2 in the repo; proposals P1–P7 marked accepted and checked against code
+- [x] Field abilities as data (`field-abilities.json`: forager, angler, runereader, nightseer, sealbreaker, homing; badge, learner types, da/en names), validated
+- [x] Franchise-term guard test (content names, ids, all da/en strings)
+- [x] DEPLOY.md: option B, private repo + Cloudflare Pages
+
 ## Next: Gate 2 (outdoor battle test) — owner runs it; see docs/GATE2.md
+
+- [ ] Choose hosting (DEPLOY.md option A public / option B private) and deploy
+- [ ] Open the link on 2–3 phones (Android and iOS)
+- [ ] Run 6–10 tester sessions, collect exports, `pnpm gate2:report`
+- [ ] Decide: pass (go to M2), tune timings, or rework battles
 
 ## Open questions (before/during M2)
 
-- Field-ability names collide with Pokémon HM names (GDD-PROPOSALS P1).
 - The AI never uses heal moves or target-lowering stat moves.
 - Leader fights take 30–42 turns (median). Fine for a leader, but too long for wild
   battles outdoors?

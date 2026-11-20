@@ -38,7 +38,7 @@ status here changes to `accepted` (or `rejected`, with a reason).
 
 - **Reason / evidence:** CLAUDE.md hard rule 1. Until this is settled, the code uses no
   field-ability names: the spawn schema's `requires` is a free id (D45).
-- **Status:** open
+- **Status:** accepted (GDD v1.2)
 
 ### P2. Turn order: catch and run also go first
 
@@ -49,7 +49,7 @@ status here changes to `accepted` (or `rejected`, with a reason).
   seeded RNG), then moves by priority, then Speed."
 - **Reason / evidence:** That's how the engine has worked since M1 (D9). Catching is a
   separate action because charms aren't used on your own creatures.
-- **Status:** open
+- **Status:** accepted (GDD v1.2)
 
 ### P3. Data model table: match the real content schemas
 
@@ -70,7 +70,7 @@ status here changes to `accepted` (or `rejected`, with a reason).
 - **Reason / evidence:** The schemas in `packages/data/src/schemas.ts` are validated in CI.
   `effects[]` is needed because Hunker Down has two effects (def +1 and heal), and catch
   items are called charms throughout.
-- **Status:** open
+- **Status:** accepted (GDD v1.2)
 
 ### P4. Runtime types: match the engine
 
@@ -91,7 +91,7 @@ status here changes to `accepted` (or `rejected`, with a reason).
 - **Reason / evidence:** The GDD block was a suggestion; these fields carry the M1/M1.5 rules
   (sleep counting, XP split, run odds, storage). Keeping a log in the state would grow
   every save without being needed for replay (seed + actions reproduce it).
-- **Status:** open
+- **Status:** accepted (GDD v1.2)
 
 ### P5. Arena leader team size: "2–6", not "3–6"
 
@@ -100,7 +100,7 @@ status here changes to `accepted` (or `rejected`, with a reason).
 - **Proposed change:** "a 2–6 creature team on its type theme (growing as in the difficulty table)"
 - **Reason / evidence:** The difficulty table gives arena 1 two creatures (Rendsnude,
   Loftnisse), and that is what was balanced and is on target.
-- **Status:** open
+- **Status:** accepted (GDD v1.2)
 
 ### P6. "Grove is no longer the best defensive type": evidence is mixed
 
@@ -117,7 +117,7 @@ status here changes to `accepted` (or `rejected`, with a reason).
   - Bøgling 64→56%, Mosbille 57→45%.
   - All 6 remaining > 70% flags are evolved or rare species (base stat total 370–390)
     against mostly unevolved commons.
-- **Status:** open
+- **Status:** accepted (GDD v1.2)
 
 ### P7. One name for the item button: "Bag"
 
@@ -127,4 +127,4 @@ status here changes to `accepted` (or `rejected`, with a reason).
   Bag screen that the button opens.
 - **Reason / evidence:** The battle button opens the bag list (tonics, drops, charms); the
   client has used "Bag" / "Taske" since M1.
-- **Status:** open
+- **Status:** accepted (GDD v1.2)
