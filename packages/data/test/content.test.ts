@@ -81,7 +81,7 @@ describe('GDD audit checks (M1.6)', () => {
     const errors = checkContent(broken).join('\n');
     expect(errors).toMatch(/level 51 above the Odense cap 50/);
     expect(errors).toMatch(/player team arena2: level 51/);
-    expect(errors).toMatch(/spawn 0: species "ghost"/);
+    expect(errors).toMatch(/spawn \d+: species "ghost"/);
   });
 
   it('validates spawn entries', () => {

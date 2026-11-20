@@ -340,3 +340,162 @@ create … --public --source . --remote origin`.
 
   The portfolio root still returns 200 (unchanged). The first deploy run succeeded without
   a re-run, because Pages was enabled while the job was still queued.
+
+## M2a: map and shared spawns
+
+- **D63. Region builder method** (`tools/region-builder`).
+  - **Inputs:** one Overpass query for the bbox (10.30–10.47 E, 55.35–55.43 N; config in
+    `src/config.ts`), cached in `tools/region-builder/cache/` (gitignored).
+  - **Sea and harbour basins:** these are bounded by `natural=coastline` lines, so water
+    _polygons_ also come from the Protomaps extract's `water` layer (zoom 15).
+  - **Sampling:** biome shares are the fraction of each res-10 cell's 49 res-12
+    child-centre samples that fall in a biome.
+  - **Priority** (when a sample is in several areas): water > forest > park > historic >
+    meadow > farmland > industrial > urban.
+  - **Buffers (radius):**
+    - water lines: river 15 m, canal 10 m, stream 5 m;
+    - historic features: 20 m;
+    - noSpawn points: 30 m;
+    - rail: 10 m;
+    - motorway/trunk: 20 m.
+  - **noSpawn** (GDD list), if **any** sample overlaps:
+    - schools, kindergartens/childcare, hospitals, cemeteries, military areas, aerodromes;
+    - `railway=rail`, motorway/trunk roads (incl. links).
+  - **Light rail and tram tracks** (Odense Letbane) are **not** noSpawn: they run along
+    main streets people walk every day.
+  - Samples in no mapped area stay unclassified, so shares can sum to less than 100%.
+  - Run: `pnpm region:build` (about 2 s from cache).
+- **D64. Region file** `packages/data/region/region.odense.json`.
+  - **Format:** `{region, version, h3Res 10, coarseRes 7, bbox, biomes[], osmTimestamp,
+districts[{id, wildLevels, draft}], cells{h3: [district, noSpawn, …shares %]}}`.
+  - One cell per line, shares as integer percent.
+  - Cells without a district or any biome are dropped.
+  - Validated by `pnpm validate` (schema, districts 1–8, stale-file check).
+  - Size: 7,562 cells, 316 KB raw / 47 KB gzip.
+- **D65. Districts** (`packages/data/content/districts.odense.geojson`, hand-editable).
+  - District 1 is drawn along real streets: the railway north of the station, Nørregade,
+    Overgade/Vestergade, Kongensgade/Klostervej, Vestre Stationsvej. It includes Kongens
+    Have and the station and excludes the H.C. Andersen quarter and the cathedral square.
+  - Districts 2–8 are Voronoi placeholders around their GDD arena landmarks, clipped to
+    the bbox, `draft: true`.
+  - `wildLevels` are the GDD bands.
+  - `draft-districts.ts` made the first version only. The GeoJSON is now the source; edit
+    it by hand (e.g. geojson.io) and re-run `pnpm region:build`.
+- **D66. Map.**
+  - **Tiles:** a PMTiles extract of the Protomaps basemap (build 2026-11-18, schema 4.15),
+    8.4 MB, served from Pages. Range requests verified (206).
+  - **Style:** custom "paper" MapLibre style; water, parks and forest in strong colours.
+  - **Fonts:** Noto Sans glyphs (OFL), self-hosted, so the map makes no third-party
+    requests.
+  - **Attribution:** `© OpenStreetMap contributors · Protomaps`, always visible
+    (non-compact).
+  - **Offline:** tiles are not precached; offline map tiles come in M3. Spawn lists are
+    cached for the window.
+- **D67. Spawn rules** (`packages/spawn`, pure; same lint rules as the engine; h3-js
+  allowed).
+  - **Density** per res-10 cell per window = Σ share × `DENSITY[biome]`, 0 in noSpawn
+    cells.
+    - Values: water 1.0, forest 0.95, park 1.0, meadow 0.85, farmland 0.6, urban 0.5,
+      industrial 0.4, historic 0.6.
+    - Count = ⌊density⌋ + (rng < fraction), capped at 3.
+  - **Species weight** = entry weight × Σ share(biome) × preference(biome). Entries are
+    filtered by district and by day/night (`time`).
+  - **Day/night:** sunrise/sunset from the NOAA equations at the region centre, at the
+    window midpoint. Checked against published times to within about 2 minutes.
+  - **Level:** uniform in the district band.
+  - **Position:** a res-12 child centre that lies inside the cell after rounding to
+    6 decimals.
+  - **Id:** two FNV-1a hashes of `region|window|cell|index` (16 hex digits).
+  - **RNG:** the engine's sfc32, seeded by mixing the HMAC seed words, the cell hash and
+    the window.
+- **D68. Spawn tables** for districts 1–2 (`content/spawns.json`).
+  - Seven commons/specials plus Lygtling (night only) and two rares that need a field
+    ability: Loftnisse needs runereader (district 1), Søormling needs angler (district 2).
+    These show as "rustling" hint markers.
+  - Starter lines are not wild; evolved forms are rejected by validate.
+  - Every biome has at least one species in each district.
+- **D69. Density report** (`pnpm spawn:report`, a CI gate).
+  - **Method:** seeded random walks (10 m steps, gentle turns, kept inside districts 1–2),
+    12 walkers × 1.2 km per window, 96 windows over 3 days (day and night).
+  - **Counted:** battle-able spawns within 40 m.
+  - **Classes:** green = water+forest+park+meadow ≥ 50% of the cell; streets =
+    urban+historic+industrial ≥ 50%.
+  - **Result:** green 1 per 238 m (target 150–300), streets 1 per 432 m (target
+    300–500).
+- **D70. Spawn service** (`apps/spawn-service`, Cloudflare Worker).
+  - **Parameters:** only `region`, `cell` and `window` are accepted; anything else
+    (e.g. `lat`) is a 400.
+  - **Cell:** must be a valid res-7 cell containing region cells.
+  - **Window:** `current`, `next`, or the equivalent numbers; past and later windows are
+    rejected.
+  - **Response:** `Cache-Control: max-age` until the requested window ends.
+  - **CORS:** the live domain and localhost only.
+  - **Rate limit:** Workers rate-limit binding, 60/min, keyed by the client IP in memory
+    only.
+  - **Logging:** no `console` calls; observability, logs and Logpush off;
+    `send_metrics = false`.
+  - **Secret:** `SPAWN_SECRET` only via `wrangler secret put` (prod) or `.dev.vars`
+    (local, gitignored).
+  - **Bundle:** 173 KB gzip (free limit 3 MB).
+  - **Tests:** `@cloudflare/vitest-pool-workers` 0.8.71, the newest release that supports
+    our Vitest 2.1; it prints a harmless warning about the `ratelimits` key.
+- **D71. Map game** (`#/`).
+  - **Permission:** a short explanation screen before the browser's location prompt,
+    skipped if permission was already granted.
+  - **GPS:** `watchPosition` with high accuracy. Fixes worse than 50 m are ignored.
+  - **Speed rule:**
+    - speed comes from the device, or else from fixes at least 5 s apart;
+    - spawns hide above 25 km/h and return below 20 km/h (hysteresis).
+  - **Fetching:**
+    - the player's res-7 cell is fetched for the current and next window;
+    - when a point 350 m away in any of 8 directions lies in another res-7 cell, that
+      cell is fetched too;
+    - lists are cached in memory and IndexedDB until they expire.
+  - **Display:**
+    - spawns within 100 m are shown;
+    - tapping one within 40 m starts a wild battle, from further away a toast says
+      "walk closer";
+    - the encounter toast vibrates only after the user has interacted.
+  - **Once per spawn:** used spawn ids are kept in localStorage until they expire.
+  - **Team:** the temporary player team is the arena-1 preset with the fire starter
+    (until M2b saves).
+  - **Pause:** map battles can be paused and resumed.
+  - **Routes:** `#/playtest` (Gate 2), `#/dev` (battle page), `#/dev/map` (simulator),
+    `#/dev/biomes` (debug).
+  - **Not configured:** without `VITE_SPAWN_SERVICE_URL` a production build shows "spawn
+    service not configured" with a link to the playtest. Dev builds default to
+    `http://localhost:8787`.
+- **D72. GPS simulator** (dev builds and `#/dev/map`).
+  - **Controls:** teleport by tap, sample GPX (station → Kongens Have → Kongensgade →
+    Klosterbakken → Munke Mose → Odense Å, about 1.9 km), ×1/×5/×20 time-lapse, fake
+    40 km/h.
+  - **Time-lapse** reports walking speed, so only the fake toggle trips the speed rule.
+  - **Test hooks:** `window.__omlSim` and marker `data-lat/lng` exist for automated
+    checks only, and only when the dev tools are on.
+- **D73. Privacy test** (`apps/client/test/privacy.test.ts`) fails if:
+  - a spawn request carries anything but `region`, a res-7 `cell` and `window`;
+  - a finer cell can be sent;
+  - any client module other than `src/map/spawnApi.ts` makes network calls (`fetch`,
+    `sendBeacon`, XHR, WebSocket, EventSource).
+- **D74. A1 art** (`packages/art`).
+  - **Generator:** code creates every sprite, deterministic from the species id, its
+    types (features per type), its stage (evolved = crest) and its stat total (size).
+    Map markers and a species-neutral hint marker come from the same code.
+  - **Manifest:** `assets.json` gives file, kind, species, source `code`, author, licence
+    `own` and `placeholder: true` for every asset.
+  - **CI check:**
+    - every species has a sprite and a marker entry, and every file has an entry;
+    - licences come from the allow-list `CC0-1.0`, `CC-BY-4.0`, `own`, `artist-licence`;
+    - the files are up to date with the generator.
+  - **Accessors:** `spriteUrl()`/`markerUrl()` refuse anything without a manifest entry.
+  - **Use:** the battle screen (map and playtest) uses the sprites, with type tags kept
+    for colour-blind readability.
+- **D75. PWA precache:** includes the label fonts; excludes the region chunk (only used by
+  the dev biome view).
+- **D76. CI:**
+  - Actions bumped off the deprecated Node 20 runtime: checkout v7, setup-node v7,
+    pnpm/action-setup v6, configure-pages v6, upload-pages-artifact v5, deploy-pages v5.
+  - CI runs on Node 22.
+  - New steps: `pnpm spawn:report` and a Wrangler dry-run of the Worker.
+  - The Pages build takes `VITE_SPAWN_SERVICE_URL` from the repo variable
+    `SPAWN_SERVICE_URL`.

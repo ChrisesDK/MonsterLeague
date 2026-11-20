@@ -110,6 +110,87 @@ want only testers to reach it, Cloudflare Zero Trust _Access_ (free for small te
 require an email one-time code. That adds a login step outdoors, so for a short Gate 2 an
 unlisted URL is usually enough.
 
+## Spawn service (Cloudflare Worker, M2a)
+
+The map gets its wild creatures from a small Worker in `apps/spawn-service` (GDD
+"Encounters and spawning"). Everything is prepared; deploying needs **your** Cloudflare
+account. Until the Worker URL is configured, the live map shows "spawn service not
+configured" and the playtest at `#/playtest` keeps working.
+
+**What it does:** `GET /v1/spawns?region=odense&cell=<H3 res-7>&window=current|next`
+returns the spawns for that coarse cell.
+
+- **Seed:** `HMAC-SHA256(SPAWN_SECRET, "odense|<window>")`, so nobody can predict future
+  spawns.
+- **Windows:** only the current and the next window are served.
+- **CORS:** only `https://www.christianrasmussen.dk` and localhost.
+- **Rate limit:** 60 requests per minute per client.
+- **No logs:** request logging, observability and Logpush are off in `wrangler.toml`.
+
+### One-time setup (run these yourself)
+
+From the project folder, in a terminal:
+
+1. **Log in** (opens the browser; free account is enough):
+   ```sh
+   cd apps/spawn-service
+   pnpm exec wrangler login
+   ```
+2. **Deploy:**
+   ```sh
+   pnpm exec wrangler deploy
+   ```
+   The first time, Wrangler asks you to pick a `workers.dev` subdomain. It prints the
+   URL, e.g. `https://oml-spawn-service.<your-subdomain>.workers.dev`.
+3. **Set the secret.** Make a random value and paste it when asked. Keep no copy in the
+   repo; you can generate a new one any time. Changing it reshuffles all future spawns.
+   ```sh
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+   pnpm exec wrangler secret put SPAWN_SECRET
+   ```
+4. **Check it** (the res-7 cell around Kongens Have):
+   ```sh
+   curl "https://oml-spawn-service.<your-subdomain>.workers.dev/v1/spawns?region=odense&cell=871f04d71ffffff&window=current"
+   ```
+   You should get JSON with a `spawns` list. Before step 3 it answers
+   `500 spawn service not configured`.
+5. **Tell the client where it is.** This is a repository variable, not a secret, because
+   the URL is public anyway:
+   ```sh
+   gh variable set SPAWN_SERVICE_URL --repo chrisesdk/OdenseMonsterLeague --body "https://oml-spawn-service.<your-subdomain>.workers.dev"
+   ```
+   The Pages workflow passes it to the build as `VITE_SPAWN_SERVICE_URL`. Then push (or
+   re-run the Pages workflow) and the live map shows creatures.
+
+**If `wrangler deploy` rejects the `[[ratelimits]]` block** (it should be available on all
+plans), delete that block from `wrangler.toml`, deploy again, and tell me. The service
+still works; rate limiting then relies on Cloudflare's default DDoS protection.
+
+**Privacy check in the dashboard:** _Workers & Pages → oml-spawn-service → Settings →
+Observability_ should show logs **disabled**. Don't enable Logpush or Tail for this
+Worker.
+
+**Local development:** `pnpm --filter @oml/spawn-service dev` runs the Worker on
+`http://localhost:8787` with the secret from `apps/spawn-service/.dev.vars` (gitignored;
+copy `.dev.vars.example`). `pnpm dev` (the client) uses that URL automatically in dev
+builds.
+
+## Map tiles
+
+`apps/client/public/tiles/odense.pmtiles` (8.4 MB, zoom 0–15) is an extract of the
+Protomaps basemap build of 2026-11-18 for the bbox 10.30–10.47 E, 55.35–55.43 N, made with
+`pmtiles extract`. It is served from GitHub Pages like any other file. Pages answers HTTP
+range requests (verified: `206 Partial Content`), which is all PMTiles needs. Label
+fonts (Noto Sans, OFL) are self-hosted in `apps/client/public/fonts/`.
+
+To refresh the extract (e.g. after big OSM changes), download the `pmtiles` CLI from
+github.com/protomaps/go-pmtiles and run:
+
+```sh
+pmtiles extract https://build.protomaps.com/<YYYYMMDD>.pmtiles apps/client/public/tiles/odense.pmtiles --bbox=10.30,55.35,10.47,55.43
+pnpm region:build   # the region builder reads basemap water from the same file
+```
+
 ## Before the test day
 
 - Open the URL on your own phone (Android Chrome and iOS Safari), play one wild battle, and

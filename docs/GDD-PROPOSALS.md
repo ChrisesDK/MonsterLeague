@@ -2,7 +2,8 @@
 
 Changes Claude Code proposes to the master GDD (docs/GDD.md is a read-only export). The
 owner reviews each one; accepted proposals come back in a new GDD export, and then the
-status here changes to `accepted` (or `rejected`, with a reason).
+status here changes to `accepted` (or `rejected`, with a reason). P1–P7 were accepted in
+GDD v1.2 (see its change log and git history).
 
 ## Template
 
@@ -17,114 +18,47 @@ status here changes to `accepted` (or `rejected`, with a reason).
 
 ## Proposals
 
-### P1. Rename the field abilities (hard rule: no Pokémon terms)
+### P8. Spawn example still uses retired names
 
-- **GDD section:** World (district table, "Field ability earned"); Arenas → Field abilities; Encounters (spawn example `"requires": "rock_smash"`)
-- **Current text:** "Cut", "Fish", "Rock Smash", "Night Sight", "Strength", "Fly"
-- **Proposed change:** "Cut", "Rock Smash", "Strength" and "Fly" are the names of the HM
-  field moves in the Pokémon games, and the set as a whole mirrors the HM system. Rename all
-  six with our own vocabulary and folklore flavour. Suggestions:
-
-  | Now         | Proposed (en / da)        |
-  | ----------- | ------------------------- |
-  | Cut         | Hedgewalk / Hækkegang     |
-  | Fish        | Angling / Medefiskeri     |
-  | Rock Smash  | Stonecraft / Stenkløver   |
-  | Night Sight | Owl Eyes / Ugleøje        |
-  | Strength    | Heave / Kæmpekraft        |
-  | Fly         | Homeward Wing / Hjemvinge |
-
-  Optionally loosen the "taught into a move slot" mechanic so it doesn't map 1:1 onto HMs.
-
-- **Reason / evidence:** CLAUDE.md hard rule 1. Until this is settled, the code uses no
-  field-ability names: the spawn schema's `requires` is a free id (D45).
-- **Status:** accepted (GDD v1.2)
-
-### P2. Turn order: catch and run also go first
-
-- **GDD section:** Battle system → Each turn, steps 1–2
-- **Current text:** "Both sides choose an action: Move, Switch, Item, or Run" … "Order: Switch and Item go first, then moves …"
-- **Proposed change:** "Both sides choose an action: Move, Switch, Item, Catch (wild only) or
-  Run (wild only)." … "Order: Switch, Item, Catch and Run go first (ties by Speed, then the
-  seeded RNG), then moves by priority, then Speed."
-- **Reason / evidence:** That's how the engine has worked since M1 (D9). Catching is a
-  separate action because charms aren't used on your own creatures.
-- **Status:** accepted (GDD v1.2)
-
-### P3. Data model table: match the real content schemas
-
-- **GDD section:** Data model
-- **Current text:** `types.json` "matrix"; moves "effect? {kind, …}"; items "kind (heal, cure, catch, revive), value"; trainers "id, name, poiId, aiTier, team [{species, level, moves}], reward, lines"; species "name (i18n key) … sprite"
+- **GDD section:** Encounters and spawning → Example spawn table entry
+- **Current text:** `{ "species": "cobble_crab", "district": 4, … "requires": "rock_smash" }`
 - **Proposed change:**
+  `{ "species": "brokrabbe", "district": 4, "weight": 10, "biomes": { "historic": 3.0, "urban": 1.0 }, "time": "any", "requires": "runereader" }`
+- **Reason / evidence:** "rock_smash" is one of the Pokémon field-move names that accepted
+  proposal P1 removed everywhere ("never used in code, data or text"); "cobble_crab" isn't
+  a species id (the cobble-crab is `brokrabbe`). The franchise-term guard doesn't scan
+  the GDD, so this slipped through.
+- **Status:** open
 
-  | File                | Key fields (as built)                                                                                                                                                                     |
-  | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-  | `types.json`        | `types[{id, color}]`, `chart[attacker][defender]`                                                                                                                                         |
-  | `species.json`      | id, types, baseStats {hp, atk, def, spd}, catchRate, baseXp, learnset [{level, moveId}], evolution? {into, level}; name = i18n key `species.<id>.name`; sprite and biome weights from M2  |
-  | `moves.json`        | id, type, power, accuracy (null = never misses), pp, priority, `effects[]` (status {status, chance} · stat {target, stat, stages, chance} · heal {percent} · recoil {percent}), typeless? |
-  | `items.json`        | id, kind: `heal` {amount} · `cure` · `charm` {catchBonus} · `revive` {percent}                                                                                                            |
-  | `trainers.json`     | id, tier (trainer/leader), team [{speciesId, level, moves?}], items, arena?, theme?; name = i18n key; poiId, reward, lines from M2                                                        |
-  | `player-teams.json` | id, arena, starterLevel, team [{speciesId, level}], items: the expected player team per arena (balance tooling)                                                                           |
-  | `spawns.json`       | species, district, weight, biomes {water…historic}, time (any/day/night), requires?                                                                                                       |
+### P9. Add "meadow" to the biome list
 
-- **Reason / evidence:** The schemas in `packages/data/src/schemas.ts` are validated in CI.
-  `effects[]` is needed because Hunker Down has two effects (def +1 and heal), and catch
-  items are called charms throughout.
-- **Status:** accepted (GDD v1.2)
+- **GDD section:** Encounters and spawning → Build time, step 3; Data model (`region.<id>.json`)
+- **Current text:** "the share of each biome by area: Water, Forest, Park, Urban, Industrial, Farmland, Historic"
+- **Proposed change:** "… Water, Forest, Park, Meadow (grass, meadow, heath, scrub), Farmland, Urban, Industrial, Historic". Also note that rivers mapped as lines count as water within 15 m (streams 5 m).
+- **Reason / evidence:** The M2a brief and the GDD M2a checklist already include
+  meadow/field. In Odense it is the third-largest biome (11 km² of 96), mostly grass along
+  paths and the river, which would otherwise count as nothing.
+- **Status:** open
 
-### P4. Runtime types: match the engine
+### P10. noSpawn: by share, and never place a spawn inside a no-spawn area
 
-- **GDD section:** Data model → Runtime types; Battle system → Battle log
-- **Current text:** `BattleState { turn; rngState: number; sides; kind; log: BattleEvent[]; result }`; CreatureInstance without a sleep counter; event `status`
-- **Proposed change:**
-  - `CreatureInstance` adds `statusTurns: number` (sleep counter).
-  - `BattleState`:
-    - `rngState: number[]` (four 32-bit words of sfc32);
-    - no stored `log`: `resolveTurn` returns `{ state, events }` per turn and the client
-      animates them;
-    - adds `participation` (who faced whom, for the XP split) and
-      `caught?: { creature, destination: 'team' | 'storage' }`.
-  - `Side`: team, active, stages, items, ai, gainsXp, needsReplacement, itemsUsed,
-    runAttempts.
-  - Status events are `status_applied`, `status_cured` and `status_damage`; new events
-    `run_failed`, `sent_to_storage`, `needs_replacement`.
-- **Reason / evidence:** The GDD block was a suggestion; these fields carry the M1/M1.5 rules
-  (sleep counting, XP split, run odds, storage). Keeping a log in the state would grow
-  every save without being needed for replay (seed + actions reproduce it).
-- **Status:** accepted (GDD v1.2)
+- **GDD section:** Encounters and spawning → Build time, step 3; Safety → Placement
+- **Current text:** "Mark the cell `noSpawn` if it overlaps schools, cemeteries, hospitals, military areas, airports, or motorway/trunk roads."
+- **Proposed change:** "A cell is `noSpawn` when at least 25% of it lies in a no-spawn area (schools, kindergartens, cemeteries, hospitals, military areas, airports, rail tracks, motorway/trunk roads). In other cells, spawns are never placed at a point inside a no-spawn area."
+- **Reason / evidence:** With "any overlap", 1,032 of 7,562 Odense cells (14%) are
+  noSpawn. Whole park cells disappear because a kindergarten touches their edge:
+  Eventyrhaven is entirely noSpawn (Dronningens Asyl Børnehus next door), and several
+  Kongens Have cells are lost to the station tracks. The safety goal (no creatures _in_
+  those places) is kept by the per-point rule; spawn positions are already sampled points,
+  so this is cheap to implement. Implemented as in the GDD today; awaiting your decision.
+- **Status:** open
 
-### P5. Arena leader team size: "2–6", not "3–6"
+### P11. "Railway tracks" excludes light rail and trams
 
-- **GDD section:** Arenas → Arena leaders
-- **Current text:** "a 3–6 creature team on its type theme"
-- **Proposed change:** "a 2–6 creature team on its type theme (growing as in the difficulty table)"
-- **Reason / evidence:** The difficulty table gives arena 1 two creatures (Rendsnude,
-  Loftnisse), and that is what was balanced and is on target.
-- **Status:** accepted (GDD v1.2)
-
-### P6. "Grove is no longer the best defensive type": evidence is mixed
-
-- **GDD section:** Creatures, types and stats (note under the type chart)
-- **Current text:** "so Grove has two weaknesses (Fire, Storm) and is no longer the best defensive type."
-- **Proposed change:** "… Grove now has two weaknesses (Fire, Storm). It still resists four
-  types (Water, Grove, Stone, Storm), so Grove species remain strong in 1v1s; evolved and
-  rare species win most equal-level 1v1s by design (higher base stat totals)."
-  Optionally the balance flag "> 70% of 1v1s" could compare species within the same tier
-  (common / special / starter stage 1 / stage 2 / rare).
-- **Reason / evidence:** `pnpm sim:report` after v1.1 (docs/BALANCE.md change log):
-  - Bøgevætte's average 1v1 win rate went 84→80% (L10) and 88→85% (L25), still the
-    highest of all species;
-  - Bøgling 64→56%, Mosbille 57→45%.
-  - All 6 remaining > 70% flags are evolved or rare species (base stat total 370–390)
-    against mostly unevolved commons.
-- **Status:** accepted (GDD v1.2)
-
-### P7. One name for the item button: "Bag"
-
-- **GDD section:** Screens and UX → Battle screen; Battle system → Each turn
-- **Current text:** "Switch / Item / Run row"
-- **Proposed change:** "Switch / Bag / Run row" (da: Skift / Taske / Flygt), matching the
-  Bag screen that the button opens.
-- **Reason / evidence:** The battle button opens the bag list (tonics, drops, charms); the
-  client has used "Bag" / "Taske" since M1.
-- **Status:** accepted (GDD v1.2)
+- **GDD section:** Encounters and spawning → Build time, step 3
+- **Current text:** "… or motorway/trunk roads" (rail tracks are in the M2a brief)
+- **Proposed change:** add "railway tracks (heavy rail; not light rail or trams that run along streets)".
+- **Reason / evidence:** Odense Letbane runs along main streets and squares that people
+  walk every day; making those noSpawn would empty the city centre. Implemented this way
+  (DECISIONS D63).
+- **Status:** open
