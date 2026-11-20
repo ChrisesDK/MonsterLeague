@@ -1,0 +1,89 @@
+{
+  "region": "odense",
+  "pois": [
+    {
+      "id": "arena1",
+      "kind": "arena",
+      "district": 1,
+      "lat": 55.39978,
+      "lng": 10.38522,
+      "radius": 80,
+      "arena": 1,
+      "trainers": ["arena1_junior", "leader_folk"],
+      "verified": false,
+      "note": "Kongens Have, centre of the park (OSM leisure=park centroid); open lawn and paths, away from Østre Stationsvej"
+    },
+    {
+      "id": "rest_library",
+      "kind": "restStop",
+      "district": 1,
+      "lat": 55.40125,
+      "lng": 10.38846,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Hovedbiblioteket (main library) in Odense Banegård Center; public, step-free, indoors when it is cold"
+    },
+    {
+      "id": "rest_jernbanegade",
+      "kind": "restStop",
+      "district": 1,
+      "lat": 55.39781,
+      "lng": 10.38504,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Jernbanegade pedestrian street just south of Kongens Have; car-free and step-free"
+    },
+    {
+      "id": "trainer_lise",
+      "kind": "trainer",
+      "district": 1,
+      "lat": 55.39963,
+      "lng": 10.38333,
+      "radius": 50,
+      "trainer": "route1_lise",
+      "verified": false,
+      "note": "Path by Landsarkivet for Fyn on the west side of Kongens Have, about 120 m from the arena centre (moved from Elisabeth Klixbülls Plads, which lies in a no-spawn cell by the railway)"
+    },
+    {
+      "id": "trainer_ole",
+      "kind": "trainer",
+      "district": 1,
+      "lat": 55.40059,
+      "lng": 10.3871,
+      "radius": 50,
+      "trainer": "route1_ole",
+      "verified": false,
+      "note": "Banegårdspladsen, the square in front of the station (bike parking nearby)"
+    },
+    {
+      "id": "trainer_freja",
+      "kind": "trainer",
+      "district": 1,
+      "lat": 55.39793,
+      "lng": 10.38837,
+      "radius": 50,
+      "trainer": "route1_freja",
+      "verified": false,
+      "note": "Gravene, a pedestrian street by Nørregade"
+    },
+    {
+      "id": "trainer_niels",
+      "kind": "trainer",
+      "district": 1,
+      "lat": 55.39791,
+      "lng": 10.38035,
+      "radius": 50,
+      "trainer": "route1_niels",
+      "verified": false,
+      "note": "Kongensgade pedestrian street by the artwork The Guardians Light"
+    }
+  ]
+}

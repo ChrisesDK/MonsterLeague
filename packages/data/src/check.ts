@@ -98,6 +98,40 @@ export function checkContent(dex: Dex): string[] {
       );
   }
 
+  for (const t of Object.values(dex.trainers)) {
+    if (t.reward && !dex.items[t.reward.itemId])
+      errors.push(`trainer ${t.id}: reward item "${t.reward.itemId}" does not exist`);
+  }
+
+  for (const p of Object.values(dex.pois)) {
+    const where = `poi ${p.id}`;
+    if (p.kind === 'trainer') {
+      const t = dex.trainers[p.trainer];
+      if (!t) errors.push(`${where}: trainer "${p.trainer}" does not exist`);
+      else if (t.tier !== 'trainer')
+        errors.push(`${where}: "${p.trainer}" is a leader; use an arena POI`);
+    } else if (p.kind === 'arena') {
+      p.trainers.forEach((id, i) => {
+        const t = dex.trainers[id];
+        const last = i === p.trainers.length - 1;
+        if (!t) errors.push(`${where}: trainer "${id}" does not exist`);
+        else if (last && (t.tier !== 'leader' || t.arena !== p.arena))
+          errors.push(`${where}: the last trainer must be the arena ${p.arena} leader`);
+        else if (!last && t.tier !== 'trainer')
+          errors.push(`${where}: junior "${id}" must be a trainer, not a leader`);
+      });
+      if (p.trainers.length > 3) errors.push(`${where}: GDD allows 1–2 junior trainers`);
+    } else {
+      for (const itemId of Object.keys(p.restock))
+        if (!dex.items[itemId]) errors.push(`${where}: restock item "${itemId}" does not exist`);
+    }
+  }
+  const usedTrainers = Object.values(dex.pois).flatMap((p) =>
+    p.kind === 'trainer' ? [p.trainer] : p.kind === 'arena' ? p.trainers : [],
+  );
+  if (new Set(usedTrainers).size !== usedTrainers.length)
+    errors.push('pois: a trainer is placed twice');
+
   // GDD: each badge (2–7) unlocks exactly one field ability.
   const badges = new Map<number, string>();
   for (const f of Object.values(dex.fieldAbilities)) {
@@ -136,6 +170,14 @@ export function checkI18n(dex: Dex, tables: Record<string, I18nTable>): string[]
     ...Object.keys(dex.items).flatMap((i) => [`item.${i}.name`, `item.${i}.desc`]),
     ...Object.keys(dex.trainers).map((t) => `trainer.${t}.name`),
     ...Object.keys(dex.fieldAbilities).map((f) => `fieldAbility.${f}.name`),
+    ...Object.keys(dex.pois).map((p) => `poi.${p}.name`),
+    // Trainers placed on the map need their pre- and post-battle lines.
+    ...Object.values(dex.pois).flatMap((p) =>
+      (p.kind === 'trainer' ? [p.trainer] : p.kind === 'arena' ? p.trainers : []).flatMap((id) => [
+        `trainer.${id}.intro`,
+        `trainer.${id}.defeated`,
+      ]),
+    ),
   ];
   const locales = Object.keys(tables);
   for (const locale of locales) {

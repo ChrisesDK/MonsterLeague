@@ -12,7 +12,12 @@ describe('content', () => {
     expect(Object.keys(content.species)).toHaveLength(15);
     expect(Object.keys(content.moves).length).toBeGreaterThanOrEqual(30);
     expect(Object.keys(content.items)).toHaveLength(7);
-    expect(Object.keys(content.trainers)).toHaveLength(4);
+    expect(
+      Object.values(content.pois)
+        .map((p) => p.kind)
+        .sort(),
+    ).toEqual(['arena', 'restStop', 'restStop', 'trainer', 'trainer', 'trainer', 'trainer']);
+    expect(Object.keys(content.trainers)).toHaveLength(9);
     expect(Object.keys(content.playerTeams)).toHaveLength(2);
     for (const s of Object.values(content.species)) expect(s.placeholder).toBe(true);
   });
@@ -134,5 +139,42 @@ describe('field abilities (M1.7, GDD v1.2 / P1)', () => {
         fieldAbilities: { fieldAbilities: [{ id: 'x', badge: 2, types: ['lava'] }] },
       }),
     ).toThrow();
+  });
+});
+
+describe('POIs (M2b)', () => {
+  it('district 1 has arena 1 (junior then leader), 4 trainers and 2 rest stops, all unverified', () => {
+    const pois = Object.values(content.pois);
+    const arena = pois.find((p) => p.kind === 'arena')!;
+    expect(arena.kind === 'arena' && arena.trainers).toEqual(['arena1_junior', 'leader_folk']);
+    for (const p of pois) {
+      expect(p.district).toBe(1);
+      expect(p.verified).toBe(false);
+    }
+    for (const p of pois)
+      if (p.kind === 'trainer') {
+        const t = content.trainers[p.trainer]!;
+        for (const m of t.team) {
+          expect(m.level).toBeGreaterThanOrEqual(4);
+          expect(m.level).toBeLessThanOrEqual(9);
+        }
+        expect(t.reward).toBeDefined();
+      }
+  });
+
+  it('rejects broken POI references', () => {
+    const broken = structuredClone(content);
+    const arena = broken.pois.arena1!;
+    if (arena.kind === 'arena') arena.trainers = ['leader_folk', 'arena1_junior'];
+    const t = broken.pois.trainer_ole!;
+    if (t.kind === 'trainer') t.trainer = 'nobody';
+    const r = broken.pois.rest_library!;
+    if (r.kind === 'restStop') r.restock = { nope: 1 };
+    broken.trainers.route1_lise!.reward = { itemId: 'nope', count: 1 };
+    const errors = checkContent(broken).join('\n');
+    expect(errors).toMatch(/last trainer must be the arena 1 leader/);
+    expect(errors).toMatch(/trainer "nobody" does not exist/);
+    expect(errors).toMatch(/restock item "nope"/);
+    expect(errors).toMatch(/reward item "nope"/);
   });
 });

@@ -137,6 +137,11 @@ export const TrainerSchema = z
     arena: z.number().int().min(1).max(8).optional(),
     /** Leader theme type, used by balance tooling to classify match-ups. */
     theme: TypeIdSchema.optional(),
+    /** Item given once when the player wins (GDD: trainers give a reward item). */
+    reward: z
+      .object({ itemId: id, count: z.number().int().min(1) })
+      .strict()
+      .optional(),
     placeholder,
   })
   .strict();
@@ -264,3 +269,42 @@ export const RegionVersionFileSchema = z
   .object({ region: id, dataVersion: z.string().regex(/^[0-9a-f]{12}$/) })
   .strict();
 export type RegionDistrict = z.infer<typeof RegionDistrictSchema>;
+
+/**
+ * Points of interest (GDD "Arenas, trainers, rest stops"): fixed, hand-placed, each with an
+ * interaction radius. Names are i18n keys `poi.<id>.name`. `verified` = checked on site.
+ */
+const poiBase = {
+  id,
+  district: z.number().int().min(1).max(8),
+  lat: z.number().min(-90).max(90),
+  lng: z.number().min(-180).max(180),
+  verified: z.boolean(),
+  /** Short note on why this spot was chosen (public, step-free, …). */
+  note: z.string().optional(),
+};
+export const PoiSchema = z.discriminatedUnion('kind', [
+  z
+    .object({
+      ...poiBase,
+      kind: z.literal('arena'),
+      radius: z.literal(80),
+      arena: z.number().int().min(1).max(8),
+      /** Junior trainers first, the leader last. */
+      trainers: z.array(id).min(2),
+    })
+    .strict(),
+  z.object({ ...poiBase, kind: z.literal('trainer'), radius: z.literal(50), trainer: id }).strict(),
+  z
+    .object({
+      ...poiBase,
+      kind: z.literal('restStop'),
+      radius: z.literal(40),
+      /** Free restock once per hour (GDD), data-driven. */
+      restock: z.record(id, z.number().int().min(1)),
+    })
+    .strict(),
+]);
+export type Poi = z.infer<typeof PoiSchema>;
+export const PoisFileSchema = z.object({ region: id, pois: z.array(PoiSchema) }).strict();
+export type PoisFile = z.infer<typeof PoisFileSchema>;

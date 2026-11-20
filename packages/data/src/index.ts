@@ -6,6 +6,7 @@ import trainersJson from '../content/trainers.json';
 import playerTeamsJson from '../content/player-teams.json';
 import spawnsJson from '../content/spawns.json';
 import fieldAbilitiesJson from '../content/field-abilities.json';
+import poisJson from '../content/pois.odense.json';
 import enJson from '../i18n/en.json';
 import daJson from '../i18n/da.json';
 import {
@@ -14,6 +15,7 @@ import {
   PlayerTeamsFileSchema,
   SpawnsFileSchema,
   FieldAbilitiesFileSchema,
+  PoisFileSchema,
   MovesFileSchema,
   SpeciesFileSchema,
   TrainersFileSchema,
@@ -24,6 +26,7 @@ import {
   type PlayerTeam,
   type Spawn,
   type FieldAbility,
+  type Poi,
   type Species,
   type Trainer,
   type TypeId,
@@ -47,6 +50,8 @@ export interface Dex {
   /** Spawn tables (empty until M2). */
   spawns: Spawn[];
   fieldAbilities: Record<string, FieldAbility>;
+  /** Points of interest in Odense (arenas, trainers, rest stops). */
+  pois: Record<string, Poi>;
 }
 
 export interface RawContent {
@@ -58,6 +63,7 @@ export interface RawContent {
   playerTeams: unknown;
   spawns: unknown;
   fieldAbilities: unknown;
+  pois: unknown;
 }
 
 function indexById<T extends { id: string }>(list: T[], what: string): Record<string, T> {
@@ -88,6 +94,7 @@ export function parseContent(raw: RawContent): Dex {
       FieldAbilitiesFileSchema.parse(raw.fieldAbilities).fieldAbilities,
       'field ability',
     ),
+    pois: indexById(PoisFileSchema.parse(raw.pois).pois, 'poi'),
   };
 }
 
@@ -100,6 +107,7 @@ export const rawContent: RawContent = {
   playerTeams: playerTeamsJson,
   spawns: spawnsJson,
   fieldAbilities: fieldAbilitiesJson,
+  pois: poisJson,
 };
 
 /** The default, validated game content. */

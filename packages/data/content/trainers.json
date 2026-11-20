@@ -60,7 +60,11 @@
       },
       "arena": 1,
       "theme": "folk",
-      "placeholder": true
+      "placeholder": true,
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      }
     },
     {
       "id": "leader_water",
@@ -88,6 +92,114 @@
       "placeholder": true,
       "arena": 2,
       "theme": "water"
+    },
+    {
+      "id": "route1_lise",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "torvdue",
+          "level": 4
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 5
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "small_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route1_ole",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "rendsnude",
+          "level": 5
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 6
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "clear_drops",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route1_freja",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "mosbille",
+          "level": 6
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 7
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route1_niels",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "torvdue",
+          "level": 7
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 8
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 9
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "arena1_junior",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "mosbille",
+          "level": 8
+        },
+        {
+          "speciesId": "torvdue",
+          "level": 9
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 2
+      },
+      "placeholder": true
     }
   ]
 }

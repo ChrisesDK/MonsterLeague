@@ -15,6 +15,7 @@ import { buildQuery, fetchOverpass } from './overpass';
 const root = (p: string) => fileURLToPath(new URL(`../../../${p}`, import.meta.url));
 const cacheDir = fileURLToPath(new URL('../cache', import.meta.url));
 const OUT = root('packages/data/region/region.odense.json');
+const HAZARDS_OUT = root('packages/data/region/hazards.odense.json');
 const VERSION_OUT = root('packages/data/region/region.odense.version.json');
 const DISTRICTS = root('packages/data/content/districts.odense.geojson');
 const BASEMAP = root('apps/client/public/tiles/odense.pmtiles');
@@ -31,6 +32,18 @@ const geo = osmtogeojson(osm as never) as FeatureCollection<Geometry | null>;
 
 const index = new FeatureIndex();
 for (const f of geo.features) index.addFeature(f);
+// Hazard lines for POI validation (GDD: no POI within 15 m of trunk/motorway or railway).
+const hazards: { kind: 'rail' | 'road'; coords: [number, number][] }[] = [];
+for (const f of geo.features) {
+  const tags = (f.properties ?? {}) as Record<string, string | undefined>;
+  const kind =
+    tags.railway === 'rail' ? 'rail' : /^(motorway|trunk)(_link)?$/.test(tags.highway ?? '') ? 'road' : null;
+  if (!kind || f.geometry?.type !== 'LineString') continue;
+  hazards.push({
+    kind,
+    coords: f.geometry.coordinates.map(([x, y]) => [Math.round(x! * 1e6) / 1e6, Math.round(y! * 1e6) / 1e6]),
+  });
+}
 const water = await basemapWater(BASEMAP, REGION.bbox);
 for (const f of water) index.addFeature(f);
 console.log(`Basemap water polygons: ${water.length}`);
@@ -100,6 +113,7 @@ const lines = Object.entries(region.cells).map(([id, row]) => `"${id}":${JSON.st
 const { cells: _omit, ...head } = region;
 const json = `${JSON.stringify(head).slice(0, -1)},"cells":{\n${lines.join(',\n')}\n}}\n`;
 writeFileSync(OUT, json);
+writeFileSync(HAZARDS_OUT, `${JSON.stringify({ region: REGION.id, lines: hazards })}\n`);
 // Tiny companion file so the client knows the expected version without bundling the region.
 writeFileSync(
   VERSION_OUT,

@@ -92,6 +92,17 @@
       "requires": "runereader"
     },
     {
+      "species": "mosbille",
+      "district": 1,
+      "weight": 6,
+      "biomes": {
+        "forest": 2,
+        "park": 1
+      },
+      "time": "any",
+      "requires": "forager"
+    },
+    {
       "species": "grimaelling",
       "district": 2,
       "weight": 25,

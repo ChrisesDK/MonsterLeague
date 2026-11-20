@@ -94,7 +94,7 @@ describe('computeSpawns', () => {
     const many = Array.from({ length: 40 }, (_, w) => run(SEED, NOON + w)).flat();
     const req = many.filter((s) => s.requires);
     expect(req.length).toBeGreaterThan(0);
-    for (const s of req) expect(['runereader', 'angler']).toContain(s.requires);
+    for (const s of req) expect(['runereader', 'angler', 'forager']).toContain(s.requires);
   });
 });
 
