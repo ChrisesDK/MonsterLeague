@@ -68,7 +68,7 @@ export function BiomeDebug({ t }: { t: Translate }) {
       if (!alive) return;
       const features: GeoJSON.Feature[] = [];
       for (const [id, row] of Object.entries(region.cells)) {
-        const shares = row.slice(2);
+        const shares = row.slice(2, 10);
         let best = 0;
         for (let i = 1; i < shares.length; i++) if (shares[i]! > shares[best]!) best = i;
         const ring = cellToBoundary(id, true);

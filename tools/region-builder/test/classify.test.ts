@@ -4,6 +4,7 @@ import { latLngToCell } from 'h3-js';
 import {
   FeatureIndex,
   areaRules,
+  blockedMask,
   classifyCell,
   distanceToSegmentM,
   lineRules,
@@ -44,7 +45,8 @@ describe('OSM tag rules', () => {
     expect(lineRules({ waterway: 'stream' })).toEqual([{ biome: 'water', buffer: 5 }]);
     expect(lineRules({ railway: 'rail' })).toEqual([{ noSpawn: true, buffer: 10 }]);
     expect(lineRules({ highway: 'trunk_link' })).toEqual([{ noSpawn: true, buffer: 20 }]);
-    expect(lineRules({ railway: 'tram' })).toEqual([]);
+    expect(lineRules({ railway: 'tram' })).toEqual([{ blockSpawn: true, buffer: 5 }]);
+    expect(lineRules({ railway: 'light_rail' })).toEqual([{ blockSpawn: true, buffer: 5 }]);
     expect(pointRules({ historic: 'memorial' })).toEqual([{ biome: 'historic', buffer: 20 }]);
     expect(pointRules({ amenity: 'school' })).toEqual([{ noSpawn: true, buffer: 30 }]);
   });
@@ -87,15 +89,51 @@ describe('cell classification', () => {
     expect((c.shares.water ?? 0) + (c.shares.urban ?? 0)).toBe(100);
   });
 
-  it('marks a cell noSpawn when any sample touches a noSpawn feature', () => {
-    const index = new FeatureIndex();
-    index.addFeature(poly({ leisure: 'park' }));
-    index.addFeature({
+  it('marks a cell noSpawn only when ≥25% of it is in no-spawn areas (GDD P10)', () => {
+    const covered = new FeatureIndex();
+    covered.addFeature(poly({ leisure: 'park' }));
+    covered.addFeature(poly({ amenity: 'school' }));
+    const c = classifyCell(covered, cell, 12);
+    expect(c.noSpawn).toBe(true);
+    expect(c.noSpawnShare).toBe(1);
+
+    // A school mapped as a point: its 30 m radius covers well under 25% of the cell.
+    const edge = new FeatureIndex();
+    edge.addFeature(poly({ leisure: 'park' }));
+    edge.addFeature({
       type: 'Feature',
       properties: { amenity: 'school' },
       geometry: { type: 'Point', coordinates: [LNG, LAT] },
     });
-    expect(classifyCell(index, cell, 12).noSpawn).toBe(true);
+    const e = classifyCell(edge, cell, 12);
+    expect(e.noSpawn).toBe(false);
+    expect(e.noSpawnShare).toBeGreaterThan(0);
+    expect(e.noSpawnShare).toBeLessThan(0.25);
+    // …but those positions are blocked for spawns.
+    expect(e.blocked.length).toBe(Math.round(e.noSpawnShare * 49));
+  });
+
+  it('blocks positions on light-rail tracks without making the cell noSpawn (GDD P11)', () => {
+    const index = new FeatureIndex();
+    index.addFeature(poly({ landuse: 'residential' }));
+    index.addFeature({
+      type: 'Feature',
+      properties: { railway: 'light_rail' },
+      geometry: {
+        type: 'LineString',
+        coordinates: [
+          [LNG - 0.01, LAT],
+          [LNG + 0.01, LAT],
+        ],
+      },
+    });
+    const c = classifyCell(index, cell, 12);
+    expect(c.noSpawn).toBe(false);
+    expect(c.noSpawnShare).toBe(0);
+    expect(c.blocked.length).toBeGreaterThan(0);
+    expect(c.blocked.length).toBeLessThan(20);
+    expect(blockedMask([0, 3])).toBe(9);
+    expect(blockedMask([48])).toBe(2 ** 48);
   });
 
   it('returns no shares where nothing is mapped', () => {
@@ -107,7 +145,7 @@ describe('Overpass query', () => {
   it('uses (south,west,north,east) and covers the needed tags', () => {
     const q = buildQuery([10.3, 55.35, 10.47, 55.43]);
     expect(q).toContain('(55.35,10.3,55.43,10.47)');
-    for (const t of ['waterway', 'railway"="rail', 'kindergarten', 'historic', 'motorway'])
+    for (const t of ['waterway', 'light_rail|tram', 'kindergarten', 'historic', 'motorway'])
       expect(q).toContain(t);
   });
 });

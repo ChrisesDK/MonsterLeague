@@ -12,6 +12,9 @@ export const REGION = {
 };
 
 /** Buffer radii in metres for features mapped as lines or points. */
+/** GDD P10: a cell is noSpawn when at least this share of it lies in no-spawn areas. */
+export const NO_SPAWN_SHARE = 0.25;
+
 export const BUFFERS_M = {
   river: 15,
   canal: 10,
@@ -19,6 +22,8 @@ export const BUFFERS_M = {
   historic: 20,
   noSpawnPoint: 30,
   railway: 10,
+  /** Light rail / tram tracks: spawn positions are blocked, the cell is not (GDD P11). */
+  lightRail: 5,
   majorRoad: 20,
 };
 

@@ -62,7 +62,7 @@ function checkRegion(): string[] {
   for (const [cell, row] of Object.entries(region.cells)) {
     if (!region.districts.some((d) => d.id === row[0]))
       errors.push(`region cell ${cell}: unknown district ${row[0]}`);
-    const sum = row.slice(2).reduce((a, b) => a + b, 0);
+    const sum = row.slice(2, 10).reduce((a, b) => a + b, 0);
     if (sum > 101) errors.push(`region cell ${cell}: biome shares sum to ${sum}%`);
   }
   return errors;

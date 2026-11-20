@@ -96,15 +96,21 @@ export function entryWeight(entry: SpawnEntry, cell: RegionCell): number {
 }
 
 /**
- * Candidate spawn positions: centres of the cell's res-12 children that really lie inside
+ * Candidate spawn positions: centres of the cell's res-12 children that are not blocked
+ * (inside a no-spawn area or on light-rail tracks, GDD P10/P11) and really lie inside
  * the cell after rounding to 6 decimals (H3 children don't nest exactly, so a few centres
  * fall in, or on the edge of, a neighbour).
  */
-function positionsInside(cellId: string): [number, number][] {
+export function positionsInside(cellId: string, blockedMask = 0): [number, number][] {
   const res = getResolution(cellId);
   return cellToChildren(cellId, POSITION_RES)
     .map((c) => cellToLatLng(c).map((v) => Math.round(v * 1e6) / 1e6) as [number, number])
-    .filter(([lat, lng]) => latLngToCell(lat, lng, res) === cellId);
+    .filter((p, i) => !isBlocked(blockedMask, i) && latLngToCell(p[0], p[1], res) === cellId);
+}
+
+/** Bit i of a mask stored as a plain number (49 bits fit exactly in a double). */
+export function isBlocked(mask: number, i: number): boolean {
+  return Math.floor(mask / 2 ** i) % 2 === 1;
 }
 
 /** Deterministic spawns for the given res-10 cells in one window. Pure: no clock, no Math.random. */
@@ -140,7 +146,8 @@ export function computeSpawns({
       MAX_SPAWNS_PER_CELL,
       Math.floor(density) + (rng.next() < density % 1 ? 1 : 0),
     );
-    const children = count > 0 ? positionsInside(cellId) : [];
+    const children = count > 0 ? positionsInside(cellId, cell.blockedMask) : [];
+    if (count > 0 && children.length === 0) continue; // every position is blocked
     for (let i = 0; i < count; i++) {
       let pick = rng.next() * total;
       let entry = entries[entries.length - 1]!;

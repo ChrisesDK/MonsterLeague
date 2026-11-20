@@ -5,6 +5,8 @@ export interface RegionCell {
   id: string;
   district: number;
   noSpawn: boolean;
+  /** Bit mask of res-12 child positions (cellToChildren order) where spawns are blocked. */
+  blockedMask: number;
   /** Biome area shares, 0–1. */
   shares: Record<Biome, number>;
 }
@@ -27,7 +29,13 @@ export function decodeRegion(file: RegionFile): Region {
   for (const [id, row] of Object.entries(file.cells)) {
     const shares = {} as Record<Biome, number>;
     BIOMES.forEach((b, i) => (shares[b] = (row[2 + i] ?? 0) / 100));
-    cells.set(id, { id, district: row[0]!, noSpawn: row[1] === 1, shares });
+    cells.set(id, {
+      id,
+      district: row[0]!,
+      noSpawn: row[1] === 1,
+      blockedMask: row[2 + BIOMES.length] ?? 0,
+      shares,
+    });
     const parent = cellToParent(id, file.coarseRes);
     const list = byCoarse.get(parent);
     if (list) list.push(id);

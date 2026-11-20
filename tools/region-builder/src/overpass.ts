@@ -26,7 +26,7 @@ export function buildQuery([west, south, east, north]: [number, number, number, 
   nwr["healthcare"="hospital"]${b};
   nwr["military"]${b};
   nwr["aeroway"="aerodrome"]${b};
-  way["railway"="rail"]${b};
+  way["railway"~"^(rail|light_rail|tram)$"]${b};
   way["highway"~"^(motorway|motorway_link|trunk|trunk_link)$"]${b};
 );
 out body;
@@ -51,13 +51,18 @@ export async function fetchOverpass(
     return JSON.parse(readFileSync(file, 'utf8'));
   }
   console.log('Overpass: fetching (one request; this can take a minute)…');
-  const res = await fetch(ENDPOINT, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': USER_AGENT },
-    body: new URLSearchParams({ data: query }),
-  });
-  if (res.status === 429 || res.status === 504) {
-    throw new Error(`Overpass is busy (HTTP ${res.status}). Wait a few minutes and run again.`);
+  // Overpass asks clients to back off when busy: retry 429/502/503/504 after 30, 60, 120, 240 s.
+  let res: Response | null = null;
+  for (let attempt = 0; ; attempt++) {
+    res = await fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': USER_AGENT },
+      body: new URLSearchParams({ data: query }),
+    });
+    if (![429, 502, 503, 504].includes(res.status) || attempt >= 4) break;
+    const wait = 30 * 2 ** attempt;
+    console.log(`Overpass is busy (HTTP ${res.status}); retrying in ${wait} s…`);
+    await new Promise((r) => setTimeout(r, wait * 1000));
   }
   if (!res.ok) throw new Error(`Overpass HTTP ${res.status}: ${(await res.text()).slice(0, 300)}`);
   const text = await res.text();

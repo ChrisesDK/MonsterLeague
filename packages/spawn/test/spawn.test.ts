@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { content, RegionFileSchema, type RegionFile, type Spawn as SpawnEntry } from '@oml/data';
-import { latLngToCell } from 'h3-js';
+import { cellToChildren, cellToLatLng, latLngToCell } from 'h3-js';
 import { describe, expect, it } from 'vitest';
 import {
   WINDOW_SECONDS,
@@ -8,7 +8,9 @@ import {
   computeSpawns,
   decodeRegion,
   entryWeight,
+  isBlocked,
   isNight,
+  positionsInside,
   seedWords,
   spawnId,
   sunTimes,
@@ -93,6 +95,66 @@ describe('computeSpawns', () => {
     const req = many.filter((s) => s.requires);
     expect(req.length).toBeGreaterThan(0);
     for (const s of req) expect(['runereader', 'angler']).toContain(s.requires);
+  });
+});
+
+describe('blocked positions (GDD P10, P11)', () => {
+  const rounded = (c: string) =>
+    cellToLatLng(c)
+      .map((v) => Math.round(v * 1e6) / 1e6)
+      .join(',');
+
+  it('never places a spawn on a blocked position', () => {
+    const partly = [...region.cells.values()].filter(
+      (c) => c.blockedMask > 0 && !c.noSpawn && c.district <= 2,
+    );
+    expect(partly.length).toBeGreaterThan(5);
+    let checked = 0;
+    for (let w = 0; w < 60; w++) {
+      const spawns = computeSpawns({
+        region,
+        spawnTables: tables,
+        seed: SEED,
+        window: NOON + w,
+        cellIds: partly.map((c) => c.id),
+      });
+      for (const s of spawns) {
+        const cell = region.cells.get(s.cellId)!;
+        const index = cellToChildren(s.cellId, 12).findIndex(
+          (c) => rounded(c) === `${s.lat},${s.lng}`,
+        );
+        expect(index).toBeGreaterThanOrEqual(0);
+        expect(isBlocked(cell.blockedMask, index)).toBe(false);
+        checked++;
+      }
+    }
+    expect(checked).toBeGreaterThan(30);
+  });
+
+  it('skips a cell whose every position is blocked', () => {
+    const water = latLngToCell(55.3908, 10.3833, 10);
+    const all = 2 ** 49 - 1;
+    const r = decodeRegion({ ...file, cells: { [water]: [2, 0, 100, 0, 0, 0, 0, 0, 0, 0, all] } });
+    expect(positionsInside(water, all)).toEqual([]);
+    for (let w = 0; w < 50; w++) {
+      expect(
+        computeSpawns({
+          region: r,
+          spawnTables: tables,
+          seed: SEED,
+          window: NOON + w,
+          cellIds: [water],
+        }),
+      ).toEqual([]);
+    }
+  });
+
+  it('reads mask bits exactly up to bit 48', () => {
+    expect(isBlocked(2 ** 48, 48)).toBe(true);
+    expect(isBlocked(2 ** 48, 47)).toBe(false);
+    expect(isBlocked(5, 0)).toBe(true);
+    expect(isBlocked(5, 1)).toBe(false);
+    expect(isBlocked(5, 2)).toBe(true);
   });
 });
 

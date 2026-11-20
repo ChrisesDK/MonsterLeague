@@ -219,7 +219,9 @@ export type I18nTable = z.infer<typeof I18nSchema>;
 
 /**
  * Region file built by tools/region-builder (e.g. region.odense.json). Compact on purpose:
- * each cell is `[district, noSpawn 0|1, ...biome shares in percent, in BIOMES order]`.
+ * each cell is `[district, noSpawn 0|1, ...biome shares in percent, in BIOMES order,
+ * blockedMask?]`. The optional last column is a bit mask over the cell's 49 res-12 child
+ * positions (in `cellToChildren` order) where no spawn may be placed (GDD P10, P11).
  */
 export const RegionDistrictSchema = z
   .object({
@@ -231,7 +233,7 @@ export const RegionDistrictSchema = z
 export const RegionFileSchema = z
   .object({
     region: id,
-    version: z.literal(1),
+    version: z.literal(2),
     h3Res: z.literal(10),
     coarseRes: z.literal(7),
     bbox: z.tuple([z.number(), z.number(), z.number(), z.number()]),
@@ -240,7 +242,16 @@ export const RegionFileSchema = z
     districts: z.array(RegionDistrictSchema).min(1),
     cells: z.record(
       z.string().regex(/^8a[0-9a-f]{13}$/, 'H3 res-10 cell id'),
-      z.array(z.number().int().min(0).max(100)).length(2 + BIOMES.length),
+      z
+        .array(z.number().int().min(0))
+        .min(2 + BIOMES.length)
+        .max(3 + BIOMES.length)
+        .refine(
+          (row) =>
+            row.slice(0, 2 + BIOMES.length).every((v) => v <= 100) &&
+            (row.length === 2 + BIOMES.length || row[2 + BIOMES.length]! < 2 ** 49),
+          'district, noSpawn and shares ≤ 100; blocked mask < 2^49',
+        ),
     ),
   })
   .strict();

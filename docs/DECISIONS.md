@@ -499,3 +499,28 @@ districts[{id, wildLevels, draft}], cells{h3: [district, noSpawn, …shares %]}}
   - New steps: `pnpm spawn:report` and a Wrangler dry-run of the Worker.
   - The Pages build takes `VITE_SPAWN_SERVICE_URL` from the repo variable
     `SPAWN_SERVICE_URL`.
+
+## GDD v1.4: accepted P10 and P11
+
+- **D77. No-spawn rules (supersedes the "any overlap" part of D63).**
+  - **Cell rule:** a cell is `noSpawn` when at least 25% of its 49 res-12 sample points lie
+    in a no-spawn area (schools, kindergartens/childcare, hospitals, cemeteries, military
+    areas, aerodromes, heavy rail ±10 m, motorway/trunk ±20 m).
+  - **Position rule:** in every other cell, sample positions inside those areas **or within
+    5 m of light-rail/tram tracks** (Odense Letbane, now in the Overpass query) are blocked.
+    No spawn is ever placed there.
+  - Light rail never counts toward a cell's 25%.
+  - **Format:** blocked positions are stored per cell as a bit mask over `cellToChildren(cell,
+12)` order, in an optional 11th column of the region file (format **version 2**; 49
+    bits fit exactly in a JSON number).
+  - **Spawn package:** spawns only take unblocked positions that lie inside the cell; a
+    cell with no free position gets no spawns.
+  - **Effect** (OSM data of 2026-11-20):
+    - noSpawn cells: 1,032 → **502 of 7,562 (6.6%)**;
+    - 660 other cells keep spawning with some blocked positions;
+    - Eventyrhaven spawns again (1 of 49 positions blocked, by the kindergarten).
+  - **Density** (`pnpm spawn:report`): green 1 per **221 m** (was 238), streets 1 per
+    **371 m** (was 432). Both still within the GDD targets.
+- **D78. Overpass backoff.** The region builder retries HTTP 429/502/503/504 after 30, 60,
+  120 and 240 s, as the Overpass servers ask. A cached response is reused whenever the
+  query is unchanged.

@@ -2,7 +2,7 @@ import { booleanPointInPolygon } from '@turf/turf';
 import type { Feature, Geometry, MultiPolygon, Polygon, Position } from 'geojson';
 import { cellToChildren, cellToLatLng } from 'h3-js';
 import RBush from 'rbush';
-import { BIOME_PRIORITY, BUFFERS_M, type Biome } from './config';
+import { BIOME_PRIORITY, BUFFERS_M, NO_SPAWN_SHARE, type Biome } from './config';
 
 type Tags = Record<string, string | undefined>;
 
@@ -10,6 +10,8 @@ type Tags = Record<string, string | undefined>;
 export interface Rule {
   biome?: Biome;
   noSpawn?: boolean;
+  /** Blocks spawn positions without counting toward the cell's noSpawn share (light rail). */
+  blockSpawn?: boolean;
   /** Radius in metres for lines and points (and the edge band of buffered areas). */
   buffer?: number;
 }
@@ -77,6 +79,8 @@ export function lineRules(tags: Tags): Rule[] {
   if (tags.waterway === 'canal') rules.push({ biome: 'water', buffer: BUFFERS_M.canal });
   if (tags.waterway === 'stream') rules.push({ biome: 'water', buffer: BUFFERS_M.stream });
   if (tags.railway === 'rail') rules.push({ noSpawn: true, buffer: BUFFERS_M.railway });
+  if (tags.railway === 'light_rail' || tags.railway === 'tram')
+    rules.push({ blockSpawn: true, buffer: BUFFERS_M.lightRail });
   if (tags.highway && /^(motorway|trunk)(_link)?$/.test(tags.highway))
     rules.push({ noSpawn: true, buffer: BUFFERS_M.majorRoad });
   if (tags.historic && tags.historic !== 'no')
@@ -203,9 +207,10 @@ export class FeatureIndex {
   }
 
   /** Biomes and noSpawn at one point ([lon, lat]). */
-  query(p: Position): { biomes: Set<Biome>; noSpawn: boolean } {
+  query(p: Position): { biomes: Set<Biome>; noSpawn: boolean; blockSpawn: boolean } {
     const biomes = new Set<Biome>();
     let noSpawn = false;
+    let blockSpawn = false;
     const box = { minX: p[0]!, minY: p[1]!, maxX: p[0]!, maxY: p[1]! };
     for (const item of this.areas.search(box)) {
       if (item.rule.biome && biomes.has(item.rule.biome) && !item.rule.noSpawn) continue;
@@ -217,33 +222,58 @@ export class FeatureIndex {
       if (distanceToSegmentM(p, item.a, item.b) > item.rule.buffer) continue;
       if (item.rule.biome) biomes.add(item.rule.biome);
       if (item.rule.noSpawn) noSpawn = true;
+      if (item.rule.blockSpawn) blockSpawn = true;
     }
-    return { biomes, noSpawn };
+    return { biomes, noSpawn, blockSpawn };
   }
 }
 
 /** Area shares of each biome in one res-10 cell (percent, by sample points) and noSpawn. */
 export interface CellClass {
   shares: Partial<Record<Biome, number>>;
+  /** GDD P10: at least NO_SPAWN_SHARE of the cell lies in no-spawn areas. */
   noSpawn: boolean;
+  /** Share of samples (0–1) inside no-spawn areas. */
+  noSpawnShare: number;
+  /**
+   * Indices (in `cellToChildren(cell, sampleRes)` order) of sample positions where no spawn
+   * may be placed: inside a no-spawn area or on light-rail/tram tracks (GDD P10, P11).
+   */
+  blocked: number[];
   samples: number;
+}
+
+/** Blocked sample indices as one integer bit mask (49 samples fit exactly in a double). */
+export function blockedMask(blocked: readonly number[]): number {
+  let mask = 0;
+  for (const i of blocked) mask += 2 ** i;
+  return mask;
 }
 
 export function classifyCell(index: FeatureIndex, cell: string, sampleRes: number): CellClass {
   const children = cellToChildren(cell, sampleRes);
   const counts: Partial<Record<Biome, number>> = {};
-  let noSpawn = false;
-  for (const child of children) {
+  let noSpawnSamples = 0;
+  const blocked: number[] = [];
+  children.forEach((child, i) => {
     const [lat, lng] = cellToLatLng(child);
     const hit = index.query([lng, lat]);
-    if (hit.noSpawn) noSpawn = true;
+    if (hit.noSpawn) noSpawnSamples++;
+    if (hit.noSpawn || hit.blockSpawn) blocked.push(i);
     const biome = BIOME_PRIORITY.find((b) => hit.biomes.has(b));
     if (biome) counts[biome] = (counts[biome] ?? 0) + 1;
-  }
+  });
   const shares: Partial<Record<Biome, number>> = {};
   for (const [b, n] of Object.entries(counts) as [Biome, number][]) {
     const pct = Math.round((100 * n) / children.length);
     if (pct > 0) shares[b] = pct;
   }
-  return { shares, noSpawn, samples: children.length };
+  const noSpawnShare = noSpawnSamples / children.length;
+  return {
+    shares,
+    noSpawn: noSpawnShare >= NO_SPAWN_SHARE,
+    noSpawnShare,
+    blocked,
+    samples: children.length,
+  };
 }

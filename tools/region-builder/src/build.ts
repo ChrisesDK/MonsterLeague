@@ -6,7 +6,7 @@ import type { Feature, FeatureCollection, Geometry, MultiPolygon, Polygon } from
 import { cellToLatLng, polygonToCells } from 'h3-js';
 import osmtogeojson from 'osmtogeojson';
 import { RegionFileSchema, type RegionFile } from '@oml/data';
-import { FeatureIndex, classifyCell } from './classify';
+import { FeatureIndex, blockedMask, classifyCell } from './classify';
 import { BIOMES, REGION } from './config';
 import { basemapWater } from './basemap-water';
 import { buildQuery, fetchOverpass } from './overpass';
@@ -45,6 +45,7 @@ const out: RegionFile['cells'] = {};
 const totals = Object.fromEntries(BIOMES.map((b) => [b, 0])) as Record<string, number>;
 let dropped = 0;
 let noSpawnCells = 0;
+let partlyBlocked = 0;
 for (const cell of cells.sort()) {
   const [lat, lng] = cellToLatLng(cell);
   const district = districts.find((d) => booleanPointInPolygon([lng, lat], d));
@@ -55,13 +56,18 @@ for (const cell of cells.sort()) {
   }
   if (c.noSpawn) noSpawnCells++;
   const row = [district.properties.id, c.noSpawn ? 1 : 0, ...BIOMES.map((b) => c.shares[b] ?? 0)];
+  // Blocked spawn positions (P10/P11) as an optional 11th column; omitted when none.
+  if (!c.noSpawn && c.blocked.length > 0) {
+    row.push(blockedMask(c.blocked));
+    partlyBlocked++;
+  }
   for (const b of BIOMES) totals[b]! += (c.shares[b] ?? 0) / 100;
   out[cell] = row;
 }
 
 const region: RegionFile = RegionFileSchema.parse({
   region: REGION.id,
-  version: 1,
+  version: 2,
   h3Res: REGION.h3Res,
   coarseRes: REGION.coarseRes,
   bbox: REGION.bbox,
@@ -89,7 +95,11 @@ console.log(
   `OSM features: ${index.counts.areas} areas, ${index.counts.segments} buffered segments, ${index.counts.ignored} ignored`,
 );
 console.log(
-  `Cells: ${cells.length} in bbox → ${kept} kept, ${dropped} dropped (no biome or district), ${noSpawnCells} noSpawn`,
+  `Cells: ${cells.length} in bbox → ${kept} kept, ${dropped} dropped (no biome or district)`,
+);
+console.log(
+  `noSpawn cells (≥25% in no-spawn areas): ${noSpawnCells} of ${kept} (${((100 * noSpawnCells) / kept).toFixed(1)}%); ` +
+    `${partlyBlocked} more cells with some blocked spawn positions`,
 );
 console.log('Biome totals (km², by area share):');
 for (const b of BIOMES)
