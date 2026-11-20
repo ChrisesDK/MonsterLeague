@@ -185,15 +185,18 @@ export const FieldAbilitiesFileSchema = z
   .strict();
 
 /** GDD "Encounters and spawning": biome shares computed per H3 cell by the region builder. */
+/** Order matters: it is also the column order of biome shares in region files. */
 export const BIOMES = [
   'water',
   'forest',
   'park',
+  'meadow',
+  'farmland',
   'urban',
   'industrial',
-  'farmland',
   'historic',
 ] as const;
+export type Biome = (typeof BIOMES)[number];
 export const BiomeSchema = z.enum(BIOMES);
 
 /** One spawn-table entry (GDD "Example spawn table entry"). Used from M2 on. */
@@ -213,3 +216,33 @@ export const SpawnsFileSchema = z.object({ spawns: z.array(SpawnSchema) }).stric
 
 export const I18nSchema = z.record(z.string(), z.string());
 export type I18nTable = z.infer<typeof I18nSchema>;
+
+/**
+ * Region file built by tools/region-builder (e.g. region.odense.json). Compact on purpose:
+ * each cell is `[district, noSpawn 0|1, ...biome shares in percent, in BIOMES order]`.
+ */
+export const RegionDistrictSchema = z
+  .object({
+    id: z.number().int().min(1).max(8),
+    wildLevels: z.tuple([z.number().int().min(1), z.number().int().max(100)]),
+    draft: z.boolean(),
+  })
+  .strict();
+export const RegionFileSchema = z
+  .object({
+    region: id,
+    version: z.literal(1),
+    h3Res: z.literal(10),
+    coarseRes: z.literal(7),
+    bbox: z.tuple([z.number(), z.number(), z.number(), z.number()]),
+    biomes: z.array(BiomeSchema).length(BIOMES.length),
+    osmTimestamp: z.string(),
+    districts: z.array(RegionDistrictSchema).min(1),
+    cells: z.record(
+      z.string().regex(/^8a[0-9a-f]{13}$/, 'H3 res-10 cell id'),
+      z.array(z.number().int().min(0).max(100)).length(2 + BIOMES.length),
+    ),
+  })
+  .strict();
+export type RegionFile = z.infer<typeof RegionFileSchema>;
+export type RegionDistrict = z.infer<typeof RegionDistrictSchema>;

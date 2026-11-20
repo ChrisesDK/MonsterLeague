@@ -6,7 +6,9 @@
   "exports": {
     ".": "./src/index.ts",
     "./i18n/en.json": "./i18n/en.json",
-    "./i18n/da.json": "./i18n/da.json"
+    "./i18n/da.json": "./i18n/da.json",
+    "./region/odense.json": "./region/region.odense.json",
+    "./content/districts.odense.geojson": "./content/districts.odense.geojson"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",

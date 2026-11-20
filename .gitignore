@@ -22,3 +22,11 @@ oml-gate2-*.csv
 *.log
 .DS_Store
 Thumbs.db
+
+# Region builder: cached Overpass responses (large, re-downloadable)
+tools/region-builder/cache/
+
+# Cloudflare Worker local secrets
+.dev.vars
+.dev.vars.*
+.wrangler/
