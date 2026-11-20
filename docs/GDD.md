@@ -360,7 +360,7 @@ The save never stores a location history: only progress. It is versioned so migr
 | M1 / M1.5 — Battle engine, balance | 3–5 | A full, balanced battle on a phone | Coverage ≥ 90%; arena win-rate targets in CI | Done |
 | M1.6–M1.8 — Playtest kit, GDD sync, deploy | 5 | Gate 2 build online | Live at christianrasmussen.dk/OdenseMonsterLeague | Done |
 | Gate 2 — Outdoor battle test | 5 | Are battles fun on a street? | Testers rate battles well | Qualitative pass |
-| M2a — Map and shared spawns | 6–8 | Real Odense map with biomes and server-decided spawns you can walk to and battle | Region file for Odense; spawn service live; same spawns on two phones; GPS simulator; A1 placeholder art | Built; waiting for the spawn service deploy |
+| M2a — Map and shared spawns | 6–8 | Real Odense map with biomes and server-decided spawns you can walk to and battle | Region file for Odense; spawn service live; same spawns on two phones; GPS simulator; A1 placeholder art | Done (live; 6.6% no-spawn cells, 1 spawn per 221 m in green areas, 371 m in streets) |
 | M2b — District 1 playable | 8–9 | A complete single-player loop in district 1 | Save, starter, trainers, rest stops, arena 1 and badge playable offline-tolerant | Planned |
 | Gate 3 — District walk test | 10 | Does walking to fights feel good? | Spawn density on target; testers want to keep walking | Planned |
 | M3 — Full Odense single-player | 11–18 | The whole campaign | 8 districts, 8 arenas, \~35 creatures, all field abilities, Championship; A2 art | Planned |
