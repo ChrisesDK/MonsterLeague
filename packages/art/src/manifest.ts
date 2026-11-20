@@ -11,8 +11,10 @@ export const AssetEntrySchema = z
   .object({
     file: z
       .string()
-      .regex(/^generated\/(sprites|markers)\/[a-z0-9_]+\.svg$|^generated\/hint\.svg$/),
-    kind: z.enum(['sprite', 'marker', 'hint']),
+      .regex(
+        /^generated\/(sprites|markers|stamps|badges)\/[a-zA-Z0-9_]+\.svg$|^generated\/hint\.svg$/,
+      ),
+    kind: z.enum(['sprite', 'marker', 'hint', 'stamp', 'badge']),
     species: z.string().nullable(),
     source: z.string().regex(/^(code|ai:.+ prompt:.+|pack:https?:\/\/.+|artist:.+)$/),
     author: z.string().min(1),

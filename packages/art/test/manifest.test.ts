@@ -13,6 +13,9 @@ import {
   markerSvg,
   markerUrl,
   spriteUrl,
+  stampUrl,
+  badgeUrl,
+  STAMP_KINDS,
 } from '../src/index';
 
 const root = (p: string) => fileURLToPath(new URL(`../${p}`, import.meta.url));
@@ -35,6 +38,8 @@ describe('asset manifest (CI gate)', () => {
     const files = [
       ...readdirSync(root('generated/sprites')).map((f) => `generated/sprites/${f}`),
       ...readdirSync(root('generated/markers')).map((f) => `generated/markers/${f}`),
+      ...readdirSync(root('generated/stamps')).map((f) => `generated/stamps/${f}`),
+      ...readdirSync(root('generated/badges')).map((f) => `generated/badges/${f}`),
       'generated/hint.svg',
     ];
     const listed = new Set(manifest.assets.map((a) => a.file));
@@ -85,5 +90,18 @@ describe('generator', () => {
   it('marks evolved forms as stage 2', () => {
     expect(artInput('baalkat').stage).toBe(2);
     expect(artInput('gnistkat').stage).toBe(1);
+  });
+});
+
+describe('POI stamps and badges (M2b)', () => {
+  it('every stamp and badge in use has a manifest entry and renders', () => {
+    for (const k of STAMP_KINDS) {
+      expect(stampUrl(k)).toMatch(/^data:image\/svg\+xml/);
+      expect(stampUrl(k, true)).toMatch(/^data:image\/svg\+xml/);
+    }
+    for (let a = 1; a <= 8; a++) {
+      expect(badgeUrl(a)).toMatch(/^data:image\/svg\+xml/);
+      expect(badgeUrl(a, false)).toMatch(/^data:image\/svg\+xml/);
+    }
   });
 });

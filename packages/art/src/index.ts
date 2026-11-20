@@ -1,11 +1,13 @@
 import manifestJson from '../assets.json';
 import { creatureSvg, hintMarkerSvg, markerSvg } from './creature';
 import { artInput } from './inputs';
+import { badgeSvg, stampSvg, type StampKind } from './stamps';
 import { AssetManifestSchema, type AssetEntry } from './manifest';
 
 export { creatureSvg, hintMarkerSvg, markerSvg } from './creature';
 export type { CreatureArtInput } from './creature';
 export { artInput } from './inputs';
+export { badgeSvg, stampSvg, STAMP_KINDS, type StampKind } from './stamps';
 export {
   ALLOWED_LICENCES,
   AssetEntrySchema,
@@ -46,4 +48,22 @@ export function markerUrl(speciesId: string): string {
 export function hintMarkerUrl(): string {
   entry('hint', null);
   return cached('hint', () => toDataUrl(hintMarkerSvg()));
+}
+
+function fileEntry(file: string): AssetEntry {
+  const found = manifest.assets.find((a) => a.file === file);
+  if (!found) throw new Error(`No asset-manifest entry for ${file}`);
+  return found;
+}
+
+/** POI map stamp (64×64). `done` = beaten trainer / won arena. */
+export function stampUrl(kind: StampKind, done = false): string {
+  fileEntry(`generated/stamps/${kind}${done ? '_done' : ''}.svg`);
+  return cached(`p:${kind}:${done}`, () => toDataUrl(stampSvg(kind, done)));
+}
+
+/** Badge art for arena 1–8; `earned` false = the empty slot. */
+export function badgeUrl(arena: number, earned = true): string {
+  fileEntry(`generated/badges/badge${arena}${earned ? '' : '_empty'}.svg`);
+  return cached(`b:${arena}:${earned}`, () => toDataUrl(badgeSvg(arena, earned)));
 }
