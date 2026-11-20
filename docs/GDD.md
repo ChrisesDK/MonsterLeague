@@ -179,7 +179,7 @@ There is no shop and no currency in v1: rest stops give a free restock once per 
 
 1. Fetch OSM features for the region (land use, natural, water, leisure, historic, amenity, highways).
 2. Cover the region with H3 cells at resolution 10 (about 65 m edge, \~15,000 m² per cell).
-3. For each cell, compute the share of each biome by area: Water, Forest, Park, Urban, Industrial, Farmland, Historic. Mark the cell `noSpawn` if it overlaps schools, cemeteries, hospitals, military areas, airports, or motorway/trunk roads.
+3. For each cell, compute the share of each biome by area: Water (lakes, harbour, and rivers and streams buffered from their lines), Forest, Park, Meadow/field, Farmland, Urban, Industrial, Historic. Mark the cell `noSpawn` if at least 25% of its area is covered by schools, kindergartens, cemeteries, hospitals, military areas, airports, railway tracks or motorway/trunk roads. The light rail (letbanen) does not count as railway, because it runs along ordinary streets. Separately, no spawn is ever placed inside one of those areas, or on the light-rail tracks, whatever its cell (accepted P10, P11).
 4. Assign each cell to a district from the district polygons.
 5. Write `region.json`: cells → {district, biomes, noSpawn}, plus arenas, trainers, rest stops.
 
@@ -204,9 +204,11 @@ There is no shop and no currency in v1: rest stops give a free restock once per 
 **Example spawn table entry:**
 
 ```json
-{ "species": "cobble_crab", "district": 4, "weight": 10,
-  "biomes": { "historic": 3.0, "urban": 1.0 }, "time": "any", "requires": "rock_smash" }
+{ "species": "<a stone species id>", "district": 4, "weight": 10,
+  "biomes": { "historic": 3.0, "urban": 1.0 }, "time": "any", "requires": "runereader" }
 ```
+
+Real spawn tables live in `packages/data/content/spawns.json` (accepted P8).
 
 ## Arenas, trainers, rest stops and field abilities
 
@@ -358,7 +360,7 @@ The save never stores a location history: only progress. It is versioned so migr
 | M1 / M1.5 — Battle engine, balance | 3–5 | A full, balanced battle on a phone | Coverage ≥ 90%; arena win-rate targets in CI | Done |
 | M1.6–M1.8 — Playtest kit, GDD sync, deploy | 5 | Gate 2 build online | Live at christianrasmussen.dk/OdenseMonsterLeague | Done |
 | Gate 2 — Outdoor battle test | 5 | Are battles fun on a street? | Testers rate battles well | Qualitative pass |
-| M2a — Map and shared spawns | 6–8 | Real Odense map with biomes and server-decided spawns you can walk to and battle | Region file for Odense; spawn service live; same spawns on two phones; GPS simulator; A1 placeholder art | Next |
+| M2a — Map and shared spawns | 6–8 | Real Odense map with biomes and server-decided spawns you can walk to and battle | Region file for Odense; spawn service live; same spawns on two phones; GPS simulator; A1 placeholder art | Built; waiting for the spawn service deploy |
 | M2b — District 1 playable | 8–9 | A complete single-player loop in district 1 | Save, starter, trainers, rest stops, arena 1 and badge playable offline-tolerant | Planned |
 | Gate 3 — District walk test | 10 | Does walking to fights feel good? | Spawn density on target; testers want to keep walking | Planned |
 | M3 — Full Odense single-player | 11–18 | The whole campaign | 8 districts, 8 arenas, \~35 creatures, all field abilities, Championship; A2 art | Planned |
@@ -477,6 +479,7 @@ M1.7 (done, 148 tests): field abilities are data in `field-abilities.json`; a fr
 
 | Version | Date | Changes |
 | --- | --- | --- |
+| 1.4 | 2026-11-20 | Accepted P8–P11 from M2a: field-ability name in the spawn example, Meadow/field biome and buffered rivers, no-spawn cells at 25% coverage plus never placing spawns inside no-spawn areas, light rail excluded from railway; M2a built, waiting for the spawn service deploy |
 | 1.3 | 2026-11-20 | Gate 2 qualitative pass; single-player game first, multiplayer as M5; server-authoritative shared spawns (spawn service, coarse-cell privacy, visible spawns you tap); creature art pipeline A1–A3; new roadmap M2a/M2b, Gate 3, M3 full Odense, M4 field test, M5 multiplayer; new Multiplayer and social section |
 | 1.2 | 2026-11-20 | Accepted P1–P7 from M1.6: original field-ability names (Forager, Angler, Runereader, Nightseer, Sealbreaker, Homing), Catch and Run in the turn order, data model defers field names to code, leader teams 2–6, Grove defensive strength tracked in BALANCE.md, "Bag" button; M1.6 marked done, Gate 2 checklist added |
 | 1.1 | 2026-11-20 | Folded in M1 and M1.5: HP formula, Storm → Stone ½, Storm → Grove 2 (new), coverage moves, auto-learn rule, AI set-up rule, running, full-team catch, turn cap 150, arena difficulty table and win-rate targets, balance tooling, M1.6 and Gate 2 added to the plan |
