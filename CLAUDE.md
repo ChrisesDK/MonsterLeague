@@ -106,7 +106,7 @@ pnpm sim --player-team arena2 --starter grove --b leader_water   # expected play
 pnpm sim:report    # regenerates docs/BALANCE.md (~15 s); run after any content/rule change
 pnpm dev           # client dev server (http://localhost:5173; #/dev = developer battle page)
 pnpm gate2:report <folder>   # Gate 2 summary from exported playtest .json/.csv files
-pnpm region:build  # rebuild region.odense.json (Overpass cache in tools/region-builder/cache)
+pnpm region:build  # rebuild region.odense.json + its version file (Overpass cache in tools/region-builder/cache)
 pnpm spawn:report  # spawn density per km walked vs GDD targets (CI gate)
 pnpm art:build     # regenerate A1 sprites + assets.json after adding species
 pnpm --filter @oml/spawn-service dev    # Worker on :8787 (needs apps/spawn-service/.dev.vars)
@@ -115,6 +115,11 @@ pnpm --filter @oml/spawn-service dev    # Worker on :8787 (needs apps/spawn-serv
 Sim side specs: a trainer id (`leader_water`), `speciesId:level` (`gnistkat:12`), a
 starter alias (`starter_fire`, `starter_water`, `starter_grove`), several joined with `,`,
 or a player-team preset `team:<preset>:<starter>`.
+
+Worker/client drift: the Worker is redeployed by `.github/workflows/spawn-service.yml`
+whenever spawn code, data or the region file change on main. When spawn _code_ changes
+its output, bump `SPAWN_ALGORITHM` in `packages/spawn/src/version.ts` (the golden test
+says so).
 
 Balance: leader targets (neutral 40–60%, advantage 75–90%, disadvantage 15–30%) are guarded
 by `tools/sim/test/balance.test.ts`. If a content change breaks them, re-tune with

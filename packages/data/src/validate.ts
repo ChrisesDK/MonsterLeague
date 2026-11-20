@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { ZodError } from 'zod';
-import { RegionFileSchema } from './schemas';
+import { RegionFileSchema, RegionVersionFileSchema } from './schemas';
 import { checkContent, checkI18n, i18n, parseContent, rawContent, type Dex } from './index';
 
 function main(): number {
@@ -44,6 +44,11 @@ function checkRegion(): string[] {
     return errors;
   }
   const region = parsed.data;
+  const version = RegionVersionFileSchema.safeParse(read('../region/region.odense.version.json'));
+  if (!version.success || version.data.dataVersion !== region.dataVersion)
+    errors.push(
+      'region.odense.version.json does not match region.odense.json: run pnpm region:build',
+    );
   const geo = read('../content/districts.odense.geojson') as {
     features: { properties: { id: number; wildLevels: [number, number]; draft: boolean } }[];
   };

@@ -1,0 +1,71 @@
+name: Deploy spawn service (Cloudflare Worker)
+
+# Keeps the Worker in step with the client: whenever anything that decides spawns changes on
+# main, the Worker is tested and redeployed from the same commit. The client checks the
+# versions the Worker reports (see apps/client/src/map/versions.ts).
+#
+# Needs (see docs/DEPLOY.md, "Automatic Worker deploys"):
+#   secret   CLOUDFLARE_API_TOKEN   (Account › Workers Scripts › Edit, this account only)
+#   variable CLOUDFLARE_ACCOUNT_ID
+# SPAWN_SECRET is a Worker secret and is kept across deploys; it is never in GitHub.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/spawn-service/**'
+      - 'packages/spawn/**'
+      - 'packages/data/**'
+      - 'packages/engine/src/rng.ts'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/spawn-service.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: spawn-service
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Validate content and region file
+        run: pnpm validate
+      - name: Test what decides spawns
+        run: |
+          pnpm --filter @oml/data test
+          pnpm --filter @oml/spawn test
+          pnpm --filter @oml/spawn-service test
+      - name: Deploy with Wrangler
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::CLOUDFLARE_API_TOKEN (secret) or CLOUDFLARE_ACCOUNT_ID (variable) is missing. The Worker was NOT deployed, so it may now differ from the client. See docs/DEPLOY.md."
+            exit 1
+          fi
+          pnpm --filter @oml/spawn-service exec wrangler deploy
+      - name: Check the deployed Worker reports this commit's versions
+        env:
+          SPAWN_SERVICE_URL: ${{ vars.SPAWN_SERVICE_URL }}
+        run: |
+          if [ -z "$SPAWN_SERVICE_URL" ]; then echo "::warning::SPAWN_SERVICE_URL not set; skipping live check"; exit 0; fi
+          expected=$(pnpm exec tsx apps/spawn-service/scripts/expected-versions.ts)
+          echo "expected $expected"
+          for i in 1 2 3 4 5 6; do
+            got=$(curl -s "$SPAWN_SERVICE_URL/v1/spawns?region=odense&cell=871f04d71ffffff&window=current"               | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{try{console.log(JSON.stringify(JSON.parse(s).versions??null))}catch{console.log('null')}})")
+            if [ "$got" = "$expected" ]; then echo "Worker reports $got ✓"; exit 0; fi
+            sleep 10
+          done
+          echo "::error::Worker reports $got, expected $expected"
+          exit 1

@@ -8,6 +8,7 @@ import {
   type WindowParam,
 } from './spawnApi';
 import { getList, pruneLists, putList } from './spawnCache';
+import { checkServiceVersions } from './versions';
 
 export type SpawnStatus = 'not-configured' | 'waiting' | 'loading' | 'ok' | 'cached' | 'no-signal';
 
@@ -33,11 +34,14 @@ export function useSpawns(position: { lat: number; lng: number } | null): {
   spawns: ApiSpawn[];
   status: SpawnStatus;
   window: number;
+  versionDrift: string[];
 } {
   const base = serviceUrl();
   const window = useWindow();
   const [lists, setLists] = useState<Map<string, SpawnList>>(new Map());
   const [status, setStatus] = useState<SpawnStatus>(base ? 'waiting' : 'not-configured');
+  /** Fields where the service's versions differ from this build's (dev warning only). */
+  const [versionDrift, setVersionDrift] = useState<string[]>([]);
   const cellsKey = position ? coarseCellsAround(position).sort().join(',') : '';
   const inFlight = useRef(new Set<string>());
 
@@ -68,6 +72,8 @@ export function useSpawns(position: { lat: number; lng: number } | null): {
           if (alive && param === 'current') setStatus((s) => (s === 'ok' ? s : 'loading'));
           try {
             const list = await fetchSpawnList(base, cell, param);
+            const drift = checkServiceVersions(list.versions);
+            if (alive) setVersionDrift((d) => (d.join() === drift.join() ? d : drift));
             await putList(list);
             anyFetched = true;
             if (alive) setLists((m) => new Map(m).set(`${list.cell}:${list.window}`, list));
@@ -97,5 +103,5 @@ export function useSpawns(position: { lat: number; lng: number } | null): {
     return out;
   }, [lists, window, cellsKey]);
 
-  return { spawns, status: position || !base ? status : 'waiting', window };
+  return { spawns, status: position || !base ? status : 'waiting', window, versionDrift };
 }

@@ -272,5 +272,6 @@
   "district.5.name": "Havnen",
   "district.6.name": "Fruens Bøge",
   "district.7.name": "Zoo og åen mod syd",
-  "district.8.name": "Den Fynske Landsby"
+  "district.8.name": "Den Fynske Landsby",
+  "dev.versionMismatch": "Udvikler: væsentjenesten er forældet ({fields})"
 }

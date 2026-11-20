@@ -1,6 +1,9 @@
 import { SELF } from 'cloudflare:test';
 import { cellToChildren, latLngToCell } from 'h3-js';
 import { describe, expect, it } from 'vitest';
+import { content } from '@oml/data';
+import regionVersion from '@oml/data/region/odense.version.json';
+import { spawnRulesVersion } from '@oml/spawn';
 import { handle, windowSeed, type Env } from '../src/handler';
 
 const KONGENS_HAVE = latLngToCell(55.3998, 10.3852, 7);
@@ -28,6 +31,16 @@ describe('GET /v1/spawns', () => {
     const maxAge = Number(/max-age=(\d+)/.exec(a.headers.get('Cache-Control') ?? '')?.[1]);
     expect(maxAge).toBeGreaterThan(0);
     expect(maxAge).toBeLessThanOrEqual(900);
+  });
+
+  it('reports its region-data and spawn-rules versions (what the client expects)', async () => {
+    const body = (await (await get(`${URL0}&window=current`)).json()) as {
+      versions: { regionData: string; spawnRules: string };
+    };
+    expect(body.versions).toEqual({
+      regionData: regionVersion.dataVersion,
+      spawnRules: spawnRulesVersion(content.spawns),
+    });
   });
 
   it('serves the next window, and numeric current/next windows', async () => {

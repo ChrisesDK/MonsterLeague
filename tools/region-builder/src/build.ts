@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
@@ -14,6 +15,7 @@ import { buildQuery, fetchOverpass } from './overpass';
 const root = (p: string) => fileURLToPath(new URL(`../../../${p}`, import.meta.url));
 const cacheDir = fileURLToPath(new URL('../cache', import.meta.url));
 const OUT = root('packages/data/region/region.odense.json');
+const VERSION_OUT = root('packages/data/region/region.odense.version.json');
 const DISTRICTS = root('packages/data/content/districts.odense.geojson');
 const BASEMAP = root('apps/client/public/tiles/odense.pmtiles');
 
@@ -65,21 +67,32 @@ for (const cell of cells.sort()) {
   out[cell] = row;
 }
 
+const districtMeta = districts
+  .map((d) => ({
+    id: d.properties.id,
+    wildLevels: d.properties.wildLevels,
+    draft: d.properties.draft,
+  }))
+  .sort((a, b) => a.id - b.id);
+/**
+ * Content hash of what decides spawns (cells and district bands). The spawn service returns
+ * it with every response, and the client compares it with region.odense.version.json.
+ */
+const dataVersion = createHash('sha256')
+  .update(JSON.stringify({ region: REGION.id, districts: districtMeta, cells: out }))
+  .digest('hex')
+  .slice(0, 12);
+
 const region: RegionFile = RegionFileSchema.parse({
   region: REGION.id,
+  dataVersion,
   version: 2,
   h3Res: REGION.h3Res,
   coarseRes: REGION.coarseRes,
   bbox: REGION.bbox,
   biomes: [...BIOMES],
   osmTimestamp: osm.osm3s?.timestamp_osm_base ?? 'unknown',
-  districts: districts
-    .map((d) => ({
-      id: d.properties.id,
-      wildLevels: d.properties.wildLevels,
-      draft: d.properties.draft,
-    }))
-    .sort((a, b) => a.id - b.id),
+  districts: districtMeta,
   cells: out,
 });
 // One cell per line keeps diffs readable and the file small.
@@ -87,6 +100,12 @@ const lines = Object.entries(region.cells).map(([id, row]) => `"${id}":${JSON.st
 const { cells: _omit, ...head } = region;
 const json = `${JSON.stringify(head).slice(0, -1)},"cells":{\n${lines.join(',\n')}\n}}\n`;
 writeFileSync(OUT, json);
+// Tiny companion file so the client knows the expected version without bundling the region.
+writeFileSync(
+  VERSION_OUT,
+  `${JSON.stringify({ region: REGION.id, dataVersion })}
+`,
+);
 
 const CELL_KM2 = 0.015047; // average H3 res-10 cell area
 const kept = Object.keys(out).length;

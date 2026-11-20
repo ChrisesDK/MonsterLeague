@@ -8,7 +8,7 @@ import { isNight } from './sun';
 export const WINDOW_SECONDS = 900;
 export const MAX_SPAWNS_PER_CELL = 3;
 /** Spawn positions snap to a res-12 child centre of the res-10 cell (deterministic jitter). */
-const POSITION_RES = 12;
+export const POSITION_RES = 12;
 
 export const windowOf = (unixSeconds: number): number => Math.floor(unixSeconds / WINDOW_SECONDS);
 export const windowEnd = (window: number): number => (window + 1) * WINDOW_SECONDS;

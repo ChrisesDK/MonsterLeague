@@ -1,6 +1,14 @@
 import { content, type RegionFile } from '@oml/data';
 import regionJson from '@oml/data/region/odense.json';
-import { computeSpawns, decodeRegion, windowEnd, windowOf, type Region } from '@oml/spawn';
+import {
+  computeSpawns,
+  decodeRegion,
+  spawnRulesVersion,
+  windowEnd,
+  windowOf,
+  type Region,
+  type ServiceVersions,
+} from '@oml/spawn';
 import { getResolution, isValidCell } from 'h3-js';
 
 export interface Env {
@@ -18,8 +26,18 @@ const ALLOWED_ORIGINS = [
 /** The only query parameters accepted: nothing that could carry a precise position. */
 const ALLOWED_PARAMS = new Set(['region', 'cell', 'window']);
 
+const ODENSE = regionJson as unknown as RegionFile;
 const REGIONS: Record<string, Region> = {
-  odense: decodeRegion(regionJson as unknown as RegionFile),
+  odense: decodeRegion(ODENSE),
+};
+
+/**
+ * What this deployment runs: the region-data hash and the spawn-rules version. Returned in
+ * every response so the client can detect a Worker deployed from a different commit.
+ */
+export const VERSIONS: ServiceVersions = {
+  regionData: ODENSE.dataVersion,
+  spawnRules: spawnRulesVersion(content.spawns),
 };
 
 function corsHeaders(origin: string | null): Record<string, string> {
@@ -105,7 +123,7 @@ export async function handle(request: Request, env: Env, nowSeconds: number): Pr
   const expiresAt = windowEnd(window);
   return json(
     200,
-    { region: region.id, cell, window, expiresAt, spawns },
+    { region: region.id, cell, window, expiresAt, versions: VERSIONS, spawns },
     {
       ...cors,
       'Cache-Control': `public, max-age=${Math.max(1, expiresAt - nowSeconds)}`,

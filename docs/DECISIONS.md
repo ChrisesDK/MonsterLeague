@@ -524,3 +524,34 @@ districts[{id, wildLevels, draft}], cells{h3: [district, noSpawn, …shares %]}}
 - **D78. Overpass backoff.** The region builder retries HTTP 429/502/503/504 after 30, 60,
   120 and 240 s, as the Overpass servers ask. A cached response is reused whenever the
   query is unchanged.
+
+## Worker/client drift guard
+
+- **D79. Versions.**
+  - **`regionData`:** the first 12 hex digits of SHA-256 over the region cells and
+    districts. `pnpm region:build` writes it into `region.odense.json` (`dataVersion`) and
+    into the tiny `region.odense.version.json`, which the client imports instead of the
+    324 KB region file. Validate fails if the two disagree.
+  - **`spawnRules`:** `a<SPAWN_ALGORITHM>-<hash32 of density table, per-cell cap, window
+length, position resolution and spawn tables>`.
+  - **Code changes:** a golden test in `packages/spawn/test/version.test.ts` (fixed
+    synthetic region and tables) fails whenever spawn _code_ changes its output, until
+    `SPAWN_ALGORITHM` is bumped.
+- **D80. Reporting.**
+  - **Worker:** returns `versions` in every `/v1/spawns` response (not in headers, so no
+    CORS changes).
+  - **Client:** `src/map/versions.ts` compares them with its own; a missing `versions`
+    field counts as a mismatch.
+  - **On a mismatch:** `console.error` once per distinct mismatch; a dev-tools-only
+    warning chip on the map; nothing player-visible.
+- **D81. Automatic Worker deploys** (`.github/workflows/spawn-service.yml`) on pushes to
+  `main` touching the Worker, `packages/spawn`, `packages/data`, the engine RNG or the
+  lockfile.
+  - **Before deploying:** validate plus the data/spawn/Worker tests.
+  - **After deploying:** it verifies the live Worker reports this commit's versions
+    (6 tries, 10 s apart).
+  - **Credentials:** a Cloudflare API token limited to _Account · Workers Scripts · Edit_
+    for the owner's account (secret `CLOUDFLARE_API_TOKEN`) plus the variable
+    `CLOUDFLARE_ACCOUNT_ID`. The job fails rather than skips when they're missing.
+  - **Ordering:** the Pages and Worker deploys run in parallel, so a dev build may briefly
+    show the drift warning for a minute after a push.

@@ -8,7 +8,8 @@
     "./i18n/en.json": "./i18n/en.json",
     "./i18n/da.json": "./i18n/da.json",
     "./region/odense.json": "./region/region.odense.json",
-    "./content/districts.odense.geojson": "./content/districts.odense.geojson"
+    "./content/districts.odense.geojson": "./content/districts.odense.geojson",
+    "./region/odense.version.json": "./region/region.odense.version.json"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",

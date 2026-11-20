@@ -25,6 +25,8 @@ export interface SpawnList {
   cell: string;
   window: number;
   expiresAt: number;
+  /** What the service runs (region-data hash, spawn-rules version); absent in old Workers. */
+  versions?: { regionData: string; spawnRules: string };
   spawns: ApiSpawn[];
 }
 

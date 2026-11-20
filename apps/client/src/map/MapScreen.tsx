@@ -125,7 +125,7 @@ export function MapScreen({ t, devTools }: Props) {
     () => (posLat !== undefined && posLng !== undefined ? { lat: posLat, lng: posLng } : null),
     [posLat, posLng],
   );
-  const { spawns, status } = useSpawns(position);
+  const { spawns, status, versionDrift } = useSpawns(position);
 
   const visible = useMemo(() => {
     if (!position || fast) return [];
@@ -406,6 +406,11 @@ export function MapScreen({ t, devTools }: Props) {
               {t('map.toPlaytest')}
             </a>
           )}
+        </div>
+      )}
+      {devTools && versionDrift.length > 0 && (
+        <div className="dev-warning" role="status" data-testid="version-drift">
+          {t('dev.versionMismatch', { fields: versionDrift.join(', ') })}
         </div>
       )}
       {devTools && sim && (

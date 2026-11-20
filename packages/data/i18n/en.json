@@ -272,5 +272,6 @@
   "district.5.name": "Harbour",
   "district.6.name": "Fruens Bøge",
   "district.7.name": "Zoo and the river south",
-  "district.8.name": "Den Fynske Landsby"
+  "district.8.name": "Den Fynske Landsby",
+  "dev.versionMismatch": "Dev: spawn service out of date ({fields})"
 }

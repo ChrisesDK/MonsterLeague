@@ -233,6 +233,8 @@ export const RegionDistrictSchema = z
 export const RegionFileSchema = z
   .object({
     region: id,
+    /** Content hash of cells + districts (12 hex), written by the region builder. */
+    dataVersion: z.string().regex(/^[0-9a-f]{12}$/),
     version: z.literal(2),
     h3Res: z.literal(10),
     coarseRes: z.literal(7),
@@ -256,4 +258,9 @@ export const RegionFileSchema = z
   })
   .strict();
 export type RegionFile = z.infer<typeof RegionFileSchema>;
+
+/** region.<id>.version.json: what the client expects the spawn service to be running. */
+export const RegionVersionFileSchema = z
+  .object({ region: id, dataVersion: z.string().regex(/^[0-9a-f]{12}$/) })
+  .strict();
 export type RegionDistrict = z.infer<typeof RegionDistrictSchema>;

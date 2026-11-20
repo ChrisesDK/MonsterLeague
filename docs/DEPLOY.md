@@ -175,6 +175,58 @@ Worker.
 copy `.dev.vars.example`). `pnpm dev` (the client) uses that URL automatically in dev
 builds.
 
+### Automatic Worker deploys (keeps Worker and client in step)
+
+`.github/workflows/spawn-service.yml` redeploys the Worker on every push to `main` that
+touches anything deciding spawns:
+
+- `apps/spawn-service`, `packages/spawn`, `packages/data` (incl. the region file);
+- `packages/engine/src/rng.ts`, `pnpm-lock.yaml`.
+
+It runs validate and the data/spawn/Worker tests first. After deploying, it checks that the
+live Worker reports this commit's versions. You can also run it by hand: _Actions → Deploy
+spawn service → Run workflow_.
+
+**One-time setup: a Cloudflare API token that can only edit Workers scripts.**
+
+1. Open dash.cloudflare.com → your profile icon (top right) → **My Profile → API Tokens →
+   Create Token**. At the bottom, next to **Create Custom Token**, click **Get started**.
+   Don't use the "Edit Cloudflare Workers" template: it grants more than needed.
+2. **Token name:** `oml-spawn-service GitHub deploy`.
+3. **Permissions:** one row only: **Account · Workers Scripts · Edit**.
+4. **Account Resources:** **Include · \<your account\>** (only this account).
+5. **Zone Resources:** none. **Client IP Address Filtering:** leave empty (GitHub's runners
+   change IP). **TTL:** optional, e.g. an end date a year ahead.
+6. **Continue to summary → Create Token**, and copy the token (it's shown once).
+7. Store it as a GitHub **secret** named `CLOUDFLARE_API_TOKEN`. Paste it when prompted, so
+   it never lands in your shell history:
+   ```sh
+   gh secret set CLOUDFLARE_API_TOKEN --repo chrisesdk/OdenseMonsterLeague
+   ```
+8. Store your account ID as a GitHub **variable** (it isn't secret). Find it in the
+   dashboard under _Workers & Pages_ (right-hand side, "Account ID"), or with
+   `pnpm --filter @oml/spawn-service exec wrangler whoami`:
+   ```sh
+   gh variable set CLOUDFLARE_ACCOUNT_ID --repo chrisesdk/OdenseMonsterLeague --body "<account id>"
+   ```
+
+`SPAWN_SECRET` stays a Worker secret in Cloudflare; deploys keep it, and it is never in
+GitHub. If the token or account ID is missing, the job **fails** instead of skipping
+silently, because a skipped deploy is exactly how the two would drift apart. If Wrangler
+ever reports a missing permission, the error names it; add only that permission.
+
+**How drift shows up:**
+
+- **What's compared:** every spawn response carries
+  `versions: { regionData, spawnRules }`.
+  - `regionData` is a hash of the region cells and districts, written by `pnpm
+region:build`.
+  - `spawnRules` is the spawn algorithm number plus a hash of the density numbers and
+    spawn tables.
+- **On a mismatch,** the client logs a `console.error`. With dev tools on (`#/dev/map` or
+  dev builds) it also shows a small red "Dev: spawn service out of date" note. Players see
+  nothing.
+
 ## Map tiles
 
 `apps/client/public/tiles/odense.pmtiles` (8.4 MB, zoom 0–15) is an extract of the
