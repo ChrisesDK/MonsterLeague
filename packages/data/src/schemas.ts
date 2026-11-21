@@ -245,7 +245,8 @@ export const RegionFileSchema = z
     region: id,
     /** Content hash of cells + districts (12 hex), written by the region builder. */
     dataVersion: z.string().regex(/^[0-9a-f]{12}$/),
-    version: z.literal(2),
+    /** 3 (M2d): column 1 of a cell row is a bit field: 1 noSpawn, 2 wild, 4 water edge, 8 route. */
+    version: z.literal(3),
     h3Res: z.literal(10),
     coarseRes: z.literal(7),
     bbox: z.tuple([z.number(), z.number(), z.number(), z.number()]),
@@ -262,7 +263,7 @@ export const RegionFileSchema = z
           (row) =>
             row.slice(0, 2 + BIOMES.length).every((v) => v <= 100) &&
             (row.length === 2 + BIOMES.length || row[2 + BIOMES.length]! < 2 ** 49),
-          'district, noSpawn and shares ≤ 100; blocked mask < 2^49',
+          'district, flags and shares ≤ 100; blocked mask < 2^49',
         ),
     ),
   })
@@ -313,3 +314,89 @@ export const PoiSchema = z.discriminatedUnion('kind', [
 export type Poi = z.infer<typeof PoiSchema>;
 export const PoisFileSchema = z.object({ region: id, pois: z.array(PoiSchema) }).strict();
 export type PoisFile = z.infer<typeof PoisFileSchema>;
+
+/**
+ * Arena sites (M2d, GDD "World" table): where each district's arena stands, for routes, the
+ * Town Map and the Journal. Built arenas also have an arena POI; `poi` links it. Names are
+ * i18n keys `arenaSite.<arena>.name`.
+ */
+export const ArenaSiteSchema = z
+  .object({
+    arena: z.number().int().min(1).max(8),
+    district: z.number().int().min(1).max(8),
+    /** Arena theme type; null = mixed (arena 5). */
+    type: TypeIdSchema.nullable(),
+    lat: z.number().min(-90).max(90),
+    lng: z.number().min(-180).max(180),
+    /** The arena POI once the arena is built (null until then). */
+    poi: id.nullable(),
+    note: z.string().optional(),
+  })
+  .strict();
+export type ArenaSite = z.infer<typeof ArenaSiteSchema>;
+export const ArenasFileSchema = z
+  .object({ region: id, arenas: z.array(ArenaSiteSchema).length(8) })
+  .strict();
+
+/**
+ * Routes (M2d, GDD "Wild areas and routes"): named walking routes between consecutive arenas
+ * along real footpaths, built by `pnpm routes:build` from the OSM foot network. Names are
+ * i18n keys `route.<id>.name`. `path` is [lng, lat] (6 decimals).
+ */
+export const RouteSchema = z
+  .object({
+    id,
+    number: z.number().int().min(1).max(7),
+    /** Arena numbers at each end (to = from + 1). */
+    from: z.number().int().min(1).max(8),
+    to: z.number().int().min(1).max(8),
+    /** Draft routes are drawn dashed and not used by the Journal yet. */
+    draft: z.boolean(),
+    /**
+     * Districts the route passes through besides its two (only when those don't touch).
+     * For non-draft routes each must already be unlocked when the route is walked (< to).
+     */
+    via: z.array(z.number().int().min(1).max(8)),
+    lengthM: z.number().int().positive(),
+    /** Share of the length that runs through wild-area cells, 0–1. */
+    wildShare: z.number().min(0).max(1),
+    path: z.array(z.tuple([z.number(), z.number()])).min(2),
+  })
+  .strict();
+export type Route = z.infer<typeof RouteSchema>;
+export const RoutesFileSchema = z.object({ region: id, routes: z.array(RouteSchema) }).strict();
+
+/**
+ * Journal side goals (M2d, GDD "Journal"): finite, per district, never daily. Their text
+ * comes from one template per kind (`goal.<kind>`). exploreWild: walk `metres` inside the
+ * district's wild areas; catchType: catch a creature of `type` there; findRare: meet
+ * `species` there (a battle with it).
+ */
+export const SideGoalSchema = z.discriminatedUnion('kind', [
+  z
+    .object({
+      id,
+      district: z.number().int().min(1).max(8),
+      kind: z.literal('exploreWild'),
+      metres: z.number().int().min(50),
+    })
+    .strict(),
+  z
+    .object({
+      id,
+      district: z.number().int().min(1).max(8),
+      kind: z.literal('catchType'),
+      type: TypeIdSchema,
+    })
+    .strict(),
+  z
+    .object({
+      id,
+      district: z.number().int().min(1).max(8),
+      kind: z.literal('findRare'),
+      species: id,
+    })
+    .strict(),
+]);
+export type SideGoal = z.infer<typeof SideGoalSchema>;
+export const GoalsFileSchema = z.object({ sideGoals: z.array(SideGoalSchema) }).strict();

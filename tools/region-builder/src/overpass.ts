@@ -71,3 +71,34 @@ export async function fetchOverpass(
   console.log(`Overpass: cached ${(text.length / 1e6).toFixed(1)} MB to ${file}`);
   return JSON.parse(text);
 }
+
+/** Walkable ways for the route builder (M2d): footpaths, park paths, streets with pavements. */
+export function buildFootQuery([west, south, east, north]: [
+  number,
+  number,
+  number,
+  number,
+]): string {
+  const b = `(${south},${west},${north},${east})`;
+  const kinds =
+    'footway|path|pedestrian|cycleway|track|bridleway|steps|living_street|residential|service|' +
+    'unclassified|tertiary|tertiary_link|secondary|secondary_link|primary|primary_link';
+  return `[out:json][timeout:240][maxsize:536870912];
+way["highway"~"^(${kinds})$"]${b};
+out body;
+>;
+out skel qt;`;
+}
+
+/** Named landmarks used as arena sites for the routes (M2d). */
+export function buildLandmarkQuery([west, south, east, north]: [
+  number,
+  number,
+  number,
+  number,
+]): string {
+  const b = `(${south},${west},${north},${east})`;
+  return `[out:json][timeout:120];
+nwr["name"~"^(H\\.? ?C\\.? Andersens Hus|Munke Mose|Odense Zoo|Fruens Bøge|Den Fynske Landsby|Havnebadet|Klosterhaven|Kongens Have)"]${b};
+out center tags;`;
+}

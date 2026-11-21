@@ -222,3 +222,55 @@ describe('POIs (M2b)', () => {
     expect(errors).toMatch(/reward item "nope"/);
   });
 });
+
+describe('arena sites, routes and Journal goals (M2d)', () => {
+  const m = (a: [number, number], b: [number, number]) =>
+    Math.hypot((a[1] - b[1]) * 110_540, (a[0] - b[0]) * 111_320 * Math.cos((a[1] * Math.PI) / 180));
+  const toRoute = (p: [number, number], path: [number, number][]) => {
+    let best = Infinity;
+    for (const q of path) best = Math.min(best, m(p, q));
+    for (let i = 1; i < path.length; i++) {
+      const [a, b] = [path[i - 1]!, path[i]!];
+      for (let k = 1; k < 20; k++)
+        best = Math.min(
+          best,
+          m(p, [a[0] + ((b[0] - a[0]) * k) / 20, a[1] + ((b[1] - a[1]) * k) / 20]),
+        );
+    }
+    return best;
+  };
+
+  it('has 8 arena sites in order, built ones linked to their arena POI', () => {
+    expect(content.arenaSites.map((a) => a.arena)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+    expect(content.arenaSites.filter((a) => a.poi).map((a) => a.poi)).toEqual(['arena1', 'arena2']);
+  });
+
+  it('routes 1–3 are live, connect consecutive arenas and start and end at them', () => {
+    const live = Object.values(content.routes).filter((r) => !r.draft);
+    expect(live.map((r) => r.id)).toEqual(['route1', 'route2', 'route3']);
+    for (const r of Object.values(content.routes)) {
+      const from = content.arenaSites[r.from - 1]!;
+      const to = content.arenaSites[r.to - 1]!;
+      expect(m(r.path[0]!, [from.lng, from.lat])).toBeLessThan(150);
+      expect(m(r.path[r.path.length - 1]!, [to.lng, to.lat])).toBeLessThan(150);
+    }
+  });
+
+  it('the moved district 1–2 trainers stand on a route', () => {
+    for (const id of ['trainer_freja', 'trainer_karen', 'trainer_mads']) {
+      const p = content.pois[id]!;
+      const d = Math.min(
+        ...Object.values(content.routes).map((r) => toRoute([p.lng, p.lat], r.path)),
+      );
+      expect(d, id).toBeLessThan(10);
+    }
+  });
+
+  it('every district has finite side goals: explore, catch a type, find the rare', () => {
+    for (let d = 1; d <= 8; d++)
+      expect(
+        content.sideGoals.filter((g) => g.district === d).map((g) => g.kind),
+        `district ${d}`,
+      ).toEqual(['exploreWild', 'catchType', 'findRare']);
+  });
+});

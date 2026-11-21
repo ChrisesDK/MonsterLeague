@@ -77,7 +77,7 @@ export function BiomeDebug({ t }: { t: Translate }) {
           properties: {
             id,
             district: row[0],
-            noSpawn: row[1],
+            noSpawn: row[1]! & 1,
             biome: BIOMES[best],
             share: shares[best],
             shares: BIOMES.map((b, i) => `${b} ${shares[i]}%`)

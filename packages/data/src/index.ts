@@ -7,6 +7,9 @@ import playerTeamsJson from '../content/player-teams.json';
 import spawnsJson from '../content/spawns.json';
 import fieldAbilitiesJson from '../content/field-abilities.json';
 import poisJson from '../content/pois.odense.json';
+import arenasJson from '../content/arenas.odense.json';
+import routesJson from '../content/routes.odense.json';
+import goalsJson from '../content/goals.json';
 import enJson from '../i18n/en.json';
 import daJson from '../i18n/da.json';
 import {
@@ -16,6 +19,9 @@ import {
   SpawnsFileSchema,
   FieldAbilitiesFileSchema,
   PoisFileSchema,
+  ArenasFileSchema,
+  RoutesFileSchema,
+  GoalsFileSchema,
   MovesFileSchema,
   SpeciesFileSchema,
   TrainersFileSchema,
@@ -27,6 +33,9 @@ import {
   type Spawn,
   type FieldAbility,
   type Poi,
+  type ArenaSite,
+  type Route,
+  type SideGoal,
   type Species,
   type Trainer,
   type TypeId,
@@ -52,6 +61,12 @@ export interface Dex {
   fieldAbilities: Record<string, FieldAbility>;
   /** Points of interest in Odense (arenas, trainers, rest stops). */
   pois: Record<string, Poi>;
+  /** Arena sites 1–8 in arena order (M2d: routes, Town Map, Journal). */
+  arenaSites: ArenaSite[];
+  /** Named routes between consecutive arenas. */
+  routes: Record<string, Route>;
+  /** Journal side goals per district. */
+  sideGoals: SideGoal[];
 }
 
 export interface RawContent {
@@ -64,6 +79,9 @@ export interface RawContent {
   spawns: unknown;
   fieldAbilities: unknown;
   pois: unknown;
+  arenas: unknown;
+  routes: unknown;
+  goals: unknown;
 }
 
 function indexById<T extends { id: string }>(list: T[], what: string): Record<string, T> {
@@ -95,6 +113,9 @@ export function parseContent(raw: RawContent): Dex {
       'field ability',
     ),
     pois: indexById(PoisFileSchema.parse(raw.pois).pois, 'poi'),
+    arenaSites: [...ArenasFileSchema.parse(raw.arenas).arenas].sort((a, b) => a.arena - b.arena),
+    routes: indexById(RoutesFileSchema.parse(raw.routes).routes, 'route'),
+    sideGoals: GoalsFileSchema.parse(raw.goals).sideGoals,
   };
 }
 
@@ -108,6 +129,9 @@ export const rawContent: RawContent = {
   spawns: spawnsJson,
   fieldAbilities: fieldAbilitiesJson,
   pois: poisJson,
+  arenas: arenasJson,
+  routes: routesJson,
+  goals: goalsJson,
 };
 
 /** The default, validated game content. */

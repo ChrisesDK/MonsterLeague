@@ -5,6 +5,8 @@ import { describe, expect, it } from 'vitest';
 import {
   WINDOW_SECONDS,
   cellDensity,
+  STREET_FACTOR,
+  WILD_FACTOR,
   computeSpawns,
   decodeRegion,
   entryWeight,
@@ -172,7 +174,7 @@ describe('species mix follows biome weights', () => {
   const synthetic: RegionFile = {
     ...file,
     cells: {
-      [water]: [2, 0, 100, 0, 0, 0, 0, 0, 0, 0],
+      [water]: [2, 2 | 4, 100, 0, 0, 0, 0, 0, 0, 0], // wild water edge
       [urban]: [2, 0, 0, 0, 0, 0, 0, 100, 0, 0],
     },
   };
@@ -202,7 +204,7 @@ describe('species mix follows biome weights', () => {
       const c = r.cells.get(cell)!;
       const counts = observed(cell);
       const n = [...counts.values()].reduce((a, b) => a + b, 0);
-      expect(n).toBeGreaterThan(2000);
+      expect(n).toBeGreaterThan(1500);
       // Day windows only (every 96th window = same time of day as NOON).
       const entries = tables.filter((e: SpawnEntry) => e.district === 2 && e.time !== 'night');
       const total = entries.reduce((a, e) => a + entryWeight(e, c), 0);
@@ -221,6 +223,21 @@ describe('species mix follows biome weights', () => {
   it('density follows the biome mix and is 0 when noSpawn', () => {
     expect(cellDensity(r.cells.get(water)!)).toBeGreaterThan(cellDensity(r.cells.get(urban)!));
     expect(cellDensity({ ...r.cells.get(water)!, noSpawn: true })).toBe(0);
+  });
+
+  it('decodes the region flags (v3 bit field)', () => {
+    const w = r.cells.get(water)!;
+    expect([w.noSpawn, w.wild, w.waterEdge, w.route]).toEqual([false, true, true, false]);
+    const u = r.cells.get(urban)!;
+    expect([u.noSpawn, u.wild, u.waterEdge, u.route]).toEqual([false, false, false, false]);
+  });
+
+  it('GDD v1.9: wild areas and route corridors are denser than streets with the same mix', () => {
+    const street = r.cells.get(urban)!;
+    const base = cellDensity(street) / STREET_FACTOR;
+    expect(cellDensity({ ...street, route: true })).toBeCloseTo(base * WILD_FACTOR);
+    expect(cellDensity({ ...street, wild: true })).toBeCloseTo(base * WILD_FACTOR);
+    expect(WILD_FACTOR / STREET_FACTOR).toBeGreaterThan(1.5);
   });
 });
 

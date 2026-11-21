@@ -5,6 +5,12 @@ export interface RegionCell {
   id: string;
   district: number;
   noSpawn: boolean;
+  /** M2d wild area: mostly park, forest, meadow/field or water ("tall grass"). */
+  wild: boolean;
+  /** Wild area with a lot of water: drawn as ripples. */
+  waterEdge: boolean;
+  /** Within about 30 m of a named route. */
+  route: boolean;
   /** Bit mask of res-12 child positions (cellToChildren order) where spawns are blocked. */
   blockedMask: number;
   /** Biome area shares, 0–1. */
@@ -22,7 +28,10 @@ export interface Region {
   center: { lat: number; lng: number };
 }
 
-/** Decodes the compact region file (`[district, noSpawn, ...shares%]` per cell). */
+/** Region row flag bits (column 1, region file v3). */
+export const REGION_FLAG = { noSpawn: 1, wild: 2, waterEdge: 4, route: 8 } as const;
+
+/** Decodes the compact region file (`[district, flags, ...shares%, blockedMask?]` per cell). */
 export function decodeRegion(file: RegionFile): Region {
   const cells = new Map<string, RegionCell>();
   const byCoarse = new Map<string, string[]>();
@@ -32,7 +41,10 @@ export function decodeRegion(file: RegionFile): Region {
     cells.set(id, {
       id,
       district: row[0]!,
-      noSpawn: row[1] === 1,
+      noSpawn: (row[1]! & REGION_FLAG.noSpawn) !== 0,
+      wild: (row[1]! & REGION_FLAG.wild) !== 0,
+      waterEdge: (row[1]! & REGION_FLAG.waterEdge) !== 0,
+      route: (row[1]! & REGION_FLAG.route) !== 0,
       blockedMask: row[2 + BIOMES.length] ?? 0,
       shares,
     });

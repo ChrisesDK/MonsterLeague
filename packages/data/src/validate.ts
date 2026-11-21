@@ -72,7 +72,90 @@ function checkRegion(): string[] {
     const sum = row.slice(2, 10).reduce((a, b) => a + b, 0);
     if (sum > 101) errors.push(`region cell ${cell}: biome shares sum to ${sum}%`);
   }
-  return [...errors, ...checkPois(region)];
+  return [...errors, ...checkPois(region), ...checkRoutes(region)];
+}
+
+/**
+ * Routes (M2d): start and end at their arenas, stay in the districts they connect (plus any
+ * `via` districts the data declares), and never run along a railway or motorway (crossing
+ * one is fine: at most 30 m of a route may lie within 12 m of one).
+ */
+function checkRoutes(region: RegionFile): string[] {
+  const errors: string[] = [];
+  const hazards = (
+    JSON.parse(
+      readFileSync(
+        fileURLToPath(new URL('../region/hazards.odense.json', import.meta.url)),
+        'utf8',
+      ),
+    ) as { lines: { coords: number[][] }[] }
+  ).lines;
+  const m = (a: number[], b: number[]) =>
+    Math.hypot(
+      (a[1]! - b[1]!) * 110_540,
+      (a[0]! - b[0]!) * 111_320 * Math.cos((a[1]! * Math.PI) / 180),
+    );
+  for (const r of Object.values(content.routes)) {
+    const where = `route ${r.id}`;
+    const from = content.arenaSites[r.from - 1]!;
+    const to = content.arenaSites[r.to - 1]!;
+    const first = r.path[0]!;
+    const last = r.path[r.path.length - 1]!;
+    if (m(first, [from.lng, from.lat]) > 150)
+      errors.push(`${where}: does not start at arena ${r.from}`);
+    if (m(last, [to.lng, to.lat]) > 150) errors.push(`${where}: does not end at arena ${r.to}`);
+    if (!r.draft && r.via.some((d) => d >= r.to))
+      errors.push(`${where}: passes district(s) ${r.via.join(',')} that are still locked on it`);
+    const allowed = new Set([from.district, to.district, ...r.via]);
+    let length = 0;
+    let nearHazard = 0;
+    let wild = 0;
+    let samples = 0;
+    const bad = new Set<number>();
+    for (let i = 1; i < r.path.length; i++) {
+      const a = r.path[i - 1]!;
+      const b = r.path[i]!;
+      const d = m(a, b);
+      length += d;
+      const n = Math.max(1, Math.ceil(d / 5));
+      for (let k = 1; k <= n; k++) {
+        const p: [number, number] = [
+          a[0] + ((b[0] - a[0]) * k) / n,
+          a[1] + ((b[1] - a[1]) * k) / n,
+        ];
+        const row = region.cells[latLngToCell(p[1], p[0], region.h3Res)];
+        samples++;
+        if (!row) {
+          bad.add(0);
+          continue;
+        }
+        if (!allowed.has(row[0]!)) bad.add(row[0]!);
+        if (row[1]! & 2) wild++;
+        let near = Infinity;
+        for (const line of hazards)
+          for (let j = 0; j + 1 < line.coords.length; j++)
+            near = Math.min(near, distToSegmentM(p, line.coords[j]!, line.coords[j + 1]!));
+        if (near < 12) nearHazard += d / n;
+      }
+    }
+    if (bad.size > 0)
+      errors.push(
+        `${where}: leaves its districts (${[...bad].map((d) => (d === 0 ? 'outside the region' : `district ${d}`)).join(', ')})`,
+      );
+    if (nearHazard > 30) {
+      const msg = `${where}: ${nearHazard.toFixed(0)} m run along a railway or motorway (max 30 m)`;
+      // Draft routes (districts 4–8) are only drawn; they get fixed before they go live.
+      if (r.draft) console.warn(`! ${msg} (draft: warning only)`);
+      else errors.push(msg);
+    }
+    if (Math.abs(length - r.lengthM) > Math.max(5, r.lengthM * 0.02))
+      errors.push(`${where}: lengthM ${r.lengthM} but the path is ${length.toFixed(0)} m`);
+    if (Math.abs(wild / samples - r.wildShare) > 0.05)
+      errors.push(
+        `${where}: wildShare ${r.wildShare} but the region says ${(wild / samples).toFixed(2)}`,
+      );
+  }
+  return errors;
 }
 
 /** Ray casting for [lng, lat] points in GeoJSON rings (outer ring + holes). */
@@ -144,7 +227,7 @@ function checkPois(region: RegionFile): string[] {
     if (!row) errors.push(`${where}: not in a region cell`);
     else if (row[0] !== p.district)
       errors.push(`${where}: its map cell counts as district ${row[0]}, not ${p.district}`);
-    else if (row[1] === 1) errors.push(`${where}: inside a no-spawn cell`);
+    else if ((row[1]! & 1) === 1) errors.push(`${where}: inside a no-spawn cell`);
     else {
       // Blocked sample positions are no-spawn areas or light rail: the POI may not sit on one.
       const mask = row[10] ?? 0;

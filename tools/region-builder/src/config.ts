@@ -45,3 +45,24 @@ export const BIOME_PRIORITY: readonly Biome[] = [
   'industrial',
   'urban',
 ];
+
+/**
+ * M2d wild areas (GDD "Wild areas and routes"): a cell is wild when park, forest,
+ * meadow/field and water together cover at least half of it; a wild cell with at least this
+ * much water is drawn as a water edge (ripples) instead of grass.
+ */
+export const WILD_MIN_SHARE = 0.5;
+export const WATER_EDGE_MIN_SHARE = 0.25;
+/** Route corridor: cells with at least this many of their 49 sample points within 30 m. */
+export const ROUTE_CORRIDOR_M = 30;
+export const ROUTE_CORRIDOR_MIN_POINTS = 3;
+
+/** Region row flag bits (column 1; region file version 3). */
+export const FLAG = { noSpawn: 1, wild: 2, waterEdge: 4, route: 8 } as const;
+
+/** Wild / water-edge flags from biome shares in percent. */
+export function wildFlags(shares: Partial<Record<string, number>>): number {
+  const s = (b: string) => (shares[b] ?? 0) / 100;
+  if (s('water') + s('forest') + s('park') + s('meadow') < WILD_MIN_SHARE) return 0;
+  return FLAG.wild | (s('water') >= WATER_EDGE_MIN_SHARE ? FLAG.waterEdge : 0);
+}

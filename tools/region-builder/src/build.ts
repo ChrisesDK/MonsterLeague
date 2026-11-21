@@ -4,11 +4,19 @@ import { gzipSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { booleanPointInPolygon, bboxPolygon } from '@turf/turf';
 import type { Feature, FeatureCollection, Geometry, MultiPolygon, Polygon } from 'geojson';
-import { cellToLatLng, latLngToCell, polygonToCells } from 'h3-js';
+import { cellToChildren, cellToLatLng, latLngToCell, polygonToCells } from 'h3-js';
 import osmtogeojson from 'osmtogeojson';
-import { content, RegionFileSchema, type RegionFile } from '@oml/data';
+import { content, RegionFileSchema, RoutesFileSchema, type RegionFile } from '@oml/data';
 import { FeatureIndex, blockedMask, classifyCell } from './classify';
-import { BIOMES, REGION } from './config';
+import {
+  BIOMES,
+  FLAG,
+  REGION,
+  ROUTE_CORRIDOR_M,
+  ROUTE_CORRIDOR_MIN_POINTS,
+  wildFlags,
+} from './config';
+import { segmentDistM, type LngLat } from './route-lib';
 import { basemapWater } from './basemap-water';
 import { buildQuery, fetchOverpass } from './overpass';
 
@@ -18,6 +26,7 @@ const OUT = root('packages/data/region/region.odense.json');
 const HAZARDS_OUT = root('packages/data/region/hazards.odense.json');
 const VERSION_OUT = root('packages/data/region/region.odense.version.json');
 const DISTRICTS = root('packages/data/content/districts.odense.geojson');
+const ROUTES = root('packages/data/content/routes.odense.json');
 const BASEMAP = root('apps/client/public/tiles/odense.pmtiles');
 
 const started = performance.now();
@@ -62,12 +71,36 @@ type DistrictFeature = Feature<
 const districts = (JSON.parse(readFileSync(DISTRICTS, 'utf8')) as FeatureCollection)
   .features as DistrictFeature[];
 
+/**
+ * Route corridors (M2d): a cell counts as on a route when at least a few of its 49 sample
+ * points lie within 30 m of a route path. Routes come from `pnpm routes:build`.
+ */
+const routeSegments: [LngLat, LngLat][] = RoutesFileSchema.parse(
+  JSON.parse(readFileSync(ROUTES, 'utf8')),
+).routes.flatMap((r) => r.path.slice(1).map((b, i) => [r.path[i]!, b] as [LngLat, LngLat]));
+function onRoute(cell: string): boolean {
+  const [lat, lng] = cellToLatLng(cell);
+  const near = routeSegments.filter(
+    ([a, b]) => segmentDistM([lng, lat], a, b) < ROUTE_CORRIDOR_M + 80,
+  );
+  if (near.length === 0) return false;
+  let hits = 0;
+  for (const kid of cellToChildren(cell, REGION.sampleRes)) {
+    const [y, x] = cellToLatLng(kid);
+    if (near.some(([a, b]) => segmentDistM([x, y], a, b) <= ROUTE_CORRIDOR_M)) hits++;
+    if (hits >= ROUTE_CORRIDOR_MIN_POINTS) return true;
+  }
+  return false;
+}
+
 const cells = polygonToCells(bboxPolygon(REGION.bbox).geometry.coordinates, REGION.h3Res, true);
 const out: RegionFile['cells'] = {};
 const totals = Object.fromEntries(BIOMES.map((b) => [b, 0])) as Record<string, number>;
 let dropped = 0;
 let noSpawnCells = 0;
 let partlyBlocked = 0;
+let wildCells = 0;
+let routeCells = 0;
 /**
  * A POI's own map cell always counts as the POI's district (M2c): otherwise a cell whose
  * centre lies just across a border would show, e.g., the library rest stop's wildlife as
@@ -89,7 +122,13 @@ for (const cell of cells.sort()) {
     continue;
   }
   if (c.noSpawn) noSpawnCells++;
-  const row = [district.properties.id, c.noSpawn ? 1 : 0, ...BIOMES.map((b) => c.shares[b] ?? 0)];
+  // Column 1 is a bit field (region file v3): noSpawn, wild, water edge, route corridor.
+  let flags = c.noSpawn ? FLAG.noSpawn : 0;
+  flags |= wildFlags(c.shares);
+  if (onRoute(cell)) flags |= FLAG.route;
+  if (flags & FLAG.wild) wildCells++;
+  if (flags & FLAG.route) routeCells++;
+  const row = [district.properties.id, flags, ...BIOMES.map((b) => c.shares[b] ?? 0)];
   // Blocked spawn positions (P10/P11) as an optional 11th column; omitted when none.
   if (!c.noSpawn && c.blocked.length > 0) {
     row.push(blockedMask(c.blocked));
@@ -118,7 +157,7 @@ const dataVersion = createHash('sha256')
 const region: RegionFile = RegionFileSchema.parse({
   region: REGION.id,
   dataVersion,
-  version: 2,
+  version: 3,
   h3Res: REGION.h3Res,
   coarseRes: REGION.coarseRes,
   bbox: REGION.bbox,
@@ -153,6 +192,7 @@ console.log(
   `noSpawn cells (≥25% in no-spawn areas): ${noSpawnCells} of ${kept} (${((100 * noSpawnCells) / kept).toFixed(1)}%); ` +
     `${partlyBlocked} more cells with some blocked spawn positions`,
 );
+console.log(`Wild-area cells: ${wildCells}; route-corridor cells: ${routeCells}`);
 console.log('Biome totals (km², by area share):');
 for (const b of BIOMES)
   console.log(`  ${b.padEnd(11)} ${(totals[b]! * CELL_KM2).toFixed(2).padStart(7)}`);

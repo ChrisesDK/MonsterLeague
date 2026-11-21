@@ -15,9 +15,10 @@ export const windowEnd = (window: number): number => (window + 1) * WINDOW_SECON
 
 /**
  * Expected spawns per res-10 cell per window, by biome. A cell's density is the share-
- * weighted sum (0 in noSpawn cells). Tuned with `pnpm spawn:report` against the GDD targets:
- * one battle-able spawn per 150–300 m walked in parks, forest and along water, and per
- * 300–500 m in dense streets.
+ * weighted sum (0 in noSpawn cells), times WILD_FACTOR in wild areas and route corridors or
+ * STREET_FACTOR elsewhere. Tuned with `pnpm spawn:report` against the GDD v1.9 targets: one
+ * battle-able spawn per 100–150 m walked in wild areas and along routes, per 300–400 m in
+ * streets, and 10–14 creatures on a 30-minute park walk.
  */
 export const DENSITY: Record<Biome, number> = {
   water: 1.0,
@@ -29,6 +30,10 @@ export const DENSITY: Record<Biome, number> = {
   industrial: 0.4,
   historic: 0.6,
 };
+
+/** GDD v1.9: wild areas ("tall grass") and route corridors are denser than streets ("towns"). */
+export const WILD_FACTOR = 1.6;
+export const STREET_FACTOR = 0.9;
 
 export interface Spawn {
   /** Stable id: hash of region, window, cell and index. */
@@ -92,7 +97,7 @@ export function cellDensity(cell: RegionCell): number {
   let d = 0;
   for (const [b, share] of Object.entries(cell.shares) as [Biome, number][])
     d += share * DENSITY[b];
-  return d;
+  return d * (cell.wild || cell.route ? WILD_FACTOR : STREET_FACTOR);
 }
 
 /** Species weight of a table entry in a cell: weight × Σ share(biome) × preference(biome). */

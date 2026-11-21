@@ -1,12 +1,20 @@
 import type { Spawn as SpawnEntry } from '@oml/data';
-import { DENSITY, MAX_SPAWNS_PER_CELL, POSITION_RES, WINDOW_SECONDS, hash32 } from './spawns';
+import {
+  DENSITY,
+  MAX_SPAWNS_PER_CELL,
+  POSITION_RES,
+  STREET_FACTOR,
+  WILD_FACTOR,
+  WINDOW_SECONDS,
+  hash32,
+} from './spawns';
 
 /**
  * Bump when spawn *code* changes what spawns (counting, picking, positions, day/night…).
  * The golden test in test/version.test.ts fails until this is bumped and the golden
  * fingerprint is updated, so code changes can't slip through unversioned.
  */
-export const SPAWN_ALGORITHM = 3;
+export const SPAWN_ALGORITHM = 4;
 
 /**
  * Version of the spawn rules: algorithm number + tunable numbers + spawn tables. The spawn
@@ -17,6 +25,8 @@ export function spawnRulesVersion(spawnTables: readonly SpawnEntry[]): string {
   const fingerprint = JSON.stringify({
     algorithm: SPAWN_ALGORITHM,
     density: DENSITY,
+    wildFactor: WILD_FACTOR,
+    streetFactor: STREET_FACTOR,
     maxPerCell: MAX_SPAWNS_PER_CELL,
     window: WINDOW_SECONDS,
     positionRes: POSITION_RES,

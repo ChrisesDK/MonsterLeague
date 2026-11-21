@@ -67,12 +67,12 @@
       "id": "trainer_freja",
       "kind": "trainer",
       "district": 1,
-      "lat": 55.39676,
-      "lng": 10.38308,
+      "lat": 55.39689,
+      "lng": 10.38526,
       "radius": 50,
       "trainer": "route1_freja",
       "verified": false,
-      "note": "Pedestrian Slotsgade south of Odense Slot; moved from Gravene (17 m from the district 3 border) so the whole 50 m radius lies inside district 1"
+      "note": "On Route 1: pedestrian Jernbanegade just north of Vestergade (M2d; moved 139 m from Slotsgade onto the route), 133 m inside district 1"
     },
     {
       "id": "trainer_niels",
@@ -115,23 +115,23 @@
       "id": "trainer_karen",
       "kind": "trainer",
       "district": 2,
-      "lat": 55.39525,
-      "lng": 10.4038,
+      "lat": 55.39612,
+      "lng": 10.39035,
       "radius": 50,
       "trainer": "route2_karen",
       "verified": false,
-      "note": "Albaniengen, the public green by Sankt Albani Kirke"
+      "note": "On Route 2: footway by Albani Torv, north-east of Sankt Knuds Kirke (M2d; moved from Albaniengen, 740 m off any route)"
     },
     {
       "id": "trainer_mads",
       "kind": "trainer",
       "district": 2,
-      "lat": 55.39759,
-      "lng": 10.41147,
+      "lat": 55.39286,
+      "lng": 10.38889,
       "radius": 50,
       "trainer": "route2_mads",
       "verified": false,
-      "note": "Sankt Jørgens Park, public park by Odense Å"
+      "note": "On Route 3: the path along Odense Å south of Eventyrhaven (M2d; moved from Sankt Jørgens Park, 1.2 km off any route)"
     }
   ]
 }

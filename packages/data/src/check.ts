@@ -157,6 +157,57 @@ export function checkContent(dex: Dex): string[] {
       errors.push(`spawn ${i}: field ability "${sp.requires}" does not exist`);
   });
 
+  errors.push(...checkWorld(dex));
+  return errors;
+}
+
+/** M2d: arena sites, routes and Journal side goals refer to real content. */
+function checkWorld(dex: Dex): string[] {
+  const errors: string[] = [];
+  dex.arenaSites.forEach((a, i) => {
+    if (a.arena !== i + 1) errors.push(`arenas: expected arena ${i + 1}, got ${a.arena}`);
+    if (a.district !== a.arena)
+      errors.push(`arenas: arena ${a.arena} must be in district ${a.arena}`);
+    if (a.poi !== null) {
+      const poi = dex.pois[a.poi];
+      if (!poi || poi.kind !== 'arena' || poi.arena !== a.arena)
+        errors.push(`arenas: arena ${a.arena}: poi "${a.poi}" is not arena ${a.arena}'s POI`);
+      else if (Math.hypot((poi.lat - a.lat) * 110_540, (poi.lng - a.lng) * 63_300) > 5)
+        errors.push(`arenas: arena ${a.arena} site is not at its POI`);
+    }
+  });
+  for (const p of Object.values(dex.pois))
+    if (p.kind === 'arena' && dex.arenaSites[p.arena - 1]?.poi !== p.id)
+      errors.push(`arenas: arena ${p.arena} site must link its POI "${p.id}"`);
+  const numbers = new Set<number>();
+  for (const r of Object.values(dex.routes)) {
+    if (r.id !== `route${r.number}`) errors.push(`routes: id ${r.id} must be route${r.number}`);
+    if (numbers.has(r.number)) errors.push(`routes: duplicate route number ${r.number}`);
+    numbers.add(r.number);
+    if (r.to !== r.from + 1) errors.push(`routes: ${r.id} must link consecutive arenas`);
+  }
+  const typesIn = (d: number) =>
+    new Set(
+      dex.spawns
+        .filter((e) => e.district === d && e.rarity === 'common' && !e.requires)
+        .flatMap((e) => dex.species[e.species]?.types ?? []),
+    );
+  for (const g of dex.sideGoals) {
+    const where = `goals: ${g.id}`;
+    if (g.kind === 'catchType' && !typesIn(g.district).has(g.type))
+      errors.push(`${where}: no common ${g.type} creature spawns in district ${g.district}`);
+    if (
+      g.kind === 'findRare' &&
+      !dex.spawns.some(
+        (e) =>
+          e.district === g.district &&
+          e.species === g.species &&
+          e.rarity === 'rare' &&
+          !e.requires,
+      )
+    )
+      errors.push(`${where}: ${g.species} is not a rare spawn in district ${g.district}`);
+  }
   return errors;
 }
 
@@ -171,6 +222,8 @@ export function checkI18n(dex: Dex, tables: Record<string, I18nTable>): string[]
     ...Object.keys(dex.trainers).map((t) => `trainer.${t}.name`),
     ...Object.keys(dex.fieldAbilities).map((f) => `fieldAbility.${f}.name`),
     ...Object.keys(dex.pois).map((p) => `poi.${p}.name`),
+    ...dex.arenaSites.map((a) => `arenaSite.${a.arena}.name`),
+    ...Object.keys(dex.routes).map((r) => `route.${r}.name`),
     // Trainers placed on the map need their pre- and post-battle lines.
     ...Object.values(dex.pois).flatMap((p) =>
       (p.kind === 'trainer' ? [p.trainer] : p.kind === 'arena' ? p.trainers : []).flatMap((id) => [

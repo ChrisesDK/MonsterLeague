@@ -1,0 +1,77 @@
+{
+  "region": "odense",
+  "arenas": [
+    {
+      "arena": 1,
+      "district": 1,
+      "type": "folk",
+      "lat": 55.39978,
+      "lng": 10.38522,
+      "poi": "arena1",
+      "note": "Kongens Have (arena POI)"
+    },
+    {
+      "arena": 2,
+      "district": 2,
+      "type": "stone",
+      "lat": 55.39472,
+      "lng": 10.38887,
+      "poi": "arena2",
+      "note": "Klosterhaven by Sankt Knuds Kirke (arena POI)"
+    },
+    {
+      "arena": 3,
+      "district": 3,
+      "type": "spirit",
+      "lat": 55.39872,
+      "lng": 10.39078,
+      "poi": null,
+      "note": "H.C. Andersens Hus (OSM museum way 912702695, centroid); POI placed in M3"
+    },
+    {
+      "arena": 4,
+      "district": 4,
+      "type": "water",
+      "lat": 55.39077,
+      "lng": 10.38331,
+      "poi": null,
+      "note": "Munke Mose park (OSM way 86127610, centroid); POI placed in M3"
+    },
+    {
+      "arena": 5,
+      "district": 5,
+      "type": null,
+      "lat": 55.37792,
+      "lng": 10.3708,
+      "poi": null,
+      "note": "Outside Odense Zoo's entrance (OSM node 4519017876); mixed arena; POI placed in M3"
+    },
+    {
+      "arena": 6,
+      "district": 6,
+      "type": "grove",
+      "lat": 55.36571,
+      "lng": 10.37908,
+      "poi": null,
+      "note": "Fruens Bøge, the forest inside district 6 (the forest's centroid lies in district 5); POI placed in M3"
+    },
+    {
+      "arena": 7,
+      "district": 7,
+      "type": "fire",
+      "lat": 55.36624,
+      "lng": 10.38592,
+      "poi": null,
+      "note": "Den Fynske Landsby entrance (OSM node 5314590418); POI placed in M3"
+    },
+    {
+      "arena": 8,
+      "district": 8,
+      "type": "storm",
+      "lat": 55.4085,
+      "lng": 10.3895,
+      "poi": null,
+      "note": "Havnebadet in the inner harbour (approximate); POI placed in M3"
+    }
+  ]
+}
