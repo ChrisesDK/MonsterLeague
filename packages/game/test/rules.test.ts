@@ -29,7 +29,7 @@ import {
   teachFieldAbility,
   trainerStatus,
   tutorialDex,
-  useItem,
+  applyItem,
   visitRestStop,
   type SaveGame,
 } from '../src/index';
@@ -135,6 +135,23 @@ describe('onboarding and the tutorial catch', () => {
   });
 });
 
+describe('tutorial without a catch', () => {
+  it('stays in the tutorial step when the creature faints or the player runs', () => {
+    let save = chooseStarter(newSave(SEED), 'gnistkat');
+    save = boost(startTutorialBattle(save, 3), 20);
+    save = startTutorialBattle({ ...save, battle: null }, 3);
+    const { state, events } = play(save, undefined, tutorialDex());
+    expect(state.result).toBe('p1');
+    const out = finishBattle(save, state, events);
+    expect(out.save.onboarding).toBe('tutorial');
+    expect(out.caught).toBeNull();
+    expect(out.save.team).toHaveLength(1);
+    // out of charms: the next tutorial battle tops them up
+    const again = startTutorialBattle({ ...out.save, bag: {} }, 4);
+    expect(again.battle!.state.sides[0].items.basic_charm).toBe(3);
+  });
+});
+
 describe('district 1 run: trainers, losing, rest stops, arena 1, badge', () => {
   it('plays through to badge 1 and district 2', () => {
     let save: SaveGame = { ...chooseStarter(newSave(SEED), 'boegling'), onboarding: 'done' };
@@ -233,13 +250,13 @@ describe('items outside battle', () => {
     const max = getMaxHp(save.team[0]!);
     save = { ...save, bag: { small_tonic: 1, clear_drops: 1, revive_leaf: 1 } };
     save = { ...save, team: [{ ...save.team[0]!, hp: 1, status: 'poison' }] };
-    save = useItem(save, 'small_tonic', uid);
+    save = applyItem(save, 'small_tonic', uid);
     expect(save.team[0]!.hp).toBe(Math.min(max, 21));
-    save = useItem(save, 'clear_drops', uid);
+    save = applyItem(save, 'clear_drops', uid);
     expect(save.team[0]!.status).toBeNull();
-    expect(() => useItem(save, 'small_tonic', uid)).toThrow(); // none left
+    expect(() => applyItem(save, 'small_tonic', uid)).toThrow(); // none left
     save = { ...save, team: [{ ...save.team[0]!, hp: 0 }] };
-    save = useItem(save, 'revive_leaf', uid);
+    save = applyItem(save, 'revive_leaf', uid);
     expect(save.team[0]!.hp).toBe(Math.floor(max / 2));
     expect(save.bag).toEqual({ small_tonic: 0, clear_drops: 0, revive_leaf: 0 });
   });

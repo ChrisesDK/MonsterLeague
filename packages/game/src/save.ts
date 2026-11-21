@@ -24,7 +24,7 @@ export type PostBattleChoice =
 
 export interface Settings {
   sound: boolean;
-  speed: 1 | 2 | 3;
+  speed: 'normal' | 'fast';
   textSize: 'normal' | 'large' | 'larger';
   reduceMotion: boolean;
   language: 'da' | 'en';
@@ -59,7 +59,7 @@ export interface SaveGame {
 
 export const DEFAULT_SETTINGS: Settings = {
   sound: true,
-  speed: 1,
+  speed: 'normal',
   textSize: 'normal',
   reduceMotion: false,
   language: 'da',
@@ -156,7 +156,7 @@ export const SaveSchema = z
     settings: z
       .object({
         sound: z.boolean(),
-        speed: z.union([z.literal(1), z.literal(2), z.literal(3)]),
+        speed: z.enum(['normal', 'fast']),
         textSize: z.enum(['normal', 'large', 'larger']),
         reduceMotion: z.boolean(),
         language: z.enum(['da', 'en']),

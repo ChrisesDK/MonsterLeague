@@ -178,8 +178,13 @@ export function startWildBattle(
   };
 }
 
+/** The tutorial never runs out of charms: the guide tops the bag up to this many. */
+export const TUTORIAL_CHARMS = 3;
+
 export function startTutorialBattle(save: SaveGame, seed: number, dex: Dex = content): SaveGame {
   const tdex = tutorialDex(dex);
+  if ((save.bag.basic_charm ?? 0) < TUTORIAL_CHARMS)
+    save = { ...save, bag: { ...save.bag, basic_charm: TUTORIAL_CHARMS } };
   const state = createBattle(
     {
       kind: 'wild',
@@ -373,7 +378,8 @@ export function finishBattle(
       }
     }
   }
-  if (battle.kind === 'tutorial' && save.onboarding === 'tutorial') {
+  // The tutorial ends with the first catch; otherwise another creature is placed.
+  if (battle.kind === 'tutorial' && save.onboarding === 'tutorial' && caught) {
     next = { ...next, onboarding: 'done' };
   }
   return { save: next, won, caught, caughtTo, reward, badge };
@@ -451,7 +457,12 @@ export function canUseItem(c: CreatureInstance, itemId: string, dex: Dex = conte
 }
 
 /** Uses a tonic, clear drops or revive leaf on a team or storage creature (by uid). */
-export function useItem(save: SaveGame, itemId: string, uid: string, dex: Dex = content): SaveGame {
+export function applyItem(
+  save: SaveGame,
+  itemId: string,
+  uid: string,
+  dex: Dex = content,
+): SaveGame {
   if ((save.bag[itemId] ?? 0) <= 0) throw new Error(`No ${itemId} in the bag`);
   const item = dex.items[itemId];
   if (!item) throw new Error(`Unknown item ${itemId}`);
