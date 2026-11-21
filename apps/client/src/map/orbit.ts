@@ -177,3 +177,28 @@ export function attachOrbit(map: MlMap): () => void {
     el.removeEventListener('click', click, true);
   };
 }
+
+/**
+ * The fog ellipse in screen pixels, from the player's screen point and the projected points
+ * at the fog start and end ahead of the player and at the fog end to the side. Returns the
+ * CSS radial-gradient for the .map-fog overlay (transparent inside the start, solid fog
+ * from the end outwards).
+ */
+export function fogEllipse(
+  player: { x: number; y: number },
+  startAhead: { x: number; y: number },
+  endAhead: { x: number; y: number },
+  endSide: { x: number; y: number },
+  colour: string,
+): string {
+  const ry = Math.max(1, Math.hypot(endAhead.x - player.x, endAhead.y - player.y));
+  const rx = Math.max(1, Math.hypot(endSide.x - player.x, endSide.y - player.y));
+  const ryStart = Math.hypot(startAhead.x - player.x, startAhead.y - player.y);
+  const startPct = Math.max(0, Math.min(99, (100 * ryStart) / ry));
+  const mid = startPct + (100 - startPct) * 0.55;
+  return (
+    `radial-gradient(ellipse ${rx.toFixed(0)}px ${ry.toFixed(0)}px at ${player.x.toFixed(0)}px ${player.y.toFixed(0)}px, ` +
+    `transparent ${startPct.toFixed(1)}%, ` +
+    `color-mix(in srgb, ${colour} 55%, transparent) ${mid.toFixed(1)}%, ${colour} 100%)`
+  );
+}

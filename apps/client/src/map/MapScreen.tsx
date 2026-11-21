@@ -67,11 +67,7 @@ import {
 import { useCompassHeading } from './heading';
 import {
   addBuildings3d,
-  addFog,
-  buildingRadius,
-  setBuildingsRange,
   fogRadii,
-  setFog,
   setFogPalette,
   setBuildings3d,
   addWorldLayers,
@@ -87,7 +83,17 @@ import { markerElement, PLAYER_SVG, STAR_SVG, START } from './markers';
 import { LoadingScreen } from './LoadingScreen';
 import { TownMap } from './TownMap';
 import { useSpawns } from './useSpawns';
-import { attachOrbit, hazeForPitch, ORBIT, pitchForZoom } from './orbit';
+import { attachOrbit, fogEllipse, hazeForPitch, ORBIT, pitchForZoom } from './orbit';
+
+/** A point `metres` away from `p` towards `bearingDeg`. */
+function offsetM(p: LatLng, metres: number, bearingDeg: number): LatLng {
+  const b = (bearingDeg * Math.PI) / 180;
+  return {
+    lat: p.lat + (metres * Math.cos(b)) / 110_540,
+    lng: p.lng + (metres * Math.sin(b)) / (111_320 * Math.cos((p.lat * Math.PI) / 180)),
+  };
+}
+const toLngLat = (p: LatLng): [number, number] => [p.lng, p.lat];
 
 const POIS: Poi[] = Object.values(content.pois);
 /** POI radius circles appear when the player is this much outside the radius, or closer. */
@@ -205,6 +211,8 @@ export function MapScreen({
   const containerRef = useRef<HTMLDivElement | null>(null);
   /** Distance haze: only needed at steep tilts, where the map's far edge comes into view. */
   const hazeRef = useRef<HTMLDivElement | null>(null);
+  /** Distance fog overlay (screen space, updated by the frame loop). */
+  const fogRef = useRef<HTMLDivElement | null>(null);
   const markers = useRef(new Map<string, Marker>());
   const poiMarkers = useRef(new Map<string, { marker: Marker; img: HTMLImageElement }>());
   const player = useRef<{ figure: Marker; cone: Marker } | null>(null);
@@ -425,7 +433,7 @@ export function MapScreen({
         },
       });
       addBuildings3d(map, paletteRef.current, saveRef.current.settings.buildings3d);
-      addFog(map, paletteRef.current);
+      setFogPalette(map, paletteRef.current);
       setMapReady(true);
     });
     // Drag rotates around the player; pinch and wheel zoom on the player (no panning).
@@ -579,10 +587,7 @@ export function MapScreen({
     let prev = performance.now();
     let ringAt: LatLng | null = null;
     let ringAcc = -1;
-    let fogAt: LatLng | null = null;
-    let fogZoom = -1;
-    let rangeAt: LatLng | null = null;
-    let rangeRadius = 0;
+    let fogCss = '';
     const frame = (now: number) => {
       // the map is removed (a battle opened) one render before this effect is cleaned up
       if (mapRef.current !== map) return;
@@ -615,23 +620,27 @@ export function MapScreen({
           features: [circle(next, accuracyM.current)],
         });
       }
-      // the fog follows the player (re-drawn every few metres)
-      const zoom = map.getZoom();
-      if (!fogAt || distanceM(fogAt, next) > 4 || Math.abs(zoom - fogZoom) > 0.03) {
-        fogAt = next;
-        fogZoom = zoom;
-        setFog(map, next, zoom);
-      }
-      // buildings inside the fog are despawned (updated every ~40 m or on a zoom change)
-      const radius = buildingRadius(zoom);
-      if (
-        !rangeAt ||
-        distanceM(rangeAt, next) > 40 ||
-        Math.abs(radius - rangeRadius) / radius > 0.15
-      ) {
-        rangeAt = next;
-        rangeRadius = radius;
-        setBuildingsRange(map, next, radius + 40);
+      // the fog: an ellipse around the player in screen space, from projected distances
+      if (fogRef.current) {
+        const [start, end] = fogRadii(map.getZoom());
+        const b = map.getBearing();
+        const css = fogEllipse(
+          map.project([next.lng, next.lat]),
+          map.project(toLngLat(offsetM(next, start, b))),
+          map.project(toLngLat(offsetM(next, end, b))),
+          map.project(toLngLat(offsetM(next, end, b + 90))),
+          paletteRef.current.fog,
+        );
+        if (css !== fogCss) {
+          fogCss = css;
+          fogRef.current.style.background = css;
+          // Fog only lies ahead: below the player's row on screen the ground is near the
+          // camera (a screen ellipse would otherwise fog the bottom of the screen).
+          const y = map.project([next.lng, next.lat]).y.toFixed(0);
+          const mask = `linear-gradient(180deg, #000 0, #000 ${y}px, transparent ${y}px)`;
+          fogRef.current.style.maskImage = mask;
+          fogRef.current.style.webkitMaskImage = mask;
+        }
       }
       if (offCentre && !map.isMoving()) map.jumpTo({ center: [next.lng, next.lat] });
       cullMarkers(next);
@@ -1252,6 +1261,7 @@ export function MapScreen({
     <main className="map-screen" data-night={night ? 'true' : 'false'}>
       <div ref={containerRef} className="map" data-testid="play-map" />
       {/* Haze over the far distance: hides where the map's far edge ends at a steep tilt. */}
+      <div className="map-fog" ref={fogRef} data-testid="map-fog" aria-hidden />
       <div className="map-haze" ref={hazeRef} aria-hidden />
       <div className="hud-top">
         <div className="hud-left">

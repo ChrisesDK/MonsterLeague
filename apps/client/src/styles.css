@@ -1758,3 +1758,26 @@ html[data-theme='night'] .arena-field {
   transition: opacity var(--dur) linear;
   background: linear-gradient(180deg, var(--sky) 0%, var(--sky) 25%, transparent 100%);
 }
+
+/* Phones: a drag on the map rotates the camera; it must never scroll the page or trigger the
+   browser's pull-to-reload (map panning is off, so MapLibre no longer sets this itself). */
+html,
+body {
+  overscroll-behavior: none;
+}
+/* MapLibre's own CSS (loaded later) sets `pan-x pan-y` when drag-panning is off, which hands
+   one-finger drags to the browser; these selectors are more specific on purpose. */
+.map-screen,
+.map-screen .maplibregl-map .maplibregl-canvas-container.maplibregl-touch-zoom-rotate,
+.map-screen .maplibregl-map .maplibregl-canvas-container,
+.map-screen .maplibregl-map .maplibregl-canvas {
+  touch-action: none;
+}
+/* Distance fog: a screen-space ellipse around the player (set by the map's frame loop). It
+   covers distant ground, buildings, labels and icons, below the sky and the HUD. */
+.map-fog {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}

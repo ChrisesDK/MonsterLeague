@@ -203,8 +203,11 @@ test('play camera: always on the player; drag rotates, zoom tilts (no panning)',
   expect(cam.pitch).toBeCloseTo(53, 0); // halfway between 30 (zoomed out) and 76 (zoomed in)
   const jump = (o: Record<string, number>) =>
     page.evaluate(
-      (x) =>
-        (window as unknown as { __omlMap: { jumpTo: (o: unknown) => void } }).__omlMap.jumpTo(x),
+      // returns nothing: jumpTo returns the whole map object, and sending that back to the
+      // test (serialising its tile caches) can exhaust the page's memory
+      (x) => {
+        (window as unknown as { __omlMap: { jumpTo: (o: unknown) => void } }).__omlMap.jumpTo(x);
+      },
       o,
     );
   // zoom limits, and the tilt follows the zoom
@@ -389,13 +392,11 @@ test('icons behind the camera are hidden (looking away from the centre)', async 
         ).length,
     );
   const face = (bearing: number) =>
-    page.evaluate(
-      (b) =>
-        (
-          window as unknown as { __omlMap: { setBearing: (x: number) => void } }
-        ).__omlMap.setBearing(b),
-      bearing,
-    );
+    page.evaluate((b) => {
+      (window as unknown as { __omlMap: { setBearing: (x: number) => void } }).__omlMap.setBearing(
+        b,
+      );
+    }, bearing);
   await face(270); // west, away from the centre
   await expect.poll(shown, { timeout: 5000 }).toBe(0);
   await face(90); // east, towards it
@@ -463,35 +464,6 @@ test('3D buildings are opt-in (Settings), and facing labels stay above them', as
   await expect.poll(async () => (await layers(page)).on3d, { timeout: 10_000 }).toBe(true);
   l = await layers(page);
   expect(l.flat).toBe(false);
-  // buildings inside the distance fog are despawned: none drawn beyond the radius
-  await page.waitForTimeout(2500);
-  const far = await page.evaluate(() => {
-    type F = { geometry: { coordinates: unknown } };
-    const points = (c: unknown): number[][] =>
-      Array.isArray(c) && typeof c[0] === 'number'
-        ? [c as number[]]
-        : (c as unknown[]).flatMap(points);
-    const m = (
-      window as unknown as {
-        __omlMap: {
-          getCenter: () => { lat: number; lng: number };
-          getZoom: () => number;
-          queryRenderedFeatures: (o: { layers: string[] }) => F[];
-        };
-      }
-    ).__omlMap;
-    const c = m.getCenter();
-    const radius = 150 * 2 ** (18.5 - m.getZoom()) + 0.6 * 330 * 2 ** (18.5 - m.getZoom()) + 40;
-    const feats = m.queryRenderedFeatures({ layers: ['buildings-3d'] });
-    const dist = (p: number[]) => Math.hypot((p[1]! - c.lat) * 110_540, (p[0]! - c.lng) * 63_300);
-    // a building is out of range when every corner is beyond the radius (+ tile slack)
-    const out = feats.filter((f) =>
-      points(f.geometry.coordinates).every((p) => dist(p) > radius + 60),
-    ).length;
-    return { drawn: feats.length, out };
-  });
-  expect(far.drawn).toBeGreaterThan(0);
-  expect(far.out).toBe(0);
 });
 
 test('HUD on demand: the Nearby strip opens from a button; no text banner while searching', async ({
@@ -512,4 +484,10 @@ test('HUD on demand: the Nearby strip opens from a button; no text banner while 
   await expect(page.getByTestId('gps-signal')).toHaveCount(0);
   // the goal card starts folded
   await expect(page.getByTestId('journal-card')).toHaveAttribute('data-open', 'false');
+  // a drag on the map never scrolls the page or pulls to reload
+  const touch = await page.evaluate(() => ({
+    canvas: getComputedStyle(document.querySelector('.maplibregl-canvas-container')!).touchAction,
+    html: getComputedStyle(document.documentElement).overscrollBehaviorY,
+  }));
+  expect(touch).toEqual({ canvas: 'none', html: 'none' });
 });

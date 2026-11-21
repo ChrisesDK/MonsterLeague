@@ -25,10 +25,12 @@ Replace the camera paragraph with:
 
 Add:
 
-- **Distance fog and sky:** a low fog surrounds the player, clear up close and thickening
-  with distance (the fog distance scales with the zoom), so the world reads as a round
-  patch around the player. Buildings and icons inside the fog are not drawn. At steep tilts
-  a day or night sky shows above the fog.
+- **Distance fog and sky:** a low fog lies in the distance around the player (zoomed in it
+  begins about 400 m away; the distance scales with the zoom), so the world reads as a
+  round patch around the player. Icons inside the fog are not drawn; buildings stay and the
+  fog covers them. At steep tilts a day or night sky shows above the fog.
+- **Touch:** dragging on the map never scrolls the page or triggers the browser's
+  pull-to-reload.
 - **Icons:** creatures, stamps and the Journal star are hidden when they are behind the
   camera or inside the fog.
 

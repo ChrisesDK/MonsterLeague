@@ -1098,3 +1098,20 @@ length, position resolution and spawn tables>`.
     55 degrees, full at 76), so the near-top-down view isn't fogged.
   - The district e2e answers a pending evolve/learn question before opening the menu (which
     creature reaches its evolution level depends on random catches).
+- **D133. Fog moved out, buildings stay, no pull-to-reload** (owner feedback).
+  - **Fog further out:** zoomed in it starts at 400 m and is solid at 1,100 m (doubling per
+    zoom level out, so zoomed out it lies beyond the view).
+  - **Buildings are no longer unloaded in the fog:** the distance filter re-processed the
+    map tiles on every zoom step (the zoom lag); the fog simply covers distant buildings.
+  - **Screen-space fog:** the fog is now a CSS ellipse around the player, sized each frame
+    from three projected ground points (fog start and end ahead, fog end to the side) and
+    masked below the player's row (the ground there is near the camera). It replaces the
+    kilometre-wide fog polygons on the map, which were expensive to tile.
+  - **No pull-to-reload on phones:** with drag-panning off, MapLibre's CSS sets
+    `touch-action: pan-x pan-y` on the map, which hands one-finger vertical drags to the
+    browser (scrolling and pull-to-reload). The map now sets `touch-action: none` (more
+    specific than MapLibre's rule), and the page has `overscroll-behavior: none`.
+  - **Test flake explained:** the camera e2e called `map.jumpTo()` inside `page.evaluate`,
+    which returns the whole map object; serialising it back to the test could exhaust the
+    page's memory ("execution context was destroyed"). The helpers now return nothing. The
+    district e2e uses Beech Lash against the Stone trainers of district 2 too.

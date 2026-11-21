@@ -365,7 +365,7 @@ test('onboarding to badge 2 (districts 1 and 2, open wildlife), with reloads', a
   card = await poiAction(page, 'trainer_karen');
   await expect(card).toHaveAttribute('data-state', 'ready');
   await card.getByTestId('poi-action').click();
-  await fight(page);
+  await fight(page, { move: 'Beech Lash' });
   await expect(page.getByTestId('result-card')).toContainText('You beat');
   await page.locator('[data-testid=result-card] .btn').click();
   card = await poiAction(page, 'rest_barndomshjem');
@@ -373,7 +373,7 @@ test('onboarding to badge 2 (districts 1 and 2, open wildlife), with reloads', a
   card = await poiAction(page, 'arena2');
   await expect(card).toContainText('junior');
   await card.getByTestId('poi-action').click();
-  await fight(page);
+  await fight(page, { move: 'Beech Lash' });
   await expect(page.getByTestId('result-card')).toContainText('You beat');
   await page.locator('[data-testid=result-card] .btn').click();
   // badge 1 raised obedience to 20, so a level-19 team still obeys
@@ -384,7 +384,7 @@ test('onboarding to badge 2 (districts 1 and 2, open wildlife), with reloads', a
     card = await poiAction(page, 'arena2');
     await expect(card).toContainText('leader');
     await card.getByTestId('poi-action').click();
-    await fight(page);
+    await fight(page, { move: 'Beech Lash' });
     if ((await devSave(page)).badges.includes(2)) break;
     await page.locator('[data-testid=result-card] .btn').click();
   }

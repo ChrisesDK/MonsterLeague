@@ -4,6 +4,7 @@ import {
   FLING_DECAY_MS,
   FLING_MAX_DEG_PER_MS,
   flingVelocity,
+  fogEllipse,
   hazeForPitch,
   ORBIT,
   pitchForZoom,
@@ -109,5 +110,25 @@ describe('fling after a swipe', () => {
   it('no fling when the finger stopped before it was lifted', () => {
     const swipe = Array.from({ length: 10 }, (_, i) => ({ t: 1000 + i * 16, delta: 4 }));
     expect(flingVelocity(swipe, 1300)).toBe(0);
+  });
+});
+
+describe('distance fog (screen space)', () => {
+  it('an ellipse around the player: clear inside the fog start, solid fog at its end', () => {
+    const css = fogEllipse(
+      { x: 195, y: 500 },
+      { x: 195, y: 300 },
+      { x: 195, y: 100 },
+      { x: 595, y: 500 },
+      '#123456',
+    );
+    // radii: 400 px to the side, 400 px ahead; the start is halfway
+    expect(css).toContain('ellipse 400px 400px at 195px 500px');
+    expect(css).toContain('transparent 50.0%');
+    expect(css).toContain('#123456 100%');
+  });
+  it('never has a zero radius', () => {
+    const p = { x: 10, y: 10 };
+    expect(fogEllipse(p, p, p, p, '#000')).toContain('ellipse 1px 1px');
   });
 });
