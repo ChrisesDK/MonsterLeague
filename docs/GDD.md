@@ -38,6 +38,8 @@ Nov 20, 2026 · @Christian
 
 **First 15 minutes (onboarding):** choose one of three starter creatures wherever the player opens the game; a personal tutorial creature (visible only to that player, not a shared spawn) appears 100–200 m away on a spawnable spot for a guided first battle and catch; then the map points the way to district 1, its nearest rest stop and first trainer. The player should have fought three battles and seen the arena marker before minute 15.
 
+**Onboarding details (accepted P13):** starters begin at level 5; the starting bag holds 5 Basic Charms and 2 Small Tonics; the tutorial creature is level 3 and easy to catch. The tutorial only ends with a catch: if the creature gets away or wins, the team is healed, up to 3 charms are given back, and a new tutorial creature appears.
+
 ## World: Odense districts and progression
 
 **Odense is split into 8 hand-drawn districts, each with one arena, opened in a fixed order that spirals out from the centre.** District boundaries are polygons drawn in a GeoJSON file. Wild creature levels and trainer strength rise with each district.
@@ -324,6 +326,8 @@ The battle engine is the heart of the game and has no dependency on the browser,
 
 The table says what each file must hold. **The exact field names live in code** and win over this doc: content schemas in `packages/data/src/schemas.ts`, engine and save types in `packages/engine/src/types.ts` (accepted proposals P3 and P4). Change the GDD only when the *meaning* changes, not for a renamed field.
 
+Since M2b, the save format and the progression rules (badges, obedience, district unlocks, rest stops, restock, field abilities) live in the pure package `packages/game`, not in the engine's types (accepted P12).
+
 | File / type | Holds | Key fields |
 | --- | --- | --- |
 | `types.json` | The type chart | types\[\], matrix\[attacker\]\[defender\] |
@@ -361,7 +365,7 @@ The save never stores a location history: only progress. It is versioned so migr
 | M1.6–M1.8 — Playtest kit, GDD sync, deploy | 5 | Gate 2 build online | Live at christianrasmussen.dk/OdenseMonsterLeague | Done |
 | Gate 2 — Outdoor battle test | 5 | Are battles fun on a street? | Testers rate battles well | Qualitative pass |
 | M2a — Map and shared spawns | 6–8 | Real Odense map with biomes and server-decided spawns you can walk to and battle | Region file for Odense; spawn service live; same spawns on two phones; GPS simulator; A1 placeholder art | Done (live; 6.6% no-spawn cells, 1 spawn per 221 m in green areas, 371 m in streets) |
-| M2b — District 1 playable | 8–9 | A complete single-player loop in district 1 | Save, starter, trainers, rest stops, arena 1 and badge playable offline-tolerant | Planned |
+| M2b — District 1 playable | 8–9 | A complete single-player loop in district 1 | Save, starter, trainers, rest stops, arena 1 and badge playable offline-tolerant | Done (live; badge 1 playable end to end) |
 | Gate 3 — District walk test | 10 | Does walking to fights feel good? | Spawn density on target; testers want to keep walking | Planned |
 | M3 — Full Odense single-player | 11–18 | The whole campaign | 8 districts, 8 arenas, \~35 creatures, all field abilities, Championship; A2 art | Planned |
 | M4 — Field test | 19–20 | Two weeks with 15–25 players | Return rate and ratings from the fun-test plan | Planned |
@@ -437,6 +441,12 @@ M1.7 (done, 148 tests): field abilities are data in `field-abilities.json`; a fr
 - [ ] Badge 1, obedience levels, district unlocks ("too wild to catch")
 - [ ] Field-ability system with spawn layers (Forager tested with a dev toggle until badge 2 exists in M3)
 
+**Before Gate 3**
+
+- [ ] Redraw all 8 district polygons so each arena from the World table sits in its own district, in spiral order (Munkemose currently falls in district 4, not 2)
+- [ ] Check the 7 district-1 POIs on site (public, step-free, away from traffic, sensible after dark) and set them to `verified: true`
+- [ ] Run Gate 3 with `docs/GATE3.md`: daylight sessions plus one after dark
+
 **M3 — Full Odense single-player, M4 — Field test, M5 — Multiplayer**
 
 - [ ] M3: districts 2–8 and arenas 2–8 placed and checked on site; \~35 creatures; all six field abilities; arena rematches; the Odense Championship; A2 art
@@ -479,6 +489,7 @@ M1.7 (done, 148 tests): field abilities are data in `field-abilities.json`; a fr
 
 | Version | Date | Changes |
 | --- | --- | --- |
+| 1.6 | 2026-11-21 | M2b done and live (district 1 playable to badge 1); accepted P12 (save and progression rules in packages/game) and P13 (starter level 5, starting bag, tutorial rules); district redraw and POI checks added before Gate 3 |
 | 1.5 | 2026-11-21 | M2a done and live; Worker auto-deploy and version check; onboarding: starter chosen anywhere plus a personal tutorial creature; losing faints the whole team until a rest stop or items |
 | 1.4 | 2026-11-20 | Accepted P8–P11 from M2a: field-ability name in the spawn example, Meadow/field biome and buffered rivers, no-spawn cells at 25% coverage plus never placing spawns inside no-spawn areas, light rail excluded from railway; M2a built, waiting for the spawn service deploy |
 | 1.3 | 2026-11-20 | Gate 2 qualitative pass; single-player game first, multiplayer as M5; server-authoritative shared spawns (spawn service, coarse-cell privacy, visible spawns you tap); creature art pipeline A1–A3; new roadmap M2a/M2b, Gate 3, M3 full Odense, M4 field test, M5 multiplayer; new Multiplayer and social section |
