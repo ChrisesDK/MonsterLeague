@@ -130,7 +130,7 @@
 
 ### After M2d (owner feedback) ✅
 
-- [x] Orbit camera: drag rotates around the player (circles anywhere and swipes, with fling; no jerk), zoom on the player tilts the view (65–76°, with a distance haze), no panning or recentre; always centred, GPS corrections glide; icons behind the camera hidden
+- [x] Orbit camera: drag rotates around the player (circles anywhere and swipes, with fling; no jerk), zoom on the player tilts the view (30–76°, with distance fog and a sky), no panning or recentre; always centred, GPS corrections glide; icons behind the camera hidden
 - [x] Natural recovery: fainted creatures heal by themselves after 8 hours (save v4)
 - [x] GPS dips: the last accurate fix stays in play for 90 s
 - [x] Species colours for the placeholder art (district 1 commons were all grey)

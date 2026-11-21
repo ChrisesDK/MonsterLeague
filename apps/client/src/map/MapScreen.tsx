@@ -67,6 +67,12 @@ import {
 import { useCompassHeading } from './heading';
 import {
   addBuildings3d,
+  addFog,
+  buildingRadius,
+  setBuildingsRange,
+  fogRadii,
+  setFog,
+  setFogPalette,
   setBuildings3d,
   addWorldLayers,
   applyPatternPalette,
@@ -81,7 +87,7 @@ import { markerElement, PLAYER_SVG, STAR_SVG, START } from './markers';
 import { LoadingScreen } from './LoadingScreen';
 import { TownMap } from './TownMap';
 import { useSpawns } from './useSpawns';
-import { attachOrbit, ORBIT, pitchForZoom } from './orbit';
+import { attachOrbit, hazeForPitch, ORBIT, pitchForZoom } from './orbit';
 
 const POIS: Poi[] = Object.values(content.pois);
 /** POI radius circles appear when the player is this much outside the radius, or closer. */
@@ -197,6 +203,8 @@ export function MapScreen({
   const [loadingTimedOut, setLoadingTimedOut] = useState(false);
   const mapRef = useRef<MlMap | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  /** Distance haze: only needed at steep tilts, where the map's far edge comes into view. */
+  const hazeRef = useRef<HTMLDivElement | null>(null);
   const markers = useRef(new Map<string, Marker>());
   const poiMarkers = useRef(new Map<string, { marker: Marker; img: HTMLImageElement }>());
   const player = useRef<{ figure: Marker; cone: Marker } | null>(null);
@@ -417,11 +425,19 @@ export function MapScreen({
         },
       });
       addBuildings3d(map, paletteRef.current, saveRef.current.settings.buildings3d);
+      addFog(map, paletteRef.current);
       setMapReady(true);
     });
     // Drag rotates around the player; pinch and wheel zoom on the player (no panning).
     const detachOrbit = attachOrbit(map);
     map.on('rotate', () => setBearing(map.getBearing()));
+    const haze = () => {
+      if (hazeRef.current) hazeRef.current.style.opacity = String(hazeForPitch(map.getPitch()));
+    };
+    // `move` fires for every camera change (the tilt is set by transformCameraUpdate, which
+    // doesn't fire `pitch`)
+    map.on('move', haze);
+    map.on('load', haze);
     map.on('idle', () => {
       if (drawnAt.current) setTownBuilt(true);
     });
@@ -502,6 +518,7 @@ export function MapScreen({
     if (!map || !mapReady) return;
     applyPalette(map, palette);
     applyPatternPalette(map, palette);
+    setFogPalette(map, palette);
   }, [palette, mapReady]);
 
   // Wild areas and locked districts.
@@ -562,6 +579,10 @@ export function MapScreen({
     let prev = performance.now();
     let ringAt: LatLng | null = null;
     let ringAcc = -1;
+    let fogAt: LatLng | null = null;
+    let fogZoom = -1;
+    let rangeAt: LatLng | null = null;
+    let rangeRadius = 0;
     const frame = (now: number) => {
       // the map is removed (a battle opened) one render before this effect is cleaned up
       if (mapRef.current !== map) return;
@@ -593,6 +614,24 @@ export function MapScreen({
           features: [circle(next, accuracyM.current)],
         });
       }
+      // the fog follows the player (re-drawn every few metres)
+      const zoom = map.getZoom();
+      if (!fogAt || distanceM(fogAt, next) > 4 || Math.abs(zoom - fogZoom) > 0.03) {
+        fogAt = next;
+        fogZoom = zoom;
+        setFog(map, next, zoom);
+      }
+      // buildings inside the fog are despawned (updated every ~40 m or on a zoom change)
+      const radius = buildingRadius(zoom);
+      if (
+        !rangeAt ||
+        distanceM(rangeAt, next) > 40 ||
+        Math.abs(radius - rangeRadius) / radius > 0.15
+      ) {
+        rangeAt = next;
+        rangeRadius = radius;
+        setBuildingsRange(map, next, radius + 40);
+      }
       if (offCentre && !map.isMoving()) map.jumpTo({ center: [next.lng, next.lat] });
       cullMarkers(next);
     };
@@ -607,8 +646,10 @@ export function MapScreen({
       const bottom = map.unproject([box.clientWidth / 2, box.clientHeight]);
       const behindM = distanceM(at, { lat: bottom.lat, lng: bottom.lng });
       const bearing = map.getBearing();
+      // icons stop at the fog's solid edge (they would float in the fog)
+      const maxM = fogRadii(map.getZoom())[1];
       const show = (el: HTMLElement, p: LatLng) => {
-        const v = markerInView(at, bearing, behindM, p) ? '' : 'hidden';
+        const v = markerInView(at, bearing, behindM, p, maxM) ? '' : 'hidden';
         if (el.style.visibility !== v) el.style.visibility = v;
       };
       for (const [id, { marker }] of poiMarkers.current) {
@@ -1210,7 +1251,7 @@ export function MapScreen({
     <main className="map-screen" data-night={night ? 'true' : 'false'}>
       <div ref={containerRef} className="map" data-testid="play-map" />
       {/* Haze over the far distance: hides where the map's far edge ends at a steep tilt. */}
-      <div className="map-haze" aria-hidden />
+      <div className="map-haze" ref={hazeRef} aria-hidden />
       <div className="hud-top">
         <div className="hud-left">
           {card}

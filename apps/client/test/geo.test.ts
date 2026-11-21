@@ -89,19 +89,19 @@ describe('the player figure glides to a new fix (owner request)', () => {
 });
 
 describe('map icons behind the camera are hidden (owner report)', () => {
-  const me = { lat: 55.398, lng: 10.366 };
-  const centre = { lat: 55.3998, lng: 10.3852 }; // ~1.2 km east
+  const me = { lat: 55.3998, lng: 10.3773 };
+  const centre = { lat: 55.3998, lng: 10.3852 }; // ~500 m east
   it('measures how far ahead a point lies for the camera bearing', () => {
-    expect(aheadM(me, 90, centre)).toBeGreaterThan(1100);
-    expect(aheadM(me, 270, centre)).toBeLessThan(-1100);
-    expect(Math.abs(aheadM(me, 0, centre))).toBeLessThan(250);
+    expect(aheadM(me, 90, centre)).toBeGreaterThan(450);
+    expect(aheadM(me, 270, centre)).toBeLessThan(-450);
+    expect(Math.abs(aheadM(me, 0, centre))).toBeLessThan(50);
   });
   it('looking east the centre can show; looking west it cannot', () => {
     expect(markerInView(me, 90, 300, centre)).toBe(true);
     expect(markerInView(me, 270, 300, centre)).toBe(false);
     // close behind the player (still on screen at the bottom) stays visible
     expect(markerInView(me, 270, 300, { lat: me.lat, lng: me.lng + 0.002 })).toBe(true);
-    // never further than 2 km
+    // never beyond the distance fog
     expect(markerInView(me, 90, 300, { lat: me.lat, lng: me.lng + 0.04 })).toBe(false);
   });
 });

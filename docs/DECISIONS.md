@@ -1082,3 +1082,19 @@ length, position resolution and spawn tables>`.
     degrees), but 65–72 was too subtle to see. The range is now 65–76, and a haze along the
     top of the map hides the map's far edge, which at a steep tilt ended in a visible cut
     (the "rendering glitch" on PC).
+- **D132. 30 degrees zoomed out, fog and sky** (owner feedback).
+  - **Tilt 30–76 degrees:** zoomed out the camera looks almost straight down (30); zooming
+    in tilts it up to 76.
+  - **Low distance fog** (MapLibre 4 has no built-in fog): concentric rings around the player
+    drawn above the map, clear up close, thickening from 150 m and solid from 480 m when
+    zoomed in; the distances double per zoom level out (`fogRadii`), so the fog band always
+    sits in view rather than squeezed against the horizon. The map background (past the
+    horizon) takes the fog colour.
+  - **Buildings despawn inside the fog:** the 3D layer has a `distance` filter that draws
+    only buildings within 60% of the fog band (updated every 40 m walked or on a zoom
+    change, since a filter change re-processes the tiles). Icons stop at the fog's solid
+    edge too.
+  - **Sky:** a day or night sky gradient above the fog, shown only at steep tilts (none up to
+    55 degrees, full at 76), so the near-top-down view isn't fogged.
+  - The district e2e answers a pending evolve/learn question before opening the menu (which
+    creature reaches its evolution level depends on random catches).

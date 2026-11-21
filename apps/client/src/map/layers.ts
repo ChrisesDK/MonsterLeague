@@ -336,3 +336,103 @@ export function setBuildings3d(map: MlMap, on: boolean): void {
   if (map.getLayer('buildings'))
     map.setLayoutProperty('buildings', 'visibility', on ? 'none' : 'visible');
 }
+
+/**
+ * Distance fog (owner idea: fog and sky for a round world, like walking games): concentric
+ * rings around the player, clear up close, thickening from FOG_START_M and solid from
+ * FOG_END_M out to the horizon. Drawn above everything on the map (also far buildings and
+ * labels), so the world reads as a round patch around the player. The map background (what
+ * shows past the horizon) takes the fog colour, so the horizon has no edge.
+ */
+/** Fog distances zoomed all the way in (18.5); each zoom level out doubles them. */
+export const FOG_START_M = 150;
+export const FOG_END_M = 480;
+/** Fog [start, end] in metres for a zoom level (a round world that scales with the view). */
+export function fogRadii(zoom: number): [number, number] {
+  const k = 2 ** (18.5 - zoom);
+  return [FOG_START_M * k, FOG_END_M * k];
+}
+const FOG_STEPS = 10;
+const FOG_FAR_M = 8000;
+
+function ringCoords(c: { lat: number; lng: number }, r: number, n = 72): [number, number][] {
+  const out: [number, number][] = [];
+  const kx = 111_320 * Math.cos((c.lat * Math.PI) / 180);
+  for (let i = 0; i <= n; i++) {
+    const a = (i / n) * 2 * Math.PI;
+    out.push([c.lng + (r * Math.sin(a)) / kx, c.lat + (r * Math.cos(a)) / 110_540]);
+  }
+  return out;
+}
+
+/** The fog rings around a point: bands of rising opacity, then solid fog to the horizon. */
+export function fogGeo(c: { lat: number; lng: number }, zoom = 18.5): GeoJSON.FeatureCollection {
+  const [start, end] = fogRadii(zoom);
+  const features: GeoJSON.Feature[] = [];
+  const band = (inner: number, outer: number, o: number) =>
+    features.push({
+      type: 'Feature',
+      properties: { o },
+      geometry: {
+        type: 'Polygon',
+        coordinates: [ringCoords(c, outer), ringCoords(c, inner).reverse()],
+      },
+    });
+  const step = (end - start) / FOG_STEPS;
+  for (let i = 0; i < FOG_STEPS; i++) {
+    const t = (i + 1) / FOG_STEPS;
+    band(start + i * step, start + (i + 1) * step, t * t * (3 - 2 * t));
+  }
+  band(end, Math.max(FOG_FAR_M, end * 4), 1);
+  return { type: 'FeatureCollection', features };
+}
+
+export function addFog(map: MlMap, p: Palette): void {
+  map.addSource('fog', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+  map.addLayer({
+    id: 'fog',
+    type: 'fill',
+    source: 'fog',
+    paint: { 'fill-color': p.fog, 'fill-opacity': ['get', 'o'], 'fill-antialias': false },
+  });
+  setFogPalette(map, p);
+}
+
+/** Fog colour for the rings and the map background (past the horizon). */
+export function setFogPalette(map: MlMap, p: Palette): void {
+  if (map.getLayer('fog')) map.setPaintProperty('fog', 'fill-color', p.fog);
+  if (map.getLayer('background')) map.setPaintProperty('background', 'background-color', p.fog);
+}
+
+/** Moves the fog with the player. */
+export function setFog(map: MlMap, c: { lat: number; lng: number }, zoom: number): void {
+  (map.getSource('fog') as GeoJSONSource | undefined)?.setData(fogGeo(c, zoom));
+}
+
+/** Buildings are despawned this far into the fog band (0 = where it starts, 1 = solid). */
+export const BUILDINGS_FOG_CUT = 0.6;
+
+/** Radius (m) within which 3D buildings are drawn, for a zoom level. */
+export function buildingRadius(zoom: number): number {
+  const [start, end] = fogRadii(zoom);
+  return start + (end - start) * BUILDINGS_FOG_CUT;
+}
+
+/**
+ * Despawns 3D buildings inside the fog (owner idea): only buildings within the radius of
+ * the player are drawn; past it the low fog and the sky behind it take over. A filter
+ * change re-processes the tiles, so callers update it every few tens of metres, not per
+ * frame.
+ */
+export function setBuildingsRange(
+  map: MlMap,
+  c: { lat: number; lng: number },
+  radiusM: number,
+): void {
+  if (!map.getLayer('buildings-3d')) return;
+  map.setFilter('buildings-3d', [
+    '<',
+    ['distance', { type: 'Point', coordinates: [c.lng, c.lat] }],
+    radiusM,
+  ] as never);
+}

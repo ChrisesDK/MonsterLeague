@@ -125,8 +125,8 @@ export function aheadM(
   return north * Math.cos(b) + east * Math.sin(b);
 }
 
-/** Map icons further away than this are never drawn (the play view shows ~1.5 km at most). */
-export const MARKER_MAX_M = 2000;
+/** Default limit for map icons (the play view passes the fog's solid edge instead). */
+export const MARKER_MAX_M = 700;
 
 /**
  * Whether a map icon can really be on screen. MapLibre's DOM markers have no depth test, so
@@ -139,6 +139,7 @@ export function markerInView(
   bearingDeg: number,
   behindM: number,
   p: { lat: number; lng: number },
+  maxM = MARKER_MAX_M,
 ): boolean {
-  return aheadM(player, bearingDeg, p) >= -behindM && distanceM(player, p) <= MARKER_MAX_M;
+  return aheadM(player, bearingDeg, p) >= -behindM && distanceM(player, p) <= maxM;
 }

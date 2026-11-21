@@ -1745,7 +1745,7 @@ html[data-theme='night'] .arena-field {
   background: var(--ink);
   color: var(--paper);
 }
-/* Distance haze: the tilted map's far edge (and the empty space past it) fades into the sky. */
+/* Sky at steep tilts, above the fogged horizon; opacity follows the tilt (hazeForPitch). */
 .map-haze {
   position: absolute;
   left: 0;
@@ -1754,11 +1754,7 @@ html[data-theme='night'] .arena-field {
   height: 30%;
   z-index: 1;
   pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    var(--paper) 0%,
-    var(--paper) 22%,
-    color-mix(in srgb, var(--paper) 70%, transparent) 55%,
-    transparent 100%
-  );
+  opacity: 0;
+  transition: opacity var(--dur) linear;
+  background: linear-gradient(180deg, var(--sky) 0%, var(--sky) 25%, transparent 100%);
 }

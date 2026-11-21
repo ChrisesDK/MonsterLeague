@@ -4,6 +4,7 @@ import {
   FLING_DECAY_MS,
   FLING_MAX_DEG_PER_MS,
   flingVelocity,
+  hazeForPitch,
   ORBIT,
   pitchForZoom,
 } from '../src/map/orbit';
@@ -39,11 +40,16 @@ const arc = (cx: number, cy: number, r: number, dir: 1 | -1, turns: number) =>
   });
 
 describe('tilt follows the zoom', () => {
-  it('65 degrees zoomed out, 76 zoomed in', () => {
-    expect(pitchForZoom(ORBIT.minZoom)).toBe(65);
+  it('30 degrees zoomed out, 76 zoomed in', () => {
+    expect(pitchForZoom(ORBIT.minZoom)).toBe(30);
     expect(pitchForZoom(ORBIT.maxZoom)).toBe(76);
-    expect(pitchForZoom(17.5)).toBeCloseTo(70.5);
-    expect(pitchForZoom(10)).toBe(65);
+    expect(pitchForZoom(17.5)).toBeCloseTo(53);
+    expect(pitchForZoom(10)).toBe(30);
+  });
+  it('the distance haze only shows at steep tilts', () => {
+    expect(hazeForPitch(30)).toBe(0);
+    expect(hazeForPitch(55)).toBe(0);
+    expect(hazeForPitch(76)).toBe(1);
   });
 });
 

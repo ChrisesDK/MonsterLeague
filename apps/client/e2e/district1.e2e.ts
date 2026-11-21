@@ -400,6 +400,13 @@ test('onboarding to badge 2 (districts 1 and 2, open wildlife), with reloads', a
   // Badges screen, after one more reload.
   await page.reload();
   await openMap(page);
+  // a learn-move / evolve question may be waiting (which creatures level up depends on the
+  // random catches): answer "not now" so it doesn't cover the menu button
+  for (let i = 0; i < 4; i++) {
+    const skip = page.getByTestId('choice-skip');
+    if (!(await skip.isVisible().catch(() => false))) break;
+    await skip.click();
+  }
   await page.getByTestId('menu-button').click();
   await page.getByTestId('menu-badges').click();
   await expect(page.locator('[data-testid=badge-1].earned')).toBeVisible();

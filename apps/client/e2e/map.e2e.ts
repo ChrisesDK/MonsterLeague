@@ -200,7 +200,7 @@ test('play camera: always on the player; drag rotates, zoom tilts (no panning)',
     );
   let cam = await camera(page);
   expect(cam.zoom).toBeCloseTo(17.5, 1);
-  expect(cam.pitch).toBeCloseTo(70.5, 0); // halfway between 65 (zoomed out) and 76 (zoomed in)
+  expect(cam.pitch).toBeCloseTo(53, 0); // halfway between 30 (zoomed out) and 76 (zoomed in)
   const jump = (o: Record<string, number>) =>
     page.evaluate(
       (x) =>
@@ -215,7 +215,7 @@ test('play camera: always on the player; drag rotates, zoom tilts (no panning)',
   await jump({ zoom: 13 });
   cam = await camera(page);
   expect(cam.zoom).toBeCloseTo(16.5, 1);
-  expect(cam.pitch).toBeCloseTo(65, 0);
+  expect(cam.pitch).toBeCloseTo(30, 0);
   await jump({ zoom: 17.5 });
   await page.waitForTimeout(800);
   // a one-finger drag across the screen turns the map around the player; it never pans
@@ -378,8 +378,8 @@ test('Journal: walking Route 1 with the GPS simulator completes its goal', async
 
 test('icons behind the camera are hidden (looking away from the centre)', async ({ page }) => {
   await startDone(page);
-  // ~1.2 km west of Kongens Have
-  await teleport(page, { lat: 55.398, lng: 10.366 });
+  // ~500 m west of Kongens Have (icons further than 700 m are hidden in the fog)
+  await teleport(page, { lat: 55.3998, lng: 10.3773 });
   await page.waitForTimeout(2500);
   const shown = () =>
     page.evaluate(
@@ -463,6 +463,35 @@ test('3D buildings are opt-in (Settings), and facing labels stay above them', as
   await expect.poll(async () => (await layers(page)).on3d, { timeout: 10_000 }).toBe(true);
   l = await layers(page);
   expect(l.flat).toBe(false);
+  // buildings inside the distance fog are despawned: none drawn beyond the radius
+  await page.waitForTimeout(2500);
+  const far = await page.evaluate(() => {
+    type F = { geometry: { coordinates: unknown } };
+    const points = (c: unknown): number[][] =>
+      Array.isArray(c) && typeof c[0] === 'number'
+        ? [c as number[]]
+        : (c as unknown[]).flatMap(points);
+    const m = (
+      window as unknown as {
+        __omlMap: {
+          getCenter: () => { lat: number; lng: number };
+          getZoom: () => number;
+          queryRenderedFeatures: (o: { layers: string[] }) => F[];
+        };
+      }
+    ).__omlMap;
+    const c = m.getCenter();
+    const radius = 150 * 2 ** (18.5 - m.getZoom()) + 0.6 * 330 * 2 ** (18.5 - m.getZoom()) + 40;
+    const feats = m.queryRenderedFeatures({ layers: ['buildings-3d'] });
+    const dist = (p: number[]) => Math.hypot((p[1]! - c.lat) * 110_540, (p[0]! - c.lng) * 63_300);
+    // a building is out of range when every corner is beyond the radius (+ tile slack)
+    const out = feats.filter((f) =>
+      points(f.geometry.coordinates).every((p) => dist(p) > radius + 60),
+    ).length;
+    return { drawn: feats.length, out };
+  });
+  expect(far.drawn).toBeGreaterThan(0);
+  expect(far.out).toBe(0);
 });
 
 test('HUD on demand: the Nearby strip opens from a button; no text banner while searching', async ({

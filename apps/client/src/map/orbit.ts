@@ -4,7 +4,7 @@ import type { Map as MlMap } from 'maplibre-gl';
  * Play-view camera (owner requests after M2d): the camera always looks at the player.
  * - One-finger (or mouse) drag rotates the map around the player, never pans it.
  * - Pinch and the scroll wheel zoom around the player (the map centre).
- * - Zooming in tilts the camera up (65 degrees zoomed out, 76 zoomed in); a haze along the
+ * - Zooming in tilts the camera up (30 degrees zoomed out, close to looking straight down, 76 zoomed in); a haze along the
  *   top of the map hides where the map's far edge ends.
  */
 export const ORBIT = {
@@ -12,13 +12,18 @@ export const ORBIT = {
   maxZoom: 18.5,
   zoom: 17.5,
   /** Tilt when zoomed all the way out … */
-  minPitch: 65,
+  minPitch: 30,
   /**
    * … and all the way in. 65 to 72 was too little to see on a phone; 76 shows clearly more
    * ground ahead when zoomed in, and the haze covers the far edge (see .map-haze).
    */
   maxPitch: 76,
 };
+
+/** Haze strength (0–1) for a tilt: none up to 55 degrees, full at the steepest tilt. */
+export function hazeForPitch(pitch: number): number {
+  return Math.max(0, Math.min(1, (pitch - 55) / (ORBIT.maxPitch - 55)));
+}
 
 /** Tilt for a zoom level: linear from minPitch (zoomed out) to maxPitch (zoomed in). */
 export function pitchForZoom(zoom: number): number {
