@@ -34,9 +34,11 @@ export interface OmlDev {
   /** Adds a fake spawn to the map (dev only; lets tests run without the spawn service). */
   injectSpawn: (s: {
     speciesId: string;
-    level: number;
     lat: number;
     lng: number;
+    district: number;
+    rarity?: 'common' | 'rare';
+    levelRoll?: number;
     requires?: string;
   }) => string;
   setFast: () => void;
@@ -148,7 +150,7 @@ export function GameApp({ t, locale, onLocale, devTools }: Props) {
             ? { ...next, team: [...s.team, c] }
             : { ...next, storage: [...s.storage, c] };
         }),
-      injectSpawn: ({ speciesId, level, lat, lng, requires }) => {
+      injectSpawn: ({ speciesId, lat, lng, district, rarity, levelRoll, requires }) => {
         const id = `dev${Date.now().toString(16)}${Math.floor(Math.random() * 1e6)}`;
         const now = Math.floor(Date.now() / 1000);
         setDevSpawns((list) => [
@@ -156,7 +158,9 @@ export function GameApp({ t, locale, onLocale, devTools }: Props) {
           {
             id,
             speciesId,
-            level,
+            rarity: rarity ?? 'common',
+            levelRoll: levelRoll ?? 0.5,
+            district,
             lat,
             lng,
             cellId: latLngToCell(lat, lng, 10),

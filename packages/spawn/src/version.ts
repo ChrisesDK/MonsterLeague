@@ -6,7 +6,7 @@ import { DENSITY, MAX_SPAWNS_PER_CELL, POSITION_RES, WINDOW_SECONDS, hash32 } fr
  * The golden test in test/version.test.ts fails until this is bumped and the golden
  * fingerprint is updated, so code changes can't slip through unversioned.
  */
-export const SPAWN_ALGORITHM = 2;
+export const SPAWN_ALGORITHM = 3;
 
 /**
  * Version of the spawn rules: algorithm number + tunable numbers + spawn tables. The spawn

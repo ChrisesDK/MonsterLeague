@@ -133,17 +133,47 @@ function playerSideConfig(save: SaveGame): SideConfig {
 
 export type SpawnStatus = 'ok' | 'used' | 'tooWild' | 'needsAbility' | 'teamFainted' | 'noTeam';
 
+/**
+ * GDD v1.7: common creatures can be battled in every district; rare creatures and
+ * field-ability layers in a district the player has not unlocked are "too wild"; a
+ * field-ability requirement applies everywhere.
+ */
 export function spawnStatus(
   save: SaveGame,
-  spawn: { id: string; district: number; requires: string | null },
+  spawn: { id: string; district: number; requires: string | null; rarity: 'common' | 'rare' },
 ): SpawnStatus {
   if (save.team.length === 0) return 'noTeam';
   if (save.usedSpawns[spawn.id] !== undefined) return 'used';
-  if (!isDistrictUnlocked(save.badges, spawn.district)) return 'tooWild';
+  const locked = !isDistrictUnlocked(save.badges, spawn.district);
+  if (locked && (spawn.rarity === 'rare' || spawn.requires)) return 'tooWild';
   if (spawn.requires && !save.team.some((c) => c.fieldAbility === spawn.requires))
     return 'needsAbility';
   if (teamFainted(save.team)) return 'teamFainted';
   return 'ok';
+}
+
+export type LevelBands = Record<number, readonly [number, number]>;
+
+/** The district whose band a player's common creatures use: badges + 1, at most 8. */
+export function playerBandDistrict(badges: readonly number[]): number {
+  return Math.min(8, badges.length + 1);
+}
+
+/**
+ * A spawn's level for this player (GDD v1.7): common creatures use the player's own band,
+ * rare ones their district's band. `levelRoll` in [0, 1) picks the level inside the band.
+ */
+export function spawnLevel(
+  spawn: { rarity: 'common' | 'rare'; levelRoll: number; district: number },
+  badges: readonly number[],
+  bands: LevelBands,
+): number {
+  const d = spawn.rarity === 'common' ? playerBandDistrict(badges) : spawn.district;
+  const band = bands[d];
+  if (!band) throw new Error(`No level band for district ${d}`);
+  const [lo, hi] = band;
+  const roll = Math.min(Math.max(spawn.levelRoll, 0), 0.999999);
+  return lo + Math.floor(roll * (hi - lo + 1));
 }
 
 export function startWildBattle(

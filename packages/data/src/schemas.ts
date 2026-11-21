@@ -210,6 +210,11 @@ export const SpawnSchema = z
     species: id,
     district: z.number().int().min(1).max(8),
     weight: z.number().positive(),
+    /**
+     * GDD v1.7: common creatures can be battled everywhere at the player's own level band;
+     * rare ones (and field-ability layers) use the district's band and lock with it.
+     */
+    rarity: z.enum(['common', 'rare']),
     biomes: z.record(BiomeSchema, z.number().min(0)),
     time: z.enum(['any', 'day', 'night']),
     /** Field-ability id required to see this spawn (see field-abilities.json). */

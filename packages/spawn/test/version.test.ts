@@ -22,13 +22,34 @@ const file = RegionFileSchema.parse(
  * edits don't affect it). If spawn code changes behaviour, this fails: bump SPAWN_ALGORITHM
  * in src/version.ts and add the new fingerprint here.
  */
-const GOLDEN: Record<number, string> = { 2: 'e07e871f' };
+const GOLDEN: Record<number, string> = { 2: 'e07e871f', 3: '07bfff2d' };
 
 describe('spawn rules version', () => {
   const tables: SpawnEntry[] = [
-    { species: 'torvdue', district: 1, weight: 10, biomes: { urban: 1, park: 1 }, time: 'any' },
-    { species: 'mosbille', district: 1, weight: 5, biomes: { park: 2 }, time: 'day' },
-    { species: 'lygtling', district: 1, weight: 5, biomes: { park: 1 }, time: 'night' },
+    {
+      species: 'torvdue',
+      district: 1,
+      weight: 10,
+      biomes: { urban: 1, park: 1 },
+      time: 'any',
+      rarity: 'common',
+    },
+    {
+      species: 'mosbille',
+      district: 1,
+      weight: 5,
+      biomes: { park: 2 },
+      time: 'day',
+      rarity: 'common',
+    },
+    {
+      species: 'lygtling',
+      district: 1,
+      weight: 5,
+      biomes: { park: 1 },
+      time: 'night',
+      rarity: 'common',
+    },
   ];
   const a = latLngToCell(55.3998, 10.3852, 10);
   const b = latLngToCell(55.3962, 10.3805, 10);

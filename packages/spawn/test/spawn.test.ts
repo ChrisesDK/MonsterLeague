@@ -63,21 +63,28 @@ describe('computeSpawns', () => {
     expect(run(SEED, NOON + 1)).not.toEqual(a);
   });
 
-  it('never spawns in noSpawn cells or outside spawn-table districts', () => {
+  it('never spawns in noSpawn cells; every district has its own table (GDD v1.7)', () => {
     const noSpawn = [...region.cells.values()].filter((c) => c.noSpawn).map((c) => c.id);
     expect(noSpawn.length).toBeGreaterThan(100);
     expect(run(SEED, NOON, noSpawn)).toEqual([]);
     const d8 = [...region.cells.values()].filter((c) => c.district === 8).map((c) => c.id);
-    expect(run(SEED, NOON, d8)).toEqual([]);
+    const harbour = run(SEED, NOON, d8);
+    expect(harbour.length).toBeGreaterThan(0);
+    const d8species = new Set(content.spawns.filter((e) => e.district === 8).map((e) => e.species));
+    for (const s of harbour) {
+      expect(s.district).toBe(8);
+      expect(d8species.has(s.speciesId)).toBe(true);
+    }
     expect(run(SEED, NOON, ['8a1f00000000fff', 'not-a-cell'])).toEqual([]);
   });
 
-  it('places spawns inside their cell, within the district level band, expiring at window end', () => {
+  it('places spawns inside their cell with rarity, a level roll and the district, expiring at window end', () => {
     for (const s of run()) {
       expect(latLngToCell(s.lat, s.lng, 10)).toBe(s.cellId);
-      const band = region.districts.get(region.cells.get(s.cellId)!.district)!.wildLevels;
-      expect(s.level).toBeGreaterThanOrEqual(band[0]);
-      expect(s.level).toBeLessThanOrEqual(band[1]);
+      expect(s.district).toBe(region.cells.get(s.cellId)!.district);
+      expect(['common', 'rare']).toContain(s.rarity);
+      expect(s.levelRoll).toBeGreaterThanOrEqual(0);
+      expect(s.levelRoll).toBeLessThan(1);
       expect(s.expiresAt).toBe(windowEnd(NOON));
       expect(content.species[s.speciesId]).toBeDefined();
     }

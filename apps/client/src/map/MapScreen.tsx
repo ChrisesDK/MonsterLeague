@@ -16,6 +16,7 @@ import {
   onboardingTargets,
   placeTutorial,
   restockReadyAt,
+  spawnLevel,
   spawnStatus,
   startTrainerBattle,
   startTutorialBattle,
@@ -41,7 +42,7 @@ import {
 import type { Region } from '@oml/spawn';
 import { BattleScreen } from '../BattleScreen';
 import type { Translate } from '../i18n';
-import { districtAt, districtOfCell, loadRegion } from '../game/region';
+import { districtAt, LEVEL_BANDS, loadRegion } from '../game/region';
 import {
   BATTLE_RADIUS_M,
   MAX_ACCURACY_M,
@@ -242,15 +243,12 @@ export function MapScreen({
       .map((s) => ({
         s,
         d: distanceM(position, s),
-        st: spawnStatus(save, {
-          id: s.id,
-          district: districtOfCell(region, s.cellId),
-          requires: s.requires,
-        }),
+        st: spawnStatus(save, s),
+        level: spawnLevel(s, save.badges, LEVEL_BANDS),
       }))
       .filter(({ d, st }) => d <= SHOW_RADIUS_M && st !== 'used')
       .sort((a, b) => a.d - b.d);
-  }, [spawns, position, fast, save, region]);
+  }, [spawns, position, fast, save]);
 
   // ---- tutorial creature (personal, not a shared spawn; position kept in memory only) ----
   const tutorialActive = save.onboarding === 'tutorial' && !save.battle;
@@ -443,8 +441,8 @@ export function MapScreen({
       if (!position) return;
       const s = saveRef.current;
       const name = t(`species.${spawn.speciesId}.name`);
-      const district = districtOfCell(region, spawn.cellId);
-      const st = spawnStatus(s, { id: spawn.id, district, requires: spawn.requires });
+      const district = spawn.district;
+      const st = spawnStatus(s, spawn);
       if (st === 'needsAbility') {
         setToast(t('map.hint', { ability: t(`fieldAbility.${spawn.requires}.name`) }));
         return;
@@ -461,13 +459,15 @@ export function MapScreen({
         setToast(t('map.walkCloser', { name, m: Math.round(d) }));
         return;
       }
+      // GDD v1.7: the level is per player (own band for commons, district band for rares).
+      const level = spawnLevel(spawn, s.badges, LEVEL_BANDS);
       update((cur) =>
-        startWildBattle(cur, { ...spawn, district }, Math.floor(Math.random() * 2 ** 31)),
+        startWildBattle(cur, { ...spawn, level }, Math.floor(Math.random() * 2 ** 31)),
       );
       onGate3?.({ type: 'spawnBattled' });
       openBattle();
     },
-    [position, region, t, update, onGate3, openBattle],
+    [position, t, update, onGate3, openBattle],
   );
   const tapRef = useRef(tapSpawn);
   tapRef.current = tapSpawn;
@@ -490,12 +490,12 @@ export function MapScreen({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady) return;
-    const label = (s: ApiSpawn, st: string) =>
+    const label = (s: ApiSpawn, st: string, level: number) =>
       st === 'needsAbility'
         ? t('map.hintMarker')
         : st === 'tooWild'
           ? t('map.tooWildMarker', { name: t(`species.${s.speciesId}.name`) })
-          : t('map.marker', { name: t(`species.${s.speciesId}.name`), level: s.level });
+          : t('map.marker', { name: t(`species.${s.speciesId}.name`), level });
     const want = new Map(visible.map((v) => [v.s.id, v]));
     if (tutorialSpot) want.set('tutorial', null as never);
     for (const [id, m] of markers.current) {
@@ -506,7 +506,7 @@ export function MapScreen({
         markers.current.delete(id);
       }
     }
-    for (const { s, st } of visible) {
+    for (const { s, st, level } of visible) {
       if (markers.current.has(s.id)) continue;
       const el = document.createElement('button');
       const hidden = st === 'needsAbility';
@@ -526,7 +526,7 @@ export function MapScreen({
       const marker = new maplibregl.Marker({ element: el, anchor: 'bottom' })
         .setLngLat([s.lng, s.lat])
         .addTo(map);
-      el.setAttribute('aria-label', label(s, st));
+      el.setAttribute('aria-label', label(s, st, level));
       markers.current.set(s.id, marker);
     }
     if (tutorialSpot && !markers.current.has('tutorial')) {

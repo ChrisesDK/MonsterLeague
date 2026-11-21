@@ -11,7 +11,10 @@ export const REGION = 'odense';
 export interface ApiSpawn {
   id: string;
   speciesId: string;
-  level: number;
+  /** GDD v1.7: the phone turns `levelRoll` into a level (spawnLevel in packages/game). */
+  rarity: 'common' | 'rare';
+  levelRoll: number;
+  district: number;
   cellId: string;
   lat: number;
   lng: number;

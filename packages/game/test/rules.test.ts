@@ -22,6 +22,8 @@ import {
   obedienceLevel,
   RESTOCK_SECONDS,
   spawnStatus,
+  spawnLevel,
+  playerBandDistrict,
   startTrainerBattle,
   startTutorialBattle,
   startWildBattle,
@@ -93,17 +95,59 @@ describe('badges, obedience and districts', () => {
 
 describe('spawn status', () => {
   const save = chooseStarter(newSave(SEED), 'boegling');
-  const spawn = { id: 's1', district: 1, requires: null };
+  const spawn = { id: 's1', district: 1, requires: null, rarity: 'common' as const };
   it('ok, used, too wild, needs an ability, fainted team', () => {
     expect(spawnStatus(newSave(SEED), spawn)).toBe('noTeam');
     expect(spawnStatus(save, spawn)).toBe('ok');
     expect(spawnStatus({ ...save, usedSpawns: { s1: 9 } }, spawn)).toBe('used');
-    expect(spawnStatus(save, { ...spawn, district: 2 })).toBe('tooWild');
     expect(spawnStatus(save, { ...spawn, requires: 'forager' })).toBe('needsAbility');
     expect(spawnStatus(weaken(save), spawn)).toBe('ok');
     expect(spawnStatus({ ...save, team: save.team.map((c) => ({ ...c, hp: 0 })) }, spawn)).toBe(
       'teamFainted',
     );
+  });
+});
+
+describe('GDD v1.7: open wildlife, locked rares, per-player levels', () => {
+  const save = chooseStarter(newSave(SEED), 'boegling');
+  const bands = {
+    1: [3, 8],
+    2: [8, 14],
+    3: [13, 20],
+    4: [19, 26],
+    5: [25, 32],
+    6: [31, 38],
+    7: [37, 44],
+    8: [43, 50],
+  } as const;
+  it('commons battle anywhere; rares and ability layers lock with their district', () => {
+    const far = { id: 'f', district: 8, requires: null, rarity: 'common' as const };
+    expect(spawnStatus(save, far)).toBe('ok');
+    expect(spawnStatus(save, { ...far, rarity: 'rare' })).toBe('tooWild');
+    expect(spawnStatus(save, { ...far, requires: 'forager' })).toBe('tooWild');
+    // unlocked district: the ability still applies
+    expect(spawnStatus(save, { ...far, district: 1, requires: 'forager' })).toBe('needsAbility');
+    const badge1 = { ...save, badges: [1] };
+    expect(spawnStatus(badge1, { ...far, district: 2, rarity: 'rare' })).toBe('ok');
+    expect(spawnStatus(badge1, { ...far, district: 3, rarity: 'rare' })).toBe('tooWild');
+  });
+
+  it('common levels follow the player, rare levels the district', () => {
+    const common = { rarity: 'common' as const, levelRoll: 0, district: 8 };
+    expect(spawnLevel(common, [], bands)).toBe(3);
+    expect(spawnLevel({ ...common, levelRoll: 0.9999 }, [], bands)).toBe(8);
+    expect(spawnLevel(common, [1], bands)).toBe(8);
+    expect(spawnLevel(common, [1, 2, 3, 4, 5, 6, 7, 8], bands)).toBe(43);
+    expect(spawnLevel({ ...common, rarity: 'rare' }, [], bands)).toBe(43);
+    expect(spawnLevel({ ...common, rarity: 'rare', district: 2, levelRoll: 0.5 }, [], bands)).toBe(
+      11,
+    );
+    expect(playerBandDistrict([1, 2, 3, 4, 5, 6, 7, 8])).toBe(8);
+    for (let r = 0; r < 1; r += 0.01) {
+      const l = spawnLevel({ ...common, levelRoll: r }, [1], bands);
+      expect(l).toBeGreaterThanOrEqual(8);
+      expect(l).toBeLessThanOrEqual(14);
+    }
   });
 });
 
@@ -272,7 +316,9 @@ describe('catching with a full team, storage and post-battle choices', () => {
     save = boost(save, 20);
     const spawn = { id: 'sp', speciesId: 'rendsnude', level: 3, expiresAt: 9e9, district: 1 };
     save = startWildBattle(save, spawn, 4);
-    expect(spawnStatus(save, { id: 'sp', district: 1, requires: null })).toBe('used');
+    expect(spawnStatus(save, { id: 'sp', district: 1, requires: null, rarity: 'common' })).toBe(
+      'used',
+    );
     // A worn-down wild creature (1 HP, asleep) is a sure catch with a charm.
     const wild = save.battle!.state.sides[1].team[0]!;
     wild.hp = 1;
@@ -322,7 +368,9 @@ describe('field abilities', () => {
     save = teachFieldAbility(save, c.uid, 'forager', c.moves.length >= 4 ? 0 : null);
     expect(save.team[0]!.fieldAbility).toBe('forager');
     expect(save.team[0]!.moves.length).toBeLessThanOrEqual(3);
-    expect(spawnStatus(save, { id: 'f', district: 1, requires: 'forager' })).toBe('ok');
+    expect(spawnStatus(save, { id: 'f', district: 1, requires: 'forager', rarity: 'rare' })).toBe(
+      'ok',
+    );
 
     // with 4 moves the player must forget one
     const full = {

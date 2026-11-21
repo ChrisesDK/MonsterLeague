@@ -34,7 +34,15 @@ export interface Spawn {
   /** Stable id: hash of region, window, cell and index. */
   id: string;
   speciesId: string;
-  level: number;
+  /**
+   * GDD v1.7: common creatures can be battled anywhere at the player's own level band;
+   * rare ones lock with their district and use its band.
+   */
+  rarity: 'common' | 'rare';
+  /** Deterministic roll in [0, 1); the phone turns it into a level from the right band. */
+  levelRoll: number;
+  /** District of the spawn's cell. */
+  district: number;
   cellId: string;
   lat: number;
   lng: number;
@@ -158,12 +166,13 @@ export function computeSpawns({
           break;
         }
       }
-      const [lo, hi] = district.wildLevels;
       const [lat, lng] = children[rng.int(0, children.length - 1)]!;
       out.push({
         id: spawnId(region.id, window, cellId, i),
         speciesId: entry.species,
-        level: rng.int(lo, hi),
+        rarity: entry.rarity,
+        levelRoll: rng.next(),
+        district: cell.district,
         cellId,
         lat,
         lng,

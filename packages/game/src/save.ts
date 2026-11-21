@@ -9,7 +9,7 @@ import { z } from 'zod';
  * The tutorial creature's position is kept in memory and re-rolled after a reload; used
  * spawns are kept only until they expire (≤ 15 min) and are pruned on every save.
  */
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 
 export type OnboardingStep = 'safety' | 'location' | 'starter' | 'tutorial' | 'done';
 
@@ -189,8 +189,46 @@ export const migrations: Record<number, (old: Record<string, unknown>, seed: str
         if (typeof exp === 'number') save.usedSpawns[id] = exp;
       }
     }
-    return save;
+    return { ...save, version: 1 };
   },
+  /**
+   * v1 → v2 (GDD v1.7): districts were renumbered into the new arena order. District 1 and
+   * badges are unchanged; the district numbers recorded in the field guide and in an active
+   * wild battle move to their new numbers.
+   */
+  1: (old) => {
+    const remap = (n: unknown) => (typeof n === 'number' ? (DISTRICT_V1_TO_V2[n] ?? n) : n);
+    const byDistrict = (m: unknown) =>
+      m && typeof m === 'object'
+        ? Object.fromEntries(
+            Object.entries(m as Record<string, unknown>).map(([k, v]) => [
+              k,
+              Array.isArray(v) ? [...new Set(v.map(remap))].sort() : v,
+            ]),
+          )
+        : m;
+    const battle = old.battle as Record<string, unknown> | null | undefined;
+    return {
+      ...old,
+      version: 2,
+      seen: byDistrict(old.seen),
+      caught: byDistrict(old.caught),
+      battle:
+        battle && battle.kind === 'wild' ? { ...battle, district: remap(battle.district) } : battle,
+    };
+  },
+};
+
+/** GDD v1.7 renumbering, old district → new district (1 and 3 stay). */
+export const DISTRICT_V1_TO_V2: Record<number, number> = {
+  1: 1,
+  2: 4,
+  3: 3,
+  4: 2,
+  5: 8,
+  6: 6,
+  7: 5,
+  8: 7,
 };
 
 export type LoadResult =

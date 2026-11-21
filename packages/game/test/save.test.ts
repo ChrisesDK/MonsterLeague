@@ -8,6 +8,7 @@ import {
   SAVE_VERSION,
   SaveSchema,
   startWildBattle,
+  isDistrictUnlocked,
 } from '../src/index';
 
 const SEED = '0123456789abcdef0123456789abcdef';
@@ -23,7 +24,7 @@ describe('save versions and migrations', () => {
     for (let v = 0; v < SAVE_VERSION; v++) expect(typeof migrations[v]).toBe('function');
   });
 
-  it('v0 (M2a localStorage) → v1 keeps used spawns and drops the dev battle', () => {
+  it('v0 (M2a localStorage) → v2 keeps used spawns and drops the dev battle', () => {
     const r = loadSave(
       { usedSpawns: { abc: 2_000_000_000, bad: 'x' }, battle: { spawnId: 'abc' } },
       SEED,
@@ -31,12 +32,52 @@ describe('save versions and migrations', () => {
     expect(r.ok).toBe(true);
     if (!r.ok) return;
     expect(r.migrated).toBe(true);
-    expect(r.save.version).toBe(1);
+    expect(r.save.version).toBe(2);
     expect(r.save.seed).toBe(SEED);
     expect(r.save.usedSpawns).toEqual({ abc: 2_000_000_000 });
     expect(r.save.battle).toBeNull();
     expect(r.save.onboarding).toBe('safety');
     expect(SaveSchema.safeParse(r.save).success).toBe(true);
+  });
+
+  it('v1 → v2 (GDD v1.7) renumbers districts in the field guide and an active wild battle', () => {
+    const v2 = chooseStarter(newSave(SEED), 'gnistkat');
+    const v1 = {
+      ...v2,
+      version: 1,
+      badges: [1],
+      seen: { torvdue: [1, 2], brokrabbe: [4], kulingmaage: [5] },
+      caught: { grimaelling: [2] },
+      battle: {
+        kind: 'wild',
+        spawnId: 'x',
+        expiresAt: 2e9,
+        district: 2,
+        state: startWildBattle(
+          v2,
+          { id: 'x', speciesId: 'torvdue', level: 4, expiresAt: 2e9, district: 2 },
+          1,
+        ).battle!.state,
+      },
+    };
+    const r = loadSave(JSON.parse(JSON.stringify(v1)), 'other');
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.migrated).toBe(true);
+    expect(r.save.version).toBe(2);
+    // old 2 (Munkemose) → 4, old 4 (cathedral) → 2, old 5 (harbour) → 8
+    expect(r.save.seen).toEqual({ torvdue: [1, 4], brokrabbe: [2], kulingmaage: [8] });
+    expect(r.save.caught).toEqual({ grimaelling: [4] });
+    expect(r.save.battle?.kind === 'wild' && r.save.battle.district).toBe(4);
+    // badge 1 is unchanged and now opens the cathedral district (2)
+    expect(r.save.badges).toEqual([1]);
+    expect(isDistrictUnlocked(r.save.badges, 2)).toBe(true);
+    expect(isDistrictUnlocked(r.save.badges, 3)).toBe(false);
+  });
+
+  it('a v0 save migrates through v1 to v2', () => {
+    const r = loadSave({ usedSpawns: { a: 2e9 } }, SEED);
+    expect(r.ok && r.save.version).toBe(2);
   });
 
   it('reports corrupt or newer saves instead of throwing', () => {

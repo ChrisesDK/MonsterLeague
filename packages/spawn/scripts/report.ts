@@ -1,6 +1,8 @@
 /**
  * Spawn density report: simulated walks through districts with spawn tables, counting
  * battle-able spawns (no field ability needed) that come within 40 m, per km walked.
+ * A second walk (GDD v1.7) counts only common creatures outside district 1: what a
+ * player with 0 badges can battle near home.
  * GDD targets: one per 150–300 m in parks, forest and along water; one per 300–500 m in
  * dense streets. Deterministic (fixed seeds), so results are reproducible.
  */
@@ -17,9 +19,8 @@ const file = RegionFileSchema.parse(
 );
 const region = decodeRegion(file);
 const tables = content.spawns;
-const districts = [...new Set(tables.map((t) => t.district))];
-const area = [...region.cells.values()].filter((c) => districts.includes(c.district));
-const inArea = new Set(area.map((c) => c.id));
+const districts = [...new Set(tables.map((t) => t.district))].sort((a, b) => a - b);
+const allCells = [...region.cells.values()].filter((c) => districts.includes(c.district));
 
 type Klass = 'green' | 'streets' | 'other';
 const TARGET: Record<Exclude<Klass, 'other'>, [number, number]> = {
@@ -41,80 +42,108 @@ const mLng = (lat: number) => 111_320 * Math.cos((lat * Math.PI) / 180);
 const dist = (a: [number, number], b: [number, number]) =>
   Math.hypot((a[0] - b[0]) * M_LAT, (a[1] - b[1]) * mLng(a[0]));
 
-const rng = new Rng(seedRng(20261120));
-const walked: Record<Klass, number> = { green: 0, streets: 0, other: 0 };
-const found: Record<Klass, number> = { green: 0, streets: 0, other: 0 };
-let windows = 0;
-let totalSpawns = 0;
-const start = windowOf(Date.UTC(2026, 10, 20, 0, 0) / 1000);
-for (let w = 0; w < 96 * 3; w += 3) {
-  // Every 45 min over 3 days: covers day and night.
-  const window = start + w;
-  const seed = `report-${window}`;
-  const spawns = computeSpawns({
-    region,
-    spawnTables: tables,
-    seed,
-    window,
-    cellIds: inArea,
-  }).filter((s) => s.requires === null);
-  windows++;
-  totalSpawns += spawns.length;
-  const byCell = new Map<string, Spawn[]>();
-  for (const s of spawns) byCell.set(s.cellId, [...(byCell.get(s.cellId) ?? []), s]);
+interface Result {
+  walked: Record<Klass, number>;
+  found: Record<Klass, number>;
+  windows: number;
+  spawns: number;
+  cells: number;
+}
 
-  for (let walker = 0; walker < 12; walker++) {
-    const startCell = area[rng.int(0, area.length - 1)]!;
-    let pos = cellToLatLng(startCell.id) as [number, number];
-    let heading = rng.next() * 2 * Math.PI;
-    const seen = new Set<string>();
-    for (let m = 0; m < WALK_M; m += STEP_M) {
-      heading += (rng.next() - 0.5) * 0.6;
-      const next: [number, number] = [
-        pos[0] + (Math.cos(heading) * STEP_M) / M_LAT,
-        pos[1] + (Math.sin(heading) * STEP_M) / mLng(pos[0]),
-      ];
-      if (!inArea.has(latLngToCell(next[0], next[1], 10))) {
-        heading += Math.PI + (rng.next() - 0.5);
-        continue;
-      }
-      pos = next;
-      const cellId = latLngToCell(pos[0], pos[1], 10);
-      const k = klass(region.cells.get(cellId)!);
-      walked[k] += STEP_M;
-      for (const near of gridDisk(cellId, 1)) {
-        for (const s of byCell.get(near) ?? []) {
-          if (!seen.has(s.id) && dist(pos, [s.lat, s.lng]) <= REACH_M) {
-            seen.add(s.id);
-            found[k]++;
+/** Seeded walks through `cells`, counting spawns that pass `keep` within REACH_M. */
+function measure(cells: RegionCell[], keep: (s: Spawn) => boolean): Result {
+  const inArea = new Set(cells.map((c) => c.id));
+  const rng = new Rng(seedRng(20261120));
+  const walked: Record<Klass, number> = { green: 0, streets: 0, other: 0 };
+  const found: Record<Klass, number> = { green: 0, streets: 0, other: 0 };
+  let windows = 0;
+  let totalSpawns = 0;
+  const start = windowOf(Date.UTC(2026, 10, 20, 0, 0) / 1000);
+  for (let w = 0; w < 96 * 3; w += 3) {
+    // Every 45 min over 3 days: covers day and night.
+    const window = start + w;
+    const spawns = computeSpawns({
+      region,
+      spawnTables: tables,
+      seed: `report-${window}`,
+      window,
+      cellIds: inArea,
+    }).filter(keep);
+    windows++;
+    totalSpawns += spawns.length;
+    const byCell = new Map<string, Spawn[]>();
+    for (const s of spawns) byCell.set(s.cellId, [...(byCell.get(s.cellId) ?? []), s]);
+
+    for (let walker = 0; walker < 12; walker++) {
+      const startCell = cells[rng.int(0, cells.length - 1)]!;
+      let pos = cellToLatLng(startCell.id) as [number, number];
+      let heading = rng.next() * 2 * Math.PI;
+      const seen = new Set<string>();
+      for (let m = 0; m < WALK_M; m += STEP_M) {
+        heading += (rng.next() - 0.5) * 0.6;
+        const next: [number, number] = [
+          pos[0] + (Math.cos(heading) * STEP_M) / M_LAT,
+          pos[1] + (Math.sin(heading) * STEP_M) / mLng(pos[0]),
+        ];
+        if (!inArea.has(latLngToCell(next[0], next[1], 10))) {
+          heading += Math.PI + (rng.next() - 0.5);
+          continue;
+        }
+        pos = next;
+        const cellId = latLngToCell(pos[0], pos[1], 10);
+        const k = klass(region.cells.get(cellId)!);
+        walked[k] += STEP_M;
+        for (const near of gridDisk(cellId, 1)) {
+          for (const s of byCell.get(near) ?? []) {
+            if (!seen.has(s.id) && dist(pos, [s.lat, s.lng]) <= REACH_M) {
+              seen.add(s.id);
+              found[k]++;
+            }
           }
         }
       }
     }
   }
+  return { walked, found, windows, spawns: totalSpawns, cells: cells.length };
 }
 
-const km2 = (area.length * 0.015047).toFixed(1);
+function print(r: Result, gate: boolean): boolean {
+  let ok = true;
+  for (const k of ['green', 'streets', 'other'] as const) {
+    const perKm = r.found[k] / (r.walked[k] / 1000);
+    const mPer = r.found[k] ? r.walked[k] / r.found[k] : Infinity;
+    const target = k === 'other' || !gate ? null : TARGET[k];
+    const pass = target ? mPer >= target[0] && mPer <= target[1] : null;
+    if (pass === false) ok = false;
+    console.log(
+      `  ${k.padEnd(8)} ${(r.walked[k] / 1000).toFixed(0).padStart(5)} km walked  ${perKm.toFixed(2).padStart(5)} spawns/km  ` +
+        `1 per ${mPer.toFixed(0).padStart(4)} m` +
+        (target ? `   target ${target[0]}–${target[1]} m ${pass ? '✅' : '❌'}` : '   (no target)'),
+    );
+  }
+  const total = Object.values(r.walked).reduce((a, b) => a + b, 0) / 1000;
+  const n = Object.values(r.found).reduce((a, b) => a + b, 0);
+  console.log(
+    `  all      ${total.toFixed(0).padStart(5)} km walked  ${(n / total).toFixed(2).padStart(5)} spawns/km`,
+  );
+  return ok;
+}
+
+const main = measure(allCells, (s) => s.requires === null);
 console.log(
-  `Spawn density report (districts ${districts.join(', ')}: ${area.length} cells, ${km2} km²)`,
+  `Spawn density report (districts ${districts.join(', ')}: ${main.cells} cells, ${(main.cells * 0.015047).toFixed(1)} km²)`,
 );
 console.log(
-  `${windows} windows over 3 days (day and night), ${(totalSpawns / windows).toFixed(0)} battle-able spawns per window`,
+  `${main.windows} windows over 3 days (day and night), ${(main.spawns / main.windows).toFixed(0)} battle-able spawns per window`,
 );
 console.log(`Walks: 12 per window × ${WALK_M} m, reach ${REACH_M} m\n`);
-let ok = true;
-for (const k of ['green', 'streets', 'other'] as const) {
-  const perKm = found[k] / (walked[k] / 1000);
-  const mPer = found[k] ? walked[k] / found[k] : Infinity;
-  const target = k === 'other' ? null : TARGET[k];
-  const pass = target ? mPer >= target[0] && mPer <= target[1] : null;
-  if (pass === false) ok = false;
-  console.log(
-    `  ${k.padEnd(8)} ${(walked[k] / 1000).toFixed(0).padStart(5)} km walked  ${perKm.toFixed(2).padStart(5)} spawns/km  ` +
-      `1 per ${mPer.toFixed(0).padStart(4)} m` +
-      (target ? `   target ${target[0]}–${target[1]} m ${pass ? '✅' : '❌'}` : '   (no target)'),
-  );
-}
+console.log('Battle-able spawns (no field ability needed; districts unlocked):');
+const ok = print(main, true);
+
+const outside = allCells.filter((c) => c.district !== 1);
+const zero = measure(outside, (s) => s.requires === null && s.rarity === 'common');
+console.log('\nA player with 0 badges outside district 1 (common creatures only, GDD v1.7):');
+print(zero, false);
 console.log(
   '\nGreen = water+forest+park+meadow ≥ 50% of the cell; streets = urban+historic+industrial ≥ 50%.',
 );

@@ -1,4 +1,6 @@
 import type { RegionFile } from '@oml/data';
+import type { LevelBands } from '@oml/game';
+import districtsRaw from '@oml/data/content/districts.odense.geojson?raw';
 import { decodeRegion, type Region } from '@oml/spawn';
 import { latLngToCell } from 'h3-js';
 
@@ -18,6 +20,11 @@ export function districtAt(region: Region | null, p: { lat: number; lng: number 
   return region.cells.get(latLngToCell(p.lat, p.lng, 10))?.district ?? null;
 }
 
-export function districtOfCell(region: Region | null, cellId: string): number {
-  return region?.cells.get(cellId)?.district ?? 1;
-}
+/** Level band per district, from the district file (GDD World table). */
+export const LEVEL_BANDS: LevelBands = Object.fromEntries(
+  (
+    JSON.parse(districtsRaw) as {
+      features: { properties: { id: number; wildLevels: [number, number] } }[];
+    }
+  ).features.map((f) => [f.properties.id, f.properties.wildLevels]),
+);

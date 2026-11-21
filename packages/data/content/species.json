@@ -636,6 +636,92 @@
         }
       ],
       "placeholder": true
+    },
+    {
+      "id": "kampetrold",
+      "types": ["stone"],
+      "baseStats": {
+        "hp": 85,
+        "atk": 90,
+        "def": 95,
+        "spd": 50
+      },
+      "catchRate": 45,
+      "baseXp": 150,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "shoulder_shove"
+        },
+        {
+          "level": 1,
+          "moveId": "hunker_down"
+        },
+        {
+          "level": 8,
+          "moveId": "cobble_toss"
+        },
+        {
+          "level": 12,
+          "moveId": "stern_glare"
+        },
+        {
+          "level": 16,
+          "moveId": "grit_spray"
+        },
+        {
+          "level": 22,
+          "moveId": "cobbler_kick"
+        },
+        {
+          "level": 32,
+          "moveId": "rampart_slam"
+        }
+      ],
+      "placeholder": true
+    },
+    {
+      "id": "ellepige",
+      "types": ["grove", "spirit"],
+      "baseStats": {
+        "hp": 80,
+        "atk": 85,
+        "def": 75,
+        "spd": 90
+      },
+      "catchRate": 45,
+      "baseXp": 150,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "beech_lash"
+        },
+        {
+          "level": 1,
+          "moveId": "wisp_flicker"
+        },
+        {
+          "level": 10,
+          "moveId": "drowsy_pollen"
+        },
+        {
+          "level": 16,
+          "moveId": "root_snare"
+        },
+        {
+          "level": 24,
+          "moveId": "hollow_wail"
+        },
+        {
+          "level": 30,
+          "moveId": "sap_draw"
+        },
+        {
+          "level": 38,
+          "moveId": "moonless_stare"
+        }
+      ],
+      "placeholder": true
     }
   ]
 }
