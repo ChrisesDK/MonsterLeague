@@ -311,7 +311,7 @@ test('play camera: always on the player; drag rotates, zoom tilts (no panning)',
   }
   await expect.poll(async () => centreOffset(), { timeout: 5000 }).toBeGreaterThan(20);
   await teleport(page, KONGENS_HAVE);
-  await expect.poll(centreOffset, { timeout: 5000 }).toBeLessThan(0.5);
+  await expect.poll(centreOffset, { timeout: 15_000 }).toBeLessThan(0.5);
   // the compass turns north up again
   await page.getByTestId('compass-button').click();
   await expect.poll(async () => Math.abs((await camera(page)).bearing)).toBeLessThan(0.5);

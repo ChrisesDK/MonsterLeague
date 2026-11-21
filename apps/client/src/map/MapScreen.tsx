@@ -587,7 +587,8 @@ export function MapScreen({
       // the map is removed (a battle opened) one render before this effect is cleaned up
       if (mapRef.current !== map) return;
       raf = requestAnimationFrame(frame);
-      const dt = Math.min(0.1, (now - prev) / 1000);
+      // capped so a long pause (tab in background) doesn't jump, but slow phones still keep pace
+      const dt = Math.min(0.25, (now - prev) / 1000);
       prev = now;
       const goal = fixTarget.current;
       if (!goal) return;
