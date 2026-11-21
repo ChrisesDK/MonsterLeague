@@ -978,3 +978,13 @@ length, position resolution and spawn tables>`.
   colours (`colors: [body, accent]` in species.json, chosen to suit each creature: the
   pigeon slate blue, the gull white with a yellow beak, the crab orange…). Marker rings
   keep the type colour so the type still reads at a glance. A1 art was regenerated.
+- **D124. Always centred, smooth corrections** (owner feedback). Before, the camera
+  followed with a 600 ms `easeTo` per GPS fix, skipped while another camera move ran, while
+  the figure jumped at once; so after a zoom or rotate, or with sparse fixes, the camera
+  could sit off the figure. Now one frame loop draws the player: the figure glides towards
+  the newest playable fix (exponential, 0.45 s time constant; jumps over 300 m snap) and the
+  camera centre is set to the figure's position whenever the map is idle. During gestures
+  and camera animations `transformCameraUpdate` pins the centre to the same position
+  (calling `jumpTo` then would cancel the gesture). The accuracy ring moves with the figure.
+  The e2e test checks the figure is mid-glide 150 ms after a 22 m correction and that the
+  camera stays within 3 px of it throughout.

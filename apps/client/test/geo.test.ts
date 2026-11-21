@@ -1,6 +1,7 @@
 import { latLngToCell } from 'h3-js';
 import { describe, expect, it } from 'vitest';
 import {
+  glideStep,
   coarseCellsAround,
   distanceM,
   offset,
@@ -64,5 +65,23 @@ describe('GPS dips (owner request after M2d)', () => {
     expect(playableFix(weak, good, good.time + GPS_GRACE_MS)).toBe(good);
     expect(playableFix(weak, good, good.time + GPS_GRACE_MS + 1)).toBeNull();
     expect(playableFix(weak, null, weak.time)).toBeNull();
+  });
+});
+
+describe('the player figure glides to a new fix (owner request)', () => {
+  const a = { lat: 55.4, lng: 10.38 };
+  const b = { lat: 55.4002, lng: 10.38 }; // ~22 m north
+  it('moves part of the way each frame and arrives', () => {
+    const one = glideStep(a, b, 1 / 60);
+    expect(distanceM(a, one)).toBeGreaterThan(0.3);
+    expect(distanceM(one, b)).toBeLessThan(distanceM(a, b));
+    let p = a;
+    for (let i = 0; i < 180; i++) p = glideStep(p, b, 1 / 60); // 3 s
+    expect(p).toEqual(b);
+  });
+  it('snaps on a first fix or a teleport', () => {
+    expect(glideStep(null, b, 0.016)).toBe(b);
+    const far = { lat: 55.41, lng: 10.38 };
+    expect(glideStep(a, far, 0.016)).toBe(far);
   });
 });

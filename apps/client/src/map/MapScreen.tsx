@@ -55,6 +55,7 @@ import { Icon } from '../ui/icons';
 import {
   BATTLE_RADIUS_M,
   MAX_ACCURACY_M,
+  glideStep,
   playableFix,
   SHOW_RADIUS_M,
   distanceM,
@@ -179,6 +180,10 @@ export function MapScreen({
   const markers = useRef(new Map<string, Marker>());
   const poiMarkers = useRef(new Map<string, { marker: Marker; img: HTMLImageElement }>());
   const player = useRef<{ figure: Marker; cone: Marker } | null>(null);
+  /** Where the player figure is drawn (glides towards `fixTarget`). */
+  const drawnAt = useRef<LatLng | null>(null);
+  const fixTarget = useRef<LatLng | null>(null);
+  const accuracyM = useRef(10);
   const targetMarker = useRef<Marker | null>(null);
   const announced = useRef(new Set<string>());
   const seenForGate3 = useRef(new Set<string>());
@@ -332,7 +337,13 @@ export function MapScreen({
       minPitch: CAMERA.minPitch,
       maxPitch: CAMERA.maxPitch,
       // the tilt always follows the zoom (zoomed in = looking further ahead)
-      transformCameraUpdate: ({ zoom }) => ({ pitch: pitchForZoom(zoom) }),
+      // the tilt follows the zoom, and the camera never leaves the (shown) player
+      transformCameraUpdate: ({ zoom }) => ({
+        pitch: pitchForZoom(zoom),
+        ...(drawnAt.current
+          ? { center: new maplibregl.LngLat(drawnAt.current.lng, drawnAt.current.lat) }
+          : {}),
+      }),
       maxBounds: [
         [10.25, 55.32],
         [10.52, 55.46],
@@ -487,30 +498,68 @@ export function MapScreen({
     }
   }, [save, mapReady]);
 
-  // Player figure, accuracy ring, follow camera, POI radius circles near the player.
+  // The newest playable fix (during a short GPS dip: the last accurate one) and its accuracy.
+  const playerAt = goodFix ?? last;
+  useEffect(() => {
+    if (!playerAt || !last) return;
+    fixTarget.current = { lat: playerAt.lat, lng: playerAt.lng };
+    accuracyM.current = Math.min(Math.max(last.accuracy, 5), 200);
+  }, [playerAt, last]);
+
+  // POI radius circles near the player (per fix).
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !mapReady || !last) return;
-    // During a short GPS dip the player stays at the last accurate fix.
-    const here = goodFix ?? last;
-    player.current?.figure.setLngLat([here.lng, here.lat]);
-    player.current?.cone.setLngLat([here.lng, here.lat]);
-    (map.getSource('player') as GeoJSONSource | undefined)?.setData({
-      type: 'FeatureCollection',
-      features: [circle(here, Math.min(Math.max(last.accuracy, 5), 200))],
-    });
+    if (!map || !mapReady || !playerAt) return;
     const colours = { arena: '#c8553d', trainer: '#3d6fa8', restStop: '#4f9a63' };
     (map.getSource('poi-radius') as GeoJSONSource | undefined)?.setData({
       type: 'FeatureCollection',
-      features: POIS.filter((p) => distanceM(here, p) <= p.radius + RADIUS_SHOW_M).map((p) => ({
+      features: POIS.filter((p) => distanceM(playerAt, p) <= p.radius + RADIUS_SHOW_M).map((p) => ({
         ...circle(p, p.radius),
         properties: { colour: colours[p.kind], id: p.id },
       })),
     });
-    // The camera always looks at the player. Don't cut short another camera move (reset
-    // north, a zoom); the next fix catches up.
-    if (!map.isEasing()) map.easeTo({ center: [here.lng, here.lat], duration: 600 });
-  }, [last, goodFix, mapReady]);
+  }, [playerAt, mapReady]);
+
+  // One frame loop moves the player: the figure glides towards the newest fix, and the
+  // camera stays exactly on it. While a gesture or camera animation runs, the camera's
+  // transformCameraUpdate pins the centre to the same position instead (jumpTo would cancel
+  // the gesture).
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapReady) return;
+    let raf = 0;
+    let prev = performance.now();
+    let ringAt: LatLng | null = null;
+    const frame = (now: number) => {
+      // the map is removed (a battle opened) one render before this effect is cleaned up
+      if (mapRef.current !== map) return;
+      raf = requestAnimationFrame(frame);
+      const dt = Math.min(0.1, (now - prev) / 1000);
+      prev = now;
+      const goal = fixTarget.current;
+      if (!goal) return;
+      const before = drawnAt.current;
+      const next = glideStep(before, goal, dt);
+      drawnAt.current = next;
+      const centre = map.getCenter();
+      const offCentre =
+        Math.abs(centre.lat - next.lat) > 1e-7 || Math.abs(centre.lng - next.lng) > 1e-7;
+      if (next !== before) {
+        player.current?.figure.setLngLat([next.lng, next.lat]);
+        player.current?.cone.setLngLat([next.lng, next.lat]);
+      }
+      if (!ringAt || distanceM(ringAt, next) > 0.5 || next === goal) {
+        ringAt = next;
+        (map.getSource('player') as GeoJSONSource | undefined)?.setData({
+          type: 'FeatureCollection',
+          features: [circle(next, accuracyM.current)],
+        });
+      }
+      if (offCentre && !map.isMoving()) map.jumpTo({ center: [next.lng, next.lat] });
+    };
+    raf = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(raf);
+  }, [mapReady]);
 
   useEffect(() => {
     const cone = player.current?.cone;

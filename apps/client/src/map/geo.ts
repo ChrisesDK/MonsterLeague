@@ -89,3 +89,26 @@ export function playableFix(latest: Fix | null, lastGood: Fix | null, nowMs: num
   if (lastGood && nowMs - lastGood.time <= GPS_GRACE_MS) return lastGood;
   return null;
 }
+
+/** How quickly the player figure glides to a new fix (time constant, seconds). */
+export const GLIDE_SECONDS = 0.45;
+/** Jumps longer than this (a first fix, a teleport) are not animated. */
+export const GLIDE_SNAP_M = 300;
+
+/**
+ * One animation step of the shown player position towards the newest fix: exponential
+ * easing, so a GPS correction slides into place instead of jumping (owner request).
+ */
+export function glideStep(
+  shown: { lat: number; lng: number } | null,
+  target: { lat: number; lng: number },
+  dtSeconds: number,
+): { lat: number; lng: number } {
+  if (!shown || distanceM(shown, target) > GLIDE_SNAP_M) return target;
+  const k = 1 - Math.exp(-Math.max(0, dtSeconds) / GLIDE_SECONDS);
+  const next = {
+    lat: shown.lat + (target.lat - shown.lat) * k,
+    lng: shown.lng + (target.lng - shown.lng) * k,
+  };
+  return distanceM(next, target) < 0.05 ? target : next;
+}

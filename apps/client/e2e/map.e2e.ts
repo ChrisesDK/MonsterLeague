@@ -247,6 +247,40 @@ test('play camera: always on the player; drag rotates, zoom tilts (no panning)',
   // the camera settles back on the player (the next GPS fix re-centres it)
   await expect.poll(centreOffset, { timeout: 10_000 }).toBeLessThan(3);
   await expect(page.getByTestId('recentre-button')).toHaveCount(0);
+  // a GPS correction: the figure glides there (no snap) and the camera stays on it
+  const figureOffset = () =>
+    page.evaluate(() => {
+      const map = (
+        window as unknown as {
+          __omlMap: {
+            getContainer: () => HTMLElement;
+            project: (c: unknown) => { x: number; y: number };
+            getCenter: () => unknown;
+          };
+        }
+      ).__omlMap;
+      const box = map.getContainer().getBoundingClientRect();
+      const fig = document.querySelector('[data-testid=player-marker]')!.getBoundingClientRect();
+      const c = map.project(map.getCenter());
+      // the figure is anchored at its feet (bottom centre, 6 px offset)
+      return {
+        dx: fig.left + fig.width / 2 - box.left - c.x,
+        dy: fig.bottom - 6 - box.top - c.y,
+      };
+    });
+  await teleport(page, { lat: KONGENS_HAVE.lat + 0.0002, lng: KONGENS_HAVE.lng });
+  await page.waitForTimeout(150);
+  const mid = await centreOffset();
+  expect(mid).toBeGreaterThan(1); // still on its way (≈ 22 m in total)
+  expect(mid).toBeLessThan(22);
+  for (let i = 0; i < 5; i++) {
+    const o = await figureOffset();
+    expect(Math.hypot(o.dx, o.dy)).toBeLessThan(3); // camera on the figure, also mid-glide
+    await page.waitForTimeout(120);
+  }
+  await expect.poll(async () => centreOffset(), { timeout: 5000 }).toBeGreaterThan(20);
+  await teleport(page, KONGENS_HAVE);
+  await expect.poll(centreOffset, { timeout: 5000 }).toBeLessThan(0.5);
   // the compass turns north up again
   await page.getByTestId('compass-button').click();
   await expect.poll(async () => Math.abs((await camera(page)).bearing)).toBeLessThan(0.5);
