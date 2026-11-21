@@ -216,7 +216,7 @@ status here changes to `accepted` (or `rejected`, with a reason).
   Stone rare and Fruens Bøge with no Grove rare. With Kampetrold, the Stone arena also
   has a second Stone species besides Brokrabbe (Søormling is kept off early arenas).
   Implemented in M2c (D106).
-- **Status:** open
+- **Status:** accepted (GDD v1.8)
 
 ### P15. Arena 2 stands in Klosterhaven, beside the cathedral, not on the square
 
@@ -228,4 +228,4 @@ status here changes to `accepted` (or `rejected`, with a reason).
   would reach into district 1, which POI validation rejects. Klosterhaven, just south of
   the cathedral, is 176 m inside district 2. Implemented in M2c (D108); `verified: false`
   until checked on site.
-- **Status:** open
+- **Status:** accepted (GDD v1.8)

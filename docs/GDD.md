@@ -40,6 +40,42 @@ Nov 20, 2026 · @Christian
 
 **Onboarding details (accepted P13):** starters begin at level 5; the starting bag holds 5 Basic Charms and 2 Small Tonics; the tutorial creature is level 3 and easy to catch. The tutorial only ends with a catch: if the creature gets away or wins, the team is healed, up to 3 charms are given back, and a new tutorial creature appears.
 
+## Game feel: a mainline game, served like a walking game
+
+**The aim is the feel of a mainline monster RPG (routes, tall grass, trainers, towns, badges, a Town Map) delivered through a walking-game view (a tilted map following the player, creatures visible around you).** Original look and layout throughout; no copying of any existing game's interface.
+
+|  | Walking games (Pokémon GO) | Mainline games (Switch era) | This game |
+| --- | --- | --- | --- |
+| World view | Tilted map following the avatar, limited zoom | 3D world plus a Town Map | Tilted map following the player, limited zoom; a separate Town Map |
+| Where creatures live | Everywhere | Only grass, water, caves; none in towns | Everywhere, but sparse in streets ("towns") and dense in wild areas ("tall grass"), which the map draws as grass and ripples |
+| Encounters | Many, seconds each | Near-constant in grass, about a minute each | Visible creatures; fewer battles than walking games because each is a real 1–2 minute fight |
+| Structure | No story or routes | Towns linked by routes with trainers | Named routes between arenas along real park and river paths, with trainers on them |
+| Guidance | Little | Story objectives, map markers | A Journal with the next goal always on screen |
+
+**Map view.** The camera follows the player, tilted about 50°, with zoom limited to roughly street level (about 16.5–18.5) so the world feels close. Two-finger rotate is allowed; a compass button resets north. Creatures are drawn up to 200 m away (faint beyond 100 m) and can be battled within 40 m. A "Nearby" strip lists creatures in range with distance. The map switches to a night style after sunset.
+
+**Wild areas and routes.**
+
+- **Wild areas** are cells whose biome mix is mainly park, forest, meadow/field or water edge. The map draws them with a grass or ripple texture, so players can see where creatures live, as with tall grass.
+- **Routes** are named walking routes between consecutive arenas, following real footpaths, park paths and the river path where possible (for example along Odense Å). They are drawn as dotted paths. Route trainers stand on them, and creatures are denser within about 30 m of a route.
+- **Streets** stay sparse, like the towns between routes, and mostly have urban creatures.
+
+**Town Map.** A full-screen overview of Odense in the same paper style: the 8 districts (locked ones dimmed), arenas with badge state, routes, rest stops, the player's position, and the Journal's current target. Wider zoom than the play view, and no turn-by-turn directions: straight-line distance and the route name only.
+
+**Journal (quest log).**
+
+- **Main goal:** always visible on the map as a small card with a direction arrow and distance, for example "Walk Route 1 to Klosterhaven", "Beat the trainers on Route 1 (1/2)" or "Challenge the Cathedral arena".
+- **Side goals per district:** finite and never daily, for example "Explore the Munke Mose wild area", "Catch a Water creature by Odense Å" or "Find this district's rare creature".
+- **First launch** ends with one clear goal on screen, so a new player always knows what to do next.
+
+**Look and feel.**
+
+- A storybook paper style inspired by Danish fairy tales.
+- One design system: colours, type, components and motion, with a night palette.
+- A heads-up display that never covers the player.
+- Big friendly buttons and satisfying feedback on catches, badges and level-ups.
+- Interface and icons are original; no ball-shaped menu button or other borrowed trade dress.
+
 ## World: Odense districts and progression
 
 **Odense is split into 8 districts drawn on real borders (railways, ring roads, Odense Å), each with one arena. The arena order is a loop: three small inner-city districts first, then south along the river, out through the forest and the open-air museum, and finally the long walk north to the harbour.** Each arena keeps the theme that fits its place. District borders live in `content/districts.odense.geojson`.
@@ -47,7 +83,7 @@ Nov 20, 2026 · @Christian
 | # | District | Arena location | Arena theme | Level band | Field ability earned |
 | --- | --- | --- | --- | --- | --- |
 | 1 | Centrum / station | Kongens Have | Folk | 3–8 | — |
-| 2 | Old town and cathedral | Skt. Knuds square | Stone | 8–14 | Forager |
+| 2 | Old town and cathedral | Klosterhaven, south of Skt. Knuds Kirke | Stone | 8–14 | Forager |
 | 3 | H.C. Andersen quarter | H.C. Andersens Hus | Spirit | 13–20 | Angler |
 | 4 | Munkemose and the river | Munkemose | Water | 19–26 | Runereader |
 | 5 | Zoo and river south | Odense Zoo (outside) | Mixed | 25–32 | Nightseer |
@@ -96,7 +132,7 @@ The only immunities are Folk ↔ Spirit. Changes since v1.0: Storm → Stone wen
 
 Every species needs: an ID, name, types, base stats, a learnset by level, catch rate, base XP, evolution rule, biome weights, and a sprite plus 3 animations (idle, attack, faint). Names must be original and checked against existing monster-game names before use.
 
-**Current placeholder roster** (Danish names, all marked `placeholder: true` in `packages/data/content/species.json`, which is the source of truth for species data): starter lines Gnistkat → Bålkat (Fire), Åodder → Strømodder (Water), Bøgling → Bøgevætte (Grove), plus Grimælling, Rendsnude, Lygtling, Loftnisse, Søormling and others; 33 moves and 6 items.
+**Current placeholder roster** (Danish names, all marked `placeholder: true` in `packages/data/content/species.json`, which is the source of truth for species data): starter lines Gnistkat → Bålkat (Fire), Åodder → Strømodder (Water), Bøgling → Bøgevætte (Grove), plus Grimælling, Rendsnude, Lygtling, Loftnisse, Søormling, Kampetrold (Stone) and Ellepige (Grove/Spirit) and others: 17 species, after P14 added the last two as rares for the cathedral district and Fruens Bøge. Starter lines never appear in the wild.
 
 **Coverage moves:** each starter line learns one move of another type early so it is never stuck with a single type: Fire learns Squall Slap (Storm, L12); Water and Grove learn Cobble Toss (Stone, L11 and L12). Søormling (Stone/Water) is a rare creature, kept off early arena teams.
 
@@ -200,12 +236,12 @@ There is no shop and no currency in v1: rest stops give a free restock once per 
 **On the phone:**
 
 1. Every GPS update with accuracy better than 50 m updates the player's cell. Travel above 25 km/h shows no spawns (no catching from cars and buses).
-2. Spawns within about 100 m are drawn on the map. A spawn can be battled from within 40 m.
+2. Spawns within 200 m are drawn on the map (faint beyond 100 m), and a Nearby strip lists them. A spawn can be battled from within 40 m.
 3. Spawns that need a field ability the player lacks are shown as a hint ("rustling in the trees: needs Forager"); rare spawns in districts the player has not unlocked are "too wild to catch"; common spawns can always be battled.
 4. Each player can battle each spawn (spawn ID) once; the save records which IDs were used.
 5. Without a connection, the cached list for the current window keeps working; after that the map says "No signal: the creatures are hiding".
 
-**Density targets:** on average one battle-able spawn per 150–300 m walked in parks, forests and along water, and per 300–500 m in dense city streets, tuned with the dev GPS simulator before field tests. The first walk after choosing a starter follows the onboarding script (a guaranteed spawn near the first rest stop). In M2 the server only decides what spawns; checking catches on the server comes with accounts in the multiplayer phase.
+**Density targets (v1.9):** wild areas (park, forest, meadow/field, water edge) and route corridors: one battle-able creature per 100–150 m walked, about one every 1.5–2 minutes at walking pace. Streets: one per 300–400 m. A 30-minute park walk should offer about 10–14 creatures, of which a player battles perhaps half. Tuned with `spawn:report` and the GPS simulator, then checked in Gate 3. The first walk after choosing a starter follows the onboarding script. In M2 the server only decides what spawns; checking catches on the server comes with accounts in the multiplayer phase.
 
 **Example spawn table entry:**
 
@@ -234,9 +270,9 @@ Real spawn tables live in `packages/data/content/spawns.json` (accepted P8).
 | Arena | Place | Theme | Leader team | Leader levels | Expected player team | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | Kongens Have | Folk | 2 (Rendsnude, Loftnisse) | 9–10 | 3 at L9–10 | Built, on target |
-| 2 | Skt. Knuds square | Stone | 3 | 13–15 | 4 at L13–15 | To build (M2c) |
+| 2 | Klosterhaven (Skt. Knuds Kirke) | Stone | 3 (Kampetrold, Kulingmåge, Brokrabbe); signature tactic: Storm attacks | 13–15 | 4 at L13–15 | Built, on target (Fire 24%, Water 75%, Grove 81%) |
 | 3 | H.C. Andersens Hus | Spirit | 3 | 19–21 | 4 | Planned |
-| 4 | Munkemose | Water | 4 (the former arena-2 Water leader, scaled up) | 25–27 | 5 | Planned (team exists) |
+| 4 | Munkemose | Water | 4 (the former arena-2 Water leader, scaled up) | 25–27 | 5 | Team on target (Fire 22%, Water 43%, Grove 80%); POI in M3 |
 | 5 | Odense Zoo | Mixed | 4, ace Søormling | 31–33 | 5 | Planned |
 | 6 | Fruens Bøge | Grove | 5 | 37–39 | 6 | Planned |
 | 7 | Den Fynske Landsby | Fire | 5 | 43–45 | 6 | Planned |
@@ -274,6 +310,8 @@ Locked layers are shown on the map (rustling trees, rings on water, a stone glyp
 | Field guide | Collection | Seen / caught per district, biome hints ("found near water at night") |
 | Badges and progress | Campaign | 8 badge slots, next arena and its distance |
 | Settings | Safety and comfort | Units, sound, reduce motion, text size, data export/delete, safety reminder |
+
+Added in v1.9: the **map heads-up display** (Journal card with arrow and distance, Nearby strip, compass, menu), the **Town Map** and the **Journal** screen (see Game feel).
 
 UX rules:
 
@@ -448,8 +486,9 @@ M1.7 (done, 148 tests): field abilities are data in `field-abilities.json`; a fr
 **Before Gate 3**
 
 - [x] Redraw all 8 district polygons on real borders (done; arena order then changed in v1.7)
-- [ ] M2c: apply v1.7: new arena order and district numbering, common-everywhere lock rule with per-player levels, Stone arena 2, POI fixes (library cell, Freja)
-- [ ] Check the 7 district-1 POIs on site (public, step-free, away from traffic, sensible after dark) and set them to `verified: true`
+- [x] M2c: new arena order and district numbering, open wildlife with per-player levels (0-badge players now find 3.5 battle-able spawns per km outside district 1, was 0), Stone arena 2 at Klosterhaven, Water leader moved to arena 4, district 2 trainers and rest stop, POI fixes
+- [ ] M2d: game feel (v1.9): fix the drifting creature marker, tilted follow camera with limited zoom, wild areas and routes, new density targets, Town Map, Journal, UI redesign
+- [ ] Check the POIs in districts 1–2 on site (public, step-free, away from traffic, sensible after dark) and set them to `verified: true`
 - [ ] Run Gate 3 with `docs/GATE3.md`: daylight sessions plus one after dark
 
 **M3 — Full Odense single-player, M4 — Field test, M5 — Multiplayer**
@@ -494,6 +533,8 @@ M1.7 (done, 148 tests): field abilities are data in `field-abilities.json`; a fr
 
 | Version | Date | Changes |
 | --- | --- | --- |
+| 1.9 | 2026-11-21 | New Game feel section (comparison with walking and mainline games, tilted follow camera, wild areas and routes, Town Map, Journal, look and feel); density targets raised for wild areas (1 per 100–150 m) and set for streets (1 per 300–400 m); creatures visible to 200 m with a Nearby strip; M2d added before Gate 3 |
+| 1.8 | 2026-11-21 | M2c done and live; accepted P14 (Kampetrold and Ellepige, 17 species) and P15 (arena 2 in Klosterhaven, since the square is too close to the district border); arena 2 and arena 4 teams and win rates recorded |
 | 1.7 | 2026-11-21 | Arena order becomes a geographic loop (1 Kongens Have, 2 cathedral/Stone, 3 H.C. Andersen/Spirit, 4 Munkemose/Water, 5 Zoo/Mixed, 6 Fruens Bøge/Grove, 7 Den Fynske Landsby/Fire, 8 harbour/Storm); districts lock arenas, trainers and rare creatures but not common wildlife; common creature levels follow the player's badges; spawn entries marked common or rare; M2c added before Gate 3 |
 | 1.6 | 2026-11-21 | M2b done and live (district 1 playable to badge 1); accepted P12 (save and progression rules in packages/game) and P13 (starter level 5, starting bag, tutorial rules); district redraw and POI checks added before Gate 3 |
 | 1.5 | 2026-11-21 | M2a done and live; Worker auto-deploy and version check; onboarding: starter chosen anywhere plus a personal tutorial creature; losing faints the whole team until a rest stop or items |
