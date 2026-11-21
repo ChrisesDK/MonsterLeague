@@ -350,6 +350,8 @@ export function MapScreen({
       if (teleportMode.current && sim) sim.teleport({ lat: e.lngLat.lat, lng: e.lngLat.lng });
     });
     mapRef.current = map;
+    // Dev tools only: automated checks can move the camera.
+    if (devTools) (window as unknown as { __omlMap?: MlMap }).__omlMap = map;
 
     // POI stamps (drawn once; their image follows the beaten state).
     for (const poi of POIS) {
@@ -377,6 +379,7 @@ export function MapScreen({
       poiMap.clear();
       map.remove();
       mapRef.current = null;
+      delete (window as unknown as { __omlMap?: MlMap }).__omlMap;
       setMapReady(false);
     };
     // `last` and `t` are read once for the initial view and labels.
@@ -683,7 +686,8 @@ export function MapScreen({
   };
 
   const poiCard = (() => {
-    if (!here || save.onboarding !== 'done') return null;
+    // GDD: no encounters or prompts above 25 km/h.
+    if (!here || fast || save.onboarding !== 'done') return null;
     const title = t(`poi.${here.id}.name`);
     if (here.kind === 'restStop') {
       return (
