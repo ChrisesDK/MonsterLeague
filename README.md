@@ -3,7 +3,7 @@
 A free, walk-to-play, location-based monster-collecting RPG set in Odense, Denmark
 (working title). It ships first as a mobile web app (PWA) and runs entirely on the phone.
 
-**Play the battle playtest:** <https://www.christianrasmussen.dk/OdenseMonsterLeague/>
+**Play:** <https://www.christianrasmussen.dk/OdenseMonsterLeague/>
 (also reachable via <https://chrisesdk.github.io/OdenseMonsterLeague/>). Open it once on
 Wi-Fi; after that it also works offline.
 
@@ -13,24 +13,28 @@ Wi-Fi; after that it also works offline.
   inspired by Danish folklore and H.C. Andersen. The project contains no Pokémon content
   (no names, creatures, moves, items, terms, art, sounds or data), and a test in CI blocks
   franchise terms from the game text.
-- **Current stage:** a battle prototype for an outdoor playtest ("Gate 2"). The map, GPS
-  and spawning come later. Nothing is sent anywhere: playtest results stay on the phone
-  until the tester chooses to share them, and the app has no location data.
+- **Current stage:** district 1 (the station, Kongens Have and the old town) is playable,
+  ready for a district walk test ("Gate 3"). Progress is saved on the phone only and holds
+  no location data; the only thing sent anywhere is a coarse ~5 km² area to fetch the
+  creatures around you. Test results stay on the phone until the tester shares them.
 - **Source available, all rights reserved.** The code and content are published so the
   playtest can be hosted and followed openly. No licence is granted (no open-source
   licence yet): you may read the code, but not copy, modify or redistribute it without
   permission. © 2026 the Odense Monster League author.
 
-This repository contains M0–M1.6: the battle engine, balance tooling and a Gate 2
-playtest build. Map, GPS and spawning arrive in M2. Game design lives in
+This repository contains M0–M2b: the battle engine and balance tooling, the map with
+shared spawns, and district 1 with saves, trainers, rest stops and the first arena. Game
+design lives in
 [docs/GDD.md](docs/GDD.md); deployment steps in [docs/DEPLOY.md](docs/DEPLOY.md).
 
-## What's in it now (M2a)
+## What's in it now (M2b)
 
-- **The map game** (`#/`): the real Odense map; wild creatures decided by a small spawn
-  service, so everyone in the same place at the same time sees the same ones; walk up to
-  one and tap it to battle. Your precise position never leaves the phone: only a coarse
-  ~5 km² area is sent.
+- **The map game** (`#/`): choose a starter, catch your first creature, then walk to
+  district 1 to beat its trainers, heal at rest stops and win the Kongens Have badge.
+  Wild creatures come from a small spawn service, so everyone in the same place at the
+  same time sees the same ones. Your precise position never leaves the phone: only a
+  coarse ~5 km² area is sent. Team, storage, bag, field guide, badges and settings are
+  in the menu; the save can be exported or deleted.
 - **The battle playtest** (`#/playtest`), the developer battle page (`#/dev`), a GPS
   simulator (`#/dev/map`) and a biome debug map (`#/dev/biomes`).
 - Screenshots: [docs/screenshots](docs/screenshots).
@@ -67,19 +71,25 @@ pnpm dev          # playtest mode on http://localhost:5173 (also on your LAN for
 | `pnpm sim --player-team arena2 --starter grove --b leader_water` | Expected player team vs a leader                                      |
 | `pnpm sim:report`                                                | Regenerates [docs/BALANCE.md](docs/BALANCE.md)                        |
 | `pnpm gate2:report <folder>`                                     | Summarises exported playtest results ([docs/GATE2.md](docs/GATE2.md)) |
+| `pnpm gate3:report <folder>`                                     | Summarises exported walk tests ([docs/GATE3.md](docs/GATE3.md))       |
+| `pnpm e2e`                                                       | Playwright end-to-end test of district 1 (phone viewport)             |
 
 ## Layout
 
 ```
-packages/data      content JSON, Zod schemas, i18n (da/en), validator
+packages/data      content JSON (incl. district-1 POIs), Zod schemas, i18n (da/en), validator
 packages/engine    pure, deterministic battle engine
-packages/playtest  Gate 2 record format, timer, JSON/CSV export
-packages/spawn     (M2 stub)
+packages/game      pure save format and progression rules
+packages/spawn     pure spawn rules (shared by the Worker and the client)
+packages/playtest  Gate 2 records and Gate 3 walk sessions, timer, JSON/CSV export
+packages/art       code-generated placeholder sprites, markers, stamps and badges
 tools/sim          battle simulator CLI and balance report
 tools/gate2        Gate 2 playtest report
-tools/region-builder (M2 stub)
-apps/client        Vite + React PWA: playtest mode + developer battle page (#/dev)
-docs/              GDD (read-only export), GDD-PROPOSALS, PLAN, DECISIONS, BALANCE, GATE2, DEPLOY
+tools/gate3        Gate 3 walk-test report
+tools/region-builder OpenStreetMap → region file (biomes, no-spawn areas, districts)
+apps/spawn-service Cloudflare Worker: spawns per coarse cell
+apps/client        Vite + React PWA: the map game, playtest, developer pages, e2e tests
+docs/              GDD (read-only export), GDD-PROPOSALS, PLAN, DECISIONS, BALANCE, GATE2, GATE3, DEPLOY
 ```
 
 See [CLAUDE.md](CLAUDE.md) for the hard rules and architecture, and

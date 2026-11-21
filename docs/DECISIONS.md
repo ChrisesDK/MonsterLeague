@@ -555,3 +555,157 @@ length, position resolution and spawn tables>`.
     `CLOUDFLARE_ACCOUNT_ID`. The job fails rather than skips when they're missing.
   - **Ordering:** the Pages and Worker deploys run in parallel, so a dev build may briefly
     show the drift warning for a minute after a push.
+
+## M2b: district 1 playable
+
+- **D82. Obedience in the engine.** `SideConfig.obedienceLevel` (number or null) is copied
+  to `Side.obedienceLevel`.
+  - A creature above that level ignores the order 50% of the time (`DISOBEY_CHANCE`). The
+    roll happens after the sleep/paralysis checks and uses no PP (event `disobey`).
+  - `null`/missing = always obey: trainers, leaders and wild creatures never set it.
+  - The map game passes `15 + 5 × badges` (packages/game `obedienceLevel`).
+- **D83. Field abilities take a move slot.** A taught ability is
+  `CreatureInstance.fieldAbility`; that creature can know 3 moves.
+  - Level-up learning respects the 3-move cap: a 4th learnset move becomes a
+    learn-or-skip choice.
+  - Teaching to a creature with 4 moves asks which move to forget. Forgetting the ability
+    frees the slot.
+  - Who can learn it: the ability's badge is won (or it is switched on with the dev
+    toggle) and the creature has one of its types.
+  - Spawns with `requires` can be battled only when a **team** member has the ability;
+    otherwise they show as hint markers, as in M2a.
+- **D84. `packages/game`.** The save type and all progression rules are pure functions in
+  a new package under the same purity lint as engine and spawn (h3-js allowed). The GDD
+  says save types live in `packages/engine/src/types.ts`; see proposal P12.
+- **D85. Save format v1** (`SaveGame`, Zod-validated on load).
+  - **Fields:** seed, onboarding step, starter, team, storage, bag, badges, defeated
+    trainers, seen/caught per district, `lastRestock` per rest stop, used spawns,
+    dev-unlocked abilities, the active battle, pending learn/evolve choices, next uid and
+    settings.
+  - **Storage:** IndexedDB database `oml-save`, key `save`. Writes are queued so they land
+    in order.
+  - **Autosave:** every state change is saved: battle turns, battle end, catches, items,
+    rest stops, badges, team and storage moves, settings.
+  - **Migrations:** `migrations[n]` turns version n into n+1. v0 is the M2a localStorage
+    data: used spawns carry over, and the old dev-team map battle is dropped.
+  - **A save that fails to load** is copied to `backup-<time>`, and the player gets
+    "Start over" instead of a crash.
+  - **Export:** Settings → Export save writes the JSON (share sheet or download).
+  - **Delete:** Delete save needs two taps.
+- **D86. The save holds no location.**
+  - **Tutorial creature:** its position is kept in memory only and re-rolled after a
+    reload.
+  - **Used spawns:** stored as opaque ids with their expiry, and pruned on every write, so
+    at most the last 15 minutes' worth exists.
+  - **Rest stops:** `lastRestock` holds POI ids and device times, which the GDD Data model
+    asks for.
+  - **Tests:** the game package and `apps/client/test/privacy.test.ts` scan a save (with
+    a map battle built from a full service spawn) and the exported file for coordinate
+    keys, coordinate-like numbers and H3 cells.
+- **D87. Starter.**
+  - **The three starters:** Gnistkat, Åodder and Bøgling, at **level 5**. That suits
+    route trainers at L4–9, and the arena-1 expected team reaches L10 by then.
+  - **Start bag:** 5 Basic Charms and 2 Small Tonics, the same as one rest-stop restock.
+    The GDD sets neither the starting level nor the bag; see P13.
+- **D88. Tutorial creature.**
+  - **Creature:** a level-3 Torvdue, visible only to this player.
+  - **Placement:** sampled 120–180 m away, snapped to an unblocked res-12 position in a
+    region cell that is not no-spawn, so never in a no-spawn area or on light-rail tracks.
+    Outside the region file it is placed without checks. It is placed again if the player
+    is more than 600 m from it (a poor first fix).
+  - **Easy catch:** the battle uses a copy of the content with catch rate 255. With the
+    GDD formula and a Basic Charm that is ≈ 33% at full HP and ≈ 100% at 1 HP.
+  - **Guidance:** a hint line in the battle and a guide card with an arrow on the map.
+  - **Ending:** onboarding finishes only with the catch. If the tutorial creature faints,
+    the player runs or the team faints, the team is healed for free and a new creature
+    is placed. The bag is topped up to 3 Basic Charms for each tutorial battle.
+- **D89. District-1 guidance.** After onboarding, and until the first trainer is beaten,
+  the map shows arrows and distances to the nearest unbeaten district-1 trainer and the
+  nearest district-1 rest stop. Inside district 1 it shows only the rest stop. The card
+  hides while the player stands inside a POI radius, where that POI's own card shows.
+- **D90. Trainers and the arena.**
+  - **POI card:** inside a POI's radius, a card shows the trainer's name, intro line and a
+    Battle button.
+  - **Each trainer battles once.** A win adds them to `defeatedTrainers`, shows their
+    defeated line and adds their `reward` to the bag; the stamp gets a tick.
+  - **Arena:** trainers are fought in the POI's order (juniors, then the leader). The
+    leader's win adds the badge and opens the ceremony screen (badge art, the new
+    obedience level, the district unlock).
+  - **Locked districts:** a trainer whose district is locked refuses with the badge that
+    unlocks it ("Come back with the Munkemose badge"). A fully fainted team cannot start
+    a battle.
+- **D91. Rest stops.**
+  - **Rest button:** inside the 40 m radius it fully heals HP, status and PP. It is a
+    button, not automatic, so the player sees what happened.
+  - **Restock:** the POI's `restock` items, once per hour per rest stop, by device time.
+  - **Clock guard:** a stored restock time in the future (the clock was set back after
+    it) blocks that stop until device time passes it plus the hour. Setting the clock
+    forward is not guarded; that is the "basic guard" the brief allows.
+- **D92. Losing.**
+  - **The team stays fainted.** Wild spawns and trainers refuse (`teamFainted`) until a
+    rest stop or items heal someone.
+  - **The map shows the nearest rest stop** with an arrow and distance.
+  - **Nothing else is lost:** XP is kept and the bag keeps what wasn't used. A lost
+    trainer can be fought again.
+- **D93. District locks and "too wild".**
+  - **Unlocks:** district 1 is always open; district d opens with badge d−1.
+  - **Spawn districts:** come from the region file's res-10 cell. The 330 KB region chunk
+    is now lazy-loaded by the map and precached by the service worker (it was excluded in
+    M2a), so the game works offline.
+  - **Locked spawns:** greyed markers labelled "too wild to catch"; tapping says which
+    badge is needed.
+  - **Note:** districts 2–8 are still Voronoi drafts. Munkemose currently lies in draft
+    district 4, so M3 must redraw them before the badge names and unlocks line up on the
+    ground.
+- **D94. Battles from the map.**
+  - **Saved every turn:** the battle state and any new learn/evolve choices go into the
+    save after every turn. After a reload or closing the app, "Resume battle" continues
+    exactly where it stopped.
+  - **Catches** go to the team, or to storage when the team has 6.
+  - **Learn/evolve questions** are asked from the save after the battle, and each answer
+    is saved at once. Evolving also marks the new species caught.
+- **D95. Items outside battle.**
+  - **Tonics:** on a creature that isn't fainted and isn't at full HP.
+  - **Clear Drops:** on a creature with a status.
+  - **Revive Leaf:** on a fainted creature, to 50%.
+  - **Who:** team and storage creatures alike. Charms work only in wild battles.
+- **D96. Field guide.**
+  - **Seen** is marked when a wild battle starts and for each member of a trainer's team.
+    **Caught** is marked by a catch, the starter or an evolution.
+  - **Per district:** wild by the spawn's district; tutorial, trainers and evolutions
+    count as district 1 for now (all v1 POIs are in district 1).
+  - **Unseen species** show as silhouettes with "???".
+  - **Hints** come from the spawn tables: the top one or two biomes (those with at least
+    75% of the top weight), day/night, and the required ability.
+- **D97. Settings live in the save.**
+  - **Language** follows the save.
+  - **Text size** scales the root font (100/112.5/125%).
+  - **Reduce motion** turns off animations everywhere, as well as the OS setting.
+  - **Battle speed** is normal/fast.
+  - **Sound** is stored for when sounds exist (there are none yet).
+- **D98. Art.** POI stamps (arena, trainer, rest stop, each plain and "done") and badge
+  art (8 badges, earned and empty) are code-generated A1 placeholders. The manifest
+  gained the kinds `stamp` and `badge`.
+- **D99. Speed.** Above 25 km/h the POI cards (and their Battle/Rest buttons) hide, like
+  spawns (GDD Safety: no prompts above 25 km/h).
+- **D100. Gate 3 sessions** (Settings → Walk test). Opt-in, with a tester code; stored in
+  localStorage until shared.
+  - **Distance:** summed on the phone from fixes with ≤ 50 m accuracy. Steps under 5 m
+    are added up; jumps faster than 25 km/h are dropped. Only the metres total is kept.
+  - **Spawns seen:** battle-able spawns (status ok) that came within 100 m, once per id.
+  - **Battle time:** active time with the Gate 2 timer, paused in the background. It is
+    not carried over a reload.
+  - **Dark:** "after dark" uses Odense's sun times, not the player's position.
+  - **Ending a session:** asks "How fun was this walk?" (1–5) and takes an optional
+    comment.
+  - **Export:** JSON and CSV through the share sheet. `pnpm gate3:report` reads them.
+- **D101. End-to-end test.**
+  - **Setup:** Playwright runs against a production build (`vite preview`, no spawn
+    service) on a 390×844 touch viewport, using `#/dev/map` (simulator and dev hooks).
+  - **Dev hooks:** `window.__omlDev` (`skipOnboarding`, `setTeamLevel`, `setTeamHp`,
+    `addCreature`, `injectSpawn`, `grantAbility`, `teach`, `setFast`). It exists only
+    with dev tools, so battle outcomes can be forced, and Forager and "too wild" can be
+    tested without the service.
+  - **Battles in the test:** the test's player uses the first usable move. The leader
+    battle may be retried (with a rest-stop heal) up to 4 times.
+  - **CI:** runs as its own `e2e` job (Chromium); the report is uploaded on failure.

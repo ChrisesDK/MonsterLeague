@@ -89,11 +89,30 @@
 - [x] Privacy test: the client sends only a res-7 cell
 - [x] GitHub Actions off Node 20; CI runs spawn report and Worker dry run
 
-## Next: M2b — District 1 playable (save, starter, trainers, rest stops, arena 1, badge)
+## M2b — District 1 playable ✅
+
+- [x] GDD v1.5 in the repo
+- [x] Engine: obedience level per side (50% disobey above it), field ability takes a move slot
+- [x] `packages/game` (pure): versioned save with migrations (v0 → v1) and progression rules
+- [x] Save in IndexedDB: autosave on every change, active battle resumes, export/delete, corrupt-save backup + "Start over", no-location test
+- [x] Onboarding: safety → location → starter → personal tutorial creature (100–200 m, spawnable spot, guided easy catch) → arrows to district 1; dev skip
+- [x] District 1 POIs (`pois.odense.json`, validated: district, no-spawn, 15 m from rail/trunk): arena 1, 4 route trainers, 2 rest stops, all `verified: false`
+- [x] Map: POI stamps with radius circles; trainers (once, line, reward), locked-district refusals, rest stops (heal + hourly restock with clock guard), losing (stay fainted, nearest rest stop), arena 1 (junior → leader → badge ceremony, obedience 20, district 2 unlocked), "too wild" spawns
+- [x] Field abilities: teach (takes a slot), dev toggle, Forager tested end to end
+- [x] Catches into the real team/storage; learn/evolve answers saved; items outside battle
+- [x] Screens: team, creature detail, storage, bag, field guide, badges, settings (sound, speed, text size, reduce motion, language, export/delete, safety, send test results)
+- [x] Gate 3 kit: opt-in walk sessions, JSON/CSV export, `pnpm gate3:report`, [GATE3.md](GATE3.md)
+- [x] Playwright end-to-end test in CI (onboarding → badge 1, with reloads)
+
+## Next: Gate 3 — District walk test (owner, with [GATE3.md](GATE3.md))
+
+- [ ] Verify the 7 POIs on site (public, step-free, away from road edges) and set `verified: true`
+- [ ] Walk sessions (daylight + one after dark), `pnpm gate3:report`, decision
 
 ## Open questions (before/during M2)
 
 - The AI never uses heal moves or target-lowering stat moves.
 - Leader fights take 30–42 turns (median). Fine for a leader, but too long for wild
   battles outdoors?
-- Collection/storage persistence for caught creatures and post-battle learn/evolve results.
+- Districts 2–8 are Voronoi drafts: Munkemose currently falls in draft district 4, not 2.
+  Redraw before M3 so the badge names and unlocks match the ground.

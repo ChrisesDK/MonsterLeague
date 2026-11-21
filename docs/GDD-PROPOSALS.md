@@ -173,3 +173,32 @@ status here changes to `accepted` (or `rejected`, with a reason).
   walk every day; making those noSpawn would empty the city centre. Implemented this way
   (DECISIONS D63).
 - **Status:** accepted (GDD v1.4)
+
+### P12. Save types live in `packages/game`, not the engine
+
+- **GDD section:** Data model (paragraph above the table)
+- **Current text:** "… engine and save types in `packages/engine/src/types.ts` (accepted proposals P3 and P4)."
+- **Proposed change:** "… battle types in `packages/engine/src/types.ts`; the save
+  (`SaveGame`) and progression rules in `packages/game/src/save.ts` and `rules.ts`."
+- **Reason / evidence:** The save carries progression (badges, rest-stop restock times,
+  onboarding, settings) that the battle engine never uses. Keeping it in a separate pure
+  package keeps the engine small, and lets the save import from both the engine and the
+  spawn rules. Implemented this way in M2b (DECISIONS D84). The meaning of the Data model
+  is unchanged; only the file path differs.
+- **Status:** open
+
+### P13. Starter level, starting bag and the tutorial creature
+
+- **GDD section:** Core loop → First 15 minutes; Catching, levelling, evolution and items
+- **Current text:** "choose one of three starter creatures wherever the player opens the game; a personal tutorial creature … appears 100–200 m away … for a guided first battle and catch"
+- **Proposed change:** add "Starters begin at level 5 with 5 Basic Charms and 2 Small
+  Tonics. The tutorial creature is a common level-3 creature with an easy catch rate; the
+  tutorial ends with the first catch, and if it fails the team is healed and a new one
+  appears."
+- **Reason / evidence:** The GDD sets neither the starting level nor the starting bag.
+  L5 fits district 1: wild L3–8 and route trainers L4–9, and the arena-1 expected team
+  (starter L10) is reached by walking the district. The bag equals one rest-stop
+  restock, so the first catch needs no rest stop. Without the retry rule, a player who
+  makes the tutorial creature faint would be stuck. Implemented this way in M2b
+  (DECISIONS D87, D88).
+- **Status:** open
