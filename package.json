@@ -20,7 +20,7 @@
     "sim:report": "tsx tools/sim/src/report-cli.ts",
     "gate2:report": "tsx tools/gate2/src/cli.ts",
     "gate3:report": "tsx tools/gate3/src/cli.ts",
-    "region:build": "pnpm --filter @oml/region-builder build",
+    "region:build": "pnpm --filter @oml/region-builder region",
     "spawn:report": "pnpm --filter @oml/spawn report",
     "art:build": "pnpm --filter @oml/art build"
   },
