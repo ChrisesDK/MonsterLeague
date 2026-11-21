@@ -218,11 +218,34 @@ test('play camera: always on the player; drag rotates, zoom tilts (no panning)',
   expect(turned).toBeGreaterThan(15);
   expect(await centreOffset()).toBeLessThan(3);
   // the wheel zooms on the player, not on the mouse
-  await page.mouse.move(box.x + 40, box.y + 250);
-  await page.mouse.wheel(0, -400);
-  await page.waitForTimeout(800);
-  expect((await camera(page)).zoom).toBeGreaterThan(17.6);
-  expect(await centreOffset()).toBeLessThan(3);
+  // (wheel events are dispatched on the map, off-centre: mobile emulation in CI ignores
+  // Playwright's mouse wheel)
+  await expect
+    .poll(
+      async () => {
+        await page.evaluate(
+          ({ x, y }) => {
+            const el = document.querySelector('.maplibregl-canvas')!;
+            el.dispatchEvent(
+              new WheelEvent('wheel', {
+                deltaY: -200,
+                clientX: x,
+                clientY: y,
+                bubbles: true,
+                cancelable: true,
+              }),
+            );
+          },
+          { x: box.x + 40, y: box.y + 250 },
+        );
+        await page.waitForTimeout(400);
+        return (await camera(page)).zoom;
+      },
+      { timeout: 20_000 },
+    )
+    .toBeGreaterThan(17.6);
+  // the camera settles back on the player (the next GPS fix re-centres it)
+  await expect.poll(centreOffset, { timeout: 10_000 }).toBeLessThan(3);
   await expect(page.getByTestId('recentre-button')).toHaveCount(0);
   // the compass turns north up again
   await page.getByTestId('compass-button').click();
