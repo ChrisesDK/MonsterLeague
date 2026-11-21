@@ -106,6 +106,9 @@
 
 ## Next: Gate 3 — District walk test (owner, with [GATE3.md](GATE3.md))
 
+- [x] GDD v1.6; P12 and P13 accepted
+- [x] Districts 1–8 redrawn on real borders (railways, Odense Å, Ring 2, centre streets); every arena in its own district; region rebuilt, density on target
+
 - [ ] Verify the 7 POIs on site (public, step-free, away from road edges) and set `verified: true`
 - [ ] Walk sessions (daylight + one after dark), `pnpm gate3:report`, decision
 
@@ -114,5 +117,6 @@
 - The AI never uses heal moves or target-lowering stat moves.
 - Leader fights take 30–42 turns (median). Fine for a leader, but too long for wild
   battles outdoors?
-- Districts 2–8 are Voronoi drafts: Munkemose currently falls in draft district 4, not 2.
-  Redraw before M3 so the badge names and unlocks match the ground.
+- District order jumps from the harbour (5, north) to Fruens Bøge (6, south): 4.8 km walk.
+- Arena 8 (Den Fynske Landsby) is 70 m from the Svendborg railway border: place its POI
+  ≥ 80 m east of the tracks in M3.

@@ -709,3 +709,49 @@ length, position resolution and spawn tables>`.
   - **Battles in the test:** the test's player uses the first usable move. The leader
     battle may be retried (with a rest-stop heal) up to 4 times.
   - **CI:** runs as its own `e2e` job (Chromium); the report is uploaded on failure.
+
+## GDD v1.6: district redraw
+
+- **D102. Districts 1–8 drawn on real borders** (`content/districts.odense.geojson`,
+  generator and method in `tools/region-builder/districts/`; it replaces the M2a Voronoi
+  draft and its script).
+  - **Arenas:** each arena location from the GDD World table lies inside its own
+    district, taken from OSM:
+    - Kongens Have (the arena-1 POI);
+    - Munke Mose park;
+    - H.C. Andersens Hus;
+    - Sankt Knuds Kirke;
+    - Odense Havnebad;
+    - Odense Zoo;
+    - Den Fynske Landsby;
+    - Fruens Bøge forest at 55.3712, 10.3722. The forest's centroid lies on the Svendborg
+      railway, so this point is taken from its western part.
+  - **Borders:**
+    - **1** Centrum/station: railway (N), Nørregade (E), Vestergade (S), Pantheonsgade and
+      Jarlsberggade (W).
+    - **2** Munkemose: the railway and district 1 (N), Vestergade → Ansgargade →
+      Kirkegårds Allé → Odense Å → Hunderupvej (E), Ring 2 (Kløvermosevej/Tietgens Allé,
+      S), the Svendborg railway (W).
+    - **3** H.C. Andersen quarter: railway (N), Nørregade (W), Overgade and Odense Å (S),
+      Palnatokesvej/Grønlandsgade (E).
+    - **4** Old town & cathedral: Vestergade/Overgade and Odense Å (N), Hunderupvej (W),
+      Ring 2 (Tietgens Allé, Hunderupgade, Munkerisvej, Ørbækvej, S), Ejbygade (E), and
+      the railway east of Grønlandsgade.
+    - **5** Harbour: everything north of the main railway.
+    - **6** Fruens Bøge: south of the main railway, west of the Svendborg railway.
+    - **7** Zoo & river south: Ring 2 (N), the Svendborg railway (W), Hunderupvej (E),
+      Skovalléen (S).
+    - **8** Den Fynske Landsby: everything else in the south and east (east of the
+      Svendborg railway, south of Skovalléen and Ring 2, east of Ejbygade, south of the
+      railway).
+  - **Outer areas** join the nearest outer district: the north (Tarup, Vollsmose) goes to
+    5, the south-west (Dalum, Bellinge) to 6, the south-east (Hjallese, Odense SØ) to 8.
+  - **Connectors** (no street in the extract): Jarlsberggade → Pantheonsgade (≈ 520 m,
+    the old hand-drawn line, west of Kongensgade where trainer_niels stands); Vestergade →
+    Ansgargade (180 m, along Vesterbro); the south end of Nørregade → the
+    Vestergade/Overgade corner (95 m); the east end of Overgade → Odense Å (≈ 150 m);
+    the Svendborg railway → the main line at the junction (43 m).
+  - **Result:** 8 single polygons covering the whole region bbox, with no gap or overlap.
+    Areas: 0.45 / 3.30 / 0.49 / 4.51 / 45.4 / 18.7 / 1.36 / 21.5 km². All `draft: false`.
+  - **Region build:** 7,582 cells (20 more than before, since the bbox is now fully
+    covered). Density: green 1 per 243 m, streets 1 per 362 m (targets 150–300 / 300–500).

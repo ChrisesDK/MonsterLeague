@@ -26,8 +26,8 @@ const at = (id: string) => {
   return { lat: p.lat, lng: p.lng };
 };
 const STATION = { lat: 55.4017, lng: 10.3866 };
-/** A district-2 spot (locked until badge 1). */
-const DISTRICT2 = { lat: 55.395737, lng: 10.381476 };
+/** A district-2 spot in Munke Mose (locked until badge 1). */
+const DISTRICT2 = { lat: 55.3895, lng: 10.383 };
 
 interface DevSave {
   onboarding: string;
