@@ -9,12 +9,14 @@
     "preview": "vite preview",
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run",
-    "check:base": "tsx scripts/check-base.ts"
+    "check:base": "tsx scripts/check-base.ts",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@oml/art": "workspace:^",
     "@oml/data": "workspace:*",
     "@oml/engine": "workspace:*",
+    "@oml/game": "workspace:*",
     "@oml/playtest": "workspace:*",
     "@oml/spawn": "workspace:^",
     "h3-js": "^4.1.0",
@@ -25,6 +27,7 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@playwright/test": "1.48.2",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",

@@ -575,11 +575,6 @@ input {
   inset: 0;
 }
 .map-banner {
-  position: absolute;
-  top: calc(10px + env(safe-area-inset-top));
-  left: 12px;
-  right: 12px;
-  z-index: 3;
   display: flex;
   gap: 10px;
   align-items: center;
@@ -664,7 +659,7 @@ input {
 }
 .sim-panel {
   position: absolute;
-  top: calc(70px + env(safe-area-inset-top));
+  top: calc(190px + env(safe-area-inset-top));
   right: 10px;
   z-index: 4;
   display: flex;
@@ -788,4 +783,346 @@ input {
   border: 1px solid #ef4444;
   font-size: 0.75rem;
   font-weight: 700;
+}
+
+/* ---------- M2b: text size, map cards, screens ---------- */
+html[data-text-size='large'] {
+  font-size: 112.5%;
+}
+html[data-text-size='larger'] {
+  font-size: 125%;
+}
+html[data-reduce-motion='true'] *,
+.battle.reduce-motion * {
+  animation: none !important;
+  transition: none !important;
+}
+.map-top {
+  position: absolute;
+  top: calc(10px + env(safe-area-inset-top));
+  left: 12px;
+  right: 12px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+.map-top > * {
+  pointer-events: auto;
+}
+.guide-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  background: rgba(23, 42, 32, 0.94);
+  border: 1px solid #2f5541;
+  font-weight: 600;
+  line-height: 1.35;
+}
+.guide-card.warn {
+  background: #3b1d12;
+  border-color: #b4532a;
+}
+.guide-card > span,
+.guide-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.arrow {
+  display: inline-flex;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #1d1600;
+}
+.arrow svg {
+  display: block;
+}
+.poi-card {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  background: rgba(23, 42, 32, 0.96);
+  border: 1px solid #2f5541;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+.poi-card > div {
+  flex: 1;
+  min-width: 0;
+}
+.poi-card p {
+  margin: 4px 0 0;
+}
+.poi-card-stamp {
+  width: 44px;
+  height: 44px;
+  flex: none;
+}
+.poi-marker {
+  width: 44px;
+  height: 44px;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
+}
+.poi-marker.poi-arena {
+  width: 56px;
+  height: 56px;
+}
+.poi-marker img {
+  width: 100%;
+  height: 100%;
+}
+.spawn-marker.too-wild {
+  filter: grayscale(1) opacity(0.65);
+}
+.spawn-marker.tutorial {
+  animation: bob 1.4s ease-in-out infinite;
+}
+@keyframes bob {
+  50% {
+    transform: translateY(-6px);
+  }
+}
+.menu-btn {
+  font-weight: 700;
+}
+.battle-guide {
+  flex: none;
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  background: #2a2410;
+  border: 1px solid #a16207;
+  font-size: 0.9rem;
+}
+.onboarding .safety-list,
+.safety-list {
+  line-height: 1.5;
+  padding-left: 1.2em;
+}
+.starter-grid {
+  display: grid;
+  gap: 10px;
+}
+.starter-card {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  grid-template-rows: auto auto auto;
+  column-gap: 12px;
+  align-items: center;
+  text-align: left;
+  padding: 10px 14px;
+  min-height: 96px;
+}
+.starter-card img {
+  grid-row: 1 / span 3;
+  width: 72px;
+  height: 72px;
+}
+.ceremony {
+  text-align: center;
+  align-items: center;
+}
+.ceremony-badge {
+  width: 160px;
+  height: 160px;
+  margin: 12px auto;
+  animation: enter 0.6s ease-out;
+}
+.ceremony-list {
+  text-align: left;
+  line-height: 1.5;
+}
+.screen-top {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.screen-top h1 {
+  margin: 0;
+  font-size: 1.3rem;
+}
+.screen h2 {
+  font-size: 1.05rem;
+  margin: 12px 0 6px;
+}
+.menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.creature-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  text-align: left;
+}
+.creature-row img {
+  width: 52px;
+  height: 52px;
+  flex: none;
+}
+.creature-row-main {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+.hp-line {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.small-bar {
+  flex: 1;
+  max-width: 140px;
+  height: 8px;
+}
+.detail-head {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+.detail-head img {
+  width: 110px;
+  height: 110px;
+}
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 8px 0;
+}
+.stat-grid div {
+  padding: 8px;
+  border-radius: 10px;
+  background: var(--panel);
+  text-align: center;
+}
+.stat-grid dt {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+.stat-grid dd {
+  margin: 0;
+  font-weight: 700;
+}
+.move-list {
+  padding-left: 1.1em;
+  line-height: 1.8;
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: end;
+}
+.panel-section {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: var(--radius);
+  background: var(--panel);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.panel-section h2 {
+  margin: 0;
+}
+.storage-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.storage-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chip-row .btn {
+  min-width: var(--tap);
+}
+.guide-row-card {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 8px;
+  border-radius: 10px;
+  background: var(--panel);
+}
+.guide-row-card img {
+  width: 52px;
+  height: 52px;
+  flex: none;
+}
+.guide-row-card img.unseen {
+  filter: brightness(0) opacity(0.5);
+}
+.guide-row-card p {
+  margin: 2px 0 0;
+}
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.badge-slot {
+  margin: 0;
+  text-align: center;
+}
+.badge-slot img {
+  width: 100%;
+  max-width: 72px;
+}
+.badge-slot:not(.earned) figcaption {
+  color: var(--muted);
+}
+.toggle-row,
+.setting {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  min-height: var(--tap);
+}
+.toggle-row input {
+  width: 28px;
+  height: 28px;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+.field input,
+.field textarea {
+  min-height: var(--tap);
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid #2f5541;
+  background: var(--bg);
+}
+.rating-row {
+  display: flex;
+  gap: 6px;
+}
+.dev-section {
+  border: 1px dashed #a16207;
 }

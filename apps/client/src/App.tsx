@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import type { BattleState } from '@oml/engine';
 import { BattleScreen } from './BattleScreen';
 import { makeT, type Locale } from './i18n';
@@ -7,7 +7,7 @@ import { SetupScreen } from './SetupScreen';
 import { clearBattle, loadBattle, loadLocale, saveBattle, saveLocale } from './storage';
 
 // The map pulls in MapLibre; load it only when a map route is opened.
-const MapScreen = lazy(() => import('./map/MapScreen').then((m) => ({ default: m.MapScreen })));
+const GameApp = lazy(() => import('./game/GameApp').then((m) => ({ default: m.GameApp })));
 const BiomeDebug = lazy(() => import('./map/BiomeDebug').then((m) => ({ default: m.BiomeDebug })));
 
 type Route = 'map' | 'playtest' | 'dev' | 'dev-map' | 'dev-biomes';
@@ -40,11 +40,11 @@ export function App() {
   const t = useMemo(() => makeT(locale), [locale]);
   const route = useRoute();
 
-  const changeLocale = (l: Locale) => {
+  const changeLocale = useCallback((l: Locale) => {
     setLocale(l);
     saveLocale(l);
     document.documentElement.lang = l;
-  };
+  }, []);
 
   useEffect(() => {
     document.documentElement.lang = locale;
@@ -57,7 +57,13 @@ export function App() {
       {route === 'dev-biomes' ? (
         <BiomeDebug t={t} />
       ) : (
-        <MapScreen key={route} t={t} devTools={route === 'dev-map' || import.meta.env.DEV} />
+        <GameApp
+          key={route}
+          t={t}
+          locale={locale}
+          onLocale={changeLocale}
+          devTools={route === 'dev-map' || import.meta.env.DEV}
+        />
       )}
     </Suspense>
   );

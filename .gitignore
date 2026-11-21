@@ -31,3 +31,12 @@ tools/region-builder/cache/
 .dev.vars.*
 .wrangler/
 !.dev.vars.example
+
+# Playwright output
+test-results/
+playwright-report/
+
+# Gate 3 walk-test exports (tester data stays out of the repo)
+oml-gate3-*.json
+oml-gate3-*.csv
+/gate3/

@@ -45,8 +45,9 @@ export default defineConfig({
       workbox: {
         // Everything the app needs is precached, so it works offline after the first load.
         globPatterns: ['**/*.{js,css,html,svg,webmanifest}', 'fonts/**/*.pbf'],
-        // The region file is only used by the dev biome view; don't precache it for players.
-        globIgnores: ['**/region.odense-*.js'],
+        // The region file chunk (tutorial placement, spawn districts) is precached too, so
+        // the game works offline after the first load.
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         navigateFallback: 'index.html',
         cleanupOutdatedCaches: true,
       },

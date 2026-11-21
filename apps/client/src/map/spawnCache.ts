@@ -52,20 +52,4 @@ export async function pruneLists(nowSeconds: number): Promise<void> {
   }
 }
 
-/** Spawn ids this player has already battled (GDD: each spawn once), kept until expiry. */
-const USED_KEY = 'oml.map.usedSpawns.v1';
-export function loadUsed(nowSeconds: number): Map<string, number> {
-  try {
-    const raw = JSON.parse(localStorage.getItem(USED_KEY) ?? '{}') as Record<string, number>;
-    return new Map(Object.entries(raw).filter(([, exp]) => exp > nowSeconds));
-  } catch {
-    return new Map();
-  }
-}
-export function saveUsed(used: Map<string, number>): void {
-  try {
-    localStorage.setItem(USED_KEY, JSON.stringify(Object.fromEntries(used)));
-  } catch {
-    // ignore
-  }
-}
+// Used spawns moved into the save (M2b, packages/game); the old key is migrated once.

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { spriteUrl } from '@oml/art';
-import { content } from '@oml/data';
+import { content, type Dex } from '@oml/data';
 import {
   chooseAiAction,
   getLegalActions,
@@ -35,6 +35,18 @@ interface Props {
   onAction?: (action: Action, state: BattleState) => void;
   /** Label of the button shown when the battle is over (default "New battle"). */
   endLabel?: string;
+  /** Content for this battle (the tutorial uses an easier catch rate). */
+  dex?: Dex;
+  /** Called after every resolved turn with its events (the map game saves state + choices). */
+  onTurn?: (result: TurnResult) => void;
+  /**
+   * Ask learn-move / evolve questions inside the battle screen (dev and playtest pages).
+   * The map game asks them from its save instead, so answers are saved.
+   */
+  askChoices?: boolean;
+  /** A short guide line shown above the controls (tutorial battle). */
+  guide?: string;
+  reduceMotion?: boolean;
 }
 
 type Panel = 'main' | 'switch' | 'bag' | 'target';
@@ -90,6 +102,11 @@ export function BattleScreen({
   onExit,
   onAction,
   endLabel,
+  dex = content,
+  onTurn,
+  askChoices = true,
+  guide,
+  reduceMotion: reduceMotionSetting = false,
 }: Props) {
   const [state, setState] = useState(initial);
   const [view, setView] = useState<BattleView>(() => viewFromState(initial));
@@ -116,7 +133,7 @@ export function BattleScreen({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initial]);
 
-  const reducedMotion = prefersReducedMotion();
+  const reducedMotion = reduceMotionSetting || prefersReducedMotion();
   const factor = speed === 'fast' ? FAST_FACTOR : 1;
   const textMs = TEXT_MS * factor;
   const silentMs = reducedMotion ? 0 : SILENT_MS * factor;
@@ -166,7 +183,8 @@ export function BattleScreen({
       { ...final[1], caught: v[1].caught },
     ]);
     setState(result.state);
-    setChoices((prevChoices) => collectChoices(result.events, prevChoices));
+    if (askChoices) setChoices((prevChoices) => collectChoices(result.events, prevChoices));
+    onTurn?.(result);
     if (result.state.result === 'ongoing') onSave(result.state);
     setPanel('main');
     setPendingItem(null);
@@ -177,7 +195,7 @@ export function BattleScreen({
     if (busy || over || !isLegal(action)) return;
     onAction?.(action, state);
     const tier = state.sides[1].ai ?? 'wild';
-    const result = resolveTurn(state, [action, chooseAiAction(state, 1, tier)]);
+    const result = resolveTurn(state, [action, chooseAiAction(state, 1, tier, dex)], dex);
     void play(state, result);
   }
 
@@ -258,6 +276,7 @@ export function BattleScreen({
           <button
             key={itemId}
             className="btn list-btn"
+            data-item={itemId}
             disabled={busy || !usable(itemId)}
             onClick={() => {
               if (content.items[itemId]?.kind === 'charm') submit({ type: 'catch', itemId });
@@ -395,7 +414,12 @@ export function BattleScreen({
   }
 
   return (
-    <main className={`battle${speed === 'fast' ? ' fast' : ''}`}>
+    <main
+      className={`battle${speed === 'fast' ? ' fast' : ''}${reducedMotion ? ' reduce-motion' : ''}`}
+      data-busy={busy ? 'true' : 'false'}
+      data-over={over ? 'true' : 'false'}
+      data-replacing={replacing ? 'true' : 'false'}
+    >
       <div className="topbar">
         <span className="muted small">
           {state.kind === 'wild' ? '' : t(`trainer.${state.sides[1].name ?? ''}.name`)}
@@ -415,7 +439,14 @@ export function BattleScreen({
       <p className="log" aria-live="polite" onClick={() => (skip.current = true)}>
         {log}
       </p>
-      <section className="controls">{controls}</section>
+      <section className="controls">
+        {guide && !over && (
+          <p className="battle-guide" role="note" data-testid="battle-guide">
+            {guide}
+          </p>
+        )}
+        {controls}
+      </section>
       {modal}
     </main>
   );

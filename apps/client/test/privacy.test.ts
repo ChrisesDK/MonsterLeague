@@ -66,3 +66,52 @@ describe('spawn requests carry only a res-7 cell', () => {
     expect(serviceUrl({ DEV: false })).toBe(null);
   });
 });
+
+/** Keys or values that would be location data (coordinates, H3 cells, positions). */
+function findLocation(value: unknown, path = '$'): string[] {
+  const hits: string[] = [];
+  if (Array.isArray(value)) value.forEach((v, i) => hits.push(...findLocation(v, `${path}[${i}]`)));
+  else if (value && typeof value === 'object') {
+    for (const [k, v] of Object.entries(value)) {
+      if (/^(lat|lng|lon|latitude|longitude|coords?|position|accuracy|cellId|cell|h3)$/i.test(k))
+        hits.push(`${path}.${k}`);
+      hits.push(...findLocation(v, `${path}.${k}`));
+    }
+  } else if (typeof value === 'string' && /^8[0-9a-f]{14}$/.test(value)) {
+    hits.push(`${path} (H3 cell)`);
+  } else if (
+    typeof value === 'number' &&
+    (Math.abs(value - PLAYER.lat) < 0.05 || Math.abs(value - PLAYER.lng) < 0.05)
+  ) {
+    hits.push(`${path} (coordinate-like number ${value})`);
+  }
+  return hits;
+}
+
+describe('the save holds no location data (M2b)', () => {
+  it('a save with a map battle in progress, exported as a file, has no positions or cells', async () => {
+    const { chooseStarter, newSave, startWildBattle, visitRestStop } = await import('@oml/game');
+    const { content } = await import('@oml/data');
+    const { exportGameFile } = await import('../src/game/store');
+    // What the map passes in: the full spawn from the service, with its position and cell.
+    const spawn = {
+      id: 'deadbeefcafebabe',
+      speciesId: 'torvdue',
+      level: 4,
+      cellId: latLngToCell(PLAYER.lat, PLAYER.lng, 10),
+      lat: PLAYER.lat,
+      lng: PLAYER.lng,
+      requires: null,
+      window: 1,
+      expiresAt: 4_000_000_000,
+    };
+    let save = chooseStarter(newSave('ab'.repeat(16)), 'gnistkat');
+    save = visitRestStop(save, content.pois.rest_library!, 1_900_000_000).save;
+    save = startWildBattle(save, { ...spawn, district: 1 }, 1);
+    expect(findLocation(save)).toEqual([]);
+    const file = exportGameFile(save);
+    expect(findLocation(JSON.parse(await file.text()))).toEqual([]);
+    // the scanner itself works
+    expect(findLocation({ a: { lat: 1 }, b: spawn.cellId, c: PLAYER.lng })).toHaveLength(3);
+  });
+});
