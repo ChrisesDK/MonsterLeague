@@ -185,7 +185,7 @@ status here changes to `accepted` (or `rejected`, with a reason).
   package keeps the engine small, and lets the save import from both the engine and the
   spawn rules. Implemented this way in M2b (DECISIONS D84). The meaning of the Data model
   is unchanged; only the file path differs.
-- **Status:** open
+- **Status:** accepted (GDD v1.6)
 
 ### P13. Starter level, starting bag and the tutorial creature
 
@@ -201,4 +201,4 @@ status here changes to `accepted` (or `rejected`, with a reason).
   restock, so the first catch needs no rest stop. Without the retry rule, a player who
   makes the tutorial creature faint would be stuck. Implemented this way in M2b
   (DECISIONS D87, D88).
-- **Status:** open
+- **Status:** accepted (GDD v1.6)
