@@ -1005,3 +1005,25 @@ length, position resolution and spawn tables>`.
     swipes through the player (never above about 0.43° per px) and direction-independent
     speed; the e2e test swipes across the screen level with the player.
   - **Frame rate:** at 4× CPU throttle, 44–50 fps (55° and 80°).
+- **D126. Tilt measured, circles without a jerk, no icons from behind** (owner feedback).
+  - **Tilt 65–72 degrees.** Measured in the real map (390 × 844 phone, ground distance from
+    the player to just below the Journal card): zoomed out at 65 degrees 462 m; zoomed in at
+    a fixed 65 degrees only 116 m; at 72 degrees 226 m, about twice that. From 73 degrees
+    the horizon and an empty sky band come into view, which is why 80 degrees looked wrong.
+    Doubling the zoomed-out 462 m would need 77 degrees (horizon on screen).
+  - **The jerk.** The across-the-screen part took its direction from where the stroke
+    started. A circle that isn't centred on the player (most are: thumbs circle the screen's
+    middle) moved "the wrong way" relative to the player for part of the loop, and the map
+    turned back there (rate swung from -0.44 to +0.13 degrees per px). Now a stroke tracks
+    the finger path's own turning: a smoothly curving path drives the map with the curve
+    (one map turn per loop, wherever the loop is), and straight strokes keep the
+    player-relative rules (around + across, with the side following the finger with 60 px
+    hysteresis and a decaying "circling intent"). A sudden reversal resets the curve.
+    Tested on circles around, beside and far from the player, small and large, both ways:
+    always the same direction, step-to-step change under 0.05 degrees per px.
+  - **Icons from behind.** DOM markers have no depth test, so a point behind the tilted
+    camera (about 1.1 km behind the player zoomed out, 290 m zoomed in) was projected
+    mirrored onto the screen: city-centre stamps showed up when looking away. Every icon
+    (stamps, creatures, the Journal star) is now hidden when it lies further behind the
+    player than the bottom edge of the screen reaches, or more than 2 km away
+    (`markerInView`, checked about 7 times a second).

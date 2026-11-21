@@ -112,3 +112,33 @@ export function glideStep(
   };
   return distanceM(next, target) < 0.05 ? target : next;
 }
+
+/** Metres a point lies ahead of the player in the camera's facing direction (- = behind). */
+export function aheadM(
+  player: { lat: number; lng: number },
+  bearingDeg: number,
+  p: { lat: number; lng: number },
+): number {
+  const north = (p.lat - player.lat) * 110_540;
+  const east = (p.lng - player.lng) * 111_320 * Math.cos((player.lat * Math.PI) / 180);
+  const b = (bearingDeg * Math.PI) / 180;
+  return north * Math.cos(b) + east * Math.sin(b);
+}
+
+/** Map icons further away than this are never drawn (the play view shows ~1.5 km at most). */
+export const MARKER_MAX_M = 2000;
+
+/**
+ * Whether a map icon can really be on screen. MapLibre's DOM markers have no depth test, so
+ * a point behind the tilted camera is projected mirrored onto the screen (owner report: the
+ * city centre's stamps showed up when looking away from it). `behindM` is how far behind the
+ * player the bottom edge of the screen reaches; anything further behind is off screen.
+ */
+export function markerInView(
+  player: { lat: number; lng: number },
+  bearingDeg: number,
+  behindM: number,
+  p: { lat: number; lng: number },
+): boolean {
+  return aheadM(player, bearingDeg, p) >= -behindM && distanceM(player, p) <= MARKER_MAX_M;
+}

@@ -56,6 +56,7 @@ import {
   BATTLE_RADIUS_M,
   MAX_ACCURACY_M,
   glideStep,
+  markerInView,
   playableFix,
   SHOW_RADIUS_M,
   distanceM,
@@ -556,6 +557,33 @@ export function MapScreen({
         });
       }
       if (offCentre && !map.isMoving()) map.jumpTo({ center: [next.lng, next.lat] });
+      cullMarkers(next);
+    };
+    // Hide icons that can't really be on screen (behind the camera, or very far away);
+    // checked a few times a second, and only touched when their state changes.
+    let lastCull = 0;
+    const cullMarkers = (at: LatLng) => {
+      const now = performance.now();
+      if (now - lastCull < 150) return;
+      lastCull = now;
+      const box = map.getContainer();
+      const bottom = map.unproject([box.clientWidth / 2, box.clientHeight]);
+      const behindM = distanceM(at, { lat: bottom.lat, lng: bottom.lng });
+      const bearing = map.getBearing();
+      const show = (el: HTMLElement, p: LatLng) => {
+        const v = markerInView(at, bearing, behindM, p) ? '' : 'hidden';
+        if (el.style.visibility !== v) el.style.visibility = v;
+      };
+      for (const [id, { marker }] of poiMarkers.current) {
+        const poi = content.pois[id];
+        if (poi) show(marker.getElement(), poi);
+      }
+      for (const m of markers.current.values()) {
+        const ll = m.getLngLat();
+        show(m.getElement(), { lat: ll.lat, lng: ll.lng });
+      }
+      const tm = targetMarker.current;
+      if (tm) show(tm.getElement(), { lat: tm.getLngLat().lat, lng: tm.getLngLat().lng });
     };
     raf = requestAnimationFrame(frame);
     return () => cancelAnimationFrame(raf);

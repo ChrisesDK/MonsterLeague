@@ -187,7 +187,7 @@ test('play camera: always on the player; drag rotates, zoom tilts (no panning)',
     );
   let cam = await camera(page);
   expect(cam.zoom).toBeCloseTo(17.5, 1);
-  expect(cam.pitch).toBeCloseTo(67.5, 0); // halfway between 55 (zoomed out) and 80 (zoomed in)
+  expect(cam.pitch).toBeCloseTo(68.5, 0); // halfway between 65 (zoomed out) and 72 (zoomed in)
   const jump = (o: Record<string, number>) =>
     page.evaluate(
       (x) =>
@@ -198,11 +198,11 @@ test('play camera: always on the player; drag rotates, zoom tilts (no panning)',
   await jump({ zoom: 20 });
   cam = await camera(page);
   expect(cam.zoom).toBeCloseTo(18.5, 1);
-  expect(cam.pitch).toBeCloseTo(80, 0);
+  expect(cam.pitch).toBeCloseTo(72, 0);
   await jump({ zoom: 13 });
   cam = await camera(page);
   expect(cam.zoom).toBeCloseTo(16.5, 1);
-  expect(cam.pitch).toBeCloseTo(55, 0);
+  expect(cam.pitch).toBeCloseTo(65, 0);
   await jump({ zoom: 17.5 });
   await page.waitForTimeout(800);
   // a one-finger drag across the screen turns the map around the player; it never pans
@@ -350,4 +350,30 @@ test('Journal: walking Route 1 with the GPS simulator completes its goal', async
   await expect(page.getByTestId('goal-d2.reach')).toHaveClass(/done/);
   await page.getByTestId('screen-back').click();
   await expect(page.getByTestId('play-map')).toBeVisible();
+});
+
+test('icons behind the camera are hidden (looking away from the centre)', async ({ page }) => {
+  await startDone(page);
+  // ~1.2 km west of Kongens Have
+  await teleport(page, { lat: 55.398, lng: 10.366 });
+  await page.waitForTimeout(2500);
+  const shown = () =>
+    page.evaluate(
+      () =>
+        [...document.querySelectorAll<HTMLElement>('.poi-marker')].filter(
+          (e) => e.style.visibility !== 'hidden',
+        ).length,
+    );
+  const face = (bearing: number) =>
+    page.evaluate(
+      (b) =>
+        (
+          window as unknown as { __omlMap: { setBearing: (x: number) => void } }
+        ).__omlMap.setBearing(b),
+      bearing,
+    );
+  await face(270); // west, away from the centre
+  await expect.poll(shown, { timeout: 5000 }).toBe(0);
+  await face(90); // east, towards it
+  await expect.poll(shown, { timeout: 5000 }).toBeGreaterThan(0);
 });
