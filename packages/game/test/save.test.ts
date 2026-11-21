@@ -24,7 +24,7 @@ describe('save versions and migrations', () => {
     for (let v = 0; v < SAVE_VERSION; v++) expect(typeof migrations[v]).toBe('function');
   });
 
-  it('v0 (M2a localStorage) → v2 keeps used spawns and drops the dev battle', () => {
+  it('v0 (M2a localStorage) → current keeps used spawns and drops the dev battle', () => {
     const r = loadSave(
       { usedSpawns: { abc: 2_000_000_000, bad: 'x' }, battle: { spawnId: 'abc' } },
       SEED,
@@ -32,7 +32,7 @@ describe('save versions and migrations', () => {
     expect(r.ok).toBe(true);
     if (!r.ok) return;
     expect(r.migrated).toBe(true);
-    expect(r.save.version).toBe(2);
+    expect(r.save.version).toBe(SAVE_VERSION);
     expect(r.save.seed).toBe(SEED);
     expect(r.save.usedSpawns).toEqual({ abc: 2_000_000_000 });
     expect(r.save.battle).toBeNull();
@@ -64,7 +64,7 @@ describe('save versions and migrations', () => {
     expect(r.ok).toBe(true);
     if (!r.ok) return;
     expect(r.migrated).toBe(true);
-    expect(r.save.version).toBe(2);
+    expect(r.save.version).toBe(SAVE_VERSION);
     // old 2 (Munkemose) → 4, old 4 (cathedral) → 2, old 5 (harbour) → 8
     expect(r.save.seen).toEqual({ torvdue: [1, 4], brokrabbe: [2], kulingmaage: [8] });
     expect(r.save.caught).toEqual({ grimaelling: [4] });
@@ -75,9 +75,26 @@ describe('save versions and migrations', () => {
     expect(isDistrictUnlocked(r.save.badges, 3)).toBe(false);
   });
 
-  it('a v0 save migrates through v1 to v2', () => {
+  it('a v0 save migrates through every version', () => {
     const r = loadSave({ usedSpawns: { a: 2e9 } }, SEED);
-    expect(r.ok && r.save.version).toBe(2);
+    expect(r.ok && r.save.version).toBe(3);
+  });
+
+  it('v2 → v3 (M2d) adds Journal progress; rest stops used for a restock count as visited', () => {
+    const cur = chooseStarter(newSave(SEED), 'gnistkat');
+    const { journal: _j, ...rest } = cur;
+    const v2 = { ...rest, version: 2, lastRestock: { rest_library: 1_700_000_000 } };
+    const r = loadSave(JSON.parse(JSON.stringify(v2)), 'other');
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.migrated).toBe(true);
+    expect(r.save.version).toBe(3);
+    expect(r.save.journal).toEqual({
+      reached: [],
+      routes: {},
+      wildMetres: {},
+      restStops: ['rest_library'],
+    });
   });
 
   it('reports corrupt or newer saves instead of throwing', () => {

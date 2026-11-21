@@ -13,6 +13,7 @@ import {
   type SideConfig,
 } from '@oml/engine';
 import type { ActiveBattle, PostBattleChoice, SaveGame } from './save';
+import { noteRestStop } from './journal';
 
 // ---------------------------------------------------------------------------
 // Badges, obedience and districts
@@ -455,7 +456,7 @@ export function visitRestStop(
       c.status !== null ||
       c.moves.some((m) => m.pp < (dex.moves[m.moveId]?.pp ?? m.pp)),
   );
-  let next = healTeam(save, dex);
+  let next = noteRestStop(healTeam(save, dex), poi.id);
   let restocked: Record<string, number> | null = null;
   if (canRestock(save, poi.id, nowSeconds)) {
     restocked = { ...poi.restock };

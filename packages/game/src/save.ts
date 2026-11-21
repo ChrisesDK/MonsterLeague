@@ -9,7 +9,7 @@ import { z } from 'zod';
  * The tutorial creature's position is kept in memory and re-rolled after a reload; used
  * spawns are kept only until they expire (≤ 15 min) and are pruned on every save.
  */
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 
 export type OnboardingStep = 'safety' | 'location' | 'starter' | 'tutorial' | 'done';
 
@@ -28,6 +28,18 @@ export interface Settings {
   textSize: 'normal' | 'large' | 'larger';
   reduceMotion: boolean;
   language: 'da' | 'en';
+}
+
+/**
+ * Journal progress (M2d). Game progress only, never positions or times: which districts the
+ * player has entered, which numbered checkpoints of each route were reached, metres walked in
+ * each district's wild areas (capped at the explore goal) and which rest stops were visited.
+ */
+export interface JournalProgress {
+  reached: number[];
+  routes: Record<string, number[]>;
+  wildMetres: Record<string, number>;
+  restStops: string[];
 }
 
 export interface SaveGame {
@@ -55,6 +67,7 @@ export interface SaveGame {
   pending: PostBattleChoice[];
   nextUid: number;
   settings: Settings;
+  journal: JournalProgress;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -85,6 +98,7 @@ export function newSave(seed: string, language: Settings['language'] = 'da'): Sa
     pending: [],
     nextUid: 1,
     settings: { ...DEFAULT_SETTINGS, language },
+    journal: { reached: [], routes: {}, wildMetres: {}, restStops: [] },
   };
 }
 
@@ -162,6 +176,14 @@ export const SaveSchema = z
         language: z.enum(['da', 'en']),
       })
       .strict(),
+    journal: z
+      .object({
+        reached: z.array(z.number().int().min(1).max(8)),
+        routes: z.record(z.array(z.number().int().min(0))),
+        wildMetres: z.record(z.number().min(0)),
+        restStops: z.array(z.string()),
+      })
+      .strict(),
   })
   .strict();
 
@@ -217,6 +239,20 @@ export const migrations: Record<number, (old: Record<string, unknown>, seed: str
         battle && battle.kind === 'wild' ? { ...battle, district: remap(battle.district) } : battle,
     };
   },
+  /**
+   * v2 → v3 (M2d): Journal progress. Rest stops already used for a restock count as visited;
+   * everything else starts empty (the map fills it in as the player walks).
+   */
+  2: (old) => ({
+    ...old,
+    version: 3,
+    journal: {
+      reached: [],
+      routes: {},
+      wildMetres: {},
+      restStops: Object.keys((old.lastRestock as Record<string, number> | undefined) ?? {}).sort(),
+    },
+  }),
 };
 
 /** GDD v1.7 renumbering, old district → new district (1 and 3 stay). */
