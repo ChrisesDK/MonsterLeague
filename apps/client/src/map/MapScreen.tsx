@@ -68,6 +68,8 @@ import { useCompassHeading } from './heading';
 import {
   addBuildings3d,
   fogRadii,
+  BUILDINGS_RECENTRE_M,
+  setBuildingsRange,
   setFogPalette,
   setBuildings3d,
   addWorldLayers,
@@ -588,6 +590,7 @@ export function MapScreen({
     let ringAt: LatLng | null = null;
     let ringAcc = -1;
     let fogCss = '';
+    let buildingsAt: LatLng | null = null;
     const frame = (now: number) => {
       // the map is removed (a battle opened) one render before this effect is cleaned up
       if (mapRef.current !== map) return;
@@ -641,6 +644,12 @@ export function MapScreen({
           fogRef.current.style.maskImage = mask;
           fogRef.current.style.webkitMaskImage = mask;
         }
+      }
+      // 3D buildings beyond the fog are unloaded; the filter only moves every 200 m walked
+      // (never on zoom), since each change re-processes the map tiles
+      if (!buildingsAt || distanceM(buildingsAt, next) > BUILDINGS_RECENTRE_M) {
+        buildingsAt = next;
+        setBuildingsRange(map, next);
       }
       if (offCentre && !map.isMoving()) map.jumpTo({ center: [next.lng, next.lat] });
       cullMarkers(next);

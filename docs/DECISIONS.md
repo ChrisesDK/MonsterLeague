@@ -1115,3 +1115,17 @@ length, position resolution and spawn tables>`.
     which returns the whole map object; serialising it back to the test could exhaust the
     page's memory ("execution context was destroyed"). The helpers now return nothing. The
     district e2e uses Beech Lash against the Stone trainers of district 2 too.
+- **D134. Fog at 1 km, buildings unloaded past it, menu over the live map, touch drags**
+  (owner feedback).
+  - **Fog fixed in the world:** clear to 650 m, solid at 1,000 m, at every zoom (it no
+    longer scales with zoom). 3D buildings beyond the fog are unloaded with a `distance`
+    filter (1,000 m plus a 200 m step); the filter is re-centred only after walking 200 m
+    and never on zoom, so zooming doesn't re-process tiles (the earlier lag).
+  - **Menu over the map:** the menu screens used to replace the play view, so closing the
+    menu rebuilt the map, restarted the GPS and reloaded tiles and buildings. They are now a
+    full-screen layer over the map, which stays alive underneath.
+  - **Finger drags:** on the live site a simulated one-finger drag reloaded the page (the
+    browser took it as pull-to-reload, D133). With `touch-action: none` on the map, a
+    finger drag and a mouse drag along the same stroke now turn the map identically
+    (72.2 degrees each, no cancelled pointer events). E2E tests cover the finger drag (no
+    reload) and the menu (same map object, no loading screen).

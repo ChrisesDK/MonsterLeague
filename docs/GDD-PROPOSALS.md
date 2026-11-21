@@ -289,12 +289,13 @@ status here changes to `accepted` (or `rejected`, with a reason).
 - **Proposed change:** "The camera is always centred on the player. Dragging rotates the
   view around the player (circling the player or swiping across the screen both work);
   pinching or the scroll wheel zooms on the player. Zoomed out the camera looks almost straight down
-  (30°); zooming in tilts it up to 76°. A low fog in the distance around the player
-  covers far-off buildings, with a day or night sky above it at steep tilts. Only motion
+  (30°); zooming in tilts it up to 76°. A low fog around the player (solid at 1 km)
+  hides the distance, and buildings beyond it are not drawn; a day or night sky shows
+  above it at steep tilts. Only motion
   around the player rotates the view (swipes below or above the player, circles); a swipe
   level with the player barely turns it. A GPS correction slides the
   player into place.
   A compass button turns north up."
-- **Reason / evidence:** owner requests after M2d (D120, D124, D125, D126, D131, D132, D133). The recentre button and the
+- **Reason / evidence:** owner requests after M2d (D120, D124, D125, D126, D131, D132, D133, D134). The recentre button and the
   snap-back from panning are gone.
 - **Status:** open (implemented at the owner's request; fold into the GDD)

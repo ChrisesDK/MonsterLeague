@@ -280,21 +280,6 @@ export function GameApp({ t, locale, onLocale, devTools }: Props) {
     return <BadgeCeremony t={t} arena={ceremony} onDone={() => setCeremony(null)} />;
   }
 
-  if (screen) {
-    return (
-      <Screens
-        t={t}
-        screen={screen}
-        onScreen={setScreen}
-        save={save}
-        update={update}
-        devTools={devTools}
-        gate3={<Gate3Panel t={t} session={gate3} onSession={setGate3} locale={locale} />}
-        onClose={() => setScreen(null)}
-      />
-    );
-  }
-
   return (
     <>
       <MapScreen
@@ -310,7 +295,25 @@ export function GameApp({ t, locale, onLocale, devTools }: Props) {
         sim={sim}
         devSpawns={devTools ? devSpawns : undefined}
       />
-      {save.pending.length > 0 && !save.battle && <ChoiceModal t={t} save={save} update={update} />}
+      {save.pending.length > 0 && !save.battle && !screen && (
+        <ChoiceModal t={t} save={save} update={update} />
+      )}
+      {/* Menu screens lie over the map, which stays alive underneath: closing the menu
+          doesn't rebuild the map, restart the GPS or reload the buildings. */}
+      {screen && (
+        <div className="screen-overlay">
+          <Screens
+            t={t}
+            screen={screen}
+            onScreen={setScreen}
+            save={save}
+            update={update}
+            devTools={devTools}
+            gate3={<Gate3Panel t={t} session={gate3} onSession={setGate3} locale={locale} />}
+            onClose={() => setScreen(null)}
+          />
+        </div>
+      )}
     </>
   );
 }

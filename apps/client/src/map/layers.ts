@@ -346,12 +346,36 @@ export function setBuildings3d(map: MlMap, on: boolean): void {
  * drew kilometre-wide fog polygons on the map; tiling those made zooming lag and could hang
  * the page.) The map background past the horizon takes the fog colour.
  */
-export const FOG_START_M = 400;
-export const FOG_END_M = 1100;
-/** Fog [start, end] in metres for a zoom level (a round world that scales with the view). */
-export function fogRadii(zoom: number): [number, number] {
-  const k = 2 ** (18.5 - zoom);
-  return [FOG_START_M * k, FOG_END_M * k];
+/**
+ * Fog distances in metres (owner request): fixed in the world, whatever the zoom. Clear
+ * up to FOG_START_M, solid at FOG_END_M; 3D buildings beyond FOG_END_M are unloaded.
+ */
+export const FOG_START_M = 650;
+export const FOG_END_M = 1000;
+/** Fog [start, end] in metres (the zoom no longer changes them). */
+export function fogRadii(_zoom?: number): [number, number] {
+  return [FOG_START_M, FOG_END_M];
+}
+
+/** The building filter is re-centred after walking this far (each change re-processes tiles). */
+export const BUILDINGS_RECENTRE_M = 200;
+
+/**
+ * Unloads 3D buildings beyond the fog: only buildings within `radiusM` of `c` are drawn.
+ * The radius includes the re-centring step, so nothing inside the fog edge goes missing
+ * between updates.
+ */
+export function setBuildingsRange(
+  map: MlMap,
+  c: { lat: number; lng: number },
+  radiusM = FOG_END_M + BUILDINGS_RECENTRE_M,
+): void {
+  if (!map.getLayer('buildings-3d')) return;
+  map.setFilter('buildings-3d', [
+    '<',
+    ['distance', { type: 'Point', coordinates: [c.lng, c.lat] }],
+    radiusM,
+  ] as never);
 }
 
 /** Background past the horizon in the fog colour (the fog itself is the .map-fog overlay). */

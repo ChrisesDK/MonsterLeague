@@ -464,6 +464,16 @@ test('3D buildings are opt-in (Settings), and facing labels stay above them', as
   await expect.poll(async () => (await layers(page)).on3d, { timeout: 10_000 }).toBe(true);
   l = await layers(page);
   expect(l.flat).toBe(false);
+  // buildings beyond the fog (1,000 m, plus the 200 m re-centring step) are unloaded
+  const filter = await page.evaluate(() =>
+    JSON.stringify(
+      (
+        window as unknown as { __omlMap: { getFilter: (id: string) => unknown } }
+      ).__omlMap.getFilter('buildings-3d'),
+    ),
+  );
+  expect(filter).toContain('"distance"');
+  expect(filter).toContain('1200');
 });
 
 test('HUD on demand: the Nearby strip opens from a button; no text banner while searching', async ({
@@ -490,4 +500,74 @@ test('HUD on demand: the Nearby strip opens from a button; no text banner while 
     html: getComputedStyle(document.documentElement).overscrollBehaviorY,
   }));
   expect(touch).toEqual({ canvas: 'none', html: 'none' });
+});
+
+test('a finger drag rotates like a mouse drag, and never reloads the page', async ({
+  page,
+  context,
+}) => {
+  await startDone(page);
+  await teleport(page, { lat: 55.3975, lng: 10.3905 });
+  await page.waitForTimeout(1500);
+  const bearing = () =>
+    page.evaluate(() =>
+      (window as unknown as { __omlMap: { getBearing: () => number } }).__omlMap.getBearing(),
+    );
+  await page.evaluate(() => {
+    (window as unknown as { __mark: number }).__mark = 1;
+  });
+  const b0 = await bearing();
+  const cdp = await context.newCDPSession(page);
+  const touch = (type: string, pt: [number, number] | null) =>
+    cdp.send('Input.dispatchTouchEvent', {
+      type: type as 'touchStart',
+      touchPoints: pt ? [{ x: pt[0], y: pt[1], id: 1 }] : [],
+    });
+  // one finger along the bottom of the screen, then a pull downwards (pull-to-reload gesture)
+  await touch('touchStart', [40, 620]);
+  for (let i = 1; i <= 30; i++) {
+    await touch('touchMove', [40 + i * 10, 620]);
+    await page.waitForTimeout(16);
+  }
+  await touch('touchEnd', null);
+  await touch('touchStart', [195, 200]);
+  for (let i = 1; i <= 20; i++) {
+    await touch('touchMove', [195, 200 + i * 20]);
+    await page.waitForTimeout(16);
+  }
+  await touch('touchEnd', null);
+  await page.waitForTimeout(800);
+  // still the same page (no reload) and the map turned like the mouse test does
+  expect(await page.evaluate(() => (window as unknown as { __mark?: number }).__mark)).toBe(1);
+  const turned = Math.abs((((await bearing()) - b0 + 540) % 360) - 180);
+  expect(turned).toBeGreaterThan(25);
+});
+
+test('opening and closing the menu keeps the map alive (no reload of position or buildings)', async ({
+  page,
+}) => {
+  await startDone(page);
+  await teleport(page, KONGENS_HAVE);
+  await page.waitForFunction(() =>
+    (window as unknown as { __omlMap: { getLayer: (id: string) => unknown } }).__omlMap.getLayer(
+      'buildings-3d',
+    ),
+  );
+  await page.evaluate(() => {
+    (window as unknown as { __omlMap: { __tag?: number } }).__omlMap.__tag = 7;
+  });
+  for (let i = 0; i < 2; i++) {
+    await page.getByTestId('menu-button').click();
+    await page.getByTestId('menu-team').click();
+    await page.getByTestId('screen-back').click();
+    await page.getByTestId('menu-map').click();
+  }
+  // the very same map object, and no loading screen
+  expect(
+    await page.evaluate(
+      () => (window as unknown as { __omlMap: { __tag?: number } }).__omlMap.__tag,
+    ),
+  ).toBe(7);
+  await expect(page.getByTestId('loading-screen')).toHaveCount(0);
+  await expect(page.getByTestId('journal-card')).toBeVisible();
 });
