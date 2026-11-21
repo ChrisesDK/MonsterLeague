@@ -988,3 +988,20 @@ length, position resolution and spawn tables>`.
   (calling `jumpTo` then would cancel the gesture). The accuracy ring moves with the figure.
   The e2e test checks the figure is mid-glide 150 ms after a 22 m correction and that the
   camera stays within 3 px of it throughout.
+- **D125. Rotation feel and a steeper tilt** (owner feedback). The tilt runs from 55°
+  (zoomed out) to 80° (zoomed in): closer to the ground, the camera looks further ahead.
+  Drag-to-rotate (`dragRotation` in `src/map/orbit.ts`) now blends two parts by the
+  stroke's direction:
+  - **Around the player:** the part of the move that circles the player turns the map with
+    the finger. The effective radius is clamped to 140–220 px, so dragging over the player
+    no longer spins and strokes near the screen edges still turn decisively.
+  - **Across the screen:** the part that points towards or away from the player turns the
+    map by its sideways movement. Its direction is set once per stroke from where the
+    finger starts (below/above, right/left of the player), so a long swipe from one side to
+    the other, or up and down the side, rotates at the same steady rate (about 0.4° per px).
+    A stroke aimed straight at the player hardly turns the map.
+  - **Fling:** a quick swipe keeps turning and slows down over about 0.4 s.
+  - **Tests:** unit tests cover circles, swipes along the top and bottom, side strokes,
+    swipes through the player (never above about 0.43° per px) and direction-independent
+    speed; the e2e test swipes across the screen level with the player.
+  - **Frame rate:** at 4× CPU throttle, 44–50 fps (55° and 80°).

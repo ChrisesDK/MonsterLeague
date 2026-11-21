@@ -187,7 +187,7 @@ test('play camera: always on the player; drag rotates, zoom tilts (no panning)',
     );
   let cam = await camera(page);
   expect(cam.zoom).toBeCloseTo(17.5, 1);
-  expect(cam.pitch).toBeCloseTo(59, 0); // halfway between 50 (zoomed out) and 68 (zoomed in)
+  expect(cam.pitch).toBeCloseTo(67.5, 0); // halfway between 55 (zoomed out) and 80 (zoomed in)
   const jump = (o: Record<string, number>) =>
     page.evaluate(
       (x) =>
@@ -198,11 +198,11 @@ test('play camera: always on the player; drag rotates, zoom tilts (no panning)',
   await jump({ zoom: 20 });
   cam = await camera(page);
   expect(cam.zoom).toBeCloseTo(18.5, 1);
-  expect(cam.pitch).toBeCloseTo(68, 0);
+  expect(cam.pitch).toBeCloseTo(80, 0);
   await jump({ zoom: 13 });
   cam = await camera(page);
   expect(cam.zoom).toBeCloseTo(16.5, 1);
-  expect(cam.pitch).toBeCloseTo(50, 0);
+  expect(cam.pitch).toBeCloseTo(55, 0);
   await jump({ zoom: 17.5 });
   await page.waitForTimeout(800);
   // a one-finger drag across the screen turns the map around the player; it never pans
@@ -216,6 +216,18 @@ test('play camera: always on the player; drag rotates, zoom tilts (no panning)',
   const after = await camera(page);
   const turned = Math.abs(((after.bearing - before.bearing + 540) % 360) - 180);
   expect(turned).toBeGreaterThan(15);
+  expect(await centreOffset()).toBeLessThan(3);
+  // a long swipe from one side to the other, level with the player, rotates too
+  const fig = (await page.getByTestId('player-marker').boundingBox())!;
+  const y = fig.y + fig.height - 10;
+  const b2 = await camera(page);
+  await page.mouse.move(box.x + 15, y);
+  await page.mouse.down();
+  for (let i = 1; i <= 12; i++) await page.mouse.move(box.x + 15 + i * 30, y);
+  await page.mouse.up();
+  await page.waitForTimeout(700); // includes the fling
+  const a2 = await camera(page);
+  expect(Math.abs(((a2.bearing - b2.bearing + 540) % 360) - 180)).toBeGreaterThan(60);
   expect(await centreOffset()).toBeLessThan(3);
   // the wheel zooms on the player, not on the mouse
   // (wheel events are dispatched on the map, off-centre: mobile emulation in CI ignores
