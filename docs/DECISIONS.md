@@ -755,3 +755,101 @@ length, position resolution and spawn tables>`.
     Areas: 0.45 / 3.30 / 0.49 / 4.51 / 45.4 / 18.7 / 1.36 / 21.5 km². All `draft: false`.
   - **Region build:** 7,582 cells (20 more than before, since the bbox is now fully
     covered). Density: green 1 per 243 m, streets 1 per 362 m (targets 150–300 / 300–500).
+
+## M2c: GDD v1.7 arena order and open wildlife
+
+- **D103. Districts renumbered** to the v1.7 loop. The polygons are unchanged; only their
+  numbers and names change:
+
+  | Old | New | District                |
+  | --- | --- | ----------------------- |
+  | 1   | 1   | Centrum / station       |
+  | 4   | 2   | Old town and cathedral  |
+  | 3   | 3   | H.C. Andersen quarter   |
+  | 2   | 4   | Munkemose and the river |
+  | 7   | 5   | Zoo and river south     |
+  | 6   | 6   | Fruens Bøge             |
+  | 8   | 7   | Den Fynske Landsby      |
+  | 5   | 8   | Harbour                 |
+  - **Badge names follow:** 2 Cathedral, 3 Fairy-tale, 4 Munkemose, 5 Zoo, 6 Beech,
+    7 Village, 8 Harbour.
+  - **Save v2:** the migration `1 → 2` renumbers the districts stored in the field guide
+    (seen/caught) and in an active wild battle. Badges are unchanged, so badge 1 now opens
+    the cathedral district.
+
+- **D104. Spawn format** (`SPAWN_ALGORITHM` 3).
+  - **Spawn fields:** a spawn carries `rarity`, `levelRoll` in [0, 1) and its `district`,
+    instead of a level. The roll takes the RNG draw the level used to take.
+  - **Level on the phone** (`spawnLevel` in packages/game): band = the player's band for
+    commons (district min(badges + 1, 8)), or the spawn's district band for rares; level
+    = lo + ⌊roll × (hi − lo + 1)⌋.
+  - **Bands** are read from `districts.odense.geojson` (`wildLevels`).
+- **D105. Locks** (`spawnStatus`).
+  - Commons without a field ability are battle-able in every district.
+  - In a locked district, rares and field-ability layers are "too wild" (greyed).
+  - In an unlocked district, a missing field ability shows the hint marker.
+  - Trainers and arenas in locked districts refuse, as before.
+- **D106. Spawn tables for all 8 districts** (`spawns.json`, `rarity` required).
+  - **Commons:** the same seven commons everywhere (Torvdue, Rendsnude, Mosbille,
+    Grimælling, Brokrabbe, Kulingmåge, and Lygtling at night), with per-district weight
+    factors (e.g. Brokrabbe ×2 in the old town, Grimælling ×2.5 by the river, Kulingmåge
+    ×2.5 at the harbour).
+  - **Rares by place:**
+    - 1: Loftnisse;
+    - 2: Kampetrold (new);
+    - 3: Loftnisse;
+    - 4: Søormling;
+    - 5: Søormling and Kampetrold;
+    - 6: Ellepige (new);
+    - 7: Loftnisse;
+    - 8: Søormling.
+  - **Field-ability layers** are marked rare: Loftnisse (runereader) and Mosbille
+    (forager) in 1, Søormling (angler) in 4, Ellepige (forager) in 6.
+  - **Starter lines stay out of the wild** (D68). Fruens Bøge and the cathedral district
+    had no fitting rare, so two placeholder species were added: Kampetrold (Stone, a
+    fieldstone troll, BST 320, catch rate 45) and Ellepige (Grove/Spirit, a forest
+    elf-maid, BST 330, catch rate 45). See proposal P14.
+- **D107. POI rules.**
+  - **Region build:** a POI's own res-10 cell always gets the POI's district (the library
+    rest stop's cell had counted as district 3).
+  - **Validation:** fails when a POI's cell counts as another district, or when its
+    interaction radius crosses its district's border.
+  - **trainer_freja** moved from Gravene (17 m from the border) to the pedestrian part of
+    Slotsgade by Odense Slot (195 m inside). It was first tried at the castle forecourt,
+    but that is a no-spawn cell.
+- **D108. Arena 2 and district 2.**
+  - **Arena 2** (Stone) is in Klosterhaven, the public garden just south of Sankt Knuds
+    Kirke (176 m inside district 2). Skt. Knuds Plads itself is only about 50 m from the
+    district 1 border, too close for an 80 m arena radius; see proposal P15.
+  - **District 2 POIs** (all `verified: false`):
+    - junior trainer Klokker Poul (Brokrabbe L11, Torvdue L12);
+    - leader Stenhugger Dorthe;
+    - route trainers Kirketjener Karen at Albaniengen (L10–11) and Løber Mads in Sankt
+      Jørgens Park (L12–14);
+    - a rest stop on Munkemøllestræde by H.C. Andersens Barndomshjem.
+  - **Arena 4** (Water): the former arena-2 Water leader, moved and scaled to 4 creatures
+    at L25–27. Data only until M3.
+  - **Presets:** the sim's expected player team now uses the evolved starter when the
+    preset's starter level reaches the evolution level (arena 4: L27).
+- **D109. Balance** (`pnpm sim:report`). Teams tuned, not the type chart.
+  - **The problem:** Water and Grove starters hit Stone super-effectively, so a pure Stone
+    team loses 100% to them while still beating Fire.
+  - **Arena 2 leader:** Kampetrold L14 (with Squall Slap), Kulingmåge L13, Brokrabbe L15
+    (with Sky Crackle), no items. The signature tactic is Storm coverage against Water and
+    Grove.
+  - **Arena 2 preset:** starter L15 + Grimælling L13, Mosbille L14, Kulingmåge L14 (the
+    commons a district-1 player catches).
+  - **Arena 2 result:** Fire 24%, Water 75%, Grove 81%.
+  - **Arena 4 leader:** Grimælling L25 (Beech Lash), Kulingmåge L26 (Squall Slap, Sky
+    Crackle), Strømodder L26 (Kiln Blast), Strømodder L27; 2 large tonics.
+  - **Arena 4 preset:** evolved starter L27 + Kulingmåge 25, Brokrabbe 26, Mosbille 26,
+    Torvdue 25.
+  - **Arena 4 result:** Fire 22%, Water 43%, Grove 80%.
+  - **Caveat:** win rates react in big steps to the leader's lead creature and items (the
+    AI is close to deterministic). Arena 2 Water sits at the lower edge, 75–77% across
+    seeds.
+- **D110. Density report** now walks the whole region, since every district has a
+  table.
+  - **CI gate** (battle-able = no ability needed): green 1 per 201 m, streets 1 per 308 m.
+  - **New 0-badge line** (commons only, outside district 1): 3.54 per km (green 1/203 m,
+    streets 1/301 m); before M2c it was zero.

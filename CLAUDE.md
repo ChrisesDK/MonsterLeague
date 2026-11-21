@@ -6,8 +6,10 @@ real landmarks, wild creatures that spawn from real surroundings (OpenStreetMap 
 and turn-based battles in the style of handheld monster RPGs. It ships first as a mobile
 web app (PWA). Everything runs on the phone; there is no game server in v1.
 
-Status: M0–M1.8, Gate 2 (qualitative pass), M2a (map and shared spawns) and **M2b**
-(district 1 playable: save, onboarding, trainers, rest stops, arena 1, badge) are done.
+Status: M0–M1.8, Gate 2 (qualitative pass), M2a (map and shared spawns), M2b (district 1
+playable: save, onboarding, trainers, rest stops, arena 1, badge) and **M2c** (GDD v1.7:
+new arena order, open common wildlife with per-player levels, arena 2 and district 2) are
+done.
 **Live:** https://www.christianrasmussen.dk/OdenseMonsterLeague/ (deployed from `main` by
 `.github/workflows/pages.yml`; Vite base `/OdenseMonsterLeague/`, see docs/DEPLOY.md). The
 spawn-service Worker is redeployed by CI (docs/DEPLOY.md). **Next: Gate 3**, the district
@@ -92,6 +94,10 @@ apps/client       Vite + React PWA: map game (#/; src/game = save store, onboard
   `resolveTurn(state, [a0, a1])` → `{ state, events }`, `chooseAiAction(state, side, tier)`,
   plus `createCreature(speciesId, level, uid)`.
 - Side 0 is the player (or sim side A); in wild battles side 1 is the wild creature.
+- Spawns carry `rarity` and a `levelRoll`; the phone turns the roll into a level with
+  `spawnLevel` (commons: the player's band, rares: the district's band). Commons can be
+  battled in every district; rares, field-ability layers, trainers and arenas lock with
+  their district (GDD v1.7).
 - The map game drives battles through `packages/game` (`startWildBattle`,
   `startTrainerBattle`, `finishBattle`, …) and saves after every turn; dev hooks
   (`window.__omlDev`, dev tools only) let the E2E test set levels and inject spawns.

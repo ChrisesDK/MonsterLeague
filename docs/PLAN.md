@@ -104,6 +104,18 @@
 - [x] Gate 3 kit: opt-in walk sessions, JSON/CSV export, `pnpm gate3:report`, [GATE3.md](GATE3.md)
 - [x] Playwright end-to-end test in CI (onboarding → badge 1, with reloads)
 
+## M2c — GDD v1.7: arena order and open wildlife ✅
+
+- [x] GDD v1.7 in the repo
+- [x] Districts renumbered to the new arena loop (polygons unchanged); badge and district names; save v2 migration
+- [x] Spawn tables for all 8 districts with common/rare entries; two new placeholder species (Kampetrold, Ellepige)
+- [x] Spawns carry rarity + level roll (SPAWN_ALGORITHM 3); common levels follow the player's badges, rare levels their district
+- [x] Locks: commons everywhere; rares and ability layers in locked districts are "too wild"; trainers and arenas refuse
+- [x] Arena 2 (Stone, Klosterhaven) with junior; district 2: 2 route trainers + rest stop; arena 4 Water leader scaled (data only)
+- [x] Balance: arenas 2 and 4 on target in sim:report and the CI test
+- [x] POI fixes: a POI's cell carries its district; radius must stay inside the district; trainer_freja moved
+- [x] E2E: onboarding → badge 1 → district 2 → badge 2, plus a band-1 common and a too-wild rare in district 8 with 0 badges
+
 ## Next: Gate 3 — District walk test (owner, with [GATE3.md](GATE3.md))
 
 - [x] GDD v1.6; P12 and P13 accepted

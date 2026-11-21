@@ -202,3 +202,30 @@ status here changes to `accepted` (or `rejected`, with a reason).
   makes the tutorial creature faint would be stuck. Implemented this way in M2b
   (DECISIONS D87, D88).
 - **Status:** accepted (GDD v1.6)
+
+### P14. Two more placeholder species: Kampetrold and Ellepige
+
+- **GDD section:** Creatures, types and stats → Roster structure for the v1 slice (15 species)
+- **Current text:** "Roster structure for the v1 slice (15 species)" with 2 arena-only/rare species
+- **Proposed change:** 17 species. Add Kampetrold (Stone, a fieldstone troll; rare in
+  the cathedral district and the Zoo district; arena 2 ace) and Ellepige (Grove/Spirit, a
+  forest elf-maid from Danish folklore; rare in Fruens Bøge). Both are placeholders with
+  A1 art.
+- **Reason / evidence:** v1.7 asks for 1–2 rares per district that suit its places, but
+  starter lines are not wild (DECISIONS D68). That leaves the cathedral district with no
+  Stone rare and Fruens Bøge with no Grove rare. With Kampetrold, the Stone arena also
+  has a second Stone species besides Brokrabbe (Søormling is kept off early arenas).
+  Implemented in M2c (D106).
+- **Status:** open
+
+### P15. Arena 2 stands in Klosterhaven, beside the cathedral, not on the square
+
+- **GDD section:** World (arena location table); Arenas → Arena difficulty
+- **Current text:** "Skt. Knuds square"
+- **Proposed change:** "Klosterhaven by Sankt Knuds Kirke" (the cathedral's public garden).
+- **Reason / evidence:** Skt. Knuds Plads, on the north side of the cathedral, is only
+  about 50 m from the district 1 border (Vestergade). An arena's 80 m interaction radius
+  would reach into district 1, which POI validation rejects. Klosterhaven, just south of
+  the cathedral, is 176 m inside district 2. Implemented in M2c (D108); `verified: false`
+  until checked on site.
+- **Status:** open

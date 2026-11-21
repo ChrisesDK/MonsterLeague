@@ -26,8 +26,12 @@ const at = (id: string) => {
   return { lat: p.lat, lng: p.lng };
 };
 const STATION = { lat: 55.4017, lng: 10.3866 };
-/** A district-2 spot in Munke Mose (locked until badge 1). */
-const DISTRICT2 = { lat: 55.3895, lng: 10.383 };
+/** Munke Mose: district 4 (Water), locked until badge 3. */
+const MUNKEMOSE = { lat: 55.3895, lng: 10.383 };
+/** A district-2 spot (old town / Hunderup), opened by badge 1. */
+const DISTRICT2 = { lat: 55.392, lng: 10.4 };
+/** Far out by the harbour: district 8. */
+const HARBOUR = { lat: 55.412, lng: 10.388 };
 
 interface DevSave {
   onboarding: string;
@@ -107,7 +111,7 @@ async function poiAction(page: Page, poiId: string) {
   return card;
 }
 
-test('district 1: onboarding to badge 1, with reloads', async ({ page }) => {
+test('onboarding to badge 2 (districts 1 and 2, open wildlife), with reloads', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(String(e)));
   page.on('console', (m) => {
@@ -160,10 +164,41 @@ test('district 1: onboarding to badge 1, with reloads', async ({ page }) => {
   expect(save.team).toHaveLength(2);
   await dev(page, 'setFast');
 
-  // ---- a locked district: spawns are too wild ----------------------------------------------
-  await teleport(page, DISTRICT2);
-  await dev(page, 'injectSpawn', { speciesId: 'grimaelling', level: 10, ...DISTRICT2 });
+  // ---- GDD v1.7, 0 badges in a far district: commons battle at band 1, rares are too wild ----
+  await teleport(page, HARBOUR);
+  await dev(page, 'injectSpawn', {
+    speciesId: 'soeormling',
+    rarity: 'rare',
+    district: 8,
+    ...HARBOUR,
+    lat: HARBOUR.lat + 0.0002,
+  });
+  await dev(page, 'injectSpawn', {
+    speciesId: 'grimaelling',
+    district: 8,
+    levelRoll: 0.5,
+    ...HARBOUR,
+  });
   await expect(page.locator('.spawn-marker.too-wild')).toHaveCount(1);
+  const common = page.locator('.spawn-marker[data-kind=ok]');
+  await expect(common).toHaveCount(1);
+  // band 1 is L3-8; roll 0.5 → L6 for a player with 0 badges (the rare would be L43-50)
+  await expect(common).toHaveAttribute('aria-label', /level 6/);
+  await page.locator('.spawn-marker.too-wild').evaluate((e) => (e as HTMLElement).click());
+  await expect(page.locator('.map-toast')).toContainText('too wild');
+  await common.evaluate((e) => (e as HTMLElement).click());
+  await expect(page.locator('.combatant.side-1')).toContainText('Level 6');
+  await fight(page, { charm: true });
+  await page.waitForSelector('.maplibregl-canvas');
+  save = await devSave(page);
+  const caughtFar = [...save.team, ...(save.storage as DevSave['team'])].find(
+    (c) => c.speciesId === 'grimaelling',
+  );
+  if (caughtFar) expect(caughtFar.level).toBe(6);
+  await page
+    .locator('[data-testid=result-card] .btn')
+    .click({ timeout: 3000 })
+    .catch(() => undefined);
 
   // ---- route trainer: win, reward, marked beaten -------------------------------------------
   await dev(page, 'setTeamLevel', 12);
@@ -240,7 +275,13 @@ test('district 1: onboarding to badge 1, with reloads', async ({ page }) => {
   // a Forager spawn in Kongens Have (park, district 1)
   const near = { lat: at('arena1').lat - 0.0003, lng: at('arena1').lng };
   await teleport(page, near);
-  await dev(page, 'injectSpawn', { speciesId: 'mosbille', level: 5, ...near, requires: 'forager' });
+  await dev(page, 'injectSpawn', {
+    speciesId: 'mosbille',
+    rarity: 'rare',
+    district: 1,
+    ...near,
+    requires: 'forager',
+  });
   const forager = page.locator('.spawn-marker[data-kind=ok]');
   await expect(forager).toHaveCount(1);
   await forager.evaluate((e) => (e as HTMLElement).click());
@@ -288,10 +329,61 @@ test('district 1: onboarding to badge 1, with reloads', async ({ page }) => {
   );
   expect(save.bag.revive_leaf).toBe(1);
 
-  // District 2 is open now: the same kind of spawn is no longer too wild.
+  // Badge 1 opens district 2 (cathedral): its rares are catchable; Munke Mose (4) stays wild.
   await teleport(page, DISTRICT2);
-  await dev(page, 'injectSpawn', { speciesId: 'grimaelling', level: 10, ...DISTRICT2 });
+  await dev(page, 'injectSpawn', {
+    speciesId: 'kampetrold',
+    rarity: 'rare',
+    district: 2,
+    ...DISTRICT2,
+  });
   await expect(page.locator('.spawn-marker.too-wild')).toHaveCount(0);
+  await expect(page.locator('.spawn-marker[data-kind=ok]')).toHaveCount(1);
+  await teleport(page, MUNKEMOSE);
+  await dev(page, 'injectSpawn', {
+    speciesId: 'soeormling',
+    rarity: 'rare',
+    district: 4,
+    ...MUNKEMOSE,
+  });
+  await expect(page.locator('.spawn-marker.too-wild')).toHaveCount(1);
+
+  // ---- district 2: a route trainer, the junior, the Stone leader, badge 2 ---------------------
+  await dev(page, 'setTeamLevel', 15);
+  card = await poiAction(page, 'trainer_karen');
+  await expect(card).toHaveAttribute('data-state', 'ready');
+  await card.getByTestId('poi-action').click();
+  await fight(page);
+  await expect(page.getByTestId('result-card')).toContainText('You beat');
+  await page.locator('[data-testid=result-card] .btn').click();
+  card = await poiAction(page, 'rest_barndomshjem');
+  await card.getByTestId('poi-action').click();
+  card = await poiAction(page, 'arena2');
+  await expect(card).toContainText('junior');
+  await card.getByTestId('poi-action').click();
+  await fight(page);
+  await expect(page.getByTestId('result-card')).toContainText('You beat');
+  await page.locator('[data-testid=result-card] .btn').click();
+  // badge 1 raised obedience to 20, so a level-19 team still obeys
+  await dev(page, 'setTeamLevel', 19);
+  for (let attempt = 0; attempt < 4; attempt++) {
+    card = await poiAction(page, 'rest_barndomshjem');
+    await card.getByTestId('poi-action').click();
+    card = await poiAction(page, 'arena2');
+    await expect(card).toContainText('leader');
+    await card.getByTestId('poi-action').click();
+    await fight(page);
+    if ((await devSave(page)).badges.includes(2)) break;
+    await page.locator('[data-testid=result-card] .btn').click();
+  }
+  await expect(page.getByTestId('badge-ceremony')).toHaveAttribute('data-badge', '2');
+  await expect(page.getByTestId('badge-ceremony')).toContainText('25');
+  await page.getByTestId('ceremony-done').click();
+  save = await devSave(page);
+  expect(save.badges).toEqual([1, 2]);
+  expect(save.defeatedTrainers).toEqual(
+    expect.arrayContaining(['route2_karen', 'arena2_junior', 'leader_stone']),
+  );
 
   // Badges screen, after one more reload.
   await page.reload();
@@ -299,7 +391,8 @@ test('district 1: onboarding to badge 1, with reloads', async ({ page }) => {
   await page.getByTestId('menu-button').click();
   await page.getByTestId('menu-badges').click();
   await expect(page.locator('[data-testid=badge-1].earned')).toBeVisible();
-  await expect(page.locator('[data-testid=badge-2].earned')).toHaveCount(0);
+  await expect(page.locator('[data-testid=badge-2].earned')).toBeVisible();
+  await expect(page.locator('[data-testid=badge-3].earned')).toHaveCount(0);
 
   expect(errors).toEqual([]);
 });
