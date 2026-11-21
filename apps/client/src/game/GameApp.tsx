@@ -2,7 +2,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { content } from '@oml/data';
 import { createCreature } from '@oml/engine';
 import { latLngToCell } from 'h3-js';
-import { chooseStarter, teachFieldAbility, type SaveGame } from '@oml/game';
+import {
+  chooseStarter,
+  naturalRecovery,
+  noteFainted,
+  teachFieldAbility,
+  type SaveGame,
+} from '@oml/game';
 import { recordGate3, type Gate3Event, type Gate3Session } from '@oml/playtest';
 import type { Locale, Translate } from '../i18n';
 import { MapScreen } from '../map/MapScreen';
@@ -93,6 +99,22 @@ export function GameApp({ t, locale, onLocale, devTools }: Props) {
     setSave(next);
     void writeGame(next);
   }, []);
+
+  // Fainted creatures recover by themselves after 8 hours: keep the clock in step with the
+  // team and check once a minute (nothing is saved when nothing changes).
+  useEffect(() => {
+    const tick = () =>
+      update(
+        (s) =>
+          naturalRecovery(
+            noteFainted(s, Math.floor(Date.now() / 1000)),
+            Math.floor(Date.now() / 1000),
+          ).save,
+      );
+    tick();
+    const id = setInterval(tick, 60_000);
+    return () => clearInterval(id);
+  }, [update, save?.team, save?.storage]);
 
   // Language and display settings follow the save.
   const night = useNight();

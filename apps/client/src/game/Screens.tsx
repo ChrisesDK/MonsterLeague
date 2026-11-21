@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { createContext, useContext, useState, type ReactNode } from 'react';
 import { badgeUrl, spriteUrl } from '@oml/art';
 import { content } from '@oml/data';
 import { getMaxHp, getStats, xpForLevel, type CreatureInstance } from '@oml/engine';
@@ -17,6 +17,7 @@ import {
   applyItem,
   isDistrictUnlocked,
   journal,
+  RECOVERY_SECONDS,
   type Goal,
   type SaveGame,
 } from '@oml/game';
@@ -79,7 +80,20 @@ function Shell({
   );
 }
 
+/** Fainted creatures' recovery clock (save.faintedSince), for the HP lines. */
+const FaintedSince = createContext<Record<string, number>>({});
+
+/** "4 h 10 min" until a fainted creature recovers by itself. */
+export function recoveryText(since: number | undefined, nowSeconds: number, t: Translate): string {
+  if (since === undefined) return t('team.fainted');
+  const left = Math.max(0, since + RECOVERY_SECONDS - nowSeconds);
+  const h = Math.floor(left / 3600);
+  const m = Math.max(1, Math.ceil((left % 3600) / 60));
+  return t('team.recovers', { time: h > 0 ? `${h} h ${m} min` : `${m} min` });
+}
+
 function HpLine({ c, t }: { c: CreatureInstance; t: Translate }) {
+  const fainted = useContext(FaintedSince);
   const max = getMaxHp(c);
   const pct = Math.max(0, Math.min(100, (100 * c.hp) / max));
   return (
@@ -91,7 +105,9 @@ function HpLine({ c, t }: { c: CreatureInstance; t: Translate }) {
         />
       </span>
       <span className="muted small">
-        {c.hp <= 0 ? t('team.fainted') : `${c.hp}/${max}`}
+        {c.hp <= 0
+          ? recoveryText(fainted[c.uid], Math.floor(Date.now() / 1000), t)
+          : `${c.hp}/${max}`}
         {c.status && c.hp > 0 ? ` · ${t(`status.short.${c.status}`)}` : ''}
       </span>
     </span>
@@ -124,7 +140,15 @@ function CreatureRow({
   );
 }
 
-export function Screens({ t, screen, onScreen, save, update, devTools, gate3, onClose }: Props) {
+export function Screens(props: Props) {
+  return (
+    <FaintedSince.Provider value={props.save.faintedSince}>
+      <ScreensInner {...props} />
+    </FaintedSince.Provider>
+  );
+}
+
+function ScreensInner({ t, screen, onScreen, save, update, devTools, gate3, onClose }: Props) {
   const back = () => onScreen('menu');
 
   if (screen === 'menu') {

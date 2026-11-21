@@ -1,6 +1,15 @@
 import { latLngToCell } from 'h3-js';
 import { describe, expect, it } from 'vitest';
-import { coarseCellsAround, distanceM, offset, speedKmh, tooFast, type Fix } from '../src/map/geo';
+import {
+  coarseCellsAround,
+  distanceM,
+  offset,
+  speedKmh,
+  tooFast,
+  type Fix,
+  GPS_GRACE_MS,
+  playableFix,
+} from '../src/map/geo';
 
 describe('map geometry and filters', () => {
   it('measures distance and offsets in metres', () => {
@@ -41,5 +50,19 @@ describe('map geometry and filters', () => {
     expect(tooFast(true, 15)).toBe(false);
     expect(tooFast(false, 24)).toBe(false);
     expect(tooFast(true, null)).toBe(true);
+  });
+});
+
+describe('GPS dips (owner request after M2d)', () => {
+  const good = { lat: 55.4, lng: 10.38, accuracy: 12, time: 1_000_000 };
+  const weak = { lat: 55.401, lng: 10.381, accuracy: 104, time: 1_030_000 };
+  it('an accurate fix is used as it is', () => {
+    expect(playableFix(good, good, good.time)).toBe(good);
+  });
+  it('a weak fix keeps the last accurate one in play for 90 s', () => {
+    expect(playableFix(weak, good, good.time + 30_000)).toBe(good);
+    expect(playableFix(weak, good, good.time + GPS_GRACE_MS)).toBe(good);
+    expect(playableFix(weak, good, good.time + GPS_GRACE_MS + 1)).toBeNull();
+    expect(playableFix(weak, null, weak.time)).toBeNull();
   });
 });

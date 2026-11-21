@@ -128,6 +128,13 @@
 - [x] Design system (tokens, components, original icons, OFL fonts), applied to every screen; catch/level-up/evolution/badge feedback; before/after screenshots in docs/screenshots/m2d
 - [x] E2E: camera bounds, Town Map, Journal goal after onboarding, Route 1 walk, marker positions
 
+### After M2d (owner feedback) ✅
+
+- [x] Orbit camera: drag rotates around the player, zoom on the player tilts the view (50–68°), no panning or recentre
+- [x] Natural recovery: fainted creatures heal by themselves after 8 hours (save v4)
+- [x] GPS dips: the last accurate fix stays in play for 90 s
+- [x] Species colours for the placeholder art (district 1 commons were all grey)
+
 ## Next: Gate 3 — District walk test (owner, with [GATE3.md](GATE3.md))
 
 - [x] GDD v1.6; P12 and P13 accepted

@@ -9,7 +9,7 @@ import { z } from 'zod';
  * The tutorial creature's position is kept in memory and re-rolled after a reload; used
  * spawns are kept only until they expire (≤ 15 min) and are pruned on every save.
  */
-export const SAVE_VERSION = 3;
+export const SAVE_VERSION = 4;
 
 export type OnboardingStep = 'safety' | 'location' | 'starter' | 'tutorial' | 'done';
 
@@ -68,6 +68,11 @@ export interface SaveGame {
   nextUid: number;
   settings: Settings;
   journal: JournalProgress;
+  /**
+   * Creature uid → device time (unix seconds) it was first seen fainted. Fainted creatures
+   * recover on their own after 8 hours (owner request after M2d); a rest stop is faster.
+   */
+  faintedSince: Record<string, number>;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -99,6 +104,7 @@ export function newSave(seed: string, language: Settings['language'] = 'da'): Sa
     nextUid: 1,
     settings: { ...DEFAULT_SETTINGS, language },
     journal: { reached: [], routes: {}, wildMetres: {}, restStops: [] },
+    faintedSince: {},
   };
 }
 
@@ -184,6 +190,7 @@ export const SaveSchema = z
         restStops: z.array(z.string()),
       })
       .strict(),
+    faintedSince: z.record(z.number()),
   })
   .strict();
 
@@ -253,6 +260,8 @@ export const migrations: Record<number, (old: Record<string, unknown>, seed: str
       restStops: Object.keys((old.lastRestock as Record<string, number> | undefined) ?? {}).sort(),
     },
   }),
+  /** v3 → v4: natural recovery clock for fainted creatures (starts empty; the game fills it). */
+  3: (old) => ({ ...old, version: 4, faintedSince: {} }),
 };
 
 /** GDD v1.7 renumbering, old district → new district (1 and 3 stay). */

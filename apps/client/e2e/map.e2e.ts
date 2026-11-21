@@ -166,28 +166,65 @@ const camera = (page: Page) =>
     return { pitch: m.getPitch(), zoom: m.getZoom(), bearing: m.getBearing() } as Cam;
   });
 
-test('play camera: tilted, zoom limited to street level, rotate and reset north', async ({
+test('play camera: always on the player; drag rotates, zoom tilts (no panning)', async ({
   page,
 }) => {
   await startDone(page);
   await teleport(page, KONGENS_HAVE);
-  await page.waitForTimeout(800);
+  await page.waitForTimeout(1500);
+  const centreOffset = () =>
+    page.evaluate(
+      ([lat, lng]) => {
+        const m = (
+          window as unknown as {
+            __omlMap: { getCenter: () => { lat: number; lng: number } };
+          }
+        ).__omlMap;
+        const c = m.getCenter();
+        return Math.hypot((c.lat - lat!) * 110_540, (c.lng - lng!) * 63_300);
+      },
+      [KONGENS_HAVE.lat, KONGENS_HAVE.lng],
+    );
   let cam = await camera(page);
-  expect(cam.pitch).toBeCloseTo(50, 0);
+  expect(cam.zoom).toBeCloseTo(17.5, 1);
+  expect(cam.pitch).toBeCloseTo(59, 0); // halfway between 50 (zoomed out) and 68 (zoomed in)
   const jump = (o: Record<string, number>) =>
     page.evaluate(
       (x) =>
         (window as unknown as { __omlMap: { jumpTo: (o: unknown) => void } }).__omlMap.jumpTo(x),
       o,
     );
-  await jump({ zoom: 20, pitch: 0 });
+  // zoom limits, and the tilt follows the zoom
+  await jump({ zoom: 20 });
   cam = await camera(page);
   expect(cam.zoom).toBeCloseTo(18.5, 1);
-  expect(cam.pitch).toBeCloseTo(50, 0);
+  expect(cam.pitch).toBeCloseTo(68, 0);
   await jump({ zoom: 13 });
-  expect((await camera(page)).zoom).toBeCloseTo(16.5, 1);
-  await jump({ bearing: 70 });
-  expect((await camera(page)).bearing).toBeCloseTo(70, 0);
+  cam = await camera(page);
+  expect(cam.zoom).toBeCloseTo(16.5, 1);
+  expect(cam.pitch).toBeCloseTo(50, 0);
+  await jump({ zoom: 17.5 });
+  await page.waitForTimeout(800);
+  // a one-finger drag across the screen turns the map around the player; it never pans
+  const box = (await page.getByTestId('play-map').boundingBox())!;
+  const before = await camera(page);
+  await page.mouse.move(box.x + 330, box.y + 300);
+  await page.mouse.down();
+  for (let i = 1; i <= 10; i++) await page.mouse.move(box.x + 330, box.y + 300 + i * 25);
+  await page.mouse.up();
+  await page.waitForTimeout(300);
+  const after = await camera(page);
+  const turned = Math.abs(((after.bearing - before.bearing + 540) % 360) - 180);
+  expect(turned).toBeGreaterThan(15);
+  expect(await centreOffset()).toBeLessThan(3);
+  // the wheel zooms on the player, not on the mouse
+  await page.mouse.move(box.x + 40, box.y + 250);
+  await page.mouse.wheel(0, -400);
+  await page.waitForTimeout(800);
+  expect((await camera(page)).zoom).toBeGreaterThan(17.6);
+  expect(await centreOffset()).toBeLessThan(3);
+  await expect(page.getByTestId('recentre-button')).toHaveCount(0);
+  // the compass turns north up again
   await page.getByTestId('compass-button').click();
   await expect.poll(async () => Math.abs((await camera(page)).bearing)).toBeLessThan(0.5);
 });

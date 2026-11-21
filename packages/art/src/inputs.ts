@@ -9,7 +9,9 @@ export function artInput(speciesId: string, dex: Dex = content): CreatureArtInpu
   return {
     id: s.id,
     types: [...s.types],
-    colors: s.types.map((t) => dex.typeColors[t]),
+    // species colours when the content gives them (M2d), else the type colours
+    colors: s.colors ? [...s.colors] : s.types.map((t) => dex.typeColors[t]),
+    ring: dex.typeColors[s.types[0]!],
     bst: s.baseStats.hp + s.baseStats.atk + s.baseStats.def + s.baseStats.spd,
     stage: evolved ? 2 : 1,
   };

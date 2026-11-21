@@ -76,3 +76,16 @@ export function tooFast(previous: boolean, kmh: number | null): boolean {
   if (kmh === null) return previous;
   return previous ? kmh > RESUME_SPEED_KMH : kmh > MAX_SPEED_KMH;
 }
+
+/**
+ * Short GPS dips (a fix of 100 m for a few seconds under trees or between buildings) should
+ * not hide the creatures. The last accurate fix stays in play this long.
+ */
+export const GPS_GRACE_MS = 90_000;
+
+/** The position to play with: the newest accurate fix, kept through short weak spells. */
+export function playableFix(latest: Fix | null, lastGood: Fix | null, nowMs: number): Fix | null {
+  if (latest && latest.accuracy <= MAX_ACCURACY_M) return latest;
+  if (lastGood && nowMs - lastGood.time <= GPS_GRACE_MS) return lastGood;
+  return null;
+}

@@ -10,6 +10,8 @@ export interface CreatureArtInput {
   id: string;
   /** Type colours, primary first (from types.json). */
   colors: string[];
+  /** Marker ring colour (the main type's colour); defaults to the first colour. */
+  ring?: string;
   types: string[];
   /** Base stat total (bigger creatures for bigger totals). */
   bst: number;
@@ -251,7 +253,7 @@ export function creatureSvg(input: CreatureArtInput): string {
 
 /** Map marker: a paper badge with a type-coloured ring and the creature inside (64×76). */
 export function markerSvg(input: CreatureArtInput): string {
-  const ring = input.colors[0] ?? '#a8a29e';
+  const ring = input.ring ?? input.colors[0] ?? '#a8a29e';
   const inner = creatureSvg(input)
     .replace('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">', '')
     .replace('</svg>', '');

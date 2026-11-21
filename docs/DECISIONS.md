@@ -951,3 +951,30 @@ length, position resolution and spawn tables>`.
   - **Feedback:** catch and level-up bursts in battle, an evolution morph, paper confetti
     for badges, haptic patterns for each. Reduce motion (setting or OS) turns animations
     and haptics off.
+
+## After M2d — owner feedback
+
+- **D120. Orbit camera** (owner request; replaces D117's pan, snap-back and recentre). The
+  camera always looks at the player. One-finger or mouse drag rotates the map around the
+  player and never pans: the angle swept around the player's screen point turns the bearing,
+  and a sideways swipe close to the player turns it as well. Pinch, two-finger twist and the
+  scroll wheel work around the map centre, which the padding puts on the player.
+  Double-tap zoom, box zoom and keyboard panning are off. The tilt follows the zoom
+  (`transformCameraUpdate`): 50° zoomed out (16.5), 68° zoomed in (18.5), so zooming in
+  looks further ahead. A drag that ends on a marker doesn't also tap it. The recentre
+  button is gone; the compass still turns north up (`apps/client/src/map/orbit.ts`).
+- **D121. Short GPS dips.** A fix worse than 50 m no longer hides the creatures at once:
+  the last accurate fix stays in play for 90 s (`playableFix`, `GPS_GRACE_MS`), and the
+  player figure stays there. Only after 90 s without an accurate fix does the map show "GPS
+  is weak" (or a GPS error) and hide the creatures. Distances (Gate 3, Journal) only count
+  between accurate fixes, so a dip adds no metres.
+- **D122. Natural recovery** (owner request; GDD proposal P19). A fainted creature recovers
+  fully by itself 8 hours after it fainted. The save (v4) keeps `faintedSince` (uid → device
+  time). The client keeps it in step with the team and checks once a minute, but never
+  during a battle. A rest stop or an item is still the quick way. The team screen shows the
+  time left, and the fainted Journal card offers both options.
+- **D123. Creature colours.** The placeholder art took its colours from the type, and Folk
+  is grey, so district 1's commons all looked grey. Species now carry their own art
+  colours (`colors: [body, accent]` in species.json, chosen to suit each creature: the
+  pigeon slate blue, the gull white with a yellow beak, the crab orange…). Marker rings
+  keep the type colour so the type still reads at a glance. A1 art was regenerated.

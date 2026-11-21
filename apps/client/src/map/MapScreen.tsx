@@ -18,6 +18,7 @@ import {
   noteRoutes,
   noteWildWalk,
   placeTutorial,
+  recoversAt,
   restockReadyAt,
   spawnLevel,
   spawnStatus,
@@ -54,6 +55,7 @@ import { Icon } from '../ui/icons';
 import {
   BATTLE_RADIUS_M,
   MAX_ACCURACY_M,
+  playableFix,
   SHOW_RADIUS_M,
   distanceM,
   speedKmh,
@@ -69,6 +71,7 @@ import { applyPalette, NIGHT, paperStyle, PAPER } from './style';
 import { markerElement, PLAYER_SVG, STAR_SVG, START } from './markers';
 import { TownMap } from './TownMap';
 import { useSpawns } from './useSpawns';
+import { attachOrbit, ORBIT, pitchForZoom } from './orbit';
 
 const POIS: Poi[] = Object.values(content.pois);
 /** POI radius circles appear when the player is this much outside the radius, or closer. */
@@ -79,10 +82,8 @@ const FAINT_M = 100;
 const MIN_STEP_M = 5;
 /** The tutorial creature is placed again when the player is further away than this. */
 const TUTORIAL_REPLACE_M = 600;
-/** Panning away from the player snaps back after this long without touching the map. */
-export const SNAP_BACK_MS = 6000;
-/** GDD v1.9 camera: tilted about 50°, zoom about street level. */
-export const CAMERA = { pitch: 50, minZoom: 16.5, maxZoom: 18.5, zoom: 17.5 };
+/** GDD v1.9 camera: always on the player, tilted 50–68° by zoom, zoom about street level. */
+export const CAMERA = ORBIT;
 /** Room for the heads-up display, so the player stays in the clear middle of the screen. */
 const PADDING = { top: 130, bottom: 230, left: 0, right: 0 };
 
@@ -159,11 +160,12 @@ export function MapScreen({
   devSpawns,
 }: Props) {
   const [fixes, setFixes] = useState<Fix[]>([]);
+  /** The newest accurate fix (kept through short GPS dips, see playableFix). */
+  const [lastGood, setLastGood] = useState<Fix | null>(null);
   const [gpsError, setGpsError] = useState<string | null>(null);
   const [fast, setFast] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [inBattle, setInBattle] = useState(false);
-  const [follow, setFollow] = useState(true);
   const [region, setRegion] = useState<Region | null>(null);
   const [tutorialSpot, setTutorialSpot] = useState<LatLng | null>(null);
   const [result, setResult] = useState<ResultCard | null>(null);
@@ -184,7 +186,6 @@ export function MapScreen({
   const distAnchor = useRef<Fix | null>(null);
   const journalAnchor = useRef<Fix | null>(null);
   const wildPending = useRef(0);
-  const snapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [useSim, setUseSim] = useState(devTools && !!sim);
   const teleportMode = useRef(false);
   const saveRef = useRef(save);
@@ -211,11 +212,12 @@ export function MapScreen({
       if ('error' in e) return setGpsError(e.error);
       setGpsError(null);
       setFixes((prev) => [...prev.slice(-9), e.fix]);
+      if (e.fix.accuracy <= MAX_ACCURACY_M) setLastGood(e.fix);
     });
   }, [useSim, sim]);
 
   const last = fixes[fixes.length - 1] ?? null;
-  const goodFix = last && last.accuracy <= MAX_ACCURACY_M ? last : null;
+  const goodFix = playableFix(last, lastGood, Date.now());
   const goodFixes = useMemo(() => fixes.filter((f) => f.accuracy <= MAX_ACCURACY_M), [fixes]);
   const kmh = speedKmh(goodFixes);
   useEffect(() => setFast((prev) => tooFast(prev, kmh)), [kmh]);
@@ -326,9 +328,11 @@ export function MapScreen({
       zoom: CAMERA.zoom,
       minZoom: CAMERA.minZoom,
       maxZoom: CAMERA.maxZoom,
-      pitch: CAMERA.pitch,
-      minPitch: CAMERA.pitch,
-      maxPitch: CAMERA.pitch,
+      pitch: pitchForZoom(CAMERA.zoom),
+      minPitch: CAMERA.minPitch,
+      maxPitch: CAMERA.maxPitch,
+      // the tilt always follows the zoom (zoomed in = looking further ahead)
+      transformCameraUpdate: ({ zoom }) => ({ pitch: pitchForZoom(zoom) }),
       maxBounds: [
         [10.25, 55.32],
         [10.52, 55.46],
@@ -383,13 +387,8 @@ export function MapScreen({
       });
       setMapReady(true);
     });
-    // Panning away from the player: stop following, and snap back after a few seconds.
-    map.on('dragstart', () => setFollow(false));
-    map.on('moveend', (e: { originalEvent?: unknown }) => {
-      if (!e.originalEvent) return;
-      if (snapTimer.current) clearTimeout(snapTimer.current);
-      snapTimer.current = setTimeout(() => setFollow(true), SNAP_BACK_MS);
-    });
+    // Drag rotates around the player; pinch and wheel zoom on the player (no panning).
+    const detachOrbit = attachOrbit(map);
     map.on('rotate', () => setBearing(map.getBearing()));
     map.on('click', (e) => {
       if (teleportMode.current && sim) sim.teleport({ lat: e.lngLat.lat, lng: e.lngLat.lng });
@@ -445,7 +444,7 @@ export function MapScreen({
       poiMap.clear();
       player.current = null;
       targetMarker.current = null;
-      if (snapTimer.current) clearTimeout(snapTimer.current);
+      detachOrbit();
       map.remove();
       mapRef.current = null;
       delete (window as unknown as { __omlMap?: MlMap }).__omlMap;
@@ -492,23 +491,26 @@ export function MapScreen({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady || !last) return;
-    player.current?.figure.setLngLat([last.lng, last.lat]);
-    player.current?.cone.setLngLat([last.lng, last.lat]);
+    // During a short GPS dip the player stays at the last accurate fix.
+    const here = goodFix ?? last;
+    player.current?.figure.setLngLat([here.lng, here.lat]);
+    player.current?.cone.setLngLat([here.lng, here.lat]);
     (map.getSource('player') as GeoJSONSource | undefined)?.setData({
       type: 'FeatureCollection',
-      features: [circle(last, Math.min(Math.max(last.accuracy, 5), 200))],
+      features: [circle(here, Math.min(Math.max(last.accuracy, 5), 200))],
     });
     const colours = { arena: '#c8553d', trainer: '#3d6fa8', restStop: '#4f9a63' };
     (map.getSource('poi-radius') as GeoJSONSource | undefined)?.setData({
       type: 'FeatureCollection',
-      features: POIS.filter((p) => distanceM(last, p) <= p.radius + RADIUS_SHOW_M).map((p) => ({
+      features: POIS.filter((p) => distanceM(here, p) <= p.radius + RADIUS_SHOW_M).map((p) => ({
         ...circle(p, p.radius),
         properties: { colour: colours[p.kind], id: p.id },
       })),
     });
-    // Don't cut short another camera move (reset north, recentre); the next fix catches up.
-    if (follow && !map.isEasing()) map.easeTo({ center: [last.lng, last.lat], duration: 600 });
-  }, [last, follow, mapReady]);
+    // The camera always looks at the player. Don't cut short another camera move (reset
+    // north, a zoom); the next fix catches up.
+    if (!map.isEasing()) map.easeTo({ center: [here.lng, here.lat], duration: 600 });
+  }, [last, goodFix, mapReady]);
 
   useEffect(() => {
     const cone = player.current?.cone;
@@ -516,13 +518,6 @@ export function MapScreen({
     cone.getElement().style.visibility = heading === null ? 'hidden' : 'visible';
     if (heading !== null) cone.setRotation(heading);
   }, [heading, mapReady]);
-
-  const recentre = useCallback(() => {
-    if (snapTimer.current) clearTimeout(snapTimer.current);
-    setFollow(true);
-    const map = mapRef.current;
-    if (map && last) map.easeTo({ center: [last.lng, last.lat], duration: 500 });
-  }, [last]);
 
   const resetNorth = () => {
     if (compass.needsPermission) compass.request();
@@ -895,6 +890,12 @@ export function MapScreen({
       kind = 'fainted';
       warn = true;
       title = t('guide.fainted', { name: t(`poi.${r.poi.id}.name`), m: formatM(r.distance) });
+      // ...or wait: fainted creatures recover by themselves after 8 hours
+      const soonest = Math.min(...save.team.map((c) => recoversAt(save, c.uid) ?? Infinity));
+      if (Number.isFinite(soonest)) {
+        const left = Math.max(0, soonest - Math.floor(Date.now() / 1000));
+        title += ` ${t('guide.faintedWait', { h: Math.floor(left / 3600), m: Math.ceil((left % 3600) / 60) })}`;
+      }
     } else if (journal.current) {
       target = journal.current.target;
       title = goalTitle(journal.current, t);
@@ -999,7 +1000,7 @@ export function MapScreen({
       ? t('map.notConfigured')
       : gpsError === 'denied'
         ? t('map.gps.denied')
-        : gpsError
+        : gpsError && !goodFix
           ? t('map.gps.unavailable')
           : !last
             ? t('map.gps.waiting')
@@ -1064,16 +1065,6 @@ export function MapScreen({
             aria-label={t('hud.townMap')}
             onClick={() => setTownMap(true)}
           />
-          {!follow && (
-            <Button
-              round
-              className="hud-btn"
-              icon="recentre"
-              data-testid="recentre-button"
-              aria-label={t('hud.recentre')}
-              onClick={recentre}
-            />
-          )}
         </div>
       </div>
       {devTools && versionDrift.length > 0 && (

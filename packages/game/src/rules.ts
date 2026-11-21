@@ -67,6 +67,49 @@ export function healCreature(c: CreatureInstance, dex: Dex = content): CreatureI
   };
 }
 
+/** Fainted creatures recover on their own after this long (owner request after M2d). */
+export const RECOVERY_SECONDS = 8 * 3600;
+
+/**
+ * Keeps the recovery clock in step with the team: starts it for newly fainted creatures and
+ * drops creatures that are no longer fainted (healed, revived) or gone. Same object when
+ * nothing changes.
+ */
+export function noteFainted(save: SaveGame, nowSeconds: number): SaveGame {
+  const all = [...save.team, ...save.storage];
+  const next: Record<string, number> = {};
+  for (const c of all) if (isFainted(c)) next[c.uid] = save.faintedSince[c.uid] ?? nowSeconds;
+  const same =
+    Object.keys(next).length === Object.keys(save.faintedSince).length &&
+    Object.entries(next).every(([k, v]) => save.faintedSince[k] === v);
+  return same ? save : { ...save, faintedSince: next };
+}
+
+/** When a fainted creature recovers by itself (unix seconds), or null if it isn't fainted. */
+export function recoversAt(save: SaveGame, uid: string): number | null {
+  const since = save.faintedSince[uid];
+  return since === undefined ? null : since + RECOVERY_SECONDS;
+}
+
+/** Heals every creature that has been fainted for 8 hours. Same object when none is due. */
+export function naturalRecovery(
+  save: SaveGame,
+  nowSeconds: number,
+  dex: Dex = content,
+): { save: SaveGame; recovered: string[] } {
+  const due = Object.entries(save.faintedSince)
+    .filter(([, since]) => nowSeconds - since >= RECOVERY_SECONDS)
+    .map(([uid]) => uid);
+  if (due.length === 0 || save.battle) return { save, recovered: [] };
+  const heal = (c: CreatureInstance) => (due.includes(c.uid) ? healCreature(c, dex) : c);
+  const faintedSince = { ...save.faintedSince };
+  for (const uid of due) delete faintedSince[uid];
+  return {
+    save: { ...save, team: save.team.map(heal), storage: save.storage.map(heal), faintedSince },
+    recovered: due,
+  };
+}
+
 export function healTeam(save: SaveGame, dex: Dex = content): SaveGame {
   return { ...save, team: save.team.map((c) => healCreature(c, dex)) };
 }

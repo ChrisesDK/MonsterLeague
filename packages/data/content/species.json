@@ -49,6 +49,7 @@
         "into": "baalkat",
         "level": 16
       },
+      "colors": ["#f2862e", "#ffe08a"],
       "placeholder": true
     },
     {
@@ -96,6 +97,7 @@
           "moveId": "nimble_jab"
         }
       ],
+      "colors": ["#d6452b", "#ffb347"],
       "placeholder": true
     },
     {
@@ -147,6 +149,7 @@
         "into": "stroemodder",
         "level": 16
       },
+      "colors": ["#9a6a43", "#f3dcb8"],
       "placeholder": true
     },
     {
@@ -194,6 +197,7 @@
           "moveId": "squall_slap"
         }
       ],
+      "colors": ["#6f4a30", "#9fd3f0"],
       "placeholder": true
     },
     {
@@ -245,6 +249,7 @@
         "into": "boegevaette",
         "level": 16
       },
+      "colors": ["#5cb85c", "#cfe9b4"],
       "placeholder": true
     },
     {
@@ -292,6 +297,7 @@
           "moveId": "hearty_meal"
         }
       ],
+      "colors": ["#3f8f45", "#e0c27a"],
       "placeholder": true
     },
     {
@@ -327,6 +333,7 @@
           "moveId": "cobbler_kick"
         }
       ],
+      "colors": ["#8a9cc2", "#c9a7e0"],
       "placeholder": true
     },
     {
@@ -362,6 +369,7 @@
           "moveId": "cobbler_kick"
         }
       ],
+      "colors": ["#b98b63", "#f2c7b0"],
       "placeholder": true
     },
     {
@@ -397,6 +405,7 @@
           "moveId": "root_snare"
         }
       ],
+      "colors": ["#6aa84f", "#c7e08a"],
       "placeholder": true
     },
     {
@@ -432,6 +441,7 @@
           "moveId": "harbour_wave"
         }
       ],
+      "colors": ["#3d8fd1", "#bfe3f7"],
       "placeholder": true
     },
     {
@@ -471,6 +481,7 @@
           "moveId": "rampart_slam"
         }
       ],
+      "colors": ["#d9744a", "#f0c9a0"],
       "placeholder": true
     },
     {
@@ -510,6 +521,7 @@
           "moveId": "brook_spout"
         }
       ],
+      "colors": ["#dfe7ef", "#f2c14e"],
       "placeholder": true
     },
     {
@@ -549,6 +561,7 @@
           "moveId": "lullaby_hum"
         }
       ],
+      "colors": ["#7c5cd6", "#ffe27a"],
       "placeholder": true
     },
     {
@@ -592,6 +605,7 @@
           "moveId": "moonless_stare"
         }
       ],
+      "colors": ["#c0392b", "#e9d8c4"],
       "placeholder": true
     },
     {
@@ -635,6 +649,7 @@
           "moveId": "sea_fog"
         }
       ],
+      "colors": ["#2f7f8f", "#9fd8cf"],
       "placeholder": true
     },
     {
@@ -678,6 +693,7 @@
           "moveId": "rampart_slam"
         }
       ],
+      "colors": ["#8d8174", "#b9c48a"],
       "placeholder": true
     },
     {
@@ -721,6 +737,7 @@
           "moveId": "moonless_stare"
         }
       ],
+      "colors": ["#8fcf9a", "#d8c2f0"],
       "placeholder": true
     }
   ]

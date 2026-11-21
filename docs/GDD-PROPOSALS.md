@@ -270,3 +270,26 @@ status here changes to `accepted` (or `rejected`, with a reason).
   Karen stands by Albani Torv on Route 2 and Mads on the river path on Route 3, both in
   district 2 (D114).
 - **Status:** open
+
+### P19. Fainted creatures recover by themselves after 8 hours
+
+- **GDD section:** Catching, levelling, evolution and items / Battle system (losing)
+- **Current text:** losing faints the whole team "until a rest stop or items" (v1.5).
+- **Proposed change:** add "or until 8 hours have passed: fainted creatures then recover
+  fully by themselves".
+- **Reason / evidence:** owner request after M2d, so a player far from a rest stop isn't
+  stuck. Implemented (D122).
+- **Status:** open (implemented at the owner's request; fold into the GDD)
+
+### P20. The play camera orbits the player and never pans
+
+- **GDD section:** Game feel → Map view
+- **Current text:** "tilted about 50°, with zoom limited to … 16.5–18.5 … Two-finger rotate
+  is allowed; a compass button resets north."
+- **Proposed change:** "The camera is always centred on the player. Dragging rotates the
+  view around the player; pinching or the scroll wheel zooms on the player. Zoomed out the
+  camera tilts 50°; zooming in tilts it up to about 68° so more of the way ahead shows.
+  A compass button turns north up."
+- **Reason / evidence:** owner request after M2d (D120). The recentre button and the
+  snap-back from panning are gone.
+- **Status:** open (implemented at the owner's request; fold into the GDD)

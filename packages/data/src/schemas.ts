@@ -58,6 +58,10 @@ export const SpeciesSchema = z
       .object({ into: id, level: z.number().int().min(2).max(100) })
       .strict()
       .optional(),
+    /** Art colours [body, accent] (M2d); without them the art uses the type colours. */
+    colors: z
+      .tuple([z.string().regex(/^#[0-9a-f]{6}$/), z.string().regex(/^#[0-9a-f]{6}$/)])
+      .optional(),
     placeholder,
   })
   .strict();

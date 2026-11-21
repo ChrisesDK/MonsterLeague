@@ -77,18 +77,19 @@ describe('save versions and migrations', () => {
 
   it('a v0 save migrates through every version', () => {
     const r = loadSave({ usedSpawns: { a: 2e9 } }, SEED);
-    expect(r.ok && r.save.version).toBe(3);
+    expect(r.ok && r.save.version).toBe(SAVE_VERSION);
   });
 
   it('v2 → v3 (M2d) adds Journal progress; rest stops used for a restock count as visited', () => {
     const cur = chooseStarter(newSave(SEED), 'gnistkat');
-    const { journal: _j, ...rest } = cur;
+    const { journal: _j, faintedSince: _f, ...rest } = cur;
     const v2 = { ...rest, version: 2, lastRestock: { rest_library: 1_700_000_000 } };
     const r = loadSave(JSON.parse(JSON.stringify(v2)), 'other');
     expect(r.ok).toBe(true);
     if (!r.ok) return;
     expect(r.migrated).toBe(true);
-    expect(r.save.version).toBe(3);
+    expect(r.save.version).toBe(SAVE_VERSION);
+    expect(r.save.faintedSince).toEqual({});
     expect(r.save.journal).toEqual({
       reached: [],
       routes: {},

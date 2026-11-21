@@ -520,5 +520,7 @@
   "sim.route": "Walk",
   "sim.sample": "Sample walk",
   "sim.hide": "Hide simulator",
-  "sim.show": "Simulator"
+  "sim.show": "Simulator",
+  "team.recovers": "Recovers by itself in {time}",
+  "guide.faintedWait": "– or wait {h} h {m} min: they recover by themselves."
 }
