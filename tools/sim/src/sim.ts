@@ -83,8 +83,11 @@ export type Starter = (typeof STARTERS)[number];
 export function playerTeamSide(presetId: string, starter: string, dex: Dex = content): SideSpec {
   const preset = dex.playerTeams[presetId];
   if (!preset) throw new Error(`Unknown player team preset "${presetId}"`);
-  const starterId = STARTER_ALIASES[`starter_${starter}`];
-  if (!starterId) throw new Error(`Unknown starter "${starter}" (fire, water or grove)`);
+  const baseId = STARTER_ALIASES[`starter_${starter}`];
+  if (!baseId) throw new Error(`Unknown starter "${starter}" (fire, water or grove)`);
+  // A player's starter has evolved by the time it reaches its evolution level.
+  const evo = dex.species[baseId]?.evolution;
+  const starterId = evo && preset.starterLevel >= evo.level ? evo.into : baseId;
   const members = [{ speciesId: starterId, level: preset.starterLevel }, ...preset.team];
   return {
     label: `${preset.id}/${starter} [${members.map((m) => `${m.speciesId} L${m.level}`).join(', ')}]`,

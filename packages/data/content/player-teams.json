@@ -25,11 +25,11 @@
       "starterLevel": 15,
       "team": [
         {
-          "speciesId": "rendsnude",
+          "speciesId": "grimaelling",
           "level": 13
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "mosbille",
           "level": 14
         },
         {
@@ -40,6 +40,34 @@
       "items": {
         "small_tonic": 2,
         "large_tonic": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "arena4",
+      "arena": 4,
+      "starterLevel": 27,
+      "team": [
+        {
+          "speciesId": "kulingmaage",
+          "level": 25
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 26
+        },
+        {
+          "speciesId": "mosbille",
+          "level": 26
+        },
+        {
+          "speciesId": "torvdue",
+          "level": 25
+        }
+      ],
+      "items": {
+        "small_tonic": 2,
+        "large_tonic": 2
       },
       "placeholder": true
     }

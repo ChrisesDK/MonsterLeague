@@ -10,7 +10,7 @@ import { applyEvent, viewFromState } from '../src/view';
 const choice = {
   player: 'species:gnistkat',
   playerLevel: 12,
-  opponent: 'trainer:leader_water',
+  opponent: 'trainer:leader_stone',
   opponentLevel: 5,
   seed: 3,
 };

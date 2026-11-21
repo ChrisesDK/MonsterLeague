@@ -4,9 +4,9 @@ import { gzipSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { booleanPointInPolygon, bboxPolygon } from '@turf/turf';
 import type { Feature, FeatureCollection, Geometry, MultiPolygon, Polygon } from 'geojson';
-import { cellToLatLng, polygonToCells } from 'h3-js';
+import { cellToLatLng, latLngToCell, polygonToCells } from 'h3-js';
 import osmtogeojson from 'osmtogeojson';
-import { RegionFileSchema, type RegionFile } from '@oml/data';
+import { content, RegionFileSchema, type RegionFile } from '@oml/data';
 import { FeatureIndex, blockedMask, classifyCell } from './classify';
 import { BIOMES, REGION } from './config';
 import { basemapWater } from './basemap-water';
@@ -68,9 +68,21 @@ const totals = Object.fromEntries(BIOMES.map((b) => [b, 0])) as Record<string, n
 let dropped = 0;
 let noSpawnCells = 0;
 let partlyBlocked = 0;
+/**
+ * A POI's own map cell always counts as the POI's district (M2c): otherwise a cell whose
+ * centre lies just across a border would show, e.g., the library rest stop's wildlife as
+ * "too wild".
+ */
+const poiCellDistrict = new Map(
+  Object.values(content.pois).map((p) => [latLngToCell(p.lat, p.lng, REGION.h3Res), p.district]),
+);
 for (const cell of cells.sort()) {
   const [lat, lng] = cellToLatLng(cell);
-  const district = districts.find((d) => booleanPointInPolygon([lng, lat], d));
+  const forced = poiCellDistrict.get(cell);
+  const district =
+    forced !== undefined
+      ? districts.find((d) => d.properties.id === forced)
+      : districts.find((d) => booleanPointInPolygon([lng, lat], d));
   const c = classifyCell(index, cell, REGION.sampleRes);
   if (!district || Object.keys(c.shares).length === 0) {
     dropped++;

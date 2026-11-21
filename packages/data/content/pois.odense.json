@@ -67,12 +67,12 @@
       "id": "trainer_freja",
       "kind": "trainer",
       "district": 1,
-      "lat": 55.39793,
-      "lng": 10.38837,
+      "lat": 55.39676,
+      "lng": 10.38308,
       "radius": 50,
       "trainer": "route1_freja",
       "verified": false,
-      "note": "Gravene, a pedestrian street by Nørregade"
+      "note": "Pedestrian Slotsgade south of Odense Slot; moved from Gravene (17 m from the district 3 border) so the whole 50 m radius lies inside district 1"
     },
     {
       "id": "trainer_niels",
@@ -84,6 +84,54 @@
       "trainer": "route1_niels",
       "verified": false,
       "note": "Kongensgade pedestrian street by the artwork The Guardians Light"
+    },
+    {
+      "id": "arena2",
+      "kind": "arena",
+      "district": 2,
+      "lat": 55.39472,
+      "lng": 10.38887,
+      "radius": 80,
+      "arena": 2,
+      "trainers": ["arena2_junior", "leader_stone"],
+      "verified": false,
+      "note": "Klosterhaven, the public garden just south of Sankt Knuds Kirke. Skt. Knuds Plads itself (north side of the cathedral) is only ~50 m from the district 1 border, too close for the 80 m arena radius"
+    },
+    {
+      "id": "rest_barndomshjem",
+      "kind": "restStop",
+      "district": 2,
+      "lat": 55.3945,
+      "lng": 10.3866,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Munkemøllestræde by H.C. Andersens Barndomshjem; cobbled old-town street, public, check step-free access on site"
+    },
+    {
+      "id": "trainer_karen",
+      "kind": "trainer",
+      "district": 2,
+      "lat": 55.39525,
+      "lng": 10.4038,
+      "radius": 50,
+      "trainer": "route2_karen",
+      "verified": false,
+      "note": "Albaniengen, the public green by Sankt Albani Kirke"
+    },
+    {
+      "id": "trainer_mads",
+      "kind": "trainer",
+      "district": 2,
+      "lat": 55.39759,
+      "lng": 10.41147,
+      "radius": 50,
+      "trainer": "route2_mads",
+      "verified": false,
+      "note": "Sankt Jørgens Park, public park by Odense Å"
     }
   ]
 }

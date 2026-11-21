@@ -72,26 +72,35 @@
       "team": [
         {
           "speciesId": "grimaelling",
-          "level": 13,
-          "moves": ["shoulder_shove", "brook_spout", "hearth_spark", "sea_fog"]
+          "level": 25,
+          "moves": ["brook_spout", "beech_lash", "sea_fog", "shoulder_shove"]
         },
         {
-          "speciesId": "aaodder",
-          "level": 14,
-          "moves": ["nimble_jab", "brook_spout", "hearth_spark", "rinse_and_mend"]
+          "speciesId": "kulingmaage",
+          "level": 26,
+          "moves": ["squall_slap", "sky_crackle", "gale_step", "nimble_jab"]
         },
         {
           "speciesId": "stroemodder",
-          "level": 15,
-          "moves": ["shoulder_shove", "harbour_wave", "cobble_toss", "rinse_and_mend"]
+          "level": 26,
+          "moves": ["harbour_wave", "kiln_blast", "rinse_and_mend", "cobble_toss"]
+        },
+        {
+          "speciesId": "stroemodder",
+          "level": 27,
+          "moves": ["harbour_wave", "squall_slap", "rinse_and_mend", "cobble_toss"]
         }
       ],
       "items": {
         "large_tonic": 2
       },
       "placeholder": true,
-      "arena": 2,
-      "theme": "water"
+      "arena": 4,
+      "theme": "water",
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      }
     },
     {
       "id": "route1_lise",
@@ -198,6 +207,100 @@
       "reward": {
         "itemId": "basic_charm",
         "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "leader_stone",
+      "tier": "leader",
+      "team": [
+        {
+          "speciesId": "kampetrold",
+          "level": 14,
+          "moves": ["cobble_toss", "squall_slap", "cobbler_kick", "hunker_down"]
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 13
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 15,
+          "moves": ["cobble_toss", "grit_spray", "sky_crackle", "hunker_down"]
+        }
+      ],
+      "items": {},
+      "arena": 2,
+      "theme": "stone",
+      "placeholder": true,
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      }
+    },
+    {
+      "id": "arena2_junior",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "brokrabbe",
+          "level": 11
+        },
+        {
+          "speciesId": "torvdue",
+          "level": 12
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route2_karen",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "torvdue",
+          "level": 10
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 11
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "small_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route2_mads",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "mosbille",
+          "level": 12
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 13
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 14
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 1
       },
       "placeholder": true
     }

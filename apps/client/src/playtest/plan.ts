@@ -25,7 +25,7 @@ export const SESSION_PLAN: PlanSlot[] = [
   { id: 'wild2', kind: 'wild', arena: 1 },
   { id: 'trainer1', kind: 'trainer', arena: 1, trainerId: 'trainer_fisher' },
   { id: 'leader1', kind: 'leader', arena: 1, trainerId: 'leader_folk' },
-  { id: 'leader2', kind: 'leader', arena: 2, trainerId: 'leader_water', optional: true },
+  { id: 'leader2', kind: 'leader', arena: 2, trainerId: 'leader_stone', optional: true },
 ];
 
 export const WILD_LEVELS: [number, number] = [8, 10];

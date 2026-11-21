@@ -55,7 +55,7 @@ describe('playtest session plan', () => {
   it('builds trainer and leader battles from content, starter first', () => {
     const leader2 = buildPlaytestBattle(SESSION_PLAN[4]!, 'grove', seq(0.5));
     expect(leader2.state.kind).toBe('leader');
-    expect(leader2.opponentId).toBe('leader_water');
+    expect(leader2.opponentId).toBe('leader_stone');
     expect(leader2.state.sides[0].team.map((c) => c.speciesId)[0]).toBe('boegling');
     expect(leader2.state.sides[0].team).toHaveLength(4);
     expect(leader2.state.sides[1].ai).toBe('leader');

@@ -126,10 +126,24 @@ function checkPois(region: RegionFile): string[] {
         : (d.geometry.coordinates as number[][][][]);
     if (!polys.some((rings) => inRings(pt, rings)))
       errors.push(`${where}: outside district ${p.district}`);
+    else {
+      // The whole interaction radius must stay inside the district (GDD v1.7 / M2c).
+      let edge = Infinity;
+      for (const rings of polys)
+        for (const ring of rings)
+          for (let i = 0; i + 1 < ring.length; i++)
+            edge = Math.min(edge, distToSegmentM(pt, ring[i]!, ring[i + 1]!));
+      if (edge < p.radius)
+        errors.push(
+          `${where}: its ${p.radius} m radius crosses the district border (${edge.toFixed(0)} m away)`,
+        );
+    }
 
     const cellId = latLngToCell(p.lat, p.lng, region.h3Res);
     const row = region.cells[cellId];
     if (!row) errors.push(`${where}: not in a region cell`);
+    else if (row[0] !== p.district)
+      errors.push(`${where}: its map cell counts as district ${row[0]}, not ${p.district}`);
     else if (row[1] === 1) errors.push(`${where}: inside a no-spawn cell`);
     else {
       // Blocked sample positions are no-spawn areas or light rail: the POI may not sit on one.

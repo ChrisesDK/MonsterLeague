@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { latLngToCell } from 'h3-js';
 import { describe, expect, it } from 'vitest';
 import { checkContent, checkI18n, content, i18n, parseContent, rawContent } from '../src/index';
 
@@ -9,16 +11,28 @@ describe('content', () => {
 
   it('has the expected placeholder content sizes', () => {
     expect(content.typeIds).toHaveLength(7);
-    expect(Object.keys(content.species)).toHaveLength(15);
+    expect(Object.keys(content.species)).toHaveLength(17);
     expect(Object.keys(content.moves).length).toBeGreaterThanOrEqual(30);
     expect(Object.keys(content.items)).toHaveLength(7);
     expect(
       Object.values(content.pois)
         .map((p) => p.kind)
         .sort(),
-    ).toEqual(['arena', 'restStop', 'restStop', 'trainer', 'trainer', 'trainer', 'trainer']);
-    expect(Object.keys(content.trainers)).toHaveLength(9);
-    expect(Object.keys(content.playerTeams)).toHaveLength(2);
+    ).toEqual([
+      'arena',
+      'arena',
+      'restStop',
+      'restStop',
+      'restStop',
+      'trainer',
+      'trainer',
+      'trainer',
+      'trainer',
+      'trainer',
+      'trainer',
+    ]);
+    expect(Object.keys(content.trainers)).toHaveLength(13);
+    expect(Object.keys(content.playerTeams)).toHaveLength(3);
     for (const s of Object.values(content.species)) expect(s.placeholder).toBe(true);
   });
 
@@ -82,7 +96,14 @@ describe('GDD audit checks (M1.6)', () => {
     const broken = structuredClone(content);
     broken.trainers.leader_water!.team[0]!.level = 51;
     broken.playerTeams.arena2!.team[0]!.level = 51;
-    broken.spawns.push({ species: 'ghost', district: 1, weight: 1, biomes: {}, time: 'any' });
+    broken.spawns.push({
+      species: 'ghost',
+      district: 1,
+      weight: 1,
+      rarity: 'common',
+      biomes: {},
+      time: 'any',
+    });
     const errors = checkContent(broken).join('\n');
     expect(errors).toMatch(/level 51 above the Odense cap 50/);
     expect(errors).toMatch(/player team arena2: level 51/);
@@ -126,6 +147,7 @@ describe('field abilities (M1.7, GDD v1.2 / P1)', () => {
       species: 'torvdue',
       district: 1,
       weight: 1,
+      rarity: 'rare',
       biomes: {},
       time: 'any',
       requires: 'nope',
@@ -143,23 +165,45 @@ describe('field abilities (M1.7, GDD v1.2 / P1)', () => {
 });
 
 describe('POIs (M2b)', () => {
-  it('district 1 has arena 1 (junior then leader), 4 trainers and 2 rest stops, all unverified', () => {
+  it('districts 1 and 2: arena (junior then leader), route trainers in their level range, rest stops, all unverified', () => {
     const pois = Object.values(content.pois);
-    const arena = pois.find((p) => p.kind === 'arena')!;
-    expect(arena.kind === 'arena' && arena.trainers).toEqual(['arena1_junior', 'leader_folk']);
+    const arenas = pois.filter((p) => p.kind === 'arena');
+    expect(arenas.map((a) => a.kind === 'arena' && [a.district, a.trainers])).toEqual([
+      [1, ['arena1_junior', 'leader_folk']],
+      [2, ['arena2_junior', 'leader_stone']],
+    ]);
+    const range: Record<number, [number, number]> = { 1: [4, 9], 2: [9, 14] };
     for (const p of pois) {
-      expect(p.district).toBe(1);
+      expect([1, 2]).toContain(p.district);
       expect(p.verified).toBe(false);
-    }
-    for (const p of pois)
       if (p.kind === 'trainer') {
         const t = content.trainers[p.trainer]!;
         for (const m of t.team) {
-          expect(m.level).toBeGreaterThanOrEqual(4);
-          expect(m.level).toBeLessThanOrEqual(9);
+          expect(m.level).toBeGreaterThanOrEqual(range[p.district]![0]);
+          expect(m.level).toBeLessThanOrEqual(range[p.district]![1]);
         }
         expect(t.reward).toBeDefined();
       }
+    }
+    expect(
+      pois
+        .filter((p) => p.district === 2)
+        .map((p) => p.kind)
+        .sort(),
+    ).toEqual(['arena', 'restStop', 'trainer', 'trainer']);
+    // Arena 4 (Water, Munkemose) exists as data only until M3.
+    expect(content.trainers.leader_water!.arena).toBe(4);
+    expect(content.trainers.leader_water!.team).toHaveLength(4);
+  });
+
+  it("each POI's own map cell counts as the POI's district (region build)", () => {
+    const region = JSON.parse(
+      readFileSync(new URL('../region/region.odense.json', import.meta.url), 'utf8'),
+    ) as { cells: Record<string, number[]> };
+    for (const p of Object.values(content.pois)) {
+      const row = region.cells[latLngToCell(p.lat, p.lng, 10)];
+      expect(row?.[0], p.id).toBe(p.district);
+    }
   });
 
   it('rejects broken POI references', () => {
