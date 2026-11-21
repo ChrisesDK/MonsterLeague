@@ -294,10 +294,11 @@ test('play camera: always on the player; drag rotates, zoom tilts (no panning)',
       };
     });
   await teleport(page, { lat: KONGENS_HAVE.lat + 0.0002, lng: KONGENS_HAVE.lng });
-  await page.waitForTimeout(150);
+  // wait until it starts moving (slow renderers in CI take a moment), then it must be
+  // somewhere on the way (a snap would jump the whole ≈ 22 m at once)
+  await expect.poll(centreOffset, { timeout: 5000, intervals: [16] }).toBeGreaterThan(0.2);
   const mid = await centreOffset();
-  expect(mid).toBeGreaterThan(1); // still on its way (≈ 22 m in total)
-  expect(mid).toBeLessThan(22);
+  expect(mid).toBeLessThan(21);
   for (let i = 0; i < 5; i++) {
     const o = await figureOffset();
     expect(Math.hypot(o.dx, o.dy)).toBeLessThan(3); // camera on the figure, also mid-glide
