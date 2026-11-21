@@ -42,23 +42,27 @@ Nov 20, 2026 · @Christian
 
 ## World: Odense districts and progression
 
-**Odense is split into 8 hand-drawn districts, each with one arena, opened in a fixed order that spirals out from the centre.** District boundaries are polygons drawn in a GeoJSON file. Wild creature levels and trainer strength rise with each district.
+**Odense is split into 8 districts drawn on real borders (railways, ring roads, Odense Å), each with one arena. The arena order is a loop: three small inner-city districts first, then south along the river, out through the forest and the open-air museum, and finally the long walk north to the harbour.** Each arena keeps the theme that fits its place. District borders live in `content/districts.odense.geojson`.
 
-| # | District (draft) | Arena location | Arena theme | Wild levels | Field ability earned |
+| # | District | Arena location | Arena theme | Level band | Field ability earned |
 | --- | --- | --- | --- | --- | --- |
 | 1 | Centrum / station | Kongens Have | Folk | 3–8 | — |
-| 2 | Munkemose and the river | Munkemose | Water | 8–14 | Forager |
+| 2 | Old town and cathedral | Skt. Knuds square | Stone | 8–14 | Forager |
 | 3 | H.C. Andersen quarter | H.C. Andersens Hus | Spirit | 13–20 | Angler |
-| 4 | Old town and cathedral square | Skt. Knuds square | Stone | 19–26 | Runereader |
-| 5 | Harbour | Havnebadet | Storm | 25–32 | Nightseer |
-| 6 | Fruens Bøge | Fruens Bøge forest | Grove | 31–38 | Sealbreaker |
-| 7 | Zoo and river south | Odense Zoo (outside) | Mixed | 37–44 | Homing (heal only) |
-| 8 | Den Fynske Landsby | Den Fynske Landsby | Fire | 43–50 | — |
+| 4 | Munkemose and the river | Munkemose | Water | 19–26 | Runereader |
+| 5 | Zoo and river south | Odense Zoo (outside) | Mixed | 25–32 | Nightseer |
+| 6 | Fruens Bøge | Fruens Bøge forest, western part | Grove | 31–38 | Sealbreaker |
+| 7 | Den Fynske Landsby | Den Fynske Landsby, at least 80 m from the Svendborg railway | Fire | 37–44 | Homing (heal only) |
+| 8 | Harbour (everything north of the main railway) | Havnebadet | Storm | 43–50 | — |
+
+The level band of district *n* is used for its trainers and rare creatures, and for common creatures caught by a player with *n − 1* badges (see the rules below).
 
 Rules:
 
-- **No hard walls.** Every district is visible and walkable from day one. Before you unlock a district, its wild creatures are shown as "too wild to catch" and trainers refuse to battle ("come back with the Munkemose badge").
-- **Home district.** v1 always starts in district 1. Later, a player may start anywhere and get a "home" starter route.
+- **Districts lock arenas, trainers and rare creatures, not everyday wildlife.** Common creatures can be battled and caught everywhere from day one, so a player who lives far from the centre can play near home. In a district the player has not unlocked, rare creatures and field-ability layers show greyed out as "too wild to catch", and trainers and the arena refuse ("come back with the cathedral badge").
+- **Common creatures match the player.** A common creature's level comes from the player's own band: the band of the district they would unlock next (0 badges → district 1's band, 1 badge → district 2's band, and so on). Rare creatures use their own district's band. Species are shared by everyone; levels are per player, because everyone catches their own copy anyway.
+- **District unlocks:** district 1 is open from the start; badge *n* opens district *n + 1*.
+- **Home district.** Onboarding works anywhere; the map then points to district 1.
 - **Championship.** After 8 badges, the Odense Championship is a 4-battle gauntlet at a central landmark (for example Rådhuset's square).
 
 ## Creatures, types and stats
@@ -189,7 +193,7 @@ There is no shop and no currency in v1: rest stops give a free restock once per 
 
 1. Time is cut into 15-minute windows (window = floor(unix seconds / 900)).
 2. The seed for a window is HMAC-SHA256(server secret, region + window). The secret never leaves the server, so nobody can predict future spawns.
-3. For each cell, the shared `spawn` package rolls how many creatures appear (density from the cell's biome mix, 0 in `noSpawn` cells), which species (district spawn table weighted by biome shares, day/night, and the field ability a spawn requires) and the level (district band). The same pure code runs in the server and in the tests.
+3. For each cell, the shared `spawn` package rolls how many creatures appear (density from the cell's biome mix, 0 in `noSpawn` cells), which species (district spawn table weighted by biome shares, day/night, and the field ability a spawn requires) whether it is common or rare, and a level roll between 0 and 1. The phone turns the roll into a level: the player's own band for common species, the district band for rare ones. Each spawn table entry is marked common or rare. The same pure code runs in the server and in the tests.
 4. The client asks for **one coarse cell** (H3 resolution 7, about 5 km²) and the current window, and gets the spawn list for that whole area. The server never receives the player's exact position, and it does not log requests.
 5. Only the current and the next window are served, so lists can be cached for a short time without revealing the future.
 
@@ -197,7 +201,7 @@ There is no shop and no currency in v1: rest stops give a free restock once per 
 
 1. Every GPS update with accuracy better than 50 m updates the player's cell. Travel above 25 km/h shows no spawns (no catching from cars and buses).
 2. Spawns within about 100 m are drawn on the map. A spawn can be battled from within 40 m.
-3. Spawns that need a field ability the player lacks are shown as a hint ("rustling in the trees: needs Forager"); spawns in districts the player has not unlocked are "too wild to catch".
+3. Spawns that need a field ability the player lacks are shown as a hint ("rustling in the trees: needs Forager"); rare spawns in districts the player has not unlocked are "too wild to catch"; common spawns can always be battled.
 4. Each player can battle each spawn (spawn ID) once; the save records which IDs were used.
 5. Without a connection, the cached list for the current window keeps working; after that the map says "No signal: the creatures are hiding".
 
@@ -227,18 +231,18 @@ Real spawn tables live in `packages/data/content/spawns.json` (accepted P8).
 
 **Arena difficulty.** The leader team grows by about +6 levels per arena and +1 creature every two arenas. The *expected player team* (used by the sim and by level design) is one creature more than the leader, at the same levels.
 
-| Arena | Theme | Leader team | Leader levels | Expected player team | Status |
-| --- | --- | --- | --- | --- | --- |
-| 1 | Folk | 2 (Rendsnude, Loftnisse) | 9–10 | 3 at L9–10 | Built, on target |
-| 2 | Water | 3, two carry a Fire move | 13–15 | 4 at L13–15 | Built, on target |
-| 3 | Spirit | 3 | 19–21 | 4 | Planned |
-| 4 | Stone | 4 | 25–27 | 5 | Planned |
-| 5 | Storm | 4 | 31–33 | 5 | Planned |
-| 6 | Grove | 5 | 37–39 | 6 | Planned |
-| 7 | Mixed | 5, ace Søormling | 43–45 | 6 | Planned |
-| 8 | Fire | 6 | 48–50 | 6 | Planned |
+| Arena | Place | Theme | Leader team | Leader levels | Expected player team | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | Kongens Have | Folk | 2 (Rendsnude, Loftnisse) | 9–10 | 3 at L9–10 | Built, on target |
+| 2 | Skt. Knuds square | Stone | 3 | 13–15 | 4 at L13–15 | To build (M2c) |
+| 3 | H.C. Andersens Hus | Spirit | 3 | 19–21 | 4 | Planned |
+| 4 | Munkemose | Water | 4 (the former arena-2 Water leader, scaled up) | 25–27 | 5 | Planned (team exists) |
+| 5 | Odense Zoo | Mixed | 4, ace Søormling | 31–33 | 5 | Planned |
+| 6 | Fruens Bøge | Grove | 5 | 37–39 | 6 | Planned |
+| 7 | Den Fynske Landsby | Fire | 5 | 43–45 | 6 | Planned |
+| 8 | Havnebadet | Storm | 6 | 48–50 | 6 | Planned |
 
-**Win-rate targets** for the expected player team vs. the leader, measured with `pnpm sim:report`: 40–60% with neutral types, 75–90% with a type advantage, 15–30% with a disadvantage, never 0%. Measured in M1.5: arena 1 at 53–55% for all three starters; arena 2 at 27% (Fire), 47% (Water), 85% (Grove). Route trainers have no target, but should be beatable by the expected team for their district.
+**Win-rate targets** for the expected player team vs. the leader, measured with `pnpm sim:report`: 40–60% with neutral types, 75–90% with a type advantage, 15–30% with a disadvantage, never 0%. Measured in M1.5: arena 1 at 53–55% for all three starters. The old arena-2 Water results (27% Fire, 47% Water, 85% Grove) no longer apply now that Water is arena 4; the new Stone arena 2 must meet the same targets. Route trainers have no target, but should be beatable by the expected team for their district.
 
 **Field abilities** are taught to a team member and take one of its 4 move slots. A creature must be *in the team* for the ability to work.
 
@@ -443,7 +447,8 @@ M1.7 (done, 148 tests): field abilities are data in `field-abilities.json`; a fr
 
 **Before Gate 3**
 
-- [ ] Redraw all 8 district polygons so each arena from the World table sits in its own district, in spiral order (Munkemose currently falls in district 4, not 2)
+- [x] Redraw all 8 district polygons on real borders (done; arena order then changed in v1.7)
+- [ ] M2c: apply v1.7: new arena order and district numbering, common-everywhere lock rule with per-player levels, Stone arena 2, POI fixes (library cell, Freja)
 - [ ] Check the 7 district-1 POIs on site (public, step-free, away from traffic, sensible after dark) and set them to `verified: true`
 - [ ] Run Gate 3 with `docs/GATE3.md`: daylight sessions plus one after dark
 
@@ -489,6 +494,7 @@ M1.7 (done, 148 tests): field abilities are data in `field-abilities.json`; a fr
 
 | Version | Date | Changes |
 | --- | --- | --- |
+| 1.7 | 2026-11-21 | Arena order becomes a geographic loop (1 Kongens Have, 2 cathedral/Stone, 3 H.C. Andersen/Spirit, 4 Munkemose/Water, 5 Zoo/Mixed, 6 Fruens Bøge/Grove, 7 Den Fynske Landsby/Fire, 8 harbour/Storm); districts lock arenas, trainers and rare creatures but not common wildlife; common creature levels follow the player's badges; spawn entries marked common or rare; M2c added before Gate 3 |
 | 1.6 | 2026-11-21 | M2b done and live (district 1 playable to badge 1); accepted P12 (save and progression rules in packages/game) and P13 (starter level 5, starting bag, tutorial rules); district redraw and POI checks added before Gate 3 |
 | 1.5 | 2026-11-21 | M2a done and live; Worker auto-deploy and version check; onboarding: starter chosen anywhere plus a personal tutorial creature; losing faints the whole team until a rest stop or items |
 | 1.4 | 2026-11-20 | Accepted P8–P11 from M2a: field-ability name in the spawn example, Meadow/field biome and buffered rivers, no-spawn cells at 25% coverage plus never placing spawns inside no-spawn areas, light rail excluded from railway; M2a built, waiting for the spawn service deploy |
