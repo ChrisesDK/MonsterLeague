@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
   dragRotation,
+  FLING_DECAY_MS,
+  FLING_MAX_DEG_PER_MS,
+  flingVelocity,
   ORBIT,
   pitchForZoom,
   ROTATE_RADIUS_PX,
@@ -197,5 +200,24 @@ describe('drawing circles: no jerk anywhere in the loop (owner feedback)', () =>
     const there = line({ x: 40, y: 720 }, { x: 350, y: 720 });
     const back = play([...there, ...there.slice(0, -1).reverse()]);
     expect(Math.abs(back.total)).toBeLessThan(45);
+  });
+});
+
+describe('fling after a swipe', () => {
+  it('measures speed over time, not per event (events can come 1 ms apart)', () => {
+    // 12 moves of 12 degrees, 2 ms apart: a per-event speed would be 6 degrees/ms
+    const fast = Array.from({ length: 12 }, (_, i) => ({ t: 1000 + i * 2, delta: 12 }));
+    const v = flingVelocity(fast, 1024);
+    expect(v).toBe(FLING_MAX_DEG_PER_MS);
+    // the most a fling can add
+    expect(FLING_MAX_DEG_PER_MS * FLING_DECAY_MS).toBeLessThanOrEqual(90);
+  });
+  it('a normal finger swipe flings at its own speed', () => {
+    const swipe = Array.from({ length: 10 }, (_, i) => ({ t: 1000 + i * 16, delta: 4 }));
+    expect(flingVelocity(swipe, 1150)).toBeCloseTo(28 / 100, 1);
+  });
+  it('no fling when the finger stopped before it was lifted', () => {
+    const swipe = Array.from({ length: 10 }, (_, i) => ({ t: 1000 + i * 16, delta: 4 }));
+    expect(flingVelocity(swipe, 1300)).toBe(0);
   });
 });

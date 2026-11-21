@@ -197,9 +197,29 @@ export function strokeStep(
   return { stroke: { side, intent, heading, turn }, delta };
 }
 
-/** Fling: after a quick swipe the map keeps turning and slows down over about 0.4 s. */
-const FLING_DECAY_MS = 180;
+/** Fling: after a quick swipe the map keeps turning a little and slows down. */
+export const FLING_DECAY_MS = 150;
 const FLING_MIN_DEG_PER_MS = 0.05;
+/** At most 0.6 degrees per ms, so a fling adds at most about 90 degrees. */
+export const FLING_MAX_DEG_PER_MS = 0.6;
+/** Speed is measured over the last part of the stroke … */
+const FLING_WINDOW_MS = 100;
+/** … and only if the finger was still moving when it was lifted. */
+const FLING_STILL_MS = 60;
+
+/**
+ * Rotation speed for the fling (degrees per ms) from the stroke's recent moves. Measured
+ * over a time window, not per event: touch and mouse events can come 1–3 ms apart, and a
+ * per-event speed made a fast swipe spin the map half a turn after the finger was lifted.
+ */
+export function flingVelocity(samples: { t: number; delta: number }[], upAt: number): number {
+  const recent = samples.filter((s) => s.t >= upAt - FLING_WINDOW_MS);
+  if (recent.length === 0 || upAt - recent[recent.length - 1]!.t > FLING_STILL_MS) return 0;
+  const sum = recent.reduce((a, s) => a + s.delta, 0);
+  const span = Math.max(50, upAt - recent[0]!.t);
+  const v = sum / span;
+  return Math.max(-FLING_MAX_DEG_PER_MS, Math.min(FLING_MAX_DEG_PER_MS, v));
+}
 
 /** Wires the orbit gestures to a map. Returns a function that removes them. */
 export function attachOrbit(map: MlMap): () => void {
@@ -217,8 +237,8 @@ export function attachOrbit(map: MlMap): () => void {
   let last: { x: number; y: number; t: number } | null = null;
   let moved = 0;
   let stroke: Stroke = { side: { sx: 1, sy: 1 }, intent: 0, heading: null, turn: 0 };
-  /** Smoothed rotation speed (deg/ms) for the fling. */
-  let velocity = 0;
+  /** Recent rotation steps (event time, degrees) for the fling. */
+  let samples: { t: number; delta: number }[] = [];
   let fling = 0;
   const local = (e: PointerEvent) => {
     const r = el.getBoundingClientRect();
@@ -234,7 +254,7 @@ export function attachOrbit(map: MlMap): () => void {
     last = pointers.size === 1 ? local(e) : null; // two fingers: pinch/twist (MapLibre)
     if (last) stroke = startStroke(map.project(map.getCenter()), last);
     moved = 0;
-    velocity = 0;
+    samples = [];
   };
   const move = (e: PointerEvent) => {
     if (!pointers.has(e.pointerId)) return;
@@ -247,8 +267,8 @@ export function attachOrbit(map: MlMap): () => void {
     const step = strokeStep(stroke, c, last, p);
     stroke = step.stroke;
     const delta = step.delta;
-    const dt = Math.max(1, p.t - last.t);
-    velocity = velocity * 0.6 + (delta / dt) * 0.4;
+    samples.push({ t: p.t, delta });
+    if (samples.length > 40) samples.shift();
     map.setBearing(map.getBearing() + delta);
     last = p;
   };
@@ -257,7 +277,8 @@ export function attachOrbit(map: MlMap): () => void {
     pointers.delete(e.pointerId);
     const wasDragging = last !== null && moved >= 6 && pointers.size === 0;
     last = null;
-    if (!wasDragging || Math.abs(velocity) < FLING_MIN_DEG_PER_MS) return;
+    const velocity = wasDragging ? flingVelocity(samples, e.timeStamp) : 0;
+    if (Math.abs(velocity) < FLING_MIN_DEG_PER_MS) return;
     let v = velocity;
     let prev = performance.now();
     const step = (now: number) => {

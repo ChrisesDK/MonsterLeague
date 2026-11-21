@@ -65,12 +65,19 @@ import {
   type Fix,
 } from './geo';
 import { useCompassHeading } from './heading';
-import { addWorldLayers, applyPatternPalette, setLockedDistricts, setWild } from './layers';
+import {
+  addBuildings3d,
+  addWorldLayers,
+  applyPatternPalette,
+  setLockedDistricts,
+  setWild,
+} from './layers';
 import { GpsLocation, type LocationSource, type SimLocation } from './location';
 import { SimPanel } from './SimPanel';
 import type { ApiSpawn } from './spawnApi';
 import { applyPalette, NIGHT, paperStyle, PAPER } from './style';
 import { markerElement, PLAYER_SVG, STAR_SVG, START } from './markers';
+import { LoadingScreen } from './LoadingScreen';
 import { TownMap } from './TownMap';
 import { useSpawns } from './useSpawns';
 import { attachOrbit, ORBIT, pitchForZoom } from './orbit';
@@ -109,6 +116,10 @@ interface Props {
 
 export { START };
 let protocolAdded = false;
+/** The loading screen shows on the first map of a session only (not after battles). */
+let loadedOnce = false;
+/** Never keep the player waiting longer than this (GPS or tiles slow): show the map. */
+export const LOADING_MAX_MS = 20_000;
 
 function appBase(): string {
   return new URL(import.meta.env.BASE_URL, window.location.href).href;
@@ -176,6 +187,10 @@ export function MapScreen({
   const [bearing, setBearing] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [townMap, setTownMap] = useState(false);
+  /** The map went idle (tiles and 3D buildings in place) after the player was placed. */
+  const [townBuilt, setTownBuilt] = useState(false);
+  const [loading, setLoading] = useState(!loadedOnce);
+  const [loadingTimedOut, setLoadingTimedOut] = useState(false);
   const mapRef = useRef<MlMap | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const markers = useRef(new Map<string, Marker>());
@@ -397,11 +412,15 @@ export function MapScreen({
           'line-opacity': 0.45,
         },
       });
+      addBuildings3d(map, paletteRef.current);
       setMapReady(true);
     });
     // Drag rotates around the player; pinch and wheel zoom on the player (no panning).
     const detachOrbit = attachOrbit(map);
     map.on('rotate', () => setBearing(map.getBearing()));
+    map.on('idle', () => {
+      if (drawnAt.current) setTownBuilt(true);
+    });
     map.on('click', (e) => {
       if (teleportMode.current && sim) sim.teleport({ lat: e.lngLat.lat, lng: e.lngLat.lng });
     });
@@ -1051,6 +1070,20 @@ export function MapScreen({
     } else targetMarker.current.setLngLat([lng, lat]);
   }, [targetKey, mapReady]);
 
+  // ---- loading screen: position found and the town built (or a timeout / GPS error) ------
+  useEffect(() => {
+    if (!loading) return;
+    const id = setTimeout(() => setLoadingTimedOut(true), LOADING_MAX_MS);
+    return () => clearTimeout(id);
+  }, [loading]);
+  const loadingDone = (!!goodFix && townBuilt) || loadingTimedOut || !!gpsError;
+  useEffect(() => {
+    if (!loading || !loadingDone) return;
+    loadedOnce = true;
+    const id = setTimeout(() => setLoading(false), 450); // fade out
+    return () => clearTimeout(id);
+  }, [loading, loadingDone]);
+
   // ---- render -----------------------------------------------------------------------------
   if (inBattle && save.battle) {
     const isTutorial = save.battle.kind === 'tutorial';
@@ -1249,6 +1282,9 @@ export function MapScreen({
           <div className="hud-bar-side right" />
         </div>
       </div>
+      {loading && (
+        <LoadingScreen t={t} located={!!goodFix} built={townBuilt} leaving={loadingDone} />
+      )}
       {townMap && (
         <TownMap
           t={t}

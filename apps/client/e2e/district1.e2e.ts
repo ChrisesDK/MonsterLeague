@@ -134,7 +134,8 @@ test('onboarding to badge 2 (districts 1 and 2, open wildlife), with reloads', a
   // ---- tutorial creature: personal, 100–200 m away, guided easy catch -----------------------
   for (let attempt = 0; attempt < 4; attempt++) {
     const marker = page.getByTestId('tutorial-marker');
-    await marker.waitFor({ timeout: 30_000 });
+    // attached, not visible: a creature behind the bottom of the screen is hidden (off screen)
+    await marker.waitFor({ state: 'attached', timeout: 30_000 });
     await expect(page.locator('[data-testid=journal-card][data-guide=tutorial]')).toBeVisible();
     const spot = await marker.evaluate((e) => ({
       lat: Number((e as HTMLElement).dataset.lat),

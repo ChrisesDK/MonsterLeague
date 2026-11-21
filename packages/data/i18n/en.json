@@ -522,5 +522,8 @@
   "sim.hide": "Hide simulator",
   "sim.show": "Simulator",
   "team.recovers": "Recovers by itself in {time}",
-  "guide.faintedWait": "– or wait {h} h {m} min: they recover by themselves."
+  "guide.faintedWait": "– or wait {h} h {m} min: they recover by themselves.",
+  "loading.title": "Getting ready",
+  "loading.locating": "Finding your position…",
+  "loading.building": "Building the town…"
 }

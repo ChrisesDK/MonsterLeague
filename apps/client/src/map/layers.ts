@@ -255,3 +255,73 @@ export function setLockedDistricts(map: MlMap, locked: number[]): void {
 export function applyPatternPalette(map: MlMap, p: Palette): void {
   if (map.hasImage('wild-grass')) setPatterns(map, p);
 }
+
+/**
+ * Building height in metres for the 3D layer: the OSM height when the data has one (about
+ * one building in ten in Odense), otherwise a typical height for the building's kind, with a
+ * little variation from the house number so a street doesn't look like a row of blocks.
+ * Everything is drawn at BUILDING_SCALE: storybook-low buildings keep the street around the
+ * player readable under the tilted camera (full height hid the foreground in the centre).
+ */
+export const BUILDING_SCALE = 0.55;
+export const BUILDING_HEIGHT = [
+  '*',
+  BUILDING_SCALE,
+  [
+    'min',
+    55,
+    [
+      'coalesce',
+      ['get', 'height'],
+      [
+        '+',
+        [
+          'match',
+          ['coalesce', ['get', 'kind_detail'], ''],
+          ['garage', 'garages', 'shed', 'carport', 'hut', 'roof', 'kiosk'],
+          3,
+          ['house', 'detached', 'semidetached_house', 'terrace', 'bungalow', 'farm'],
+          7,
+          ['apartments', 'dormitory', 'hotel', 'hospital', 'university'],
+          14,
+          ['commercial', 'retail', 'office', 'public', 'civic', 'school', 'train_station'],
+          12,
+          ['industrial', 'warehouse', 'manufacture', 'service'],
+          8,
+          ['church', 'cathedral', 'chapel'],
+          18,
+          9,
+        ],
+        ['*', 1.5, ['%', ['to-number', ['coalesce', ['get', 'addr_housenumber'], 0], 0], 3]],
+      ],
+    ],
+  ],
+] as const;
+
+/**
+ * 3D buildings for the play view (owner request): a GPU-drawn fill-extrusion layer on the
+ * basemap's buildings. The tiles (zoom 14–15, overzoomed) already simplify the shapes, so
+ * there is one cheap mesh per tile. Added last, so buildings hide routes and wild areas
+ * behind them; the creature and stamp icons stay on top (they are HTML).
+ */
+export function addBuildings3d(map: MlMap, p: Palette): void {
+  if (map.getLayer('buildings')) map.setLayoutProperty('buildings', 'visibility', 'none');
+  map.addLayer({
+    id: 'buildings-3d',
+    type: 'fill-extrusion',
+    source: 'protomaps',
+    'source-layer': 'buildings',
+    minzoom: 14.5,
+    paint: {
+      'fill-extrusion-color': p.building3d,
+      'fill-extrusion-height': BUILDING_HEIGHT as never,
+      'fill-extrusion-base': [
+        '*',
+        BUILDING_SCALE,
+        ['min', ['coalesce', ['get', 'min_height'], 0], 54],
+      ] as never,
+      'fill-extrusion-vertical-gradient': true,
+      'fill-extrusion-opacity': 1,
+    },
+  });
+}

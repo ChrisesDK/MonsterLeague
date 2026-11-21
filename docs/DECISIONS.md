@@ -1027,3 +1027,29 @@ length, position resolution and spawn tables>`.
     (stamps, creatures, the Journal star) is now hidden when it lies further behind the
     player than the bottom edge of the screen reaches, or more than 2 km away
     (`markerInView`, checked about 7 times a second).
+- **D127. 3D buildings** (owner request). A `fill-extrusion` layer on the basemap's
+  buildings (play view only; the Town Map stays flat). It is GPU-drawn per vector tile and
+  the tiles (zoom 14–15, overzoomed) already simplify the shapes, so the level of detail
+  comes from the tiles and every building in view is drawn as one cheap mesh per tile.
+  - **Heights:** the OSM height where Odense has one (about one building in ten), otherwise
+    a typical height for its kind (house 7 m, apartments 14 m, church 18 m, shed 3 m, …)
+    plus up to 3 m from the house number so streets aren't uniform. Everything is drawn at
+    55% (`BUILDING_SCALE`) and capped: full-height blocks hid the street around the player
+    under the tilted camera.
+  - **Order:** added last, so buildings hide routes and wild areas behind them; creature
+    and stamp icons are HTML and stay on top. Day and night colours follow the palette.
+  - **Frame rate** (headless Edge, 4× CPU throttle, Route 1 walk, 30 creatures; 3 runs each):
+    39–50 fps zoomed out, 40–48 fps zoomed in, 95th-percentile frame 28–35 ms, 0–3 frames
+    over 50 ms in 10 s (48–51 fps without buildings).
+- **D128. Loading screen.** On the first map of a session a paper screen with a swinging
+  lantern lists "Finding your position" and "Building the town" and ticks them off. It
+  leaves when there is a playable GPS fix and the map has gone idle (tiles and buildings
+  in place) after the player was placed. It never waits more than 20 s, and a GPS error
+  ends it at once (the map then shows its banner). Not shown again after battles.
+- **D129. Fling and tests.** The fling's speed is now measured over the stroke's last
+  100 ms (events can come 1–3 ms apart, which made a fast swipe spin half a turn after
+  release), only when the finger was still moving at release, and capped at 0.6 degrees
+  per ms (at most about 90 degrees extra). E2E traces are recorded only on a retry: full
+  traces of the long map tests exhausted the test runner's memory. Creature icons hidden
+  behind the camera are no longer "visible" to Playwright, so the tests wait for markers
+  to be attached instead.

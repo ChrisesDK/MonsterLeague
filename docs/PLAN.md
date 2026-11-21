@@ -134,6 +134,7 @@
 - [x] Natural recovery: fainted creatures heal by themselves after 8 hours (save v4)
 - [x] GPS dips: the last accurate fix stays in play for 90 s
 - [x] Species colours for the placeholder art (district 1 commons were all grey)
+- [x] 3D buildings in the play view (storybook scale) and a loading screen (position + town)
 
 ## Next: Gate 3 — District walk test (owner, with [GATE3.md](GATE3.md))
 

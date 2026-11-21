@@ -71,7 +71,7 @@ test('animated markers stay on their position while the map pans and zooms', asy
   await teleport(page, KONGENS_HAVE);
   // stand by the (animated) tutorial creature, with two more creatures close by
   const tut = page.getByTestId('tutorial-marker');
-  await tut.waitFor({ timeout: 30_000 });
+  await tut.waitFor({ state: 'attached', timeout: 30_000 });
   const spot = await tut.evaluate((e) => ({
     lat: Number((e as HTMLElement).dataset.lat),
     lng: Number((e as HTMLElement).dataset.lng),
@@ -90,6 +90,19 @@ test('animated markers stay on their position while the map pans and zooms', asy
     lng: spot.lng - 0.0003,
   });
   await expect(page.locator('.spawn-marker')).toHaveCount(3);
+  // the player (and camera) glide to the new spot: wait until they have arrived
+  await expect
+    .poll(
+      () =>
+        page.evaluate((p) => {
+          const c = (
+            window as unknown as { __omlMap: { getCenter: () => { lat: number; lng: number } } }
+          ).__omlMap.getCenter();
+          return Math.hypot((c.lat - p.lat) * 110_540, (c.lng - p.lng) * 63_300);
+        }, spot),
+      { timeout: 10_000 },
+    )
+    .toBeLessThan(1);
 
   const moves = [
     { zoom: 17.5, offset: [0, 0] },
@@ -376,4 +389,32 @@ test('icons behind the camera are hidden (looking away from the centre)', async 
   await expect.poll(shown, { timeout: 5000 }).toBe(0);
   await face(90); // east, towards it
   await expect.poll(shown, { timeout: 5000 }).toBeGreaterThan(0);
+});
+
+test('loading screen: finds the position, builds the town, then shows the map', async ({
+  page,
+}) => {
+  await page.addInitScript(() => localStorage.setItem('oml.locale', 'en'));
+  await page.goto('#/dev/map');
+  await page.getByTestId('onboarding-safety').waitFor();
+  await page.evaluate(() =>
+    (
+      window as unknown as { __omlDev: { skipOnboarding: (s: string) => void } }
+    ).__omlDev.skipOnboarding('gnistkat'),
+  );
+  const screen = page.getByTestId('loading-screen');
+  await screen.waitFor({ state: 'attached', timeout: 15_000 });
+  await expect(screen).toContainText('Finding your position');
+  await expect(screen).toContainText('Building the town');
+  // both steps get ticked off, then it fades away (well before the 20 s fallback)
+  await expect(screen).toHaveCount(0, { timeout: 18_000 });
+  await expect(page.getByTestId('journal-card')).toBeVisible();
+  // the 3D buildings are on the map
+  const has3d = await page.evaluate(
+    () =>
+      !!(
+        window as unknown as { __omlMap: { getLayer: (id: string) => unknown } }
+      ).__omlMap.getLayer('buildings-3d'),
+  );
+  expect(has3d).toBe(true);
 });

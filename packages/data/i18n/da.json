@@ -522,5 +522,8 @@
   "sim.hide": "Skjul simulator",
   "sim.show": "Simulator",
   "team.recovers": "Kommer sig af sig selv om {time}",
-  "guide.faintedWait": "– eller vent {h} t {m} min: så kommer de sig af sig selv."
+  "guide.faintedWait": "– eller vent {h} t {m} min: så kommer de sig af sig selv.",
+  "loading.title": "Gør klar",
+  "loading.locating": "Finder din position…",
+  "loading.building": "Bygger byen…"
 }

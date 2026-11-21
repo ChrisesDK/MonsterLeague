@@ -1584,3 +1584,85 @@ html[data-theme='night'] .arena-field {
   font-size: var(--fs-xs);
   font-weight: 700;
 }
+
+/* ---------- loading screen (position + town) ---------- */
+.loading-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+  background: var(--paper);
+  transition: opacity var(--dur-slow) var(--ease-out);
+}
+.loading-screen.leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+.loading-screen h1 {
+  margin: 0;
+  font-size: var(--fs-xl);
+  text-align: center;
+}
+.loading-lantern {
+  color: var(--accent);
+  transform-origin: 50% 0;
+  animation: lantern-swing 2.4s ease-in-out infinite;
+}
+@keyframes lantern-swing {
+  0%,
+  100% {
+    transform: rotate(-8deg);
+  }
+  50% {
+    transform: rotate(8deg);
+  }
+}
+.loading-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.loading-step {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  color: var(--ink-3);
+  font-weight: 700;
+}
+.loading-step.active {
+  color: var(--ink);
+}
+.loading-step.done {
+  color: var(--leaf);
+}
+.loading-mark {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+}
+.loading-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.loading-step.active .loading-dot {
+  animation: loading-pulse 1s ease-in-out infinite;
+}
+@keyframes loading-pulse {
+  50% {
+    transform: scale(1.8);
+    opacity: 0.4;
+  }
+}

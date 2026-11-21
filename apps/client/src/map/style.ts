@@ -18,6 +18,8 @@ export interface Palette {
   industrial: string;
   pedestrian: string;
   building: string;
+  /** 3D building walls in the play view. */
+  building3d: string;
   buildingLine: string;
   road: string;
   roadCase: string;
@@ -49,6 +51,7 @@ export const PAPER: Palette = {
   industrial: '#e3dccd',
   pedestrian: '#efe4cc',
   building: '#e7d8bc',
+  building3d: '#eedfc2',
   buildingLine: '#cdb994',
   road: '#fffaf0',
   roadCase: '#cdb994',
@@ -80,6 +83,7 @@ export const NIGHT: Palette = {
   industrial: '#252a38',
   pedestrian: '#262d40',
   building: '#2a3145',
+  building3d: '#39425c',
   buildingLine: '#3a4360',
   road: '#3a4462',
   roadCase: '#151b29',
@@ -177,6 +181,7 @@ export function paletteProps(p: Palette): [string, string, unknown][] {
     ['route-labels', 'text-halo-color', p.halo],
     ['player-accuracy', 'fill-color', p.accuracy],
     ['player-accuracy-line', 'line-color', p.accuracy],
+    ['buildings-3d', 'fill-extrusion-color', p.building3d],
   ];
 }
 
