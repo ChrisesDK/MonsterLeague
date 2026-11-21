@@ -25,9 +25,9 @@ export default defineConfig({
     locale: 'en-GB',
     geolocation: { latitude: 55.4017, longitude: 10.3866 },
     permissions: ['geolocation'],
-    // only on a retry: a full trace of the long map tests (hundreds of mouse moves on a
-    // live WebGL map) can exhaust the test runner's memory
-    trace: 'on-first-retry',
+    // off: a trace of the long map tests (hundreds of mouse moves on a live WebGL map)
+    // exhausted the test runner's memory in CI; failure screenshots are kept
+    trace: 'off',
     screenshot: 'only-on-failure',
   },
   webServer: {

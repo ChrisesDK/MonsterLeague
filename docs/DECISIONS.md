@@ -1049,7 +1049,15 @@ length, position resolution and spawn tables>`.
 - **D129. Fling and tests.** The fling's speed is now measured over the stroke's last
   100 ms (events can come 1–3 ms apart, which made a fast swipe spin half a turn after
   release), only when the finger was still moving at release, and capped at 0.6 degrees
-  per ms (at most about 90 degrees extra). E2E traces are recorded only on a retry: full
-  traces of the long map tests exhausted the test runner's memory. Creature icons hidden
+  per ms (at most about 90 degrees extra). E2E traces are off: traces of the long map tests
+  exhausted the test runner's memory in CI (failure screenshots are kept). Creature icons hidden
   behind the camera are no longer "visible" to Playwright, so the tests wait for markers
   to be attached instead.
+- **D130. The map goes idle again.** Once the player figure had arrived, the frame loop
+  re-sent the accuracy ring's data every frame, so the map re-rendered forever: the loading
+  screen (which waits for the map to go idle) always hit its 20 s fallback on the live site,
+  phones rendered constantly (battery), and CI's software renderer slowed to a crawl with
+  the 3D buildings. The ring is now only updated when it moves or changes size; the loading
+  screen finishes in about 1 s locally. The district e2e's trainer win against Ole was a
+  coin flip (the test always used the first move, a Folk move Brokrabbe resists, and
+  Brokrabbe stalls with Hunker Down); the test now uses Beech Lash there.

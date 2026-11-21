@@ -550,6 +550,7 @@ export function MapScreen({
     let raf = 0;
     let prev = performance.now();
     let ringAt: LatLng | null = null;
+    let ringAcc = -1;
     const frame = (now: number) => {
       // the map is removed (a battle opened) one render before this effect is cleaned up
       if (mapRef.current !== map) return;
@@ -568,8 +569,14 @@ export function MapScreen({
         player.current?.figure.setLngLat([next.lng, next.lat]);
         player.current?.cone.setLngLat([next.lng, next.lat]);
       }
-      if (!ringAt || distanceM(ringAt, next) > 0.5 || next === goal) {
+      // Only when the ring really moves or changes size: re-sending it every frame kept the
+      // map from ever going idle (endless re-rendering; the loading screen waited for idle).
+      const acc = accuracyM.current;
+      const ringMoved = !ringAt || distanceM(ringAt, next) > 0.5;
+      const ringSettled = next === goal && ringAt !== goal;
+      if (ringMoved || ringSettled || acc !== ringAcc) {
         ringAt = next;
+        ringAcc = acc;
         (map.getSource('player') as GeoJSONSource | undefined)?.setData({
           type: 'FeatureCollection',
           features: [circle(next, accuracyM.current)],

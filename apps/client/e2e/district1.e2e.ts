@@ -71,8 +71,11 @@ async function openMap(page: Page) {
   await page.waitForFunction(() => 'omlSim' in window || '__omlSim' in window);
 }
 
-/** Fights until the battle ends: first usable move, replacements when needed. */
-async function fight(page: Page, opts: { charm?: boolean } = {}): Promise<string> {
+/**
+ * Fights until the battle ends. `move` picks a move by name when the active creature has
+ * it (the first move is often a resisted Folk move, which turns easy fights into a stall).
+ */
+async function fight(page: Page, opts: { charm?: boolean; move?: string } = {}): Promise<string> {
   const battle = page.locator('main.battle');
   for (let i = 0; i < 400; i++) {
     // wait for the turn's playback to finish (tapping the log skips the text)
@@ -99,7 +102,11 @@ async function fight(page: Page, opts: { charm?: boolean } = {}): Promise<string
       }
       await page.locator('.list-panel > .btn:not(.list-btn)').click(); // back
     }
-    await page.locator('.move-btn:not(:disabled)').first().click();
+    const preferred = opts.move
+      ? page.locator('.move-btn:not(:disabled)', { hasText: opts.move })
+      : null;
+    if (preferred && (await preferred.count()) > 0) await preferred.first().click();
+    else await page.locator('.move-btn:not(:disabled)').first().click();
   }
   throw new Error('Battle did not end');
 }
@@ -210,7 +217,7 @@ test('onboarding to badge 2 (districts 1 and 2, open wildlife), with reloads', a
   let card = await poiAction(page, 'trainer_ole');
   await expect(card).toHaveAttribute('data-state', 'ready');
   await card.getByTestId('poi-action').click();
-  await fight(page);
+  await fight(page, { move: 'Beech Lash' });
   await expect(page.getByTestId('result-card')).toContainText('You beat');
   await expect(page.getByTestId('reward')).toBeVisible();
   await page.locator('[data-testid=result-card] .btn').click();
