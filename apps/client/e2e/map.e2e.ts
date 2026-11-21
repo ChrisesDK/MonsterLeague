@@ -166,6 +166,9 @@ async function startDone(page: Page) {
   );
   await page.waitForSelector('.maplibregl-canvas', { timeout: 60_000 });
   await page.waitForFunction(() => '__omlSim' in window && '__omlMap' in window);
+  // the loading screen covers the map until the town is built (slow in CI): touches and
+  // clicks must reach the map
+  await page.getByTestId('loading-screen').waitFor({ state: 'detached', timeout: 30_000 });
 }
 
 type Cam = { pitch: number; zoom: number; bearing: number };
@@ -508,7 +511,7 @@ test('a finger drag rotates like a mouse drag, and never reloads the page', asyn
 }) => {
   await startDone(page);
   await teleport(page, { lat: 55.3975, lng: 10.3905 });
-  await page.waitForTimeout(1500);
+  await page.waitForTimeout(2500);
   const bearing = () =>
     page.evaluate(() =>
       (window as unknown as { __omlMap: { getBearing: () => number } }).__omlMap.getBearing(),

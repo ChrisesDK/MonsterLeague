@@ -2,14 +2,14 @@
 
 Everything built or decided since the v1.9 export that the GDD doesn't describe yet,
 grouped by GDD section, with suggested wording. Details and reasons are in
-[DECISIONS.md](DECISIONS.md) (D111–D132); open proposals are in
+[DECISIONS.md](DECISIONS.md) (D111–D134); open proposals are in
 [GDD-PROPOSALS.md](GDD-PROPOSALS.md) (P16–P20).
 
 ## Change log line (suggested)
 
-| Version | Changes                                                                                                                                                                                                                                                                                                                                                 |
-| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1.10    | M2d done and live (game feel); orbit camera (always on the player, drag rotates, zoom tilts 30–76°), distance fog with a day/night sky, opt-in 3D buildings, loading screen, HUD on demand (folded goal card, Nearby button, GPS signal icon), fainted creatures recover after 8 hours, short GPS dips tolerated, species art colours; accepted P16–P20 |
+| Version | Changes                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1.10    | M2d done and live (game feel); orbit camera (always on the player, drag rotates, zoom tilts 30–76°), distance fog to 1 km with a day/night sky, opt-in 3D buildings, loading screen, HUD on demand (folded goal card, Nearby button, GPS signal icon), menu over the live map, touch drags never scroll or reload the page, fainted creatures recover after 8 hours, short GPS dips tolerated, species art colours; accepted P16–P20 |
 
 ## Game feel → Map view (P20)
 
@@ -18,7 +18,8 @@ Replace the camera paragraph with:
 > The camera is always centred on the player and never pans. Dragging rotates the view
 > around the player: strokes below or above the player, along the sides, and half or full
 > circles turn it with the finger, while a swipe level with the player barely turns it. A
-> quick swipe keeps turning briefly. Pinching or the scroll wheel zooms on the player
+> quick swipe keeps turning briefly; two-finger twist works too. Pinching or the scroll
+> wheel zooms on the player
 > (zoom about 16.5–18.5): zoomed out the camera looks almost straight down (30°), zooming
 > in tilts it up to 76°. A compass button turns north up. When the GPS position changes,
 > the player slides to it instead of jumping.
@@ -120,6 +121,16 @@ Save versions since v1.9:
 
 Region file v3: each cell carries flags for no-spawn, wild area, water edge and route
 corridor.
+
+## Open proposals to decide (GDD-PROPOSALS.md)
+
+| Proposal | What to decide                                                                          | State                                               |
+| -------- | --------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| P16      | Density targets: widen the park-walk range to 10–16, or define the walking pace         | Needs your decision; code meets the current targets |
+| P17      | Routes may pass through districts already unlocked when their two districts don't touch | Needs your decision; Route 3 already does this      |
+| P18      | Journal step "Beat the trainers in <district>"; trainers stand on any route through it  | Needs your decision; built this way                 |
+| P19      | Fainted creatures recover by themselves after 8 hours                                   | Built at your request; fold in                      |
+| P20      | Orbit camera, tilt 30–76°, fog and sky                                                  | Built at your request; fold in                      |
 
 ## Development plan
 
