@@ -135,7 +135,7 @@ test('onboarding to badge 2 (districts 1 and 2, open wildlife), with reloads', a
   for (let attempt = 0; attempt < 4; attempt++) {
     const marker = page.getByTestId('tutorial-marker');
     await marker.waitFor({ timeout: 30_000 });
-    await expect(page.locator('[data-testid=guide-card][data-guide=tutorial]')).toBeVisible();
+    await expect(page.locator('[data-testid=journal-card][data-guide=tutorial]')).toBeVisible();
     const spot = await marker.evaluate((e) => ({
       lat: Number((e as HTMLElement).dataset.lat),
       lng: Number((e as HTMLElement).dataset.lng),
@@ -153,9 +153,13 @@ test('onboarding to badge 2 (districts 1 and 2, open wildlife), with reloads', a
   await expect(page.getByTestId('result-card')).toBeVisible();
   await page.locator('[data-testid=result-card] .btn').click();
 
-  // The map points to district 1 (here: already in it, so the nearest rest stop).
+  // GDD v1.9: onboarding ends with exactly one clear goal, pointing into district 1.
   await teleport(page, STATION);
-  await expect(page.locator('[data-testid=guide-card][data-guide=district1]')).toBeVisible();
+  const goal = page.locator('[data-testid=journal-card][data-district="1"]');
+  await expect(goal).toHaveCount(1);
+  await expect(goal).toBeVisible();
+  await expect(goal).toHaveAttribute('data-guide', /^d1\./);
+  await expect(goal.locator('.arrow')).toHaveAttribute('data-bearing', /\d+/);
 
   // ---- reload: the save survives -----------------------------------------------------------
   await page.reload();
@@ -240,7 +244,7 @@ test('onboarding to badge 2 (districts 1 and 2, open wildlife), with reloads', a
   save = await devSave(page);
   expect(save.team.every((c) => c.hp === 0)).toBe(true);
   expect(save.defeatedTrainers).not.toContain('route1_niels');
-  await expect(page.locator('[data-testid=guide-card][data-guide=fainted]')).toBeVisible();
+  await expect(page.locator('[data-testid=journal-card][data-guide=fainted]')).toBeVisible();
   await expect(page.locator('[data-testid=poi-card][data-poi=trainer_niels]')).toHaveAttribute(
     'data-state',
     'teamFainted',

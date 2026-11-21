@@ -853,3 +853,101 @@ length, position resolution and spawn tables>`.
   - **CI gate** (battle-able = no ability needed): green 1 per 201 m, streets 1 per 308 m.
   - **New 0-badge line** (commons only, outside district 1): 3.54 per km (green 1/203 m,
     streets 1/301 m); before M2c it was zero.
+
+## M2d — Game feel (GDD v1.9)
+
+- **D111. The drifting creature marker.** MapLibre places a DOM marker by writing
+  `transform` on the marker's root element. The tutorial creature's idle `bob` animation
+  also animated `transform` on that root, with only a 50% keyframe; the 0%/100% frames used
+  MapLibre's inline translate, so the marker kept interpolating towards screen (0, 0), the
+  top-left (north-west on an unrotated map).
+  - **Fix:** every marker is a root (MapLibre's) plus an inner `.marker-body` that carries
+    all animations. Nothing styles the root's `transform`, `transition` or `animation`.
+  - **Second bug found by the new test:** updating a marker's state by assigning
+    `className` also wiped MapLibre's own `maplibregl-marker` classes (absolute
+    positioning), and the marker jumped about 56 px. State classes are now toggled one by
+    one.
+  - **Guards:** `apps/client/test/marker-css.test.ts` fails if any CSS rule moves a marker
+    root; `e2e/map.e2e.ts` pans and zooms with animated markers on screen and checks each
+    marker sits within 4 px of `map.project(lngLat)` (426 px off before the fix).
+- **D112. Wild areas** are computed in the region build: a cell is wild when park, forest,
+  meadow/field and water cover at least 50% of it; a wild cell with at least 25% water is a
+  water edge (ripples instead of grass). Region file v3: column 1 of a cell row is a bit
+  field (1 noSpawn, 2 wild, 4 water edge, 8 route corridor). 2,024 wild cells.
+- **D113. Routes** (`content/routes.odense.json`, `pnpm routes:build`): Dijkstra over the
+  OSM foot network (Overpass, cached). Cost per metre: footpaths and park paths 1, streets
+  1.15–2.8 by size, steps 4; ×0.65 in wild cells, ×0.55 along water, ×2.5 in no-spawn
+  cells, ×12 within 12 m of a railway or motorway (crossing stays possible). No routing
+  service. Paths simplified (2 m) and rounded to 6 decimals.
+  - **Districts:** a route may only use cells of the two districts it connects. Districts
+    3 and 4 do not touch, so Route 3 falls back to districts already unlocked when it is
+    walked (1–4) and passes district 2 along Odense Å; the data says so (`via: [2]`) and
+    validation checks it (P17).
+  - **Validation:** starts and ends within 150 m of its arenas, stays in its districts and
+    `via`, at most 30 m within 12 m of a railway or motorway, length and wild share match
+    the data. Draft routes only get a warning for the hazard rule (Route 7 runs 45 m next
+    to a railway in the far east; it is fixed when it goes live).
+  - **Arena sites** (`content/arenas.odense.json`): all 8 arena locations for routes, the
+    Town Map and the Journal; built arenas link their POI. Sites 3–8 come from OSM and are
+    approximate until their POIs are placed in M3 (Havnebadet especially).
+- **D114. Route trainers.** Route 1's district-2 stretch (Vestergade to Klosterhaven) has
+  no spot whose 50 m radius clears the border, the arena and the rest stop. District 2's
+  trainers therefore stand where Routes 2 and 3 cross the district: Karen by Albani Torv
+  (Route 2), Mads on the path along Odense Å (Route 3). Freja moved 139 m onto Route 1
+  (Jernbanegade). Lise (107 m from Route 1, in Kongens Have), Ole (station square) and
+  Niels stay: district 1 is the starting town and has no incoming route.
+- **D115. Density (SPAWN_ALGORITHM 4).** A cell's biome density is multiplied by 1.6 in
+  wild and route-corridor cells and 0.9 elsewhere. A route corridor is a cell with at least
+  3 of its 49 sample points within 30 m of a route (270 cells). Species stay biome-weighted:
+  in street cells 87% of the creatures found prefer urban, historic or industrial biomes,
+  in wild cells 33%.
+  - **spawn:report (CI gate):** wild 1 per 136 m (target 100–150), streets 1 per 331 m
+    (300–400). 30-minute park walk (2 km at 4 km/h through a wild area of 40+ cells, two
+    windows): 11.7 creatures on average, 10th–90th percentile 6–17 (target 10–14). With 0
+    badges outside district 1: wild 1 per 135 m, streets 1 per 322 m, park walk 11.6.
+- **D116. Journal** (`packages/game/src/journal.ts`, pure). Main chain per district:
+  reach → walk its route (the live route that ends at its arena) → beat its trainers →
+  visit one of its rest stops → challenge its arena. Steps without content are left out
+  (no trainers yet) or "coming soon" (no arena POI yet). Steps complete in any order; the
+  current goal is the first open step of the next arena's district.
+  - **Route walking:** checkpoints every 100 m along the route; one counts within 30 m;
+    80% of them completes the step. The arrow points to the next checkpoint after the
+    furthest one reached.
+  - **Side goals** (`content/goals.json`): explore (300 m in the district's wild areas),
+    catch a creature of the district's typical type (one that really spawns there as a
+    common: district 7 uses Folk, since Fire starters are never wild), meet (battle) its
+    rare creature.
+  - **Save v3:** `journal` = districts reached, checkpoint indices per route, wild metres
+    per district (capped at the goal), rest stops visited. No positions or times. The v2→v3
+    migration counts rest stops in `lastRestock` as visited.
+  - **Map card:** the current goal with an arrow relative to the camera bearing and a
+    straight-line distance; the tutorial and a fainted team override it.
+- **D117. Play camera.** Pitch fixed at 50° (min = max pitch), zoom 16.5–18.5, two-finger
+  rotate and drag-rotate on, compass button eases north. Map padding (top 130, bottom 230
+  px) keeps the player in the clear middle between the HUD rows. Dragging stops following;
+  6 s after the last pan the camera snaps back, or at once with "Back to me". The follow
+  `easeTo` is skipped while another camera move runs, so reset-north isn't cut short.
+  - **Heading:** `deviceorientationabsolute` (Android), `webkitCompassHeading` after the iOS
+    permission (asked from the compass button), else the GPS course; drawn as a cone that
+    lies flat on the map. Nothing is stored.
+  - **Creatures** drawn to 200 m, faint beyond 100 m, bobbing within 40 m. Markers are
+    pooled by spawn id and updated in place; at 4× CPU throttle in headless Edge, walking
+    Route 1 with 30 creatures injected averages 55 fps (95th percentile 35 ms, 1 frame over
+    50 ms in 10 s), so a symbol layer is not needed yet.
+  - **Night style:** sunset/sunrise from the spawn package's NOAA code for Odense's centre,
+    re-checked every minute; switches the map palette in place (`setPaintProperty`) and the
+    UI tokens (`html[data-theme=night]`), including the battle stage.
+  - **Map labels** only use characters in the shipped glyph ranges (U+0000–01FF); dashes in
+    route names become hyphens (a missing range logged parse errors).
+- **D118. Town Map.** A second MapLibre map, flat (pitch 0, no rotate), zoom 12–16, the
+  same paper style and world layers. Locked districts are dimmed and labelled with the
+  badge they need. Cards show name, straight-line distance, district and what is needed.
+- **D119. Design system** in `apps/client/src/ui/`: tokens (day/night colours, type scale,
+  spacing, radius, shadow, motion), components (Button, Card, Sheet, Tabs, ListRow,
+  ProgressBar, Pill, Toast, Modal), an original line-icon set, haptics. Fonts are
+  self-hosted from npm (Fraunces for headings, Atkinson Hyperlegible for body, Latin subsets
+  only) and listed with their OFL licence in `packages/art/assets.json` (`fonts`), which
+  `pnpm art:build` writes and a test checks. The main menu button is a red satchel.
+  - **Feedback:** catch and level-up bursts in battle, an evolution morph, paper confetti
+    for badges, haptic patterns for each. Reduce motion (setting or OS) turns animations
+    and haptics off.

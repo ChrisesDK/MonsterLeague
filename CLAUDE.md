@@ -7,9 +7,10 @@ and turn-based battles in the style of handheld monster RPGs. It ships first as 
 web app (PWA). Everything runs on the phone; there is no game server in v1.
 
 Status: M0–M1.8, Gate 2 (qualitative pass), M2a (map and shared spawns), M2b (district 1
-playable: save, onboarding, trainers, rest stops, arena 1, badge) and **M2c** (GDD v1.7:
-new arena order, open common wildlife with per-player levels, arena 2 and district 2) are
-done.
+playable: save, onboarding, trainers, rest stops, arena 1, badge), M2c (GDD v1.7: new
+arena order, open common wildlife with per-player levels, arena 2 and district 2) and
+**M2d** (GDD v1.9 game feel: tilted follow camera, wild areas, routes, Town Map, Journal,
+design system) are done.
 **Live:** https://www.christianrasmussen.dk/OdenseMonsterLeague/ (deployed from `main` by
 `.github/workflows/pages.yml`; Vite base `/OdenseMonsterLeague/`, see docs/DEPLOY.md). The
 spawn-service Worker is redeployed by CI (docs/DEPLOY.md). **Next: Gate 3**, the district
@@ -69,7 +70,7 @@ packages/data     JSON content (types, species, moves, items, trainers, player-t
 packages/engine   pure battle engine (rng, stats, damage, battle, ai, catch, xp, moves)
 packages/game     pure save (SaveGame, versions + migrations) and progression rules:
                   obedience, districts, trainers/arena, rest stops, items, storage,
-                  field abilities, tutorial placement, field-guide hints
+                  field abilities, tutorial placement, field-guide hints, Journal goals
 packages/playtest Gate 2 record format, Gate 3 walk sessions, active-time timer, exports
 packages/spawn    pure spawn rules: windows, HMAC-seeded rolls per cell, biome-weighted
                   species, day/night (NOAA sun times), district levels
@@ -78,11 +79,12 @@ tools/sim         CLI that runs N AI-vs-AI battles and prints stats; sim:report
 tools/gate2       merges exported playtest files and prints the Gate 2 report
 tools/gate3       merges exported walk sessions and prints the Gate 3 report
 tools/region-builder OSM (Overpass) + basemap water → region.odense.json (H3 res-10 biome
-                  shares, noSpawn, districts)
+                  shares, flags: noSpawn/wild/water edge/route, districts); routes.ts builds
+                  routes.odense.json from the OSM foot network
 apps/spawn-service Cloudflare Worker: GET /v1/spawns for one res-7 cell (secret from
                   Worker settings; never logs)
 apps/client       Vite + React PWA: map game (#/; src/game = save store, onboarding,
-                  screens), playtest (#/playtest), dev battle page (#/dev), GPS simulator
+                  screens, Journal; src/map = play view, Town Map; src/ui = design system), playtest (#/playtest), dev battle page (#/dev), GPS simulator
                   + dev hooks (#/dev/map), biome debug (#/dev/biomes); e2e/ = Playwright
 ```
 
@@ -101,6 +103,11 @@ apps/client       Vite + React PWA: map game (#/; src/game = save store, onboard
 - The map game drives battles through `packages/game` (`startWildBattle`,
   `startTrainerBattle`, `finishBattle`, …) and saves after every turn; dev hooks
   (`window.__omlDev`, dev tools only) let the E2E test set levels and inject spawns.
+- Map markers: MapLibre owns the marker root's `transform` and its `maplibregl-marker`
+  classes. Animate only the inner `.marker-body`, and toggle state classes with
+  `classList` (tests: `test/marker-css.test.ts`, `e2e/map.e2e.ts`).
+- UI: use the tokens and components in `apps/client/src/ui/` (day and night palettes);
+  map labels may only use glyphs U+0000–01FF (`glyphSafe`).
 - A player side with a fainted active creature gets `needsReplacement`; the next
   `resolveTurn` call is a replacement step where that side must send `switch` and the
   other side sends `pass`. AI-controlled sides replace automatically.
@@ -123,6 +130,7 @@ pnpm dev           # client dev server (http://localhost:5173; #/dev = developer
 pnpm gate2:report <folder>   # Gate 2 summary from exported playtest .json/.csv files
 pnpm gate3:report <folder>   # Gate 3 summary from exported walk sessions
 pnpm e2e           # Playwright district-1 test on a production build (PW_CHANNEL=msedge locally)
+pnpm routes:build  # rebuild routes.odense.json from the OSM foot network (then pnpm region:build)
 pnpm region:build  # rebuild region.odense.json + its version file (Overpass cache in tools/region-builder/cache)
 pnpm spawn:report  # spawn density per km walked vs GDD targets (CI gate)
 pnpm art:build     # regenerate A1 sprites + assets.json after adding species

@@ -116,12 +116,24 @@
 - [x] POI fixes: a POI's cell carries its district; radius must stay inside the district; trainer_freja moved
 - [x] E2E: onboarding → badge 1 → district 2 → badge 2, plus a band-1 common and a too-wild rare in district 8 with 0 badges
 
+## M2d — GDD v1.9: game feel ✅
+
+- [x] GDD v1.9 in the repo; P14 and P15 accepted
+- [x] Drifting creature marker fixed (animations on an inner element; MapLibre classes kept); CSS guard + e2e position test
+- [x] Play view: 50° follow camera, zoom 16.5–18.5, rotate + compass, snap back + recentre, player figure with heading cone and accuracy ring, creatures to 200 m, Nearby strip, night style
+- [x] Wild areas (region v3 flags) drawn as grass and ripples; routes 1–3 (drafts 4–7) from the OSM foot network, validated, drawn dotted; Freja, Karen and Mads on routes
+- [x] Density v1.9 (SPAWN_ALGORITHM 4): wild 1/136 m, streets 1/331 m, 30-minute park walk 11.7
+- [x] Town Map with district, arena, route and rest-stop cards
+- [x] Journal: pure goal chain + side goals in packages/game, save v3, map card with arrow, Journal screen
+- [x] Design system (tokens, components, original icons, OFL fonts), applied to every screen; catch/level-up/evolution/badge feedback; before/after screenshots in docs/screenshots/m2d
+- [x] E2E: camera bounds, Town Map, Journal goal after onboarding, Route 1 walk, marker positions
+
 ## Next: Gate 3 — District walk test (owner, with [GATE3.md](GATE3.md))
 
 - [x] GDD v1.6; P12 and P13 accepted
 - [x] Districts 1–8 redrawn on real borders (railways, Odense Å, Ring 2, centre streets); every arena in its own district; region rebuilt, density on target
 
-- [ ] Verify the 7 POIs on site (public, step-free, away from road edges) and set `verified: true`
+- [ ] Verify the POIs in districts 1–2 on site (Freja, Karen and Mads moved in M2d) (public, step-free, away from road edges) and set `verified: true`
 - [ ] Walk sessions (daylight + one after dark), `pnpm gate3:report`, decision
 
 ## Open questions (before/during M2)

@@ -114,7 +114,7 @@ export function Gate3Panel({
       <h2>{t('gate3.title')}</h2>
       <p className="muted small">{t('gate3.body')}</p>
       {!session && (
-        <div className="row">
+        <div className="row-wrap">
           <label className="field">
             <span>{t('gate3.code')}</span>
             <input
@@ -172,7 +172,7 @@ export function Gate3Panel({
         </>
       )}
       <p className="muted small">{t('gate3.count', { n: done.length })}</p>
-      <div className="row">
+      <div className="row-wrap">
         <button className="btn" disabled={done.length === 0} onClick={() => share('json')}>
           {t('gate3.shareJson')}
         </button>

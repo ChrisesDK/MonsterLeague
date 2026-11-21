@@ -513,5 +513,31 @@
       "licence": "own",
       "placeholder": true
     }
+  ],
+  "fonts": [
+    {
+      "name": "Fraunces",
+      "role": "headings (600, 700; Latin)",
+      "files": "npm:@fontsource/fraunces",
+      "source": "https://github.com/undercasetype/Fraunces",
+      "author": "The Fraunces Project Authors (Undercase Type)",
+      "licence": "OFL-1.1"
+    },
+    {
+      "name": "Atkinson Hyperlegible",
+      "role": "body text (400, 700; Latin)",
+      "files": "npm:@fontsource/atkinson-hyperlegible",
+      "source": "https://www.brailleinstitute.org/freefont/",
+      "author": "Braille Institute of America",
+      "licence": "OFL-1.1"
+    },
+    {
+      "name": "Noto Sans",
+      "role": "map labels (MapLibre glyph ranges)",
+      "files": "public:fonts/Noto Sans Regular, Noto Sans Medium",
+      "source": "https://github.com/protomaps/basemaps-assets",
+      "author": "The Noto Project Authors (Google)",
+      "licence": "OFL-1.1"
+    }
   ]
 }

@@ -19,6 +19,7 @@ import { creatureName, eventText } from './eventText';
 import { applyChoice, collectChoices, type PostBattleChoice } from './postBattle';
 import type { Translate } from './i18n';
 import { applyEvent, viewFromState, type BattleView, type CreatureView } from './view';
+import { buzz } from './ui/feedback';
 
 export type Speed = 'normal' | 'fast';
 
@@ -92,6 +93,12 @@ function animFor(e: BattleEvent): { uid: string; cls: string } | null {
   }
 }
 
+/** Spark directions for the catch / level-up burst. */
+const SPARKS: [number, number][] = Array.from({ length: 10 }, (_, i) => {
+  const a = (i / 10) * 2 * Math.PI;
+  return [Math.round(Math.cos(a) * 90), Math.round(Math.sin(a) * 70)];
+});
+
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export function BattleScreen({
@@ -122,6 +129,8 @@ export function BattleScreen({
   const alive = useRef(true);
   const skip = useRef(false);
   const animCounter = useRef(0);
+  /** Catch / level-up celebration over the stage (M2d feedback). */
+  const [burst, setBurst] = useState<{ kind: 'catch' | 'levelUp'; n: number } | null>(null);
 
   useEffect(() => {
     alive.current = true;
@@ -174,6 +183,13 @@ export function BattleScreen({
       if (text) setLog(text);
       const a = animFor(event);
       if (a) setAnim({ ...a, n: ++animCounter.current });
+      if (event.type === 'caught') {
+        setBurst({ kind: 'catch', n: ++animCounter.current });
+        buzz('catch');
+      } else if (event.type === 'level_up' && prev.sides[0].team.some((c) => c.uid === event.uid)) {
+        setBurst({ kind: 'levelUp', n: ++animCounter.current });
+        buzz('levelUp');
+      }
       if (!skip.current) await wait(text ? textMs : silentMs);
     }
     if (!alive.current) return;
@@ -435,6 +451,24 @@ export function BattleScreen({
       <section className="arena-field">
         <Combatant side={1} view={view[1]} anim={anim} t={t} />
         <Combatant side={0} view={view[0]} anim={anim} t={t} />
+        {burst && !reducedMotion && (
+          <div
+            key={burst.n}
+            className={`burst ${burst.kind === 'catch' ? 'catch' : 'level-up'}`}
+            aria-hidden
+          >
+            {SPARKS.map(([dx, dy], i) => (
+              <i
+                key={i}
+                className="spark"
+                style={{ '--dx': `${dx}px`, '--dy': `${dy}px` } as CSSProperties}
+              />
+            ))}
+            <span className="burst-label">
+              {t(burst.kind === 'catch' ? 'ui.burst.caught' : 'ui.burst.levelUp')}
+            </span>
+          </div>
+        )}
       </section>
       <p className="log" aria-live="polite" onClick={() => (skip.current = true)}>
         {log}

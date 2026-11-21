@@ -13,6 +13,8 @@
     "e2e": "playwright test"
   },
   "dependencies": {
+    "@fontsource/atkinson-hyperlegible": "5.1.0",
+    "@fontsource/fraunces": "5.1.0",
     "@oml/art": "workspace:^",
     "@oml/data": "workspace:*",
     "@oml/engine": "workspace:*",

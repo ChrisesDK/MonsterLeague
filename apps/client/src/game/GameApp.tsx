@@ -5,7 +5,9 @@ import { latLngToCell } from 'h3-js';
 import { chooseStarter, teachFieldAbility, type SaveGame } from '@oml/game';
 import { recordGate3, type Gate3Event, type Gate3Session } from '@oml/playtest';
 import type { Locale, Translate } from '../i18n';
-import { MapScreen, START } from '../map/MapScreen';
+import { MapScreen } from '../map/MapScreen';
+import { START } from '../map/markers';
+import { useNight } from '../ui/night';
 import { SimLocation } from '../map/location';
 import type { ApiSpawn } from '../map/spawnApi';
 import { ChoiceModal } from './ChoiceModal';
@@ -42,13 +44,16 @@ export interface OmlDev {
     requires?: string;
   }) => string;
   setFast: () => void;
+  setBadges: (badges: number[]) => void;
   sim: () => SimLocation | null;
 }
 
-function applySettingsToDocument(save: SaveGame | null) {
+function applySettingsToDocument(save: SaveGame | null, night: boolean) {
   const root = document.documentElement;
   root.dataset.textSize = save?.settings.textSize ?? 'normal';
   root.dataset.reduceMotion = save?.settings.reduceMotion ? 'true' : 'false';
+  // GDD v1.9: night style after sunset (the whole game, not only the map).
+  root.dataset.theme = night ? 'night' : 'day';
 }
 
 export function GameApp({ t, locale, onLocale, devTools }: Props) {
@@ -90,10 +95,11 @@ export function GameApp({ t, locale, onLocale, devTools }: Props) {
   }, []);
 
   // Language and display settings follow the save.
+  const night = useNight();
   useEffect(() => {
-    applySettingsToDocument(save);
+    applySettingsToDocument(save, night);
     if (save && save.settings.language !== locale) onLocale(save.settings.language);
-  }, [save, locale, onLocale]);
+  }, [save, locale, onLocale, night]);
 
   const onGate3 = useCallback((e: Gate3Event) => {
     setGate3((cur) => {
@@ -172,6 +178,7 @@ export function GameApp({ t, locale, onLocale, devTools }: Props) {
         return id;
       },
       setFast: () => update((s) => ({ ...s, settings: { ...s.settings, speed: 'fast' } })),
+      setBadges: (badges) => update((s) => ({ ...s, badges })),
       sim: () => sim,
     };
     (window as unknown as { __omlDev?: OmlDev }).__omlDev = dev;
@@ -274,6 +281,8 @@ export function GameApp({ t, locale, onLocale, devTools }: Props) {
         save={save}
         update={update}
         onMenu={() => setScreen('menu')}
+        onJournal={() => setScreen('journal')}
+        night={night}
         onBadge={setCeremony}
         onGate3={gate3 && !gate3.endedAt ? onGate3 : undefined}
         sim={sim}

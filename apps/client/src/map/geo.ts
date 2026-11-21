@@ -16,7 +16,8 @@ export const MAX_ACCURACY_M = 50;
 export const MAX_SPEED_KMH = 25;
 /** Speed must drop below this again before spawns come back (hysteresis). */
 export const RESUME_SPEED_KMH = 20;
-export const SHOW_RADIUS_M = 100;
+/** GDD v1.9: creatures are drawn up to 200 m away (faint beyond 100 m). */
+export const SHOW_RADIUS_M = 200;
 export const BATTLE_RADIUS_M = 40;
 /** Also fetch a neighbouring res-7 cell when the player is this close to its edge. */
 export const EDGE_PREFETCH_M = 350;

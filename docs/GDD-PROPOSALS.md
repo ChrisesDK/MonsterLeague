@@ -229,3 +229,44 @@ status here changes to `accepted` (or `rejected`, with a reason).
   the cathedral, is 176 m inside district 2. Implemented in M2c (D108); `verified: false`
   until checked on site.
 - **Status:** accepted (GDD v1.8)
+
+### P16. The 30-minute park walk and the wild-area density don't quite add up
+
+- **GDD section:** Encounters and spawning → Density targets (v1.9)
+- **Current text:** "one battle-able creature per 100–150 m walked, about one every
+  1.5–2 minutes at walking pace … A 30-minute park walk should offer about 10–14
+  creatures"
+- **Proposed change:** "A 30-minute park walk (about 2 km at a stroll) should offer about
+  10–16 creatures", or define the walk's pace.
+- **Reason / evidence:** at 4–5 km/h a 30-minute walk covers 2–2.5 km. At 1 per 100–150 m
+  that is 13–25 creatures, so the two targets only overlap at 143–150 m. M2d tuned wild areas
+  to 1 per 136 m. A park walk that turns back at the park's edge (as people do) finds 11.7
+  on average, because it passes some spots twice. The report's walk uses 2 km at 4 km/h.
+- **Status:** open
+
+### P17. Route 3 passes through the cathedral district
+
+- **GDD section:** Game feel → Wild areas and routes
+- **Current text:** routes run "between consecutive arenas"; the M2d brief says routes
+  "must stay in the districts they connect".
+- **Proposed change:** "A route stays in the two districts it connects where they touch;
+  otherwise it may pass through districts the player has already unlocked."
+- **Reason / evidence:** districts 3 (H.C. Andersen quarter) and 4 (Munkemose) don't touch.
+  Route 3 runs south from H.C. Andersens Hus through Eventyrhaven and along Odense Å in
+  district 2, which is unlocked by then. The route file lists it (`via: [2]`) and validation
+  checks it. Draft Route 7 (Den Fynske Landsby → harbour) has the same problem at city
+  scale: 13.6 km round the east side. It may need a different district shape or arena
+  order.
+- **Status:** open
+
+### P18. District 2's trainers stand on Routes 2 and 3, not Route 1
+
+- **GDD section:** Game feel → Journal (example "Beat the trainers on Route 1 (1/2)")
+- **Current text:** route trainers "stand on" the route.
+- **Proposed change:** the Journal step is "Beat the trainers in <district>"; a district's
+  trainers stand on any route through it.
+- **Reason / evidence:** Route 1's district-2 stretch is about 400 m, and the arena (80 m
+  radius), the rest stop and the district border leave no room for a 50 m trainer radius.
+  Karen stands by Albani Torv on Route 2 and Mads on the river path on Route 3, both in
+  district 2 (D114).
+- **Status:** open

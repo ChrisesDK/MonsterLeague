@@ -15,14 +15,28 @@ import {
   swapWithStorage,
   teachFieldAbility,
   applyItem,
+  isDistrictUnlocked,
+  journal,
+  type Goal,
   type SaveGame,
 } from '@oml/game';
 import { creatureName } from '../eventText';
+import { Button, ListRow, ProgressBar, Pill, Tabs } from '../ui/components';
+import { Icon, type IconName } from '../ui/icons';
+import { goalProgress, goalTitle } from './goalText';
 import type { Translate } from '../i18n';
 import { deleteGame, exportGameFile, shareOrDownload } from './store';
 
 export type ScreenId =
-  'menu' | 'team' | 'storage' | 'bag' | 'guide' | 'badges' | 'settings' | `creature:${string}`;
+  | 'menu'
+  | 'journal'
+  | 'team'
+  | 'storage'
+  | 'bag'
+  | 'guide'
+  | 'badges'
+  | 'settings'
+  | `creature:${string}`;
 
 interface Props {
   t: Translate;
@@ -51,9 +65,13 @@ function Shell({
   return (
     <main className="setup screen" data-testid={testId}>
       <div className="screen-top">
-        <button className="btn small-btn" data-testid="screen-back" onClick={onBack}>
-          {t('ui.back')}
-        </button>
+        <Button
+          round
+          icon="back"
+          data-testid="screen-back"
+          aria-label={t('ui.back')}
+          onClick={onBack}
+        />
         <h1>{title}</h1>
       </div>
       {children}
@@ -110,34 +128,44 @@ export function Screens({ t, screen, onScreen, save, update, devTools, gate3, on
   const back = () => onScreen('menu');
 
   if (screen === 'menu') {
-    const items: { id: ScreenId; label: string }[] = [
-      { id: 'team', label: t('menu.team') },
-      { id: 'storage', label: t('menu.storage') },
-      { id: 'bag', label: t('menu.bag') },
-      { id: 'guide', label: t('menu.guide') },
-      { id: 'badges', label: t('menu.badges') },
-      { id: 'settings', label: t('menu.settings') },
+    const items: { id: ScreenId; label: string; icon: IconName }[] = [
+      { id: 'journal', label: t('menu.journal'), icon: 'journal' },
+      { id: 'team', label: t('menu.team'), icon: 'team' },
+      { id: 'bag', label: t('menu.bag'), icon: 'bag' },
+      { id: 'guide', label: t('menu.guide'), icon: 'guide' },
+      { id: 'badges', label: t('menu.badges'), icon: 'badge' },
+      { id: 'storage', label: t('menu.storage'), icon: 'paw' },
+      { id: 'settings', label: t('menu.settings'), icon: 'settings' },
     ];
     return (
       <Shell t={t} title={t('menu.title')} onBack={onClose} testId="screen-menu">
         <nav className="menu-list">
           {items.map((i) => (
-            <button
+            <Button
               key={i.id}
-              className="btn list-btn"
+              className="menu-tile"
+              icon={i.icon}
               data-testid={`menu-${i.id}`}
               onClick={() => onScreen(i.id)}
             >
               {i.label}
-            </button>
+            </Button>
           ))}
-          <button className="btn primary" data-testid="menu-map" onClick={onClose}>
+          <Button
+            variant="primary"
+            icon="map"
+            className="menu-back"
+            data-testid="menu-map"
+            onClick={onClose}
+          >
             {t('menu.map')}
-          </button>
+          </Button>
         </nav>
       </Shell>
     );
   }
+
+  if (screen === 'journal') return <JournalScreen t={t} save={save} onBack={onClose} />;
 
   if (screen === 'team') {
     return (
@@ -303,7 +331,7 @@ function CreatureDetail({
           })}
         </section>
       )}
-      <div className="row">
+      <div className="row-wrap">
         {inTeam && save.team[0]?.uid !== uid && (
           <button className="btn" onClick={() => update((s) => setLead(s, uid))}>
             {t('detail.lead')}
@@ -744,5 +772,103 @@ function DevSection({
         </label>
       ))}
     </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Journal (M2d, GDD "Journal")
+
+const GOAL_ICON: Record<Goal['kind'], IconName> = {
+  reach: 'pin',
+  route: 'route',
+  trainers: 'trainer',
+  rest: 'rest',
+  arena: 'arena',
+  exploreWild: 'wild',
+  catchType: 'paw',
+  findRare: 'star',
+};
+
+function GoalRow({ g, t, current }: { g: Goal; t: Translate; current?: boolean }) {
+  const p = goalProgress(g, t);
+  return (
+    <ListRow
+      icon={GOAL_ICON[g.kind]}
+      testId={`goal-${g.id}`}
+      done={g.done}
+      title={goalTitle(g, t)}
+      subtitle={
+        p && !g.done ? (
+          <span className="goal-progress">
+            <ProgressBar value={p.share} max={1} tone={g.main ? 'accent' : 'leaf'} label={p.text} />
+            <span>{p.text}</span>
+          </span>
+        ) : current ? (
+          <Pill tone="accent">{t('journal.now')}</Pill>
+        ) : undefined
+      }
+    />
+  );
+}
+
+function JournalScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBack: () => void }) {
+  const [tab, setTab] = useState<'goals' | 'done'>('goals');
+  const j = journal(save, null);
+  return (
+    <Shell t={t} title={t('journal.title')} onBack={onBack} testId="screen-journal">
+      <section className="card accent journal-current" data-testid="journal-current">
+        <span className="arrow" aria-hidden>
+          <Icon name="journal" />
+        </span>
+        <div>
+          <p className="journal-card-kicker">{t('journal.current')}</p>
+          <strong data-goal={j.current?.id ?? ''}>
+            {j.current ? goalTitle(j.current, t) : t('goal.allDone')}
+          </strong>
+        </div>
+      </section>
+      <Tabs
+        tabs={[
+          { id: 'goals', label: t('journal.goals') },
+          { id: 'done', label: t('journal.completed', { n: j.completed.length }) },
+        ]}
+        value={tab}
+        onChange={setTab}
+      />
+      {tab === 'goals' ? (
+        [...j.districts].reverse().map((d) => (
+          <section
+            key={d.district}
+            className="journal-section"
+            data-testid={`journal-district-${d.district}`}
+          >
+            <h2>
+              {t(`district.${d.district}.name`)}
+              {!isDistrictUnlocked(save.badges, d.district) && (
+                <Pill tone="warn">
+                  {t('journal.locked', { badge: t(`badge.${d.district - 1}.name`) })}
+                </Pill>
+              )}
+            </h2>
+            {d.main.length > 0 && <p className="panel-title small">{t('journal.main')}</p>}
+            {d.main.map((g) => (
+              <GoalRow key={g.id} g={g} t={t} current={g.id === j.current?.id} />
+            ))}
+            <p className="panel-title small">{t('journal.side')}</p>
+            {d.side.map((g) => (
+              <GoalRow key={g.id} g={g} t={t} />
+            ))}
+          </section>
+        ))
+      ) : j.completed.length === 0 ? (
+        <p className="muted">{t('journal.noneCompleted')}</p>
+      ) : (
+        <div className="journal-section">
+          {j.completed.map((g) => (
+            <GoalRow key={g.id} g={g} t={t} />
+          ))}
+        </div>
+      )}
+    </Shell>
   );
 }

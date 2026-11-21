@@ -2,9 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import maplibregl, { type GeoJSONSource, type Map as MlMap, type Marker } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { Protocol } from 'pmtiles';
-import { hintMarkerUrl, markerUrl, stampUrl } from '@oml/art';
+import { hintMarkerUrl, markerUrl, spriteUrl, stampUrl } from '@oml/art';
 import { content, type Poi } from '@oml/data';
-import districtsRaw from '@oml/data/content/districts.odense.geojson?raw';
 import type { BattleState, TurnResult } from '@oml/engine';
 import {
   bearingDeg,
@@ -12,8 +11,12 @@ import {
   finishBattle,
   healTeam,
   insidePoi,
+  isDistrictUnlocked,
+  journal as buildJournal,
   nearestPoi,
-  onboardingTargets,
+  noteDistrict,
+  noteRoutes,
+  noteWildWalk,
   placeTutorial,
   restockReadyAt,
   spawnLevel,
@@ -40,9 +43,14 @@ import {
   type Gate3Event,
 } from '@oml/playtest';
 import type { Region } from '@oml/spawn';
+import { latLngToCell } from 'h3-js';
 import { BattleScreen } from '../BattleScreen';
 import type { Translate } from '../i18n';
 import { districtAt, LEVEL_BANDS, loadRegion } from '../game/region';
+import { formatM, goalTitle } from '../game/goalText';
+import { Button, Toast } from '../ui/components';
+import { buzz } from '../ui/feedback';
+import { Icon } from '../ui/icons';
 import {
   BATTLE_RADIUS_M,
   MAX_ACCURACY_M,
@@ -52,20 +60,31 @@ import {
   tooFast,
   type Fix,
 } from './geo';
+import { useCompassHeading } from './heading';
+import { addWorldLayers, applyPatternPalette, setLockedDistricts, setWild } from './layers';
 import { GpsLocation, type LocationSource, type SimLocation } from './location';
 import { SimPanel } from './SimPanel';
 import type { ApiSpawn } from './spawnApi';
-import { paperStyle, PAPER } from './style';
+import { applyPalette, NIGHT, paperStyle, PAPER } from './style';
+import { markerElement, PLAYER_SVG, STAR_SVG, START } from './markers';
+import { TownMap } from './TownMap';
 import { useSpawns } from './useSpawns';
 
-const districtsGeo = JSON.parse(districtsRaw) as GeoJSON.FeatureCollection;
 const POIS: Poi[] = Object.values(content.pois);
 /** POI radius circles appear when the player is this much outside the radius, or closer. */
 const RADIUS_SHOW_M = 60;
+/** Creatures further than this are drawn faint (GDD v1.9: visible to 200 m, faint beyond 100 m). */
+const FAINT_M = 100;
 /** Distance steps shorter than this are noise (GPS jitter); they are added up later. */
 const MIN_STEP_M = 5;
 /** The tutorial creature is placed again when the player is further away than this. */
 const TUTORIAL_REPLACE_M = 600;
+/** Panning away from the player snaps back after this long without touching the map. */
+export const SNAP_BACK_MS = 6000;
+/** GDD v1.9 camera: tilted about 50°, zoom about street level. */
+export const CAMERA = { pitch: 50, minZoom: 16.5, maxZoom: 18.5, zoom: 17.5 };
+/** Room for the heads-up display, so the player stays in the clear middle of the screen. */
+const PADDING = { top: 130, bottom: 230, left: 0, right: 0 };
 
 interface Props {
   t: Translate;
@@ -74,7 +93,9 @@ interface Props {
   save: SaveGame;
   update: (fn: (s: SaveGame) => SaveGame) => void;
   onMenu: () => void;
+  onJournal: () => void;
   onBadge: (arena: number) => void;
+  night: boolean;
   /** Gate 3 session counters (only called while a test session runs). */
   onGate3?: (e: Gate3Event) => void;
   /** Dev tools: the GPS simulator (owned by the game so it survives menu visits). */
@@ -83,7 +104,7 @@ interface Props {
   devSpawns?: ApiSpawn[];
 }
 
-export const START = { lat: 55.3998, lng: 10.3852 }; // Kongens Have
+export { START };
 let protocolAdded = false;
 
 function appBase(): string {
@@ -102,50 +123,26 @@ function circle(center: LatLng, radiusM: number): GeoJSON.Feature<GeoJSON.Polygo
   return { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [pts] } };
 }
 
-const vibrate = (ms: number) => {
-  try {
-    const ua = (navigator as Navigator & { userActivation?: { hasBeenActive: boolean } })
-      .userActivation;
-    if (ua && !ua.hasBeenActive) return;
-    navigator.vibrate?.(ms);
-  } catch {
-    // not supported
-  }
-};
-
 const nowSeconds = () => Math.floor(Date.now() / 1000);
-
-function formatM(m: number): string {
-  return m >= 1000 ? `${(m / 1000).toFixed(1)} km` : `${Math.round(m)} m`;
-}
-
-function Arrow({ bearing }: { bearing: number }) {
-  return (
-    <span className="arrow" aria-hidden data-bearing={Math.round(bearing)}>
-      <svg
-        viewBox="0 0 24 24"
-        width="20"
-        height="20"
-        style={{ transform: `rotate(${Math.round(bearing)}deg)` }}
-      >
-        <path d="M12 2 L20 20 L12 15 L4 20 Z" fill="currentColor" />
-      </svg>
-    </span>
-  );
-}
 
 type ResultCard =
   | { kind: 'trainer'; trainerId: string; won: boolean; reward: BattleOutcome['reward'] }
   | { kind: 'text'; text: string };
 
-function poiKindOf(p: Poi): 'arena' | 'trainer' | 'restStop' {
-  return p.kind;
-}
-
 function poiDone(p: Poi, save: SaveGame): boolean {
   if (p.kind === 'trainer') return save.defeatedTrainers.includes(p.trainer);
   if (p.kind === 'arena') return save.badges.includes(p.arena);
   return false;
+}
+
+/** Spawn-marker classes that follow the creature's state (see the marker effect). */
+const STATE_CLASSES = ['hint', 'too-wild', 'tutorial', 'far', 'in-range', 'selected'];
+
+interface Seen {
+  s: ApiSpawn;
+  d: number;
+  st: ReturnType<typeof spawnStatus> | 'tutorial';
+  level: number;
 }
 
 export function MapScreen({
@@ -154,7 +151,9 @@ export function MapScreen({
   save,
   update,
   onMenu,
+  onJournal,
   onBadge,
+  night,
   onGate3,
   sim = null,
   devSpawns,
@@ -170,18 +169,30 @@ export function MapScreen({
   const [result, setResult] = useState<ResultCard | null>(null);
   const [restMsg, setRestMsg] = useState<{ poiId: string; text: string } | null>(null);
   const [mapReady, setMapReady] = useState(false);
+  const [bearing, setBearing] = useState(0);
+  const [selected, setSelected] = useState<string | null>(null);
+  const [townMap, setTownMap] = useState(false);
   const mapRef = useRef<MlMap | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const markers = useRef(new Map<string, Marker>());
   const poiMarkers = useRef(new Map<string, { marker: Marker; img: HTMLImageElement }>());
+  const player = useRef<{ figure: Marker; cone: Marker } | null>(null);
+  const targetMarker = useRef<Marker | null>(null);
   const announced = useRef(new Set<string>());
   const seenForGate3 = useRef(new Set<string>());
   const timer = useRef<ActiveTimer | null>(null);
   const distAnchor = useRef<Fix | null>(null);
+  const journalAnchor = useRef<Fix | null>(null);
+  const wildPending = useRef(0);
+  const snapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [useSim, setUseSim] = useState(devTools && !!sim);
   const teleportMode = useRef(false);
   const saveRef = useRef(save);
   saveRef.current = save;
+  const palette = night ? NIGHT : PAPER;
+  const paletteRef = useRef(palette);
+  paletteRef.current = palette;
+  const compass = useCompassHeading();
 
   useEffect(() => {
     let alive = true;
@@ -205,8 +216,19 @@ export function MapScreen({
 
   const last = fixes[fixes.length - 1] ?? null;
   const goodFix = last && last.accuracy <= MAX_ACCURACY_M ? last : null;
-  const kmh = speedKmh(fixes.filter((f) => f.accuracy <= MAX_ACCURACY_M));
+  const goodFixes = useMemo(() => fixes.filter((f) => f.accuracy <= MAX_ACCURACY_M), [fixes]);
+  const kmh = speedKmh(goodFixes);
   useEffect(() => setFast((prev) => tooFast(prev, kmh)), [kmh]);
+
+  // Heading: the compass when the phone has one, else the direction of travel.
+  const course = useMemo(() => {
+    const n = goodFixes.length;
+    if (n < 2) return null;
+    const a = goodFixes[n - 2]!;
+    const b = goodFixes[n - 1]!;
+    return distanceM(a, b) >= 3 ? bearingDeg(a, b) : null;
+  }, [goodFixes]);
+  const heading = compass.heading ?? course;
 
   // Gate 3: distance walked, summed on the phone (only the metres leave this function).
   useEffect(() => {
@@ -235,9 +257,34 @@ export function MapScreen({
     () => (devSpawns?.length ? [...service.spawns, ...devSpawns] : service.spawns),
     [service.spawns, devSpawns],
   );
-  const playerDistrict = position ? districtAt(region, position) : null;
 
-  const visible = useMemo(() => {
+  // ---- Journal progress (districts reached, route checkpoints, wild metres) --------------
+  // Districts and checkpoints are noted on every fix (no change → nothing is saved); wild
+  // metres only count real steps of 5 m or more at walking speed.
+  useEffect(() => {
+    if (!goodFix || fast || save.onboarding !== 'done') return;
+    const district = districtAt(region, goodFix);
+    const a = journalAnchor.current;
+    if (!a) journalAnchor.current = goodFix;
+    else {
+      const d = distanceM(a, goodFix);
+      if (d >= MIN_STEP_M) {
+        const hours = Math.max(1, goodFix.time - a.time) / 3_600_000;
+        const cell = region?.cells.get(latLngToCell(goodFix.lat, goodFix.lng, 10));
+        if (cell?.wild && d / 1000 / hours <= 25) wildPending.current += d;
+        journalAnchor.current = goodFix;
+      }
+    }
+    const wild = wildPending.current >= 20 && district !== null ? wildPending.current : 0;
+    if (wild > 0) wildPending.current = 0;
+    update((s) => {
+      let next = noteRoutes(noteDistrict(s, district), goodFix);
+      if (wild > 0 && district !== null) next = noteWildWalk(next, district, wild);
+      return next;
+    });
+  }, [goodFix, fast, region, save.onboarding, update]);
+
+  const visible = useMemo<Seen[]>(() => {
     if (!position || fast) return [];
     return spawns
       .map((s) => ({
@@ -271,36 +318,32 @@ export function MapScreen({
       protocolAdded = true;
     }
     const base = appBase();
-    const start = saveRef.current && last ? last : START;
+    const start = last ?? START;
     const map = new maplibregl.Map({
       container: containerRef.current,
-      style: paperStyle(base, `${base}tiles/odense.pmtiles`),
+      style: paperStyle(base, `${base}tiles/odense.pmtiles`, paletteRef.current),
       center: [start.lng, start.lat],
-      zoom: 16.5,
-      minZoom: 12,
-      maxZoom: 19,
+      zoom: CAMERA.zoom,
+      minZoom: CAMERA.minZoom,
+      maxZoom: CAMERA.maxZoom,
+      pitch: CAMERA.pitch,
+      minPitch: CAMERA.pitch,
+      maxPitch: CAMERA.pitch,
       maxBounds: [
         [10.25, 55.32],
         [10.52, 55.46],
       ],
       attributionControl: false,
       pitchWithRotate: false,
-      dragRotate: false,
+      touchPitch: false,
     });
-    map.addControl(new maplibregl.AttributionControl({ compact: false }), 'bottom-left');
-    map.touchZoomRotate.disableRotation();
+    map.setPadding(PADDING);
+    map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
     map.on('load', () => {
-      map.addSource('districts', { type: 'geojson', data: districtsGeo });
-      map.addLayer({
-        id: 'districts',
-        type: 'line',
-        source: 'districts',
-        paint: {
-          'line-color': PAPER.district,
-          'line-width': 2,
-          'line-dasharray': [3, 2],
-          'line-opacity': 0.7,
-        },
+      addWorldLayers(map, paletteRef.current, {
+        mode: 'play',
+        districtName: (id) => t(`district.${id}.name`),
+        routeName: (id) => t(`route.${id}.name`),
       });
       map.addSource('poi-radius', {
         type: 'geojson',
@@ -326,24 +369,28 @@ export function MapScreen({
         id: 'player-accuracy',
         type: 'fill',
         source: 'player',
-        filter: ['==', ['geometry-type'], 'Polygon'],
-        paint: { 'fill-color': '#2563eb', 'fill-opacity': 0.12 },
+        paint: { 'fill-color': paletteRef.current.accuracy, 'fill-opacity': 0.12 },
       });
       map.addLayer({
-        id: 'player-dot',
-        type: 'circle',
+        id: 'player-accuracy-line',
+        type: 'line',
         source: 'player',
-        filter: ['==', ['geometry-type'], 'Point'],
         paint: {
-          'circle-radius': 9,
-          'circle-color': '#2563eb',
-          'circle-stroke-color': '#fff',
-          'circle-stroke-width': 3,
+          'line-color': paletteRef.current.accuracy,
+          'line-width': 1.5,
+          'line-opacity': 0.45,
         },
       });
       setMapReady(true);
     });
+    // Panning away from the player: stop following, and snap back after a few seconds.
     map.on('dragstart', () => setFollow(false));
+    map.on('moveend', (e: { originalEvent?: unknown }) => {
+      if (!e.originalEvent) return;
+      if (snapTimer.current) clearTimeout(snapTimer.current);
+      snapTimer.current = setTimeout(() => setFollow(true), SNAP_BACK_MS);
+    });
+    map.on('rotate', () => setBearing(map.getBearing()));
     map.on('click', (e) => {
       if (teleportMode.current && sim) sim.teleport({ lat: e.lngLat.lat, lng: e.lngLat.lng });
     });
@@ -353,22 +400,41 @@ export function MapScreen({
 
     // POI stamps (drawn once; their image follows the beaten state).
     for (const poi of POIS) {
-      const el = document.createElement('div');
-      el.className = `poi-marker poi-${poi.kind}`;
+      const img = document.createElement('img');
+      img.alt = '';
+      img.src = stampUrl(poi.kind, poiDone(poi, saveRef.current));
+      const el = markerElement('div', `poi-marker poi-${poi.kind}`, img);
       el.dataset.poiId = poi.id;
       el.dataset.lat = String(poi.lat);
       el.dataset.lng = String(poi.lng);
       el.setAttribute('role', 'img');
-      const img = document.createElement('img');
-      img.alt = '';
-      img.src = stampUrl(poiKindOf(poi), poiDone(poi, saveRef.current));
-      el.appendChild(img);
+      el.setAttribute('aria-label', t(`poi.${poi.id}.name`));
       const marker = new maplibregl.Marker({ element: el, anchor: 'center' })
         .setLngLat([poi.lng, poi.lat])
         .addTo(map);
-      el.setAttribute('aria-label', t(`poi.${poi.id}.name`));
       poiMarkers.current.set(poi.id, { marker, img });
     }
+
+    // The player: a standing figure, plus a heading cone lying flat on the map.
+    const figure = markerElement('div', 'player-marker', PLAYER_SVG);
+    figure.dataset.testid = 'player-marker';
+    const coneEl = document.createElement('div');
+    coneEl.className = 'heading-marker';
+    coneEl.innerHTML = '<div class="heading-cone"></div>';
+    coneEl.style.visibility = 'hidden';
+    player.current = {
+      cone: new maplibregl.Marker({
+        element: coneEl,
+        anchor: 'center',
+        pitchAlignment: 'map',
+        rotationAlignment: 'map',
+      })
+        .setLngLat([start.lng, start.lat])
+        .addTo(map),
+      figure: new maplibregl.Marker({ element: figure, anchor: 'bottom', offset: [0, 6] })
+        .setLngLat([start.lng, start.lat])
+        .addTo(map),
+    };
 
     const markerMap = markers.current;
     const poiMap = poiMarkers.current;
@@ -377,6 +443,9 @@ export function MapScreen({
       markerMap.clear();
       for (const { marker } of poiMap.values()) marker.remove();
       poiMap.clear();
+      player.current = null;
+      targetMarker.current = null;
+      if (snapTimer.current) clearTimeout(snapTimer.current);
       map.remove();
       mapRef.current = null;
       delete (window as unknown as { __omlMap?: MlMap }).__omlMap;
@@ -386,28 +455,48 @@ export function MapScreen({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inBattle, sim]);
 
+  // Night style after sunset (GDD v1.9).
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapReady) return;
+    applyPalette(map, palette);
+    applyPatternPalette(map, palette);
+  }, [palette, mapReady]);
+
+  // Wild areas and locked districts.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapReady) return;
+    setWild(map, region);
+  }, [region, mapReady]);
+  const badgesKey = save.badges.join(',');
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapReady) return;
+    const badges = badgesKey ? badgesKey.split(',').map(Number) : [];
+    setLockedDistricts(
+      map,
+      [1, 2, 3, 4, 5, 6, 7, 8].filter((d) => !isDistrictUnlocked(badges, d)),
+    );
+  }, [badgesKey, mapReady]);
+
   // Stamp images follow beaten trainers / won arenas.
   useEffect(() => {
     for (const poi of POIS) {
       const m = poiMarkers.current.get(poi.id);
-      if (m) m.img.src = stampUrl(poiKindOf(poi), poiDone(poi, save));
+      if (m) m.img.src = stampUrl(poi.kind, poiDone(poi, save));
     }
   }, [save, mapReady]);
 
-  // Player dot + follow + POI radius circles near the player.
+  // Player figure, accuracy ring, follow camera, POI radius circles near the player.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady || !last) return;
+    player.current?.figure.setLngLat([last.lng, last.lat]);
+    player.current?.cone.setLngLat([last.lng, last.lat]);
     (map.getSource('player') as GeoJSONSource | undefined)?.setData({
       type: 'FeatureCollection',
-      features: [
-        circle(last, Math.min(last.accuracy, 200)),
-        {
-          type: 'Feature',
-          properties: {},
-          geometry: { type: 'Point', coordinates: [last.lng, last.lat] },
-        },
-      ],
+      features: [circle(last, Math.min(Math.max(last.accuracy, 5), 200))],
     });
     const colours = { arena: '#c8553d', trainer: '#3d6fa8', restStop: '#4f9a63' };
     (map.getSource('poi-radius') as GeoJSONSource | undefined)?.setData({
@@ -417,13 +506,34 @@ export function MapScreen({
         properties: { colour: colours[p.kind], id: p.id },
       })),
     });
-    if (follow) map.easeTo({ center: [last.lng, last.lat], duration: 600 });
+    // Don't cut short another camera move (reset north, recentre); the next fix catches up.
+    if (follow && !map.isEasing()) map.easeTo({ center: [last.lng, last.lat], duration: 600 });
   }, [last, follow, mapReady]);
+
+  useEffect(() => {
+    const cone = player.current?.cone;
+    if (!cone) return;
+    cone.getElement().style.visibility = heading === null ? 'hidden' : 'visible';
+    if (heading !== null) cone.setRotation(heading);
+  }, [heading, mapReady]);
+
+  const recentre = useCallback(() => {
+    if (snapTimer.current) clearTimeout(snapTimer.current);
+    setFollow(true);
+    const map = mapRef.current;
+    if (map && last) map.easeTo({ center: [last.lng, last.lat], duration: 500 });
+  }, [last]);
+
+  const resetNorth = () => {
+    if (compass.needsPermission) compass.request();
+    mapRef.current?.easeTo({ bearing: 0, duration: 400 });
+  };
 
   // ---- battles ---------------------------------------------------------------------------
   const openBattle = useCallback(() => {
     timer.current = timer.current ? resumeTimer(timer.current, Date.now()) : startTimer(Date.now());
     setResult(null);
+    setTownMap(false);
     setInBattle(true);
   }, []);
 
@@ -445,6 +555,7 @@ export function MapScreen({
       const name = t(`species.${spawn.speciesId}.name`);
       const district = spawn.district;
       const st = spawnStatus(s, spawn);
+      setSelected(spawn.id);
       if (st === 'needsAbility') {
         setToast(t('map.hint', { ability: t(`fieldAbility.${spawn.requires}.name`) }));
         return;
@@ -478,6 +589,7 @@ export function MapScreen({
     if (!position || !tutorialSpot) return;
     const d = distanceM(position, tutorialSpot);
     const name = t(`species.${TUTORIAL_SPECIES}.name`);
+    setSelected('tutorial');
     if (d > BATTLE_RADIUS_M) {
       setToast(t('map.walkCloser', { name, m: Math.round(d) }));
       return;
@@ -488,79 +600,92 @@ export function MapScreen({
   const tutorialTapRef = useRef(tapTutorial);
   tutorialTapRef.current = tapTutorial;
 
-  // Spawn markers within 100 m (+ the tutorial creature).
+  // Creatures shown on the map and in the Nearby strip (the tutorial creature included).
+  const shown = useMemo<Seen[]>(() => {
+    if (!tutorialSpot || !position) return visible;
+    const tut: Seen = {
+      s: {
+        id: 'tutorial',
+        speciesId: TUTORIAL_SPECIES,
+        rarity: 'common',
+        levelRoll: 0,
+        district: 1,
+        cellId: '',
+        lat: tutorialSpot.lat,
+        lng: tutorialSpot.lng,
+        requires: null,
+        window: 0,
+        expiresAt: 0,
+      },
+      d: distanceM(position, tutorialSpot),
+      st: 'tutorial',
+      level: TUTORIAL_LEVEL,
+    };
+    return [tut, ...visible].sort((a, b) => a.d - b.d);
+  }, [visible, tutorialSpot, position]);
+
+  // Spawn markers (pooled by spawn id; classes update in place, nothing is rebuilt per frame).
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady) return;
-    const label = (s: ApiSpawn, st: string, level: number) =>
+    const label = ({ s, st, level }: Seen) =>
       st === 'needsAbility'
         ? t('map.hintMarker')
         : st === 'tooWild'
           ? t('map.tooWildMarker', { name: t(`species.${s.speciesId}.name`) })
           : t('map.marker', { name: t(`species.${s.speciesId}.name`), level });
-    const want = new Map(visible.map((v) => [v.s.id, v]));
-    if (tutorialSpot) want.set('tutorial', null as never);
+    const want = new Set(shown.map((v) => v.s.id));
     for (const [id, m] of markers.current) {
-      const v = want.get(id);
-      const kind = (m.getElement().dataset.kind ?? '') as string;
-      if (!want.has(id) || (v && v.st !== kind)) {
+      if (!want.has(id)) {
         m.remove();
         markers.current.delete(id);
       }
     }
-    for (const { s, st, level } of visible) {
-      if (markers.current.has(s.id)) continue;
-      const el = document.createElement('button');
+    for (const v of shown) {
+      const { s, st, d } = v;
       const hidden = st === 'needsAbility';
-      el.className = `spawn-marker${hidden ? ' hint' : ''}${st === 'tooWild' ? ' too-wild' : ''}`;
-      el.dataset.spawnId = s.id;
-      el.dataset.kind = st;
-      el.dataset.lat = String(s.lat);
-      el.dataset.lng = String(s.lng);
-      const img = document.createElement('img');
-      img.src = hidden ? hintMarkerUrl() : markerUrl(s.speciesId);
-      img.alt = '';
-      el.appendChild(img);
-      el.addEventListener('click', (ev) => {
-        ev.stopPropagation();
-        tapRef.current(s);
-      });
-      const marker = new maplibregl.Marker({ element: el, anchor: 'bottom' })
-        .setLngLat([s.lng, s.lat])
-        .addTo(map);
-      el.setAttribute('aria-label', label(s, st, level));
-      markers.current.set(s.id, marker);
+      const cls =
+        `spawn-marker${hidden ? ' hint' : ''}${st === 'tooWild' ? ' too-wild' : ''}` +
+        `${st === 'tutorial' ? ' tutorial' : ''}${d > FAINT_M ? ' far' : ''}` +
+        `${d <= BATTLE_RADIUS_M && (st === 'ok' || st === 'tutorial') ? ' in-range' : ''}` +
+        `${selected === s.id ? ' selected' : ''}`;
+      let m = markers.current.get(s.id);
+      if (!m) {
+        const img = document.createElement('img');
+        img.alt = '';
+        const el = markerElement('button', cls, img);
+        el.dataset.spawnId = s.id;
+        el.dataset.lat = String(s.lat);
+        el.dataset.lng = String(s.lng);
+        if (st === 'tutorial') el.dataset.testid = 'tutorial-marker';
+        el.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          if (el.dataset.kind === 'tutorial') tutorialTapRef.current();
+          else tapRef.current(s);
+        });
+        m = new maplibregl.Marker({ element: el, anchor: 'bottom' })
+          .setLngLat([s.lng, s.lat])
+          .addTo(map);
+        markers.current.set(s.id, m);
+      }
+      const el = m.getElement();
+      // Toggle only our own classes: MapLibre adds `maplibregl-marker…` classes to the same
+      // element for its positioning, and replacing className would drop them (markers jump).
+      const want = new Set(cls.split(' '));
+      for (const c of STATE_CLASSES) el.classList.toggle(c, want.has(c));
+      if (el.dataset.kind !== st) {
+        el.dataset.kind = st;
+        el.querySelector('img')!.src = hidden ? hintMarkerUrl() : markerUrl(s.speciesId);
+      }
+      const aria = label(v);
+      if (el.getAttribute('aria-label') !== aria) el.setAttribute('aria-label', aria);
     }
-    if (tutorialSpot && !markers.current.has('tutorial')) {
-      const el = document.createElement('button');
-      el.className = 'spawn-marker tutorial';
-      el.dataset.testid = 'tutorial-marker';
-      el.dataset.kind = 'tutorial';
-      el.dataset.lat = String(tutorialSpot.lat);
-      el.dataset.lng = String(tutorialSpot.lng);
-      const img = document.createElement('img');
-      img.src = markerUrl(TUTORIAL_SPECIES);
-      img.alt = '';
-      el.appendChild(img);
-      el.addEventListener('click', (ev) => {
-        ev.stopPropagation();
-        tutorialTapRef.current();
-      });
-      const marker = new maplibregl.Marker({ element: el, anchor: 'bottom' })
-        .setLngLat([tutorialSpot.lng, tutorialSpot.lat])
-        .addTo(map);
-      el.setAttribute(
-        'aria-label',
-        t('map.marker', { name: t(`species.${TUTORIAL_SPECIES}.name`), level: TUTORIAL_LEVEL }),
-      );
-      markers.current.set('tutorial', marker);
-    }
-  }, [visible, tutorialSpot, t, mapReady]);
+  }, [shown, selected, t, mapReady]);
 
   // Encounter toast + vibration; Gate 3 "spawns seen" (battle-able ones within 100 m).
   useEffect(() => {
-    for (const { s, st } of visible) {
-      if (st === 'ok' && onGate3 && !seenForGate3.current.has(s.id)) {
+    for (const { s, d, st } of visible) {
+      if (st === 'ok' && d <= FAINT_M && onGate3 && !seenForGate3.current.has(s.id)) {
         seenForGate3.current.add(s.id);
         onGate3({ type: 'spawnSeen' });
       }
@@ -568,7 +693,7 @@ export function MapScreen({
     for (const { s, d, st } of visible) {
       if (st !== 'ok' || d > BATTLE_RADIUS_M || announced.current.has(s.id)) continue;
       announced.current.add(s.id);
-      vibrate(120);
+      buzz('encounter');
       setToast(t('map.encounter', { name: t(`species.${s.speciesId}.name`) }));
       break;
     }
@@ -701,9 +826,9 @@ export function MapScreen({
               {restMsg?.poiId === here.id ? restMsg.text : t('rest.prompt')}
             </p>
           </div>
-          <button className="btn primary" data-testid="poi-action" onClick={() => rest(here)}>
+          <Button variant="primary" data-testid="poi-action" onClick={() => rest(here)}>
             {t('rest.button')}
-          </button>
+          </Button>
         </div>
       );
     }
@@ -726,9 +851,9 @@ export function MapScreen({
       if (here.kind === 'arena')
         body = `${t(isLeader ? 'arena.leaderNext' : 'arena.juniorFirst')} ${body}`;
       action = (
-        <button className="btn primary" data-testid="poi-action" onClick={() => fightPoi(here)}>
+        <Button variant="primary" data-testid="poi-action" onClick={() => fightPoi(here)}>
           {t('trainer.battle')}
-        </button>
+        </Button>
       );
     }
     return (
@@ -743,63 +868,110 @@ export function MapScreen({
     );
   })();
 
-  // ---- guidance ----------------------------------------------------------------------------
-  const guide = (() => {
+  // ---- Journal card: always one clear goal (GDD v1.9) --------------------------------------
+  const journal = useMemo(() => buildJournal(save, position), [save, position]);
+  const card = (() => {
     if (!position) return null;
+    let target: LatLng | null = null;
+    let title: string;
+    let kind = 'goal';
+    let warn = false;
+    let goalId = '';
+    let district: number | null = null;
     if (tutorialActive && tutorialSpot) {
       const d = distanceM(position, tutorialSpot);
-      const b = bearingDeg(position, tutorialSpot);
-      return (
-        <div className="guide-card" data-testid="guide-card" data-guide="tutorial">
-          <Arrow bearing={b} />
-          <span>
-            {d <= BATTLE_RADIUS_M
-              ? t('tutorial.tap', { name: t(`species.${TUTORIAL_SPECIES}.name`) })
-              : t('tutorial.walk', { m: formatM(d) })}
-          </span>
-        </div>
-      );
-    }
-    if (save.onboarding !== 'done') return null;
-    if (teamFainted(save.team)) {
+      target = tutorialSpot;
+      kind = 'tutorial';
+      title =
+        d <= BATTLE_RADIUS_M
+          ? t('tutorial.tap', { name: t(`species.${TUTORIAL_SPECIES}.name`) })
+          : t('tutorial.walk', { m: formatM(d) });
+    } else if (save.onboarding !== 'done') {
+      return null;
+    } else if (teamFainted(save.team)) {
       const r = nearestPoi(position, POIS, (p) => p.kind === 'restStop');
       if (!r) return null;
-      return (
-        <div className="guide-card warn" data-testid="guide-card" data-guide="fainted">
-          <Arrow bearing={r.bearing} />
-          <span>
-            {t('guide.fainted', { name: t(`poi.${r.poi.id}.name`), m: formatM(r.distance) })}
+      target = r.poi;
+      kind = 'fainted';
+      warn = true;
+      title = t('guide.fainted', { name: t(`poi.${r.poi.id}.name`), m: formatM(r.distance) });
+    } else if (journal.current) {
+      target = journal.current.target;
+      title = goalTitle(journal.current, t);
+      goalId = journal.current.id;
+      district = journal.current.district;
+    } else {
+      title = t('goal.allDone');
+    }
+    const dist = target ? distanceM(position, target) : null;
+    const arrow = target ? (bearingDeg(position, target) - bearing + 360) % 360 : null;
+    return (
+      <button
+        type="button"
+        className={`journal-card${warn ? ' warn' : ''}`}
+        data-testid="journal-card"
+        data-guide={kind === 'goal' ? goalId : kind}
+        data-district={district ?? undefined}
+        onClick={kind === 'tutorial' ? undefined : onJournal}
+      >
+        {arrow !== null ? (
+          <span className="arrow" aria-hidden data-bearing={Math.round(arrow)}>
+            <svg
+              viewBox="0 0 24 24"
+              width="26"
+              height="26"
+              style={{ transform: `rotate(${Math.round(arrow)}deg)` }}
+            >
+              <path d="M12 3 19 20l-7-4-7 4Z" fill="currentColor" />
+            </svg>
           </span>
-        </div>
-      );
-    }
-    if (save.defeatedTrainers.length === 0 && !here) {
-      const targets = onboardingTargets(position, playerDistrict, save.defeatedTrainers);
-      return (
-        <div className="guide-card" data-testid="guide-card" data-guide="district1">
-          {targets.trainer && (
-            <span className="guide-row">
-              <Arrow bearing={targets.trainer.bearing} />
-              {t('guide.trainer', {
-                name: t(`poi.${targets.trainer.poi.id}.name`),
-                m: formatM(targets.trainer.distance),
-              })}
-            </span>
+        ) : (
+          <span className="arrow" aria-hidden>
+            <Icon name="journal" />
+          </span>
+        )}
+        <span className="journal-card-text">
+          <span className="journal-card-kicker">
+            {t(
+              kind === 'tutorial'
+                ? 'hud.firstSteps'
+                : kind === 'fainted'
+                  ? 'hud.urgent'
+                  : 'hud.next',
+            )}
+          </span>
+          <span className="journal-card-title">{title}</span>
+          {dist !== null && kind !== 'tutorial' && (
+            <span className="journal-card-dist">{t('hud.away', { d: formatM(dist) })}</span>
           )}
-          {targets.restStop && (
-            <span className="guide-row">
-              <Arrow bearing={targets.restStop.bearing} />
-              {t('guide.restStop', {
-                name: t(`poi.${targets.restStop.poi.id}.name`),
-                m: formatM(targets.restStop.distance),
-              })}
-            </span>
-          )}
-        </div>
-      );
-    }
-    return null;
+        </span>
+      </button>
+    );
   })();
+
+  // The Journal target on the play map.
+  const target =
+    !tutorialActive && save.onboarding === 'done' ? (journal.current?.target ?? null) : null;
+  const targetKey = target ? `${target.lat},${target.lng}` : '';
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapReady) return;
+    if (!targetKey) {
+      targetMarker.current?.remove();
+      targetMarker.current = null;
+      return;
+    }
+    const [lat, lng] = targetKey.split(',').map(Number) as [number, number];
+    if (!targetMarker.current) {
+      const el = document.createElement('div');
+      el.className = 'target-marker';
+      el.dataset.testid = 'target-marker';
+      el.innerHTML = `<div class="target-body">${STAR_SVG}</div>`;
+      targetMarker.current = new maplibregl.Marker({ element: el, anchor: 'bottom' })
+        .setLngLat([lng, lat])
+        .addTo(map);
+    } else targetMarker.current.setLngLat([lng, lat]);
+  }, [targetKey, mapReady]);
 
   // ---- render -----------------------------------------------------------------------------
   if (inBattle && save.battle) {
@@ -843,17 +1015,66 @@ export function MapScreen({
                       ? t('map.loading')
                       : null;
   const battleable = visible.filter((v) => v.st === 'ok').length;
+  const nearbyState = ({ st, d, s }: Seen) =>
+    st === 'tooWild'
+      ? { cls: 'too-wild', text: t('hud.nearby.tooWild') }
+      : st === 'needsAbility'
+        ? {
+            cls: 'needs-ability',
+            text: t('hud.nearby.needsAbility', { ability: t(`fieldAbility.${s.requires}.name`) }),
+          }
+        : d <= BATTLE_RADIUS_M && (st === 'ok' || st === 'tutorial')
+          ? { cls: 'in-range', text: t('hud.nearby.inRange') }
+          : { cls: '', text: '' };
 
   return (
-    <main className="map-screen">
-      <div ref={containerRef} className="map" />
-      <div className="map-top">
-        {banner && (
-          <div className="map-banner" role="status">
-            {banner}
-          </div>
-        )}
-        {guide}
+    <main className="map-screen" data-night={night ? 'true' : 'false'}>
+      <div ref={containerRef} className="map" data-testid="play-map" />
+      <div className="hud-top">
+        <div className="hud-left">
+          {card}
+          {banner && (
+            <div className="map-banner" role="status">
+              {banner}
+            </div>
+          )}
+          {toast && (
+            <div className="map-toast">
+              <Toast>{toast}</Toast>
+            </div>
+          )}
+        </div>
+        <div className="hud-right">
+          <button
+            type="button"
+            className="btn round hud-btn"
+            data-testid="compass-button"
+            aria-label={t('hud.compass')}
+            onClick={resetNorth}
+          >
+            <span className="compass-rose" style={{ transform: `rotate(${-bearing}deg)` }}>
+              <Icon name="compass" size={28} />
+            </span>
+          </button>
+          <Button
+            round
+            className="hud-btn"
+            icon="map"
+            data-testid="townmap-button"
+            aria-label={t('hud.townMap')}
+            onClick={() => setTownMap(true)}
+          />
+          {!follow && (
+            <Button
+              round
+              className="hud-btn"
+              icon="recentre"
+              data-testid="recentre-button"
+              aria-label={t('hud.recentre')}
+              onClick={recentre}
+            />
+          )}
+        </div>
       </div>
       {devTools && versionDrift.length > 0 && (
         <div className="dev-warning" role="status" data-testid="version-drift">
@@ -869,12 +1090,7 @@ export function MapScreen({
           onTeleportMode={(on) => (teleportMode.current = on)}
         />
       )}
-      {toast && (
-        <div className="map-toast" role="status" aria-live="polite">
-          {toast}
-        </div>
-      )}
-      <div className="map-bottom">
+      <div className="hud-bottom">
         {result && (
           <div className="poi-card result-card" data-testid="result-card" role="status">
             <div>
@@ -903,35 +1119,79 @@ export function MapScreen({
                 <p className="small">{result.text}</p>
               )}
             </div>
-            <button className="btn" onClick={() => setResult(null)}>
-              {t('ui.ok')}
-            </button>
+            <Button onClick={() => setResult(null)}>{t('ui.ok')}</Button>
           </div>
         )}
         {!result && poiCard}
-        {save.battle && !inBattle && (
-          <button className="btn primary" data-testid="resume-battle" onClick={openBattle}>
-            {t('map.resume')}
-          </button>
-        )}
-        <div className="map-bottom-row">
-          <button className="btn menu-btn" data-testid="menu-button" onClick={onMenu}>
-            {t('menu.open')}
-          </button>
-          <span className="map-nearby" data-testid="nearby-count" data-count={battleable}>
-            {battleable === 0
-              ? t('map.nearbyNone')
-              : battleable === 1
-                ? t('map.nearbyOne')
-                : t('map.nearby', { n: battleable })}
-          </span>
-          {!follow && (
-            <button className="btn small-btn" onClick={() => setFollow(true)}>
-              {t('map.center')}
-            </button>
+        <div
+          className="nearby"
+          data-testid="nearby-count"
+          data-count={battleable}
+          aria-label={t('hud.nearby.label')}
+        >
+          {shown.length === 0 ? (
+            <span className="nearby-empty">{t('hud.nearby.none')}</span>
+          ) : (
+            shown.map((v) => {
+              const ns = nearbyState(v);
+              return (
+                <button
+                  key={v.s.id}
+                  type="button"
+                  className={`nearby-chip ${ns.cls}${selected === v.s.id ? ' selected' : ''}`}
+                  data-testid="nearby-chip"
+                  data-spawn={v.s.id}
+                  onClick={() => {
+                    if (selected === v.s.id) {
+                      if (v.st === 'tutorial') tapTutorial();
+                      else tapSpawn(v.s);
+                    } else setSelected(v.s.id);
+                  }}
+                  aria-label={`${t(`species.${v.s.speciesId}.name`)}, ${formatM(v.d)}${ns.text ? `, ${ns.text}` : ''}`}
+                >
+                  <img
+                    src={v.st === 'needsAbility' ? hintMarkerUrl() : spriteUrl(v.s.speciesId)}
+                    alt=""
+                  />
+                  <span className="nearby-dist">{formatM(v.d)}</span>
+                  {ns.text && <span className="nearby-state">{ns.text}</span>}
+                </button>
+              );
+            })
           )}
         </div>
+        <div className="hud-bar">
+          <div className="hud-bar-side">
+            {save.battle && !inBattle && (
+              <Button variant="primary" data-testid="resume-battle" onClick={openBattle}>
+                {t('map.resume')}
+              </Button>
+            )}
+          </div>
+          <button
+            type="button"
+            className="satchel-btn"
+            data-testid="menu-button"
+            aria-label={t('hud.menu')}
+            onClick={onMenu}
+          >
+            <Icon name="satchel" />
+            <span>{t('hud.menu')}</span>
+          </button>
+          <div className="hud-bar-side right" />
+        </div>
       </div>
+      {townMap && (
+        <TownMap
+          t={t}
+          save={save}
+          position={position}
+          region={region}
+          target={target}
+          palette={palette}
+          onClose={() => setTownMap(false)}
+        />
+      )}
     </main>
   );
 }

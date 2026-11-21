@@ -46,6 +46,28 @@ describe('asset manifest (CI gate)', () => {
     for (const f of files) expect(listed.has(f), f).toBe(true);
   });
 
+  it('lists the fonts: open-licensed (OFL) and actually installed or shipped', () => {
+    expect(manifest.fonts.map((f) => f.name)).toEqual([
+      'Fraunces',
+      'Atkinson Hyperlegible',
+      'Noto Sans',
+    ]);
+    const client = JSON.parse(readFileSync(root('../../apps/client/package.json'), 'utf8'));
+    for (const f of manifest.fonts) {
+      expect(f.licence).toBe('OFL-1.1');
+      if (f.files.startsWith('npm:')) {
+        const pkg = f.files.slice(4);
+        expect(client.dependencies[pkg], pkg).toBeDefined();
+        const licence = readFileSync(root(`../../apps/client/node_modules/${pkg}/LICENSE`), 'utf8');
+        expect(licence).toContain('SIL Open Font License');
+      } else {
+        expect(
+          readFileSync(root('../../apps/client/public/fonts/OFL.txt'), 'utf8').toUpperCase(),
+        ).toContain('SIL OPEN FONT LICENSE');
+      }
+    }
+  });
+
   it('only allows the licence allow-list', () => {
     expect([...ALLOWED_LICENCES]).toEqual(['CC0-1.0', 'CC-BY-4.0', 'own', 'artist-licence']);
     for (const a of manifest.assets) expect(ALLOWED_LICENCES).toContain(a.licence);

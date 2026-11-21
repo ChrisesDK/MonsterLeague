@@ -1,0 +1,190 @@
+/*
+ * Odense Monster League design tokens (M2d, GDD "Look and feel").
+ * Storybook paper with Danish fairy-tale warmth: cream paper, brown ink, a warm red, gold
+ * for badges, leaf green and fjord blue. High contrast for sunlight; a night palette after
+ * sunset (html[data-theme='night']).
+ *
+ * Fonts (self-hosted, SIL Open Font License 1.1, listed in packages/art/assets.json):
+ *   Fraunces (headings) and Atkinson Hyperlegible (body).
+ */
+@import '@fontsource/atkinson-hyperlegible/latin-400.css';
+@import '@fontsource/atkinson-hyperlegible/latin-700.css';
+@import '@fontsource/fraunces/latin-600.css';
+@import '@fontsource/fraunces/latin-700.css';
+
+:root {
+  /* colour: day */
+  --paper: #f5ecd7;
+  --paper-2: #ebdcbb;
+  --card: #fffaf0;
+  --card-2: #f8efdc;
+  --ink: #2a1f16;
+  --ink-2: #5b4a39;
+  --ink-3: #85715c;
+  --line: #cdb68e;
+  --line-strong: #8a6a43;
+  --accent: #b8322a; /* Danish red */
+  --accent-ink: #fffaf0;
+  --accent-soft: #f3d2c8;
+  --gold: #c98e1c;
+  --gold-soft: #f6e3b4;
+  --leaf: #3f7d3c;
+  --leaf-soft: #d6e8c9;
+  --fjord: #2b6a94;
+  --fjord-soft: #d2e5f1;
+  --warn: #b86a0c;
+  --danger: #a3241c;
+  --overlay: rgba(42, 31, 22, 0.55);
+  --hud: rgba(255, 250, 240, 0.95);
+  --hud-ink: var(--ink);
+  --hp-ok: #3f8f3a;
+  --hp-warn: #d29a12;
+  --hp-low: #c0392b;
+  --track: #e3d4b4;
+
+  /* type */
+  --font-body: 'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-head: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --fs-xs: 0.78rem;
+  --fs-sm: 0.9rem;
+  --fs-base: 1.0625rem;
+  --fs-md: 1.2rem;
+  --fs-lg: 1.5rem;
+  --fs-xl: 2rem;
+  --fs-xxl: 2.6rem;
+  --lh: 1.45;
+
+  /* spacing */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+
+  /* radius */
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 24px;
+  --r-pill: 999px;
+
+  /* shadow: soft ink shadows, like card stock lifted off the page */
+  --shadow-1: 0 1px 0 rgba(90, 60, 30, 0.12), 0 2px 6px rgba(90, 60, 30, 0.12);
+  --shadow-2: 0 2px 0 rgba(90, 60, 30, 0.14), 0 8px 20px rgba(90, 60, 30, 0.18);
+  --shadow-3: 0 4px 0 rgba(90, 60, 30, 0.14), 0 16px 40px rgba(60, 40, 20, 0.28);
+
+  /* motion */
+  --dur-fast: 120ms;
+  --dur: 220ms;
+  --dur-slow: 420ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* touch */
+  --tap: 48px;
+  --radius: var(--r-md);
+
+  color-scheme: light;
+  font-family: var(--font-body);
+  font-size: 100%;
+  line-height: var(--lh);
+}
+
+html[data-theme='night'] {
+  --paper: #1b2130;
+  --paper-2: #232a3d;
+  --card: #2a3247;
+  --card-2: #313a52;
+  --ink: #f4ecdb;
+  --ink-2: #c9bfa9;
+  --ink-3: #9a917f;
+  --line: #45506c;
+  --line-strong: #8d97b5;
+  --accent: #e0594d;
+  --accent-ink: #1b1410;
+  --accent-soft: #4a2c30;
+  --gold: #efbf5a;
+  --gold-soft: #4a3f25;
+  --leaf: #79c26f;
+  --leaf-soft: #2a4031;
+  --fjord: #85bde4;
+  --fjord-soft: #23384d;
+  --warn: #f0a640;
+  --danger: #f07a6e;
+  --overlay: rgba(6, 9, 16, 0.65);
+  --hud: rgba(36, 43, 62, 0.95);
+  --track: #3b445e;
+  --shadow-1: 0 1px 0 rgba(0, 0, 0, 0.3), 0 2px 6px rgba(0, 0, 0, 0.35);
+  --shadow-2: 0 2px 0 rgba(0, 0, 0, 0.3), 0 8px 20px rgba(0, 0, 0, 0.45);
+  --shadow-3: 0 4px 0 rgba(0, 0, 0, 0.3), 0 16px 40px rgba(0, 0, 0, 0.55);
+  color-scheme: dark;
+}
+
+html[data-text-size='large'] {
+  font-size: 112.5%;
+}
+html[data-text-size='larger'] {
+  font-size: 125%;
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  background: var(--paper);
+  color: var(--ink);
+}
+body {
+  font-size: var(--fs-base);
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+  /* a faint paper grain (pure CSS, no image) */
+  background-image:
+    radial-gradient(rgba(120, 90, 50, 0.05) 1px, transparent 1px),
+    radial-gradient(rgba(120, 90, 50, 0.04) 1px, transparent 1px);
+  background-size:
+    7px 7px,
+    11px 11px;
+  background-position:
+    0 0,
+    3px 5px;
+}
+h1,
+h2,
+h3 {
+  font-family: var(--font-head);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.005em;
+}
+button,
+select,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+:focus-visible {
+  outline: 3px solid var(--fjord);
+  outline-offset: 2px;
+}
+
+html[data-reduce-motion='true'] *,
+html[data-reduce-motion='true'] *::before,
+html[data-reduce-motion='true'] *::after {
+  animation: none !important;
+  transition: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}

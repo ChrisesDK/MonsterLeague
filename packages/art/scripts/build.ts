@@ -5,7 +5,7 @@ import { content } from '@oml/data';
 import { creatureSvg, hintMarkerSvg, markerSvg } from '../src/creature';
 import { artInput } from '../src/inputs';
 import { badgeSvg, stampSvg, STAMP_KINDS } from '../src/stamps';
-import type { AssetEntry } from '../src/manifest';
+import { FONTS, type AssetEntry } from '../src/manifest';
 
 const root = (p: string) => fileURLToPath(new URL(`../${p}`, import.meta.url));
 mkdirSync(root('generated/sprites'), { recursive: true });
@@ -61,7 +61,7 @@ for (let arena = 1; arena <= 8; arena++) {
   extra(`generated/badges/badge${arena}.svg`, 'badge', badgeSvg(arena));
   extra(`generated/badges/badge${arena}_empty.svg`, 'badge', badgeSvg(arena, false));
 }
-writeFileSync(root('assets.json'), JSON.stringify({ assets }, null, 2) + '\n');
+writeFileSync(root('assets.json'), JSON.stringify({ assets, fonts: FONTS }, null, 2) + '\n');
 console.log(
   `Wrote ${assets.length} assets (${Object.keys(content.species).length} species × sprite + marker, 1 hint, 6 stamps, 16 badges).`,
 );

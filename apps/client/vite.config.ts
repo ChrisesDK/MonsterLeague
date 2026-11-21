@@ -44,7 +44,7 @@ export default defineConfig({
       },
       workbox: {
         // Everything the app needs is precached, so it works offline after the first load.
-        globPatterns: ['**/*.{js,css,html,svg,webmanifest}', 'fonts/**/*.pbf'],
+        globPatterns: ['**/*.{js,css,html,svg,webmanifest,woff2}', 'fonts/**/*.pbf'],
         // The region file chunk (tutorial placement, spawn districts) is precached too, so
         // the game works offline after the first load.
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
