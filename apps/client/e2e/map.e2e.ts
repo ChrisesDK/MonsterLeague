@@ -200,7 +200,7 @@ test('play camera: always on the player; drag rotates, zoom tilts (no panning)',
     );
   let cam = await camera(page);
   expect(cam.zoom).toBeCloseTo(17.5, 1);
-  expect(cam.pitch).toBeCloseTo(68.5, 0); // halfway between 65 (zoomed out) and 72 (zoomed in)
+  expect(cam.pitch).toBeCloseTo(70.5, 0); // halfway between 65 (zoomed out) and 76 (zoomed in)
   const jump = (o: Record<string, number>) =>
     page.evaluate(
       (x) =>
@@ -211,7 +211,7 @@ test('play camera: always on the player; drag rotates, zoom tilts (no panning)',
   await jump({ zoom: 20 });
   cam = await camera(page);
   expect(cam.zoom).toBeCloseTo(18.5, 1);
-  expect(cam.pitch).toBeCloseTo(72, 0);
+  expect(cam.pitch).toBeCloseTo(76, 0);
   await jump({ zoom: 13 });
   cam = await camera(page);
   expect(cam.zoom).toBeCloseTo(16.5, 1);
@@ -230,17 +230,22 @@ test('play camera: always on the player; drag rotates, zoom tilts (no panning)',
   const turned = Math.abs(((after.bearing - before.bearing + 540) % 360) - 180);
   expect(turned).toBeGreaterThan(15);
   expect(await centreOffset()).toBeLessThan(3);
-  // a long swipe from one side to the other, level with the player, rotates too
+  // a horizontal swipe level with the player hardly turns the map …
   const fig = (await page.getByTestId('player-marker').boundingBox())!;
-  const y = fig.y + fig.height - 10;
-  const b2 = await camera(page);
-  await page.mouse.move(box.x + 15, y);
-  await page.mouse.down();
-  for (let i = 1; i <= 12; i++) await page.mouse.move(box.x + 15 + i * 30, y);
-  await page.mouse.up();
-  await page.waitForTimeout(700); // includes the fling
-  const a2 = await camera(page);
-  expect(Math.abs(((a2.bearing - b2.bearing + 540) % 360) - 180)).toBeGreaterThan(60);
+  const swipe = async (y: number) => {
+    const b0 = await camera(page);
+    await page.mouse.move(box.x + 15, y);
+    await page.mouse.down();
+    for (let i = 1; i <= 12; i++) await page.mouse.move(box.x + 15 + i * 30, y);
+    await page.mouse.up();
+    await page.waitForTimeout(700); // includes any fling
+    const b1 = await camera(page);
+    return Math.abs(((b1.bearing - b0.bearing + 540) % 360) - 180);
+  };
+  expect(await swipe(fig.y + fig.height - 10)).toBeLessThan(10);
+  // … while the same swipe well above the player turns it (below it, at Kongens Have, the
+  // arena card covers the map)
+  expect(await swipe(fig.y - 170)).toBeGreaterThan(25);
   expect(await centreOffset()).toBeLessThan(3);
   // the wheel zooms on the player, not on the mouse
   // (wheel events are dispatched on the map, off-centre: mobile emulation in CI ignores
@@ -358,6 +363,11 @@ test('Journal: walking Route 1 with the GPS simulator completes its goal', async
     .toEqual([true, expect.any(Number)]);
   // reach and route are done: the card moves on to the district's trainers
   await expect(card).toHaveAttribute('data-guide', 'd2.trainers');
+  // the goal card starts folded: the first tap opens it, the next opens the Journal
+  await expect(card).toHaveAttribute('data-open', 'false');
+  await card.click();
+  await expect(card).toHaveAttribute('data-open', 'true');
+  await expect(card).toContainText('trainers');
   await card.click();
   await expect(page.getByTestId('screen-journal')).toBeVisible();
   await expect(page.getByTestId('goal-d2.route')).toHaveClass(/done/);
@@ -410,12 +420,67 @@ test('loading screen: finds the position, builds the town, then shows the map', 
   // both steps get ticked off, then it fades away (well before the 20 s fallback)
   await expect(screen).toHaveCount(0, { timeout: 18_000 });
   await expect(page.getByTestId('journal-card')).toBeVisible();
-  // the 3D buildings are on the map
-  const has3d = await page.evaluate(
-    () =>
-      !!(
-        window as unknown as { __omlMap: { getLayer: (id: string) => unknown } }
-      ).__omlMap.getLayer('buildings-3d'),
+});
+
+type LayerMap = {
+  getLayer: (id: string) => unknown;
+  getLayoutProperty: (id: string, p: string) => unknown;
+  getStyle: () => { layers: { id: string }[] };
+};
+const layers = (page: Page) =>
+  page.evaluate(() => {
+    const m = (window as unknown as { __omlMap: LayerMap }).__omlMap;
+    const ids = m.getStyle().layers.map((l) => l.id);
+    return {
+      on3d:
+        !!m.getLayer('buildings-3d') &&
+        m.getLayoutProperty('buildings-3d', 'visibility') !== 'none',
+      flat: m.getLayoutProperty('buildings', 'visibility') !== 'none',
+      order: ['buildings-3d', 'place-labels', 'water-labels'].map((id) => ids.indexOf(id)),
+    };
+  });
+
+test('3D buildings are opt-in (Settings), and facing labels stay above them', async ({ page }) => {
+  await startDone(page);
+  await teleport(page, KONGENS_HAVE);
+  await page.waitForFunction(() =>
+    (window as unknown as { __omlMap: { getLayer: (id: string) => unknown } }).__omlMap.getLayer(
+      'buildings-3d',
+    ),
   );
-  expect(has3d).toBe(true);
+  let l = await layers(page);
+  expect(l.on3d).toBe(false); // off by default
+  expect(l.flat).toBe(true);
+  // place and water names are drawn after (above) the buildings
+  expect(l.order[1]).toBeGreaterThan(l.order[0]!);
+  expect(l.order[2]).toBeGreaterThan(l.order[0]!);
+  await page.getByTestId('menu-button').click();
+  await page.getByTestId('menu-settings').click();
+  await page.locator('[data-testid=setting-buildings3d] input').check();
+  await page.getByTestId('screen-back').click();
+  await page.getByTestId('menu-map').click();
+  await page.waitForFunction(() => '__omlMap' in window);
+  await expect.poll(async () => (await layers(page)).on3d, { timeout: 10_000 }).toBe(true);
+  l = await layers(page);
+  expect(l.flat).toBe(false);
+});
+
+test('HUD on demand: the Nearby strip opens from a button; no text banner while searching', async ({
+  page,
+}) => {
+  await startDone(page);
+  await teleport(page, KONGENS_HAVE);
+  await dev(page, 'injectSpawn', { speciesId: 'torvdue', district: 1, lat: 55.3995, lng: 10.3856 });
+  await expect(page.getByTestId('nearby-count')).toHaveCount(0); // closed by default
+  const btn = page.getByTestId('nearby-button');
+  await expect(btn).toContainText('1');
+  await btn.click();
+  await expect(page.getByTestId('nearby-chip')).toHaveCount(1);
+  await btn.click();
+  await expect(page.getByTestId('nearby-count')).toHaveCount(0);
+  // no "looking for creatures" banner, and a good GPS fix shows no signal warning
+  await expect(page.getByText('Looking for creatures')).toHaveCount(0);
+  await expect(page.getByTestId('gps-signal')).toHaveCount(0);
+  // the goal card starts folded
+  await expect(page.getByTestId('journal-card')).toHaveAttribute('data-open', 'false');
 });

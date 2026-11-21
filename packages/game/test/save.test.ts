@@ -98,6 +98,15 @@ describe('save versions and migrations', () => {
     });
   });
 
+  it('v4 → v5 adds the 3D buildings setting, off', () => {
+    const cur = chooseStarter(newSave(SEED), 'gnistkat');
+    const { buildings3d: _b, ...settings } = cur.settings;
+    const v4 = { ...cur, version: 4, settings };
+    const r = loadSave(JSON.parse(JSON.stringify(v4)), 'other');
+    expect(r.ok && r.save.settings.buildings3d).toBe(false);
+    expect(r.ok && r.save.version).toBe(SAVE_VERSION);
+  });
+
   it('reports corrupt or newer saves instead of throwing', () => {
     expect(loadSave(null, SEED).ok).toBe(false);
     expect(loadSave('{', SEED).ok).toBe(false);

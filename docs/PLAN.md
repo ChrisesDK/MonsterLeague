@@ -130,11 +130,12 @@
 
 ### After M2d (owner feedback) ✅
 
-- [x] Orbit camera: drag rotates around the player (circles anywhere and swipes, with fling; no jerk), zoom on the player tilts the view (65–72°), no panning or recentre; always centred, GPS corrections glide; icons behind the camera hidden
+- [x] Orbit camera: drag rotates around the player (circles anywhere and swipes, with fling; no jerk), zoom on the player tilts the view (65–76°, with a distance haze), no panning or recentre; always centred, GPS corrections glide; icons behind the camera hidden
 - [x] Natural recovery: fainted creatures heal by themselves after 8 hours (save v4)
 - [x] GPS dips: the last accurate fix stays in play for 90 s
 - [x] Species colours for the placeholder art (district 1 commons were all grey)
-- [x] 3D buildings in the play view (storybook scale) and a loading screen (position + town)
+- [x] 3D buildings in the play view (storybook scale, opt-in setting) and a loading screen (position + town)
+- [x] HUD on demand: folded goal card, Nearby button, GPS signal icon; simpler rotation (motion around the player)
 
 ## Next: Gate 3 — District walk test (owner, with [GATE3.md](GATE3.md))
 

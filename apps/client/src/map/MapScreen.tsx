@@ -67,6 +67,7 @@ import {
 import { useCompassHeading } from './heading';
 import {
   addBuildings3d,
+  setBuildings3d,
   addWorldLayers,
   applyPatternPalette,
   setLockedDistricts,
@@ -187,6 +188,9 @@ export function MapScreen({
   const [bearing, setBearing] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [townMap, setTownMap] = useState(false);
+  /** The Journal card and the Nearby strip are opened on demand (owner feedback). */
+  const [goalOpen, setGoalOpen] = useState(false);
+  const [nearbyOpen, setNearbyOpen] = useState(false);
   /** The map went idle (tiles and 3D buildings in place) after the player was placed. */
   const [townBuilt, setTownBuilt] = useState(false);
   const [loading, setLoading] = useState(!loadedOnce);
@@ -412,7 +416,7 @@ export function MapScreen({
           'line-opacity': 0.45,
         },
       });
-      addBuildings3d(map, paletteRef.current);
+      addBuildings3d(map, paletteRef.current, saveRef.current.settings.buildings3d);
       setMapReady(true);
     });
     // Drag rotates around the player; pinch and wheel zoom on the player (no panning).
@@ -484,6 +488,13 @@ export function MapScreen({
     // `last` and `t` are read once for the initial view and labels.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inBattle, sim]);
+
+  // The 3D buildings setting can change while the map is open.
+  const buildings3d = save.settings.buildings3d;
+  useEffect(() => {
+    const map = mapRef.current;
+    if (map && mapReady) setBuildings3d(map, buildings3d);
+  }, [buildings3d, mapReady]);
 
   // Night style after sunset (GDD v1.9).
   useEffect(() => {
@@ -1009,47 +1020,94 @@ export function MapScreen({
     }
     const dist = target ? distanceM(position, target) : null;
     const arrow = target ? (bearingDeg(position, target) - bearing + 360) % 360 : null;
+    const attrs = {
+      'data-testid': 'journal-card',
+      'data-guide': kind === 'goal' ? goalId : kind,
+      'data-district': district ?? undefined,
+      'data-open': goalOpen ? 'true' : 'false',
+    };
+    const arrowEl =
+      arrow !== null ? (
+        <span className="arrow" aria-hidden data-bearing={Math.round(arrow)}>
+          <svg
+            viewBox="0 0 24 24"
+            width="26"
+            height="26"
+            style={{ transform: `rotate(${Math.round(arrow)}deg)` }}
+          >
+            <path d="M12 3 19 20l-7-4-7 4Z" fill="currentColor" />
+          </svg>
+        </span>
+      ) : (
+        <span className="arrow" aria-hidden>
+          <Icon name="journal" />
+        </span>
+      );
+    // Closed: just the direction arrow (tap to read the goal).
+    if (!goalOpen)
+      return (
+        <button
+          type="button"
+          className={`journal-card closed${warn ? ' warn' : ''}`}
+          aria-label={`${title}${dist !== null ? `, ${t('hud.away', { d: formatM(dist) })}` : ''}`}
+          aria-expanded={false}
+          onClick={() => setGoalOpen(true)}
+          {...attrs}
+        >
+          {arrowEl}
+        </button>
+      );
     return (
-      <button
-        type="button"
-        className={`journal-card${warn ? ' warn' : ''}`}
-        data-testid="journal-card"
-        data-guide={kind === 'goal' ? goalId : kind}
-        data-district={district ?? undefined}
-        onClick={kind === 'tutorial' ? undefined : onJournal}
-      >
-        {arrow !== null ? (
-          <span className="arrow" aria-hidden data-bearing={Math.round(arrow)}>
-            <svg
-              viewBox="0 0 24 24"
-              width="26"
-              height="26"
-              style={{ transform: `rotate(${Math.round(arrow)}deg)` }}
-            >
-              <path d="M12 3 19 20l-7-4-7 4Z" fill="currentColor" />
-            </svg>
-          </span>
-        ) : (
-          <span className="arrow" aria-hidden>
-            <Icon name="journal" />
-          </span>
-        )}
-        <span className="journal-card-text">
-          <span className="journal-card-kicker">
-            {t(
-              kind === 'tutorial'
-                ? 'hud.firstSteps'
-                : kind === 'fainted'
-                  ? 'hud.urgent'
-                  : 'hud.next',
+      <div className={`journal-card-wrap${warn ? ' warn' : ''}`}>
+        <button
+          type="button"
+          className={`journal-card${warn ? ' warn' : ''}`}
+          aria-expanded
+          onClick={kind === 'tutorial' ? () => setGoalOpen(false) : onJournal}
+          {...attrs}
+        >
+          {arrow !== null ? (
+            <span className="arrow" aria-hidden data-bearing={Math.round(arrow)}>
+              <svg
+                viewBox="0 0 24 24"
+                width="26"
+                height="26"
+                style={{ transform: `rotate(${Math.round(arrow)}deg)` }}
+              >
+                <path d="M12 3 19 20l-7-4-7 4Z" fill="currentColor" />
+              </svg>
+            </span>
+          ) : (
+            <span className="arrow" aria-hidden>
+              <Icon name="journal" />
+            </span>
+          )}
+          <span className="journal-card-text">
+            <span className="journal-card-kicker">
+              {t(
+                kind === 'tutorial'
+                  ? 'hud.firstSteps'
+                  : kind === 'fainted'
+                    ? 'hud.urgent'
+                    : 'hud.next',
+              )}
+            </span>
+            <span className="journal-card-title">{title}</span>
+            {dist !== null && kind !== 'tutorial' && (
+              <span className="journal-card-dist">{t('hud.away', { d: formatM(dist) })}</span>
             )}
           </span>
-          <span className="journal-card-title">{title}</span>
-          {dist !== null && kind !== 'tutorial' && (
-            <span className="journal-card-dist">{t('hud.away', { d: formatM(dist) })}</span>
-          )}
-        </span>
-      </button>
+        </button>
+        <button
+          type="button"
+          className="journal-collapse"
+          data-testid="journal-collapse"
+          aria-label={t('hud.collapse')}
+          onClick={() => setGoalOpen(false)}
+        >
+          <Icon name="back" size={20} />
+        </button>
+      </div>
     );
   })();
 
@@ -1117,21 +1175,24 @@ export function MapScreen({
       ? t('map.notConfigured')
       : gpsError === 'denied'
         ? t('map.gps.denied')
-        : gpsError && !goodFix
-          ? t('map.gps.unavailable')
-          : !last
-            ? t('map.gps.waiting')
-            : !goodFix
-              ? t('map.gps.weak', { m: Math.round(last.accuracy) })
-              : fast
-                ? t('map.tooFast')
-                : status === 'no-signal'
-                  ? t('map.noSignal')
-                  : status === 'cached'
-                    ? t('map.cached')
-                    : status === 'loading' || status === 'waiting'
-                      ? t('map.loading')
-                      : null;
+        : !goodFix
+          ? null // no or weak GPS: a small signal icon instead (below)
+          : fast
+            ? t('map.tooFast')
+            : status === 'no-signal'
+              ? t('map.noSignal')
+              : status === 'cached'
+                ? t('map.cached')
+                : null;
+  /** Poor or missing GPS (owner feedback: an icon, not a sentence). */
+  const poorSignal =
+    gpsError !== 'denied' && !goodFix
+      ? gpsError
+        ? t('map.gps.unavailable')
+        : !last
+          ? t('map.gps.waiting')
+          : t('map.gps.weak', { m: Math.round(last.accuracy) })
+      : null;
   const battleable = visible.filter((v) => v.st === 'ok').length;
   const nearbyState = ({ st, d, s }: Seen) =>
     st === 'tooWild'
@@ -1148,6 +1209,8 @@ export function MapScreen({
   return (
     <main className="map-screen" data-night={night ? 'true' : 'false'}>
       <div ref={containerRef} className="map" data-testid="play-map" />
+      {/* Haze over the far distance: hides where the map's far edge ends at a steep tilt. */}
+      <div className="map-haze" aria-hidden />
       <div className="hud-top">
         <div className="hud-left">
           {card}
@@ -1182,6 +1245,17 @@ export function MapScreen({
             aria-label={t('hud.townMap')}
             onClick={() => setTownMap(true)}
           />
+          {poorSignal && (
+            <span
+              className="signal-icon"
+              role="status"
+              data-testid="gps-signal"
+              aria-label={poorSignal}
+              title={poorSignal}
+            >
+              <Icon name="signal" size={24} />
+            </span>
+          )}
         </div>
       </div>
       {devTools && versionDrift.length > 0 && (
@@ -1231,45 +1305,59 @@ export function MapScreen({
           </div>
         )}
         {!result && poiCard}
-        <div
-          className="nearby"
-          data-testid="nearby-count"
-          data-count={battleable}
-          aria-label={t('hud.nearby.label')}
-        >
-          {shown.length === 0 ? (
-            <span className="nearby-empty">{t('hud.nearby.none')}</span>
-          ) : (
-            shown.map((v) => {
-              const ns = nearbyState(v);
-              return (
-                <button
-                  key={v.s.id}
-                  type="button"
-                  className={`nearby-chip ${ns.cls}${selected === v.s.id ? ' selected' : ''}`}
-                  data-testid="nearby-chip"
-                  data-spawn={v.s.id}
-                  onClick={() => {
-                    if (selected === v.s.id) {
-                      if (v.st === 'tutorial') tapTutorial();
-                      else tapSpawn(v.s);
-                    } else setSelected(v.s.id);
-                  }}
-                  aria-label={`${t(`species.${v.s.speciesId}.name`)}, ${formatM(v.d)}${ns.text ? `, ${ns.text}` : ''}`}
-                >
-                  <img
-                    src={v.st === 'needsAbility' ? hintMarkerUrl() : spriteUrl(v.s.speciesId)}
-                    alt=""
-                  />
-                  <span className="nearby-dist">{formatM(v.d)}</span>
-                  {ns.text && <span className="nearby-state">{ns.text}</span>}
-                </button>
-              );
-            })
-          )}
-        </div>
+        {nearbyOpen && (
+          <div
+            className="nearby"
+            data-testid="nearby-count"
+            data-count={battleable}
+            aria-label={t('hud.nearby.label')}
+          >
+            {shown.length === 0 ? (
+              <span className="nearby-empty">{t('hud.nearby.none')}</span>
+            ) : (
+              shown.map((v) => {
+                const ns = nearbyState(v);
+                return (
+                  <button
+                    key={v.s.id}
+                    type="button"
+                    className={`nearby-chip ${ns.cls}${selected === v.s.id ? ' selected' : ''}`}
+                    data-testid="nearby-chip"
+                    data-spawn={v.s.id}
+                    onClick={() => {
+                      if (selected === v.s.id) {
+                        if (v.st === 'tutorial') tapTutorial();
+                        else tapSpawn(v.s);
+                      } else setSelected(v.s.id);
+                    }}
+                    aria-label={`${t(`species.${v.s.speciesId}.name`)}, ${formatM(v.d)}${ns.text ? `, ${ns.text}` : ''}`}
+                  >
+                    <img
+                      src={v.st === 'needsAbility' ? hintMarkerUrl() : spriteUrl(v.s.speciesId)}
+                      alt=""
+                    />
+                    <span className="nearby-dist">{formatM(v.d)}</span>
+                    {ns.text && <span className="nearby-state">{ns.text}</span>}
+                  </button>
+                );
+              })
+            )}
+          </div>
+        )}
         <div className="hud-bar">
           <div className="hud-bar-side">
+            <button
+              type="button"
+              className={`btn round hud-btn nearby-btn${nearbyOpen ? ' on' : ''}`}
+              data-testid="nearby-button"
+              data-count={battleable}
+              aria-expanded={nearbyOpen}
+              aria-label={t('hud.nearby.button', { n: shown.length })}
+              onClick={() => setNearbyOpen(!nearbyOpen)}
+            >
+              <Icon name="paw" size={26} />
+              {shown.length > 0 && <span className="nearby-badge">{shown.length}</span>}
+            </button>
             {save.battle && !inBattle && (
               <Button variant="primary" data-testid="resume-battle" onClick={openBattle}>
                 {t('map.resume')}

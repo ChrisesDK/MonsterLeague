@@ -1666,3 +1666,99 @@ html[data-theme='night'] .arena-field {
     opacity: 0.4;
   }
 }
+.toggle-hint {
+  flex-basis: 100%;
+}
+
+/* ---------- HUD on demand (owner feedback) ---------- */
+.journal-card.closed {
+  width: 56px;
+  min-height: 56px;
+  height: 56px;
+  padding: 0;
+  justify-content: center;
+  border-radius: 50%;
+}
+.journal-card.closed .arrow {
+  width: 40px;
+  height: 40px;
+}
+.journal-card-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 330px;
+}
+.journal-card-wrap .journal-card {
+  padding-right: 48px;
+}
+.journal-collapse {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.journal-collapse .icon {
+  transform: rotate(90deg);
+}
+.signal-icon {
+  align-self: center;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--hud);
+  color: var(--warn);
+  box-shadow: var(--shadow-1);
+}
+.nearby-btn {
+  position: relative;
+}
+.nearby-btn.on {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.nearby-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+.nearby-btn.on .nearby-badge {
+  background: var(--ink);
+  color: var(--paper);
+}
+/* Distance haze: the tilted map's far edge (and the empty space past it) fades into the sky. */
+.map-haze {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 30%;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    var(--paper) 0%,
+    var(--paper) 22%,
+    color-mix(in srgb, var(--paper) 70%, transparent) 55%,
+    transparent 100%
+  );
+}

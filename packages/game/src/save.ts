@@ -9,7 +9,7 @@ import { z } from 'zod';
  * The tutorial creature's position is kept in memory and re-rolled after a reload; used
  * spawns are kept only until they expire (≤ 15 min) and are pruned on every save.
  */
-export const SAVE_VERSION = 4;
+export const SAVE_VERSION = 5;
 
 export type OnboardingStep = 'safety' | 'location' | 'starter' | 'tutorial' | 'done';
 
@@ -28,6 +28,8 @@ export interface Settings {
   textSize: 'normal' | 'large' | 'larger';
   reduceMotion: boolean;
   language: 'da' | 'en';
+  /** 3D buildings on the play map (opt-in; off by default). */
+  buildings3d: boolean;
 }
 
 /**
@@ -81,6 +83,7 @@ export const DEFAULT_SETTINGS: Settings = {
   textSize: 'normal',
   reduceMotion: false,
   language: 'da',
+  buildings3d: false,
 };
 
 export function newSave(seed: string, language: Settings['language'] = 'da'): SaveGame {
@@ -180,6 +183,7 @@ export const SaveSchema = z
         textSize: z.enum(['normal', 'large', 'larger']),
         reduceMotion: z.boolean(),
         language: z.enum(['da', 'en']),
+        buildings3d: z.boolean(),
       })
       .strict(),
     journal: z
@@ -262,6 +266,12 @@ export const migrations: Record<number, (old: Record<string, unknown>, seed: str
   }),
   /** v3 → v4: natural recovery clock for fainted creatures (starts empty; the game fills it). */
   3: (old) => ({ ...old, version: 4, faintedSince: {} }),
+  /** v4 → v5: the 3D buildings setting (opt-in, so off for existing players too). */
+  4: (old) => ({
+    ...old,
+    version: 5,
+    settings: { ...(old.settings as Record<string, unknown>), buildings3d: false },
+  }),
 };
 
 /** GDD v1.7 renumbering, old district → new district (1 and 3 stay). */

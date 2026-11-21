@@ -299,13 +299,12 @@ export const BUILDING_HEIGHT = [
 ] as const;
 
 /**
- * 3D buildings for the play view (owner request): a GPU-drawn fill-extrusion layer on the
+ * 3D buildings for the play view (owner request; an opt-in setting): a GPU-drawn fill-extrusion layer on the
  * basemap's buildings. The tiles (zoom 14–15, overzoomed) already simplify the shapes, so
  * there is one cheap mesh per tile. Added last, so buildings hide routes and wild areas
  * behind them; the creature and stamp icons stay on top (they are HTML).
  */
-export function addBuildings3d(map: MlMap, p: Palette): void {
-  if (map.getLayer('buildings')) map.setLayoutProperty('buildings', 'visibility', 'none');
+export function addBuildings3d(map: MlMap, p: Palette, on: boolean): void {
   map.addLayer({
     id: 'buildings-3d',
     type: 'fill-extrusion',
@@ -324,4 +323,16 @@ export function addBuildings3d(map: MlMap, p: Palette): void {
       'fill-extrusion-opacity': 1,
     },
   });
+  // Labels that stand up and face the camera (place and water names) go above the
+  // buildings, so they are never hidden inside a block.
+  for (const id of ['water-labels', 'place-labels']) if (map.getLayer(id)) map.moveLayer(id);
+  setBuildings3d(map, on);
+}
+
+/** The 3D buildings setting (opt-in): 3D blocks, or the flat building outlines. */
+export function setBuildings3d(map: MlMap, on: boolean): void {
+  if (map.getLayer('buildings-3d'))
+    map.setLayoutProperty('buildings-3d', 'visibility', on ? 'visible' : 'none');
+  if (map.getLayer('buildings'))
+    map.setLayoutProperty('buildings', 'visibility', on ? 'none' : 'visible');
 }

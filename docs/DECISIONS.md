@@ -1061,3 +1061,24 @@ length, position resolution and spawn tables>`.
   screen finishes in about 1 s locally. The district e2e's trainer win against Ole was a
   coin flip (the test always used the first move, a Folk move Brokrabbe resists, and
   Brokrabbe stalls with Hunker Down); the test now uses Beech Lash there.
+- **D131. Owner feedback round: 3D opt-in, labels, simpler rotation, HUD on demand, tilt.**
+  - **3D buildings are an opt-in setting** (Settings → 3D buildings; save v5 adds
+    `settings.buildings3d`, false, also for existing saves). Off shows the flat building
+    outlines; the switch applies live.
+  - **Facing labels above buildings:** place and water names (the labels that stand up and
+    turn towards the camera) are moved above the 3D buildings layer.
+  - **Rotation, simplified:** only motion around the player turns the map
+    (`dragRotation` = tangential motion / effective radius 140–260 px). Strokes below or
+    above the player, along the sides, and half or full circles turn it; a horizontal swipe
+    level with the player moves towards/away from it and turns it 0–8 degrees within ±40 px,
+    helped by damping each move by (r / 200 px)³ near the player. Nothing is blocked. The
+    across-the-screen term, stroke side, circling intent and path curvature are gone; the
+    time-based fling stays.
+  - **HUD on demand:** the Journal goal starts folded as a round arrow button (tap: the goal;
+    tap again: the Journal; a chevron folds it); the Nearby strip opens from a paw button
+    with a count. The "Looking for creatures" banner is gone, and a missing or weak GPS fix
+    is a small signal icon (with the full text as its label) instead of a sentence.
+  - **Tilt on phones:** a simulated touch pinch did tilt (zoom 17.5 → 18.5, 68.5 → 72
+    degrees), but 65–72 was too subtle to see. The range is now 65–76, and a haze along the
+    top of the map hides the map's far edge, which at a steep tilt ended in a visible cut
+    (the "rendering glitch" on PC).

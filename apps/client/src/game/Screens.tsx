@@ -647,8 +647,8 @@ function SettingsScreen({
   const set = <K extends keyof SaveGame['settings']>(k: K, v: SaveGame['settings'][K]) =>
     update((s) => ({ ...s, settings: { ...s.settings, [k]: v } }));
   const s = save.settings;
-  const toggle = (k: 'sound' | 'reduceMotion', label: string) => (
-    <label className="toggle-row">
+  const toggle = (k: 'sound' | 'reduceMotion' | 'buildings3d', label: string, hint?: string) => (
+    <label className="toggle-row" data-testid={`setting-${k}`}>
       <span>{label}</span>
       <input
         type="checkbox"
@@ -656,6 +656,7 @@ function SettingsScreen({
         checked={s[k]}
         onChange={(e) => set(k, e.target.checked)}
       />
+      {hint && <span className="muted small toggle-hint">{hint}</span>}
     </label>
   );
   function choice<V extends string>(
@@ -705,6 +706,7 @@ function SettingsScreen({
         (v) => set('textSize', v),
       )}
       {toggle('reduceMotion', t('settings.reduceMotion'))}
+      {toggle('buildings3d', t('settings.buildings3d'), t('settings.buildings3dHint'))}
       {choice(
         t('settings.language'),
         s.language,

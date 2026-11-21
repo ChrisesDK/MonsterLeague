@@ -525,5 +525,9 @@
   "guide.faintedWait": "– or wait {h} h {m} min: they recover by themselves.",
   "loading.title": "Getting ready",
   "loading.locating": "Finding your position…",
-  "loading.building": "Building the town…"
+  "loading.building": "Building the town…",
+  "settings.buildings3d": "3D buildings",
+  "settings.buildings3dHint": "Shows the town's buildings in 3D. Off is lighter on older phones.",
+  "hud.nearby.button": "Creatures nearby: {n}",
+  "hud.collapse": "Fold away"
 }

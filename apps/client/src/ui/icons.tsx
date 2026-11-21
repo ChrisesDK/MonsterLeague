@@ -147,6 +147,14 @@ const PATHS = {
       <circle cx="12" cy="10" r="2.4" />
     </>
   ),
+  /** Poor GPS signal: two short bars and a slash. */
+  signal: (
+    <>
+      <path d="M5 19v-3M9 19v-6M13 19v-9" />
+      <path d="M17 19v-1M21 19v-1" opacity="0.4" />
+      <path d="M4 5l16 14" />
+    </>
+  ),
   moon: <path d="M19 15.5A8 8 0 0 1 8.5 5a7.5 7.5 0 1 0 10.5 10.5Z" />,
   sun: (
     <>
