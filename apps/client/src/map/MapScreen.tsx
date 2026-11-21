@@ -356,6 +356,8 @@ export function MapScreen({
       const el = document.createElement('div');
       el.className = `poi-marker poi-${poi.kind}`;
       el.dataset.poiId = poi.id;
+      el.dataset.lat = String(poi.lat);
+      el.dataset.lng = String(poi.lng);
       el.setAttribute('role', 'img');
       const img = document.createElement('img');
       img.alt = '';

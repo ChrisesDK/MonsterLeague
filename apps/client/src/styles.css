@@ -884,7 +884,8 @@ html[data-reduce-motion='true'] *,
 .spawn-marker.too-wild {
   filter: grayscale(1) opacity(0.65);
 }
-.spawn-marker.tutorial {
+.spawn-marker.tutorial img {
+  /* Never animate the marker root: MapLibre positions it with `transform` (M2d drift bug). */
   animation: bob 1.4s ease-in-out infinite;
 }
 @keyframes bob {
