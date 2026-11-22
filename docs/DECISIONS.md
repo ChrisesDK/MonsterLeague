@@ -1405,9 +1405,12 @@ length, position resolution and spawn tables>`.
   - coloured by the angle above the horizon seen from the camera: the fog colour at the
     foot, the sky colour from 14° up (a world-fixed gradient, not screen rows);
   - at night it carries the stars: soft dots generated in the shader in some cells of a
-    26 m grid on the wall (a whole number of cells round the ring, so no seam), fading in
-    just above the skyline. They sit where the edge of the world is, so they move exactly
-    with the skyline when the camera turns;
+    26 m grid on the wall (a whole number of cells round the ring, so no seam), drawn on
+    top of the haze. They begin 4 m above the wall's foot (the visible skyline) and reach
+    full brightness at 45 m, so low stars look faint; at first the cut-off was the angle
+    above the horizon, which left an empty band between the skyline and the camera's
+    height on the wall (owner report). They sit where the edge of the world is, so they
+    move exactly with the skyline when the camera turns;
   - the 150 m haze band on the ground inside it stays, in the fog colour.
     Removed: the screen-space fog wall colouring, the CSS sky gradient and the CSS star tiles
     (D138, D141, D142), and the per-frame horizon calculation for the background.

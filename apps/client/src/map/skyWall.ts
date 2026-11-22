@@ -31,6 +31,10 @@ export const SKY_FULL_DEG = 14;
 const TOP_MARGIN_DEG = 3;
 /** Star grid on the wall (metres): one cell per this many metres, a star in some of them. */
 export const STAR_CELL_M = 26;
+/** Stars begin this high on the wall (metres above the ground edge) … */
+export const STAR_FROM_M = 4;
+/** … and reach full brightness here (fainter below, owner). */
+export const STAR_FULL_M = 45;
 
 /**
  * How tall the wall must be (metres) so its top lies above the top of the screen.
@@ -161,7 +165,9 @@ void main() {
       float d = length(p - centre) * ${STAR_CELL_M.toFixed(1)};
       float r = 1.4 + 1.8 * hash(cell + 3.7);
       float s = (1.0 - smoothstep(r * 0.35, r, d)) * (0.55 + 0.45 * hash(cell + 9.2));
-      s *= smoothstep(0.003, 0.025, elev); // down to just above the skyline
+      // by height on the wall, from just above the ground edge (the visible skyline, lower
+      // than the horizon): faint low down, full brightness higher up, on top of the haze
+      s *= smoothstep(${STAR_FROM_M.toFixed(1)}, ${STAR_FULL_M.toFixed(1)}, v_wall.y);
       c = mix(c, vec3(1.0, 0.97, 0.9), s);
     }
   }
