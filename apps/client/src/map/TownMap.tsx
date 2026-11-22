@@ -8,7 +8,7 @@ import type { Translate } from '../i18n';
 import { formatM } from '../game/goalText';
 import { Button } from '../ui/components';
 import { addWorldLayers, setDistrictLabels, setLockedDistricts, setWild } from './layers';
-import { markerElement, PLAYER_SVG, STAR_SVG, START } from './markers';
+import { markerElement, PLAYER_SVG, STAR_SVG, START, addAttribution } from './markers';
 import { paperStyle, type Palette } from './style';
 
 /**
@@ -91,7 +91,7 @@ export function TownMap({
       attributionControl: false,
     });
     map.touchZoomRotate.disableRotation();
-    map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
+    addAttribution(map, new maplibregl.AttributionControl({ compact: true }));
     const added: Marker[] = [];
     const add = (el: HTMLElement, p: LatLng, anchor: 'center' | 'bottom' = 'center') =>
       added.push(

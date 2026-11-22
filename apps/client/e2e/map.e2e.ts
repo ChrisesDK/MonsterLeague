@@ -731,3 +731,52 @@ test("the phone's top bar blends into the sky on the map, and into the paper on 
   await page.getByTestId('menu-map').click();
   await expect.poll(bar).toMatch(/^#(b9d3e6|0e1424)$/);
 });
+
+test('map credits start closed, open and close on tap, and lie above the game buttons', async ({
+  page,
+}) => {
+  await startDone(page);
+  await teleport(page, KONGENS_HAVE);
+  const credits = (root: string) => page.locator(`${root} .maplibregl-ctrl-attrib`);
+  const open = (root: string) =>
+    credits(root).evaluate((el) => el.classList.contains('maplibregl-compact-show'));
+  const text = (root: string) => page.locator(`${root} .maplibregl-ctrl-attrib-inner`);
+  // play view: closed at start
+  await page.waitForTimeout(1500); // the credits text arrives with the map data
+  expect(await open('.map-screen')).toBe(false);
+  await expect(text('.map-screen')).toBeHidden();
+  // nothing covers the button: a tap on its centre reaches it
+  const button = page.locator('.map-screen .maplibregl-ctrl-attrib-button');
+  const box = (await button.boundingBox())!;
+  const hit = await page.evaluate(
+    ({ x, y }) => !!document.elementFromPoint(x, y)?.closest('.maplibregl-ctrl-attrib'),
+    { x: box.x + box.width / 2, y: box.y + box.height / 2 },
+  );
+  expect(hit).toBe(true);
+  await button.click();
+  await expect(text('.map-screen')).toBeVisible();
+  await expect(text('.map-screen')).toContainText('OpenStreetMap');
+  // open, the credits lie on top of the satchel button where they overlap
+  const sb = (await page.getByTestId('menu-button').boundingBox())!;
+  const tb = (await text('.map-screen').boundingBox())!;
+  if (tb.x < sb.x + sb.width && tb.y + tb.height > sb.y) {
+    const y = Math.max(tb.y, sb.y) + 2;
+    const x = Math.max(tb.x, sb.x) + 2;
+    const onTop = await page.evaluate(
+      ({ x, y }) => !!document.elementFromPoint(x, y)?.closest('.maplibregl-ctrl-attrib'),
+      { x, y },
+    );
+    expect(onTop).toBe(true);
+  }
+  await button.click();
+  await expect(text('.map-screen')).toBeHidden();
+  // Town Map: closed at start too
+  await page.getByTestId('townmap-button').click();
+  await expect(page.getByTestId('town-map')).toBeVisible();
+  await page.waitForFunction(() => '__omlTownMap' in window);
+  await page.waitForTimeout(1000);
+  expect(await open('.town-map')).toBe(false);
+  await expect(text('.town-map')).toBeHidden();
+  await page.locator('.town-map .maplibregl-ctrl-attrib-button').click();
+  await expect(text('.town-map')).toBeVisible();
+});

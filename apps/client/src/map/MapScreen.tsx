@@ -82,7 +82,7 @@ import { GpsLocation, type LocationSource, type SimLocation } from './location';
 import { SimPanel } from './SimPanel';
 import type { ApiSpawn } from './spawnApi';
 import { applyPalette, NIGHT, paperStyle, PAPER } from './style';
-import { markerElement, PLAYER_SVG, STAR_SVG, START } from './markers';
+import { markerElement, PLAYER_SVG, STAR_SVG, START, addAttribution } from './markers';
 import { addFogWall } from './fogWall';
 import { LoadingScreen } from './LoadingScreen';
 import { TownMap } from './TownMap';
@@ -421,7 +421,7 @@ export function MapScreen({
         saveRef.current.settings.fogDistance + REACH_PAST_FOG_M,
         tr.centerOffset.y,
       );
-    map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
+    addAttribution(map, new maplibregl.AttributionControl({ compact: true }));
     map.on('load', () => {
       addWorldLayers(map, paletteRef.current, {
         mode: 'play',

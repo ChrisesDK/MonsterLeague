@@ -1,3 +1,4 @@
+import type { IControl, Map as MlMap } from 'maplibre-gl';
 /** Shared map marker pieces (play view and Town Map). */
 
 export const START = { lat: 55.3998, lng: 10.3852 }; // Kongens Have
@@ -32,4 +33,22 @@ export function markerElement(
   else body.appendChild(inner);
   el.appendChild(body);
   return el;
+}
+
+/**
+ * The map credits (OpenStreetMap contributors, Protomaps) as a small "i" button that starts
+ * closed (owner request); tapping it opens and closes the credits. MapLibre's compact
+ * credits start open and only fold away on the first map drag, which the play view never
+ * makes (drag rotates, it doesn't pan).
+ */
+export function addAttribution(map: MlMap, ctrl: IControl): void {
+  map.addControl(ctrl, 'bottom-right');
+  const fold = () =>
+    map
+      .getContainer()
+      .querySelector('.maplibregl-ctrl-attrib.maplibregl-compact')
+      ?.classList.remove('maplibregl-compact-show');
+  fold();
+  // the credits text arrives with the map data; keep it folded until the player opens it
+  map.once('load', fold);
 }

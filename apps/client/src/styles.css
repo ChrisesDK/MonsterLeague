@@ -1382,6 +1382,13 @@ html[data-theme='night'] .arena-field {
 .maplibregl-ctrl-attrib a {
   color: var(--ink-2);
 }
+/* Play view: the credits button sits above the game's buttons (the bottom HUD row covered
+   it and took its taps), clear of the phone's navigation bar; open, the credits lie on top
+   of the HUD. */
+.map-screen .maplibregl-ctrl-bottom-right {
+  z-index: 6;
+  padding-bottom: env(safe-area-inset-bottom);
+}
 
 /* ---------- Town Map ---------- */
 .town-map {
