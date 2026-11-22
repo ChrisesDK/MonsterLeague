@@ -229,14 +229,22 @@ export function Modal({
   children,
   actions,
   testId,
+  className,
 }: {
   title: string;
   children: ReactNode;
   actions: ReactNode;
   testId?: string;
+  className?: string;
 }) {
   return (
-    <div className="modal" role="dialog" aria-label={title} data-testid={testId}>
+    <div
+      className={className ? `modal ${className}` : 'modal'}
+      role="dialog"
+      aria-modal="true"
+      aria-label={title}
+      data-testid={testId}
+    >
       <div className="modal-card">
         <h2>{title}</h2>
         {children}

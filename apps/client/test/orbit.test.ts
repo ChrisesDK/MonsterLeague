@@ -108,6 +108,18 @@ describe('fling after a swipe', () => {
 });
 
 describe('the sky behind the map', () => {
+  it('at night there are stars above the sky gradient; they turn with the camera', () => {
+    const at = (bearing: number) => skyBackground(120, '#0e1424', '#1c2335', { bearing });
+    const n = at(0);
+    expect(n).toContain('radial-gradient(circle at');
+    expect(n.endsWith('linear-gradient(180deg, #0e1424 0px, #1c2335 120px)')).toBe(true);
+    // turning moves them; a full turn brings every tile back to the same place (no seam)
+    expect(at(10)).not.toBe(n);
+    expect(at(360)).toBe(n);
+    expect(at(-30)).toBe(at(330));
+    // by day: no stars
+    expect(skyBackground(120, '#b9d3e6', '#e6e4dc')).not.toContain('radial-gradient');
+  });
   it('the sky goes from sky colour at the top to fog colour at the horizon', () => {
     expect(skyBackground(120, '#aaccee', '#ddeeee')).toBe(
       'linear-gradient(180deg, #aaccee 0px, #ddeeee 120px)',

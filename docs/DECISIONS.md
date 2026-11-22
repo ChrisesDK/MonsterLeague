@@ -1229,3 +1229,24 @@ length, position resolution and spawn tables>`.
     (`fingersDown` in `orbit.ts`); once a gesture runs, `transformCameraUpdate` keeps the
     camera on the player. An E2E test pinches three times during glides (it failed before
     the fix: zoom stayed at 17.5).
+- **D140. A back gesture asks before leaving** (owner request: an accidental edge swipe left
+  the site or closed the installed app).
+  - **How:** after the first tap or key press the app adds one history entry on top of its
+    own (`src/ui/backGuard.ts`). A back gesture lands on the app's own entry instead of
+    leaving; the guard adds the entry again and asks "Leave the game?" (Stay / Leave). It
+    works the same in the browser and the installed app, on every screen (map, menus,
+    playtest).
+  - **Why only after a tap:** Chrome's back button skips history entries a page added
+    without user input, so a guard added on load would not catch anything.
+  - **In-app links** (#/playtest, #/) add their own entries above the guard, so going back
+    through them never asks; only stepping back past the app's first entry does.
+  - **Leave:** goes back past both entries to the page before. Where there is nothing
+    before (an installed app, a new tab), it steps back to the app's own entry and tries
+    `window.close()`; if the phone doesn't allow that, the next back gesture leaves without
+    asking.
+- **D141. Stars on the night sky** (owner request). At night the sky behind the map gets
+  small stars (CSS dots in three repeating tiles of different sizes, so the pattern doesn't
+  look regular). Since the sky is behind the map, they only show above the horizon and the
+  fog wall. They turn with the camera at the speed the town turns at the horizon (22 px per
+  degree; each tile width divides a full turn, so the sky wraps without a seam) and move
+  with the horizon when the tilt changes.

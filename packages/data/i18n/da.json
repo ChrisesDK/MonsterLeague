@@ -534,5 +534,9 @@
   "settings.fogDistanceHint": "Tågevæggen omkring dig (0,8–1,4 km). Tættere på er lettere for ældre telefoner.",
   "settings.mode": "Kamptest",
   "settings.modeHint": "Spil testkampe uden at gå. Dit kortspil forbliver gemt; åbn kortet igen fra kamptesten.",
-  "pt.toMap": "Gå til kortspillet"
+  "pt.toMap": "Gå til kortspillet",
+  "leave.title": "Forlad spillet?",
+  "leave.body": "Dine fremskridt er gemt på denne telefon. Vil du forlade Odense Monster League?",
+  "leave.stay": "Bliv",
+  "leave.leave": "Forlad"
 }

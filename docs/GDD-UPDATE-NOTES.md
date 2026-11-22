@@ -2,14 +2,14 @@
 
 Everything built or decided since the v1.9 export that the GDD doesn't describe yet,
 grouped by GDD section, with suggested wording. Details and reasons are in
-[DECISIONS.md](DECISIONS.md) (D111–D139); open proposals are in
+[DECISIONS.md](DECISIONS.md) (D111–D141); open proposals are in
 [GDD-PROPOSALS.md](GDD-PROPOSALS.md) (P16–P20).
 
 ## Change log line (suggested)
 
-| Version | Changes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1.10    | M2d done and live (game feel); orbit camera (always on the player, drag rotates, zoom tilts 30–76° and looks ahead), a fog wall in the 3D scene (1.2 km, adjustable 0.8–1.4 km) with a day/night sky, opt-in 3D buildings, loading screen, HUD on demand (folded goal card, Nearby button, GPS signal icon), menu over the live map, touch drags never scroll or reload the page, fainted creatures recover after 8 hours, short GPS dips tolerated, species art colours, new logo (the arena badge) and colours without green and yellow, switching between the map game and the battle playtest; accepted P16–P20 |
+| Version | Changes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1.10    | M2d done and live (game feel); orbit camera (always on the player, drag rotates, zoom tilts 30–76° and looks ahead), a fog wall in the 3D scene (1.2 km, adjustable 0.8–1.4 km) with a day/night sky (stars at night), opt-in 3D buildings, loading screen, HUD on demand (folded goal card, Nearby button, GPS signal icon), menu over the live map, touch drags never scroll or reload the page, fainted creatures recover after 8 hours, short GPS dips tolerated, species art colours, new logo (the arena badge) and colours without green and yellow, switching between the map game and the battle playtest, a back gesture asks before leaving; accepted P16–P20 |
 
 ## Game feel → Map view (P20)
 
@@ -32,7 +32,8 @@ Add:
   1,400 m. It is a wall in the 3D scene: buildings inside it stand in front of it, and
   everything behind it is hidden. The ground always reaches the wall; 3D buildings load
   and unload 100 m behind it. The day or night sky is drawn behind the map, so it only
-  fills the space above the horizon and never covers ground.
+  fills the space above the horizon and never covers ground. At night it has stars, which
+  turn with the camera.
 - **Touch:** dragging on the map never scrolls the page or triggers the browser's
   pull-to-reload; a finger drag turns the map just like a mouse drag; a pinch always
   zooms, also while the player is moving.
@@ -58,6 +59,8 @@ Add:
 - **Settings screen:** add "3D buildings", "How far you can see" (fog wall, 0.8–1.4 km)
   and "Battle playtest" (opens the playtest; the playtest has "Go to the map game") to the
   list.
+- **Leaving:** an accidental back gesture (an edge swipe) doesn't leave the site or close
+  the installed app; the game asks "Leave the game?" (Stay / Leave) first.
 - **Logo:** the arena badge with an empty centre (cream petals, a red ring and a cream
   centre on navy). It is the app icon and appears with the game's name on the first
   screen. The swinging lantern stays the loading-screen icon.

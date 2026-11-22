@@ -362,3 +362,8 @@ button.row:active {
   color: var(--accent);
   letter-spacing: 0.01em;
 }
+
+/* The leave question sits above everything, menus included. */
+.modal.leave-guard {
+  z-index: 100;
+}

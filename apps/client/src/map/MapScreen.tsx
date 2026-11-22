@@ -650,11 +650,18 @@ export function MapScreen({
           features: [circle(next, accuracyM.current)],
         });
       }
-      // the sky behind the map: sky colour at the top, fog colour at the horizon (the fog
+      // the sky behind the map: sky colour at the top, fog colour at the horizon, stars at
+      // night (the fog
       // wall itself is a layer in the 3D scene, see fogWall.ts)
       {
         const horizonY = map.project(toLngLat(offsetM(next, HORIZON_M, map.getBearing()))).y;
-        const sky = skyBackground(horizonY, paletteRef.current.sky, paletteRef.current.fog);
+        const sky = skyBackground(
+          horizonY,
+          paletteRef.current.sky,
+          paletteRef.current.fog,
+          // stars on the night sky, turning with the camera
+          paletteRef.current === NIGHT ? { bearing: map.getBearing() } : undefined,
+        );
         if (sky !== skyCss) {
           skyCss = sky;
           map.getContainer().style.background = sky;

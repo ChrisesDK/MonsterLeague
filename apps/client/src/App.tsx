@@ -1,10 +1,12 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { BattleState } from '@oml/engine';
 import { BattleScreen } from './BattleScreen';
 import { makeT, type Locale } from './i18n';
 import { PlaytestApp } from './playtest/PlaytestApp';
 import { SetupScreen } from './SetupScreen';
 import { clearBattle, loadBattle, loadLocale, saveBattle, saveLocale } from './storage';
+import { installBackGuard } from './ui/backGuard';
+import { Modal } from './ui/components';
 
 // The map pulls in MapLibre; load it only when a map route is opened.
 const GameApp = lazy(() => import('./game/GameApp').then((m) => ({ default: m.GameApp })));
@@ -50,6 +52,68 @@ export function App() {
     document.documentElement.lang = locale;
   }, [locale]);
 
+  return (
+    <>
+      <Routes route={route} t={t} locale={locale} onLocale={changeLocale} />
+      <LeaveGuard t={t} />
+    </>
+  );
+}
+
+/** Asks before a back gesture leaves the site or closes the installed app (backGuard.ts). */
+function LeaveGuard({ t }: { t: ReturnType<typeof makeT> }) {
+  const [asking, setAsking] = useState(false);
+  const guard = useRef<ReturnType<typeof installBackGuard> | null>(null);
+  useEffect(() => {
+    const g = installBackGuard(window, () => setAsking(true));
+    guard.current = g;
+    return () => g.dispose();
+  }, []);
+  if (!asking) return null;
+  return (
+    <Modal
+      title={t('leave.title')}
+      testId="leave-guard"
+      className="leave-guard"
+      actions={
+        <>
+          <button
+            className="btn primary wide"
+            data-testid="leave-stay"
+            autoFocus
+            onClick={() => setAsking(false)}
+          >
+            {t('leave.stay')}
+          </button>
+          <button
+            className="btn wide"
+            data-testid="leave-go"
+            onClick={() => {
+              setAsking(false);
+              guard.current?.leave();
+            }}
+          >
+            {t('leave.leave')}
+          </button>
+        </>
+      }
+    >
+      <p>{t('leave.body')}</p>
+    </Modal>
+  );
+}
+
+function Routes({
+  route,
+  t,
+  locale,
+  onLocale: changeLocale,
+}: {
+  route: Route;
+  t: ReturnType<typeof makeT>;
+  locale: Locale;
+  onLocale: (l: Locale) => void;
+}) {
   if (route === 'playtest') return <PlaytestApp t={t} locale={locale} onLocale={changeLocale} />;
   if (route === 'dev') return <DevBattlePage t={t} locale={locale} onLocale={changeLocale} />;
   return (

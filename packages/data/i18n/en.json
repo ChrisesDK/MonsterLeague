@@ -534,5 +534,9 @@
   "settings.fogDistanceHint": "The fog wall around you (0.8–1.4 km). Nearer is lighter on older phones.",
   "settings.mode": "Battle playtest",
   "settings.modeHint": "Play test battles without walking. Your map game stays saved; open the map again from the playtest.",
-  "pt.toMap": "Go to the map game"
+  "pt.toMap": "Go to the map game",
+  "leave.title": "Leave the game?",
+  "leave.body": "Your progress is saved on this phone. Do you want to leave Odense Monster League?",
+  "leave.stay": "Stay",
+  "leave.leave": "Leave"
 }
