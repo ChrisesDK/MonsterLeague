@@ -536,8 +536,7 @@
   "settings.modeHint": "Spil testkampe uden at gå. Dit kortspil forbliver gemt; åbn kortet igen fra kamptesten.",
   "pt.toMap": "Gå til kortspillet",
   "leave.title": "Forlad spillet?",
-  "leave.body": "Dine fremskridt er gemt på denne telefon. Swipe tilbage igen eller tryk Forlad for at forlade Odense Monster League.",
+  "leave.body": "Dine fremskridt er gemt på denne telefon. Vil du forlade Odense Monster League?",
   "leave.stay": "Bliv",
-  "leave.leave": "Forlad",
-  "leave.swipe": "Swipe tilbage én gang til for at forlade spillet. Dine fremskridt er gemt."
+  "leave.leave": "Forlad"
 }

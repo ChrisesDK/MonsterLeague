@@ -62,18 +62,25 @@ export function App() {
 
 /** Asks before a back gesture leaves the site or closes the installed app (backGuard.ts). */
 function LeaveGuard({ t }: { t: ReturnType<typeof makeT> }) {
-  const [asking, setAsking] = useState<'no' | 'ask' | 'swipe'>('no');
+  const [asking, setAsking] = useState(false);
   const guard = useRef<ReturnType<typeof installBackGuard> | null>(null);
   useEffect(() => {
-    const g = installBackGuard(
-      window,
-      () => setAsking('ask'),
-      () => setAsking('swipe'),
-    );
+    let forceInstalled = false;
+    try {
+      // E2E only: run the installed-app version in a normal browser tab
+      forceInstalled = localStorage.getItem('oml.e2e.installed') === '1';
+    } catch {
+      // storage blocked
+    }
+    const g = installBackGuard(window, () => setAsking(true), {
+      onCannotLeave: () => setAsking(false),
+      forceInstalled,
+    });
     guard.current = g;
+    document.documentElement.dataset.backGuard = g.mode;
     return () => g.dispose();
   }, []);
-  if (asking === 'no') return null;
+  if (!asking) return null;
   return (
     <Modal
       title={t('leave.title')}
@@ -87,24 +94,22 @@ function LeaveGuard({ t }: { t: ReturnType<typeof makeT> }) {
             autoFocus
             onClick={() => {
               guard.current?.stay();
-              setAsking('no');
+              setAsking(false);
             }}
           >
             {t('leave.stay')}
           </button>
-          {asking === 'ask' && (
-            <button
-              className="btn wide"
-              data-testid="leave-go"
-              onClick={() => guard.current?.leave()}
-            >
-              {t('leave.leave')}
-            </button>
-          )}
+          <button
+            className="btn wide"
+            data-testid="leave-go"
+            onClick={() => guard.current?.leave()}
+          >
+            {t('leave.leave')}
+          </button>
         </>
       }
     >
-      <p data-testid="leave-text">{t(asking === 'swipe' ? 'leave.swipe' : 'leave.body')}</p>
+      <p>{t('leave.body')}</p>
     </Modal>
   );
 }

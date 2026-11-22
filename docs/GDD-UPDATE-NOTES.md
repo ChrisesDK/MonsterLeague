@@ -60,9 +60,9 @@ Add:
   and "Battle playtest" (opens the playtest; the playtest has "Go to the map game") to the
   list.
 - **Leaving:** an accidental back gesture (an edge swipe) doesn't leave the site or close
-  the installed app; the game asks "Leave the game?" first. Stay keeps you in the game;
-  a second back gesture or Leave leaves (where the phone doesn't let the game close
-  itself, Leave asks for one more swipe back).
+  the installed app; the game asks "Leave the game?" first. Stay closes the dialog and the
+  swipe has no effect; Leave, or a second swipe, closes the installed app (in the browser:
+  goes back to the page before).
 - **Logo:** the arena badge with an empty centre (cream petals, a red ring and a cream
   centre on navy). It is the app icon and appears with the game's name on the first
   screen. The swinging lantern stays the loading-screen icon.

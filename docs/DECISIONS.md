@@ -1271,15 +1271,25 @@ length, position resolution and spawn tables>`.
     from clear to 90% at the wall's foot, so the last stretch of ground blends into the sky
     instead of ending in a hard line. It is fixed in the world (no change with zoom), and
     buildings in front of it stay crisp (depth test).
-- **D143. "Leave" really leaves: the swipe does it** (owner report: Leave only closed the
-  dialog, and the next swipe left without asking).
-  - **Cause:** where the game is the first page in its history (the installed app, or a
-    tab opened straight to it) there is nothing to go back to, and no page can trigger the
-    phone's own "back and exit" or close itself (`window.close()` is blocked), so Leave
-    could only drop the guard.
-  - **Now:** when the back gesture lands on the game's own entry, the guard is not pushed
-    again while the dialog asks, so a second back gesture really leaves (the phone's own
-    back, in the browser and the installed app). "Stay" pushes the guard again. "Leave"
-    goes back to the page before the game when there is one; when there isn't, it tries
-    `window.close()` and otherwise the dialog says "Swipe back once more to leave" (that
-    swipe exits). This replaces the Leave fallback of D140.
+- **D143. Leaving the installed app: a close watcher instead of a history entry** (owner
+  report: in the installed app, Leave only closed the dialog, and the next swipe closed the
+  app without asking).
+  - **Cause:** Chrome lets a page close itself (`window.close()`) only while its history
+    has a single entry, and the history guard (D140) adds a second one. In the installed
+    app the game is the first page, so there is nothing to go back to either.
+  - **Installed app (where the browser has `CloseWatcher`, Chrome 120+ on Android):** a
+    CloseWatcher catches the phone's back gesture without touching the history. The
+    history keeps one entry, so Leave's `window.close()` closes the app. While the dialog
+    asks there is no watcher, so a second swipe is the phone's own back and closes the app.
+    Stay starts a new watcher (the swipe had no effect). In-app links (#/playtest, #/)
+    replace the current entry instead of adding one, so the history stays at one entry.
+  - **Browser (or no CloseWatcher):** the history guard of D140, except that the guard
+    isn't pushed again while the dialog asks (a second swipe goes back), Stay pushes it
+    again, and Leave goes back to the page before the game.
+  - **Flows:** swipe → dialog → Leave: closes (browser: back); swipe → dialog → swipe:
+    closes (browser: back); swipe → dialog → Stay: the dialog closes and the swipe had no
+    effect. Where the phone refuses to close the page anyway, Leave just closes the dialog
+    (no "swipe again" message, owner).
+  - **Tests:** unit tests for both ways; E2E runs the installed-app way in Chromium (a test
+    switch, `oml.e2e.installed`, forces it; Escape is a close request like the back
+    gesture) and checks that the history never grows and that Leave calls `window.close()`.

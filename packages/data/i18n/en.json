@@ -536,8 +536,7 @@
   "settings.modeHint": "Play test battles without walking. Your map game stays saved; open the map again from the playtest.",
   "pt.toMap": "Go to the map game",
   "leave.title": "Leave the game?",
-  "leave.body": "Your progress is saved on this phone. Swipe back again or press Leave to leave Odense Monster League.",
+  "leave.body": "Your progress is saved on this phone. Do you want to leave Odense Monster League?",
   "leave.stay": "Stay",
-  "leave.leave": "Leave",
-  "leave.swipe": "Swipe back once more to leave. Your progress is saved."
+  "leave.leave": "Leave"
 }
