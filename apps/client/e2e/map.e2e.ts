@@ -643,3 +643,19 @@ test('opening and closing the menu keeps the map alive (no reload of position or
   await expect(page.getByTestId('loading-screen')).toHaveCount(0);
   await expect(page.getByTestId('journal-card')).toBeVisible();
 });
+
+test('Settings lead to the battle playtest, and the playtest back to the map game', async ({
+  page,
+}) => {
+  await startDone(page);
+  await page.getByTestId('menu-button').click();
+  await page.getByTestId('menu-settings').click();
+  await page.getByTestId('to-playtest').click();
+  await expect(page).toHaveURL(/#\/playtest$/);
+  await expect(page.getByTestId('logo')).toBeVisible();
+  await page.getByTestId('to-map').click();
+  await expect(page).toHaveURL(/#\/$/);
+  // the saved game is still there: straight to the map, no onboarding
+  await page.waitForSelector('.maplibregl-canvas', { timeout: 60_000 });
+  await expect(page.getByTestId('onboarding-safety')).toHaveCount(0);
+});

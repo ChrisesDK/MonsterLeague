@@ -747,6 +747,14 @@ function SettingsScreen({
 
       {gate3}
 
+      <section className="panel-section" data-testid="setting-mode">
+        <h2>{t('settings.mode')}</h2>
+        <p className="muted small">{t('settings.modeHint')}</p>
+        <a className="btn wide link-btn" href="#/playtest" data-testid="to-playtest">
+          {t('map.toPlaytest')}
+        </a>
+      </section>
+
       <section className="panel-section">
         <h2>{t('settings.save')}</h2>
         <p className="muted small">{t('settings.saveHelp')}</p>

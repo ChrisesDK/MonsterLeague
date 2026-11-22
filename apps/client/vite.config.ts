@@ -32,14 +32,15 @@ export default defineConfig({
       manifest: {
         name: 'Odense Monster League',
         short_name: 'OML',
-        description: 'Battle playtest',
+        description: 'Walk Odense, meet creatures and battle the arenas',
         lang: 'da',
         start_url: '.',
         scope: '.',
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#0f1a14',
-        theme_color: '#14532d',
+        // the logo's night navy (the bars then follow the paper colour, see main.tsx)
+        background_color: '#1b2130',
+        theme_color: '#1b2130',
         icons: [{ src: 'icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' }],
       },
       workbox: {

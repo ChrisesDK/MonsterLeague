@@ -1,1 +1,42 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#14532d"/><circle cx="32" cy="32" r="18" fill="#f4c542"/><circle cx="32" cy="32" r="7" fill="#14532d"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Odense Monster League logo: a lantern creature (own work, original design). -->
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="56%" r="50%">
+      <stop offset="0" stop-color="#e0594d" stop-opacity="0.55"/>
+      <stop offset="0.6" stop-color="#e0594d" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#e0594d" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="paper" cx="42%" cy="38%" r="70%">
+      <stop offset="0" stop-color="#f0705f"/>
+      <stop offset="0.55" stop-color="#c83a2f"/>
+      <stop offset="1" stop-color="#8f231c"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#1b2130"/>
+  <circle cx="256" cy="286" r="236" fill="url(#glow)"/>
+  <!-- hanger -->
+  <circle cx="256" cy="70" r="24" fill="none" stroke="#f4ecdb" stroke-width="14"/>
+  <path d="M256 94v26" stroke="#f4ecdb" stroke-width="14" stroke-linecap="round"/>
+  <!-- top cap -->
+  <path d="M190 120h132l-14 34H204Z" fill="#5c1a16"/>
+  <!-- paper body -->
+  <path d="M256 146c96 0 148 58 148 136s-52 136-148 136-148-58-148-136 52-136 148-136Z" fill="url(#paper)"/>
+  <!-- ribs -->
+  <g fill="none" stroke="#8f231c" stroke-width="7" stroke-linecap="round" opacity="0.75">
+    <path d="M256 150v62M256 366v48"/>
+    <path d="M196 158c-28 30-40 74-40 124s12 94 40 124"/>
+    <path d="M316 158c28 30 40 74 40 124s-12 94-40 124"/>
+  </g>
+  <!-- face: two glowing eyes and a small smile -->
+  <ellipse cx="208" cy="266" rx="34" ry="40" fill="#fbe9d0"/>
+  <ellipse cx="304" cy="266" rx="34" ry="40" fill="#fbe9d0"/>
+  <ellipse cx="214" cy="274" rx="16" ry="20" fill="#1b2130"/>
+  <ellipse cx="298" cy="274" rx="16" ry="20" fill="#1b2130"/>
+  <circle cx="220" cy="265" r="6" fill="#fbe9d0"/>
+  <circle cx="304" cy="265" r="6" fill="#fbe9d0"/>
+  <path d="M232 334q24 20 48 0" fill="none" stroke="#fbe9d0" stroke-width="10" stroke-linecap="round"/>
+  <!-- bottom cap and tassel -->
+  <path d="M204 410h104l12 30H192Z" fill="#5c1a16"/>
+  <path d="M256 440v26" stroke="#f4ecdb" stroke-width="10" stroke-linecap="round"/>
+  <rect x="240" y="460" width="32" height="18" rx="8" fill="#f4ecdb"/>
+</svg>

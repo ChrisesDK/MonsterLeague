@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Logo } from '../ui/Logo';
 import { inReplacementPhase, type Action, type BattleState } from '@oml/engine';
 import {
   normaliseTesterCode,
@@ -288,6 +289,9 @@ export function PlaytestApp({ t, locale, onLocale }: Props) {
         <button className="btn wide" onClick={() => setScreen('export')}>
           {t('pt.results')}
         </button>
+        <a className="btn wide link-btn" href="#/" data-testid="to-map">
+          {t('pt.toMap')}
+        </a>
         <button
           className="btn wide"
           onClick={() => {
@@ -373,6 +377,7 @@ function StartScreen({
   return (
     <main className="setup">
       <header className="setup-header">
+        <Logo />
         <h1>{t('pt.title')}</h1>
         <p>{t('pt.intro')}</p>
       </header>
@@ -431,6 +436,9 @@ function StartScreen({
           {t('pt.results')}
         </button>
       )}
+      <a className="btn wide link-btn" href="#/" data-testid="to-map">
+        {t('pt.toMap')}
+      </a>
     </main>
   );
 }

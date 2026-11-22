@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { spriteUrl } from '@oml/art';
 import { content } from '@oml/data';
 import type { Translate } from '../i18n';
+import { Logo } from '../ui/Logo';
 
 const STARTERS = ['gnistkat', 'aaodder', 'boegling'] as const;
 
@@ -17,6 +18,7 @@ export function SafetyScreen({
   return (
     <main className="setup onboarding" data-testid="onboarding-safety">
       <header className="setup-header">
+        <Logo />
         <h1>{t('onboarding.safety.title')}</h1>
       </header>
       <ul className="safety-list">
