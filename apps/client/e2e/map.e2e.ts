@@ -862,3 +862,139 @@ test('the loading screen shows when the map game opens from the battle test (a n
   await expect(page.getByTestId('loading-screen')).toHaveCount(0, { timeout: 30_000 });
   await expect(page.locator('.maplibregl-canvas')).toBeVisible();
 });
+
+test('40 m range ring, see-through icons beyond it, names in Nearby, the camera faces a chosen creature', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    const calls: unknown[] = [];
+    (window as unknown as { __vibrations: unknown[] }).__vibrations = calls;
+    (navigator as unknown as { vibrate: (p: unknown) => boolean }).vibrate = (p) => (
+      calls.push(p),
+      true
+    );
+  });
+  await startDone(page);
+  await teleport(page, KONGENS_HAVE);
+  await page.waitForTimeout(1500);
+  await page.mouse.click(195, 300); // a first tap: phones only vibrate after one
+  // no heading cone on the player
+  await expect(page.locator('.heading-marker')).toHaveCount(0);
+  // the ring around the player is the 40 m battle range (not the GPS accuracy)
+  const ringM = await page.evaluate(() => {
+    const m = (
+      window as unknown as {
+        __omlMap: {
+          getSource: (id: string) => { serialize: () => { data: GeoJSON.FeatureCollection } };
+          getCenter: () => { lat: number; lng: number };
+        };
+      }
+    ).__omlMap;
+    const ring = m.getSource('player').serialize().data.features[0]!.geometry as GeoJSON.Polygon;
+    const [lng, lat] = ring.coordinates[0]![0]!;
+    const c = m.getCenter();
+    const dy = (lat! - c.lat) * 111_320;
+    const dx = (lng! - c.lng) * 111_320 * Math.cos((c.lat * Math.PI) / 180);
+    return Math.hypot(dx, dy);
+  });
+  expect(ringM).toBeGreaterThan(38);
+  expect(ringM).toBeLessThan(42);
+  // one creature within 40 m, one beyond it to the east
+  const near = (await dev(page, 'injectSpawn', {
+    speciesId: 'torvdue',
+    district: 1,
+    lat: KONGENS_HAVE.lat + 0.0002,
+    lng: KONGENS_HAVE.lng,
+  })) as string;
+  const far = (await dev(page, 'injectSpawn', {
+    speciesId: 'rendsnude',
+    district: 1,
+    lat: KONGENS_HAVE.lat,
+    lng: KONGENS_HAVE.lng + 0.0016,
+  })) as string;
+  const marker = (id: string) => page.locator(`.spawn-marker[data-spawn-id="${id}"]`);
+  await expect(marker(near)).toHaveClass(/in-range/);
+  await expect(marker(far)).toHaveClass(/out-of-range/);
+  const opacity = (id: string) =>
+    marker(id)
+      .locator('.marker-body')
+      .evaluate((el) => +getComputedStyle(el).opacity);
+  await expect.poll(() => opacity(near)).toBe(1);
+  await expect.poll(() => opacity(far)).toBeLessThan(1);
+  // coming within range vibrates; no "is close" message any more
+  await expect
+    .poll(() =>
+      page.evaluate(() => (window as unknown as { __vibrations: unknown[] }).__vibrations.length),
+    )
+    .toBeGreaterThan(0);
+  await expect(page.getByText(/is close/)).toHaveCount(0);
+  // Nearby: names instead of distances, and no "tap to battle" text
+  await page.getByTestId('nearby-button').click();
+  const chip = (id: string) => page.locator(`[data-testid="nearby-chip"][data-spawn="${id}"]`);
+  await expect(chip(near)).toContainText('Torvdue');
+  await expect(chip(far)).toContainText('Rendsnude');
+  await expect(page.getByTestId('nearby-count')).not.toContainText(/\d+ m\b/);
+  await expect(page.getByText('Tap to battle')).toHaveCount(0);
+  // choosing a creature turns the camera so it lies straight ahead (east here: ~90°)
+  await chip(far).click();
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        (window as unknown as { __omlMap: { getBearing: () => number } }).__omlMap.getBearing(),
+      ),
+    )
+    .toBeGreaterThan(85);
+  const b = await page.evaluate(() =>
+    (window as unknown as { __omlMap: { getBearing: () => number } }).__omlMap.getBearing(),
+  );
+  expect(b).toBeLessThan(95);
+  // choosing another: the first just stops bouncing (no pop-in replay from nothing)
+  await chip(near).click();
+  await expect(marker(near)).toHaveClass(/selected/);
+  await expect(marker(far)).not.toHaveClass(/selected/);
+  const anim = await marker(far)
+    .locator('.marker-body')
+    .evaluate((el) => getComputedStyle(el).animationName);
+  expect(anim).toBe('none');
+});
+
+for (const mode of ['browser', 'installed app'] as const)
+  test(`back gesture (${mode}): menus go back a level, the Town Map closes, the game view asks`, async ({
+    page,
+  }) => {
+    if (mode === 'installed app')
+      await page.addInitScript(() => localStorage.setItem('oml.e2e.installed', '1'));
+    await startDone(page);
+    await page.mouse.click(195, 300); // arms the guard (needs a first tap)
+    const back = async () => {
+      if (mode === 'installed app') await page.keyboard.press('Escape');
+      else await page.goBack({ timeout: 2000 }).catch(() => null);
+      await page.waitForTimeout(200);
+    };
+    const leave = page.getByTestId('leave-guard');
+    // the satchel menu → team; back → menu; back → game view
+    await page.getByTestId('menu-button').click();
+    await page.getByTestId('menu-team').click();
+    await expect(page.getByTestId('screen-team')).toBeVisible();
+    await back();
+    await expect(page.getByTestId('screen-menu')).toBeVisible();
+    await expect(leave).toHaveCount(0);
+    await back();
+    await expect(page.getByTestId('screen-menu')).toHaveCount(0);
+    await expect(leave).toHaveCount(0);
+    // the Town Map: back closes it
+    await page.getByTestId('townmap-button').click();
+    await expect(page.getByTestId('town-map')).toBeVisible();
+    await back();
+    await expect(page.getByTestId('town-map')).toHaveCount(0);
+    await expect(leave).toHaveCount(0);
+    // the game view with the Nearby strip open: back asks, and the strip stays
+    await page.getByTestId('nearby-button').click();
+    await back();
+    await expect(leave).toBeVisible();
+    await page.getByTestId('leave-stay').click();
+    await expect(leave).toHaveCount(0);
+    // after Stay it keeps working
+    await back();
+    await expect(leave).toBeVisible();
+  });

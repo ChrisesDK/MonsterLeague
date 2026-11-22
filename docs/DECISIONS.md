@@ -1358,3 +1358,27 @@ length, position resolution and spawn tables>`.
   (or the 20-second limit, or a GPS error). Closing the menu doesn't rebuild the map, so
   no loading screen there. After a battle the position is already known and the tiles are
   cached, so it shows briefly while the town is redrawn.
+- **D150. Range ring, in-range icons, Nearby and the back gesture in menus** (owner
+  feedback).
+  - **The ring around the player is the 40 m battle range**, not the GPS accuracy (which
+    players don't need): a dashed ring with a light fill, always 40 m (`BATTLE_RADIUS_M`).
+  - **In range is shown by the icon, not a message:** the "A wild … is close!" toast and the
+    Nearby "Tap to battle" text are gone; the phone vibrates once when a battle-able
+    creature comes within 40 m (as before, not with "reduce motion"). Icons beyond 40 m
+    are a little see-through (60%), icons within it solid with a soft light glow (before:
+    see-through only beyond 100 m, and in-range icons bobbed). The Nearby chips dim their
+    pictures the same way.
+  - **Nearby:** each chip shows the creature's name instead of its distance; choosing one
+    turns the camera so it lies straight ahead of the player (`easeTo` the bearing).
+  - **Selection bounce:** every icon's base style played the pop-in animation, so when a
+    creature was deselected the browser replayed it from 30% size (it seemed to shrink to
+    nothing). The pop-in now plays once, when an icon appears (`entering` class, removed
+    when it ends); deselecting just stops the bounce.
+  - **No heading cone** on the player (it was often off); the compass hook is removed.
+  - **Back gesture in menus** (`src/ui/backStack.ts`): an open menu screen goes back one
+    level (creature → team → the menu → the game view, as the screens' back buttons do,
+    `previousScreen`), and the Town Map closes; the back guard (D143) asks these first and
+    keeps guarding without a question. Only on the game view does it ask "Leave the
+    game?", also when the Journal card or the Nearby strip is open there (they don't
+    handle back). Works in the browser (history guard) and the installed app (close
+    watcher).

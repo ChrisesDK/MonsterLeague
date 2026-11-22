@@ -5,6 +5,7 @@
  *   swipe back → dialog → Leave        → the app closes (browser: back to the page before)
  *   swipe back → dialog → swipe back   → the app closes (browser: back to the page before)
  *   swipe back → dialog → Stay         → the dialog closes, the swipe had no effect
+ *   swipe back in a menu / Town Map    → back one level / the map closes (backStack.ts)
  *
  * Two ways, chosen at start:
  *
@@ -70,9 +71,15 @@ export function guardMode(win: Win, forceInstalled = false): GuardMode {
 export function installBackGuard(
   win: Win,
   onLeaveAttempt: () => void,
-  options: { onCannotLeave?: () => void; forceInstalled?: boolean } = {},
+  options: {
+    onCannotLeave?: () => void;
+    forceInstalled?: boolean;
+    /** An open menu or map handles the back gesture itself (backStack.ts): no question. */
+    handleBack?: () => boolean;
+  } = {},
 ) {
   const onCannotLeave = options.onCannotLeave ?? (() => undefined);
+  const handleBack = options.handleBack ?? (() => false);
   const mode = guardMode(win, options.forceInstalled);
   let leaving = false;
   let watcher: CloseWatcherLike | null = null;
@@ -83,7 +90,9 @@ export function installBackGuard(
     w.onclose = () => {
       if (watcher !== w) return;
       watcher = null; // no watcher while asking: a second swipe is the phone's own back
-      if (!leaving) onLeaveAttempt();
+      if (leaving) return;
+      if (handleBack()) return watch(); // a menu went back a level: keep guarding
+      onLeaveAttempt();
     };
     watcher = w;
   };
@@ -98,6 +107,10 @@ export function installBackGuard(
   };
   const onPop = (e: PopStateEvent) => {
     if (leaving || tag(e.state) !== BASE) return;
+    if (handleBack()) {
+      win.history.pushState({ oml: GUARD }, ''); // a menu went back a level: keep guarding
+      return;
+    }
     onLeaveAttempt(); // on the game's own entry: the next swipe leaves unless Stay
   };
   // installed app: in-app links replace the entry, so the history stays at one entry

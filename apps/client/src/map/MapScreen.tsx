@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useBackHandler } from '../ui/backStack';
 import maplibregl, { type GeoJSONSource, type Map as MlMap, type Marker } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { Protocol } from 'pmtiles';
@@ -64,7 +65,6 @@ import {
   tooFast,
   type Fix,
 } from './geo';
-import { useCompassHeading } from './heading';
 import {
   addBuildings3d,
   fogRadii,
@@ -177,7 +177,7 @@ function poiDone(p: Poi, save: SaveGame): boolean {
 }
 
 /** Spawn-marker classes that follow the creature's state (see the marker effect). */
-const STATE_CLASSES = ['hint', 'too-wild', 'tutorial', 'far', 'in-range', 'selected'];
+const STATE_CLASSES = ['hint', 'too-wild', 'tutorial', 'out-of-range', 'in-range', 'selected'];
 
 interface Seen {
   s: ApiSpawn;
@@ -214,6 +214,8 @@ export function MapScreen({
   const [bearing, setBearing] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [townMap, setTownMap] = useState(false);
+  // the back gesture closes the Town Map (owner: back to the game view, no question)
+  useBackHandler(townMap, () => setTownMap(false));
   /** The Journal card and the Nearby strip are opened on demand (owner feedback). */
   const [goalOpen, setGoalOpen] = useState(false);
   const [nearbyOpen, setNearbyOpen] = useState(false);
@@ -230,11 +232,10 @@ export function MapScreen({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const markers = useRef(new Map<string, Marker>());
   const poiMarkers = useRef(new Map<string, { marker: Marker; img: HTMLImageElement }>());
-  const player = useRef<{ figure: Marker; cone: Marker } | null>(null);
+  const player = useRef<{ figure: Marker } | null>(null);
   /** Where the player figure is drawn (glides towards `fixTarget`). */
   const drawnAt = useRef<LatLng | null>(null);
   const fixTarget = useRef<LatLng | null>(null);
-  const accuracyM = useRef(10);
   const targetMarker = useRef<Marker | null>(null);
   const announced = useRef(new Set<string>());
   const seenForGate3 = useRef(new Set<string>());
@@ -249,7 +250,6 @@ export function MapScreen({
   const palette = night ? NIGHT : PAPER;
   const paletteRef = useRef(palette);
   paletteRef.current = palette;
-  const compass = useCompassHeading();
 
   useEffect(() => {
     let alive = true;
@@ -277,16 +277,6 @@ export function MapScreen({
   const goodFixes = useMemo(() => fixes.filter((f) => f.accuracy <= MAX_ACCURACY_M), [fixes]);
   const kmh = speedKmh(goodFixes);
   useEffect(() => setFast((prev) => tooFast(prev, kmh)), [kmh]);
-
-  // Heading: the compass when the phone has one, else the direction of travel.
-  const course = useMemo(() => {
-    const n = goodFixes.length;
-    if (n < 2) return null;
-    const a = goodFixes[n - 2]!;
-    const b = goodFixes[n - 1]!;
-    return distanceM(a, b) >= 3 ? bearingDeg(a, b) : null;
-  }, [goodFixes]);
-  const heading = compass.heading ?? course;
 
   // Gate 3: distance walked, summed on the phone (only the metres leave this function).
   useEffect(() => {
@@ -453,19 +443,21 @@ export function MapScreen({
         data: { type: 'FeatureCollection', features: [] },
       });
       map.addLayer({
-        id: 'player-accuracy',
+        // the battle range: creatures inside this ring can be battled
+        id: 'player-range',
         type: 'fill',
         source: 'player',
-        paint: { 'fill-color': paletteRef.current.accuracy, 'fill-opacity': 0.12 },
+        paint: { 'fill-color': paletteRef.current.accuracy, 'fill-opacity': 0.1 },
       });
       map.addLayer({
-        id: 'player-accuracy-line',
+        id: 'player-range-line',
         type: 'line',
         source: 'player',
         paint: {
           'line-color': paletteRef.current.accuracy,
-          'line-width': 1.5,
-          'line-opacity': 0.45,
+          'line-width': 2,
+          'line-opacity': 0.6,
+          'line-dasharray': [3, 2],
         },
       });
       addBuildings3d(map, paletteRef.current, saveRef.current.settings.buildings3d);
@@ -508,22 +500,10 @@ export function MapScreen({
       poiMarkers.current.set(poi.id, { marker, img });
     }
 
-    // The player: a standing figure, plus a heading cone lying flat on the map.
+    // The player: a standing figure (owner: no heading cone; the compass was often off).
     const figure = markerElement('div', 'player-marker', PLAYER_SVG);
     figure.dataset.testid = 'player-marker';
-    const coneEl = document.createElement('div');
-    coneEl.className = 'heading-marker';
-    coneEl.innerHTML = '<div class="heading-cone"></div>';
-    coneEl.style.visibility = 'hidden';
     player.current = {
-      cone: new maplibregl.Marker({
-        element: coneEl,
-        anchor: 'center',
-        pitchAlignment: 'map',
-        rotationAlignment: 'map',
-      })
-        .setLngLat([start.lng, start.lat])
-        .addTo(map),
       figure: new maplibregl.Marker({ element: figure, anchor: 'bottom', offset: [0, 6] })
         .setLngLat([start.lng, start.lat])
         .addTo(map),
@@ -594,7 +574,6 @@ export function MapScreen({
   useEffect(() => {
     if (!playerAt || !last) return;
     fixTarget.current = { lat: playerAt.lat, lng: playerAt.lng };
-    accuracyM.current = Math.min(Math.max(last.accuracy, 5), 200);
   }, [playerAt, last]);
 
   // POI radius circles near the player (per fix).
@@ -621,7 +600,6 @@ export function MapScreen({
     let raf = 0;
     let prev = performance.now();
     let ringAt: LatLng | null = null;
-    let ringAcc = -1;
     let skyCss = '';
     let buildingsAt: LatLng | null = null;
     let buildingsFog = -1;
@@ -642,19 +620,17 @@ export function MapScreen({
         Math.abs(centre.lat - next.lat) > 1e-7 || Math.abs(centre.lng - next.lng) > 1e-7;
       if (next !== before) {
         player.current?.figure.setLngLat([next.lng, next.lat]);
-        player.current?.cone.setLngLat([next.lng, next.lat]);
       }
-      // Only when the ring really moves or changes size: re-sending it every frame kept the
-      // map from ever going idle (endless re-rendering; the loading screen waited for idle).
-      const acc = accuracyM.current;
+      // The battle range (40 m) around the player (owner: not the GPS accuracy). Only when
+      // the ring really moves: re-sending it every frame kept the map from ever going idle
+      // (endless re-rendering; the loading screen waited for idle).
       const ringMoved = !ringAt || distanceM(ringAt, next) > 0.5;
       const ringSettled = next === goal && ringAt !== goal;
-      if (ringMoved || ringSettled || acc !== ringAcc) {
+      if (ringMoved || ringSettled) {
         ringAt = next;
-        ringAcc = acc;
         (map.getSource('player') as GeoJSONSource | undefined)?.setData({
           type: 'FeatureCollection',
-          features: [circle(next, accuracyM.current)],
+          features: [circle(next, BATTLE_RADIUS_M)],
         });
       }
       // the sky behind the map: sky colour at the top, fog colour at the horizon, stars at
@@ -724,15 +700,7 @@ export function MapScreen({
     return () => cancelAnimationFrame(raf);
   }, [mapReady]);
 
-  useEffect(() => {
-    const cone = player.current?.cone;
-    if (!cone) return;
-    cone.getElement().style.visibility = heading === null ? 'hidden' : 'visible';
-    if (heading !== null) cone.setRotation(heading);
-  }, [heading, mapReady]);
-
   const resetNorth = () => {
-    if (compass.needsPermission) compass.request();
     mapRef.current?.easeTo({ bearing: 0, duration: 400 });
   };
 
@@ -853,7 +821,7 @@ export function MapScreen({
       const hidden = st === 'needsAbility';
       const cls =
         `spawn-marker${hidden ? ' hint' : ''}${st === 'tooWild' ? ' too-wild' : ''}` +
-        `${st === 'tutorial' ? ' tutorial' : ''}${d > FAINT_M ? ' far' : ''}` +
+        `${st === 'tutorial' ? ' tutorial' : ''}${d > BATTLE_RADIUS_M ? ' out-of-range' : ''}` +
         `${d <= BATTLE_RADIUS_M && (st === 'ok' || st === 'tutorial') ? ' in-range' : ''}` +
         `${selected === s.id ? ' selected' : ''}`;
       let m = markers.current.get(s.id);
@@ -861,6 +829,12 @@ export function MapScreen({
         const img = document.createElement('img');
         img.alt = '';
         const el = markerElement('button', cls, img);
+        // the pop-in plays once, when the icon appears (owner: deselecting replayed it, so
+        // the icon seemed to shrink to nothing and grow back)
+        el.classList.add('entering');
+        el.querySelector('.marker-body')!.addEventListener('animationend', (ev) => {
+          if ((ev as AnimationEvent).animationName === 'marker-in') el.classList.remove('entering');
+        });
         el.dataset.spawnId = s.id;
         el.dataset.lat = String(s.lat);
         el.dataset.lng = String(s.lng);
@@ -900,8 +874,8 @@ export function MapScreen({
     for (const { s, d, st } of visible) {
       if (st !== 'ok' || d > BATTLE_RADIUS_M || announced.current.has(s.id)) continue;
       announced.current.add(s.id);
+      // owner: a vibration instead of a message; the icon itself shows it's in range
       buzz('encounter');
-      setToast(t('map.encounter', { name: t(`species.${s.speciesId}.name`) }));
       break;
     }
   }, [visible, t, onGate3]);
@@ -1290,6 +1264,13 @@ export function MapScreen({
           ? t('map.gps.waiting')
           : t('map.gps.weak', { m: Math.round(last.accuracy) })
       : null;
+  /** Turns the camera so a creature lies straight ahead of the player (Nearby strip). */
+  const faceTowards = (p: { lat: number; lng: number }) => {
+    const map = mapRef.current;
+    const from = drawnAt.current;
+    if (!map || !from || distanceM(from, p) < 1) return;
+    map.easeTo({ bearing: bearingDeg(from, p), duration: 600 });
+  };
   const battleable = visible.filter((v) => v.st === 'ok').length;
   const nearbyState = ({ st, d, s }: Seen) =>
     st === 'tooWild'
@@ -1300,8 +1281,8 @@ export function MapScreen({
             text: t('hud.nearby.needsAbility', { ability: t(`fieldAbility.${s.requires}.name`) }),
           }
         : d <= BATTLE_RADIUS_M && (st === 'ok' || st === 'tutorial')
-          ? { cls: 'in-range', text: t('hud.nearby.inRange') }
-          : { cls: '', text: '' };
+          ? { cls: 'in-range', text: '' }
+          : { cls: 'out-of-range', text: '' };
 
   return (
     <main className="map-screen" data-night={night ? 'true' : 'false'}>
@@ -1423,7 +1404,10 @@ export function MapScreen({
                       if (selected === v.s.id) {
                         if (v.st === 'tutorial') tapTutorial();
                         else tapSpawn(v.s);
-                      } else setSelected(v.s.id);
+                      } else {
+                        setSelected(v.s.id);
+                        faceTowards(v.s);
+                      }
                     }}
                     aria-label={`${t(`species.${v.s.speciesId}.name`)}, ${formatM(v.d)}${ns.text ? `, ${ns.text}` : ''}`}
                   >
@@ -1431,7 +1415,7 @@ export function MapScreen({
                       src={v.st === 'needsAbility' ? hintMarkerUrl() : spriteUrl(v.s.speciesId)}
                       alt=""
                     />
-                    <span className="nearby-dist">{formatM(v.d)}</span>
+                    <span className="nearby-name">{t(`species.${v.s.speciesId}.name`)}</span>
                     {ns.text && <span className="nearby-state">{ns.text}</span>}
                   </button>
                 );

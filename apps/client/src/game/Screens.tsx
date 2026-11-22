@@ -40,6 +40,19 @@ export type ScreenId =
   | 'settings'
   | `creature:${string}`;
 
+/**
+ * The screen one level up, as the screens' own back buttons go (null: back to the game
+ * view). Used for the back gesture (owner: in a menu it goes back a level).
+ */
+export function previousScreen(screen: ScreenId, save: SaveGame): ScreenId | null {
+  if (screen === 'menu' || screen === 'journal') return null;
+  if (screen.startsWith('creature:')) {
+    const uid = screen.slice('creature:'.length);
+    return save.storage.some((c) => c.uid === uid) ? 'storage' : 'team';
+  }
+  return 'menu';
+}
+
 interface Props {
   t: Translate;
   screen: ScreenId;

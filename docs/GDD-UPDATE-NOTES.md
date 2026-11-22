@@ -2,7 +2,7 @@
 
 Everything built or decided since the v1.9 export that the GDD doesn't describe yet,
 grouped by GDD section, with suggested wording. Details and reasons are in
-[DECISIONS.md](DECISIONS.md) (D111–D149); open proposals are in
+[DECISIONS.md](DECISIONS.md) (D111–D150); open proposals are in
 [GDD-PROPOSALS.md](GDD-PROPOSALS.md) (P16–P21).
 
 ## Change log line (suggested)
@@ -39,6 +39,13 @@ Add:
   zooms, also while the player is moving.
 - **Menu:** the menu opens over the live map, so closing it is instant (the map, GPS and
   buildings are not reloaded).
+- **Battle range:** a dashed 40 m ring around the player shows how close you must be to
+  battle (it replaced the GPS accuracy ring). Creatures beyond it are a little see-through,
+  creatures within it solid with a soft glow, and the phone vibrates when one comes within
+  range (no message). The player figure has no direction cone.
+- **Nearby strip:** each creature shows its name; choosing one turns the camera towards it.
+- **Back gesture:** in a menu it goes back one level, on the Town Map it closes the map;
+  only on the game view does it ask "Leave the game?".
 - **Icons:** creatures, stamps (arenas, trainers, rest stops) and the Journal star show at
   every zoom while they are within the fog distance; they are hidden when they are behind
   the camera or beyond the fog wall.

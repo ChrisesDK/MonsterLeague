@@ -187,8 +187,8 @@ export function paletteProps(p: Palette): [string, string, unknown][] {
     ['routes', 'line-color', ['case', ['get', 'draft'], p.routeDraft, p.route]],
     ['route-labels', 'text-color', ['case', ['get', 'draft'], p.routeDraft, p.route]],
     ['route-labels', 'text-halo-color', p.halo],
-    ['player-accuracy', 'fill-color', p.accuracy],
-    ['player-accuracy-line', 'line-color', p.accuracy],
+    ['player-range', 'fill-color', p.accuracy],
+    ['player-range-line', 'line-color', p.accuracy],
     ['buildings-3d', 'fill-extrusion-color', p.building3d],
     ['fog', 'fill-color', p.fog],
   ];

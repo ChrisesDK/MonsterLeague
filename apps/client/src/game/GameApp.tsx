@@ -20,7 +20,8 @@ import { ChoiceModal } from './ChoiceModal';
 import { BadgeCeremony } from './BadgeCeremony';
 import { Gate3Panel, loadGate3, saveGate3 } from './Gate3';
 import { LocationScreen, SafetyScreen, StarterScreen } from './Onboarding';
-import { Screens, type ScreenId } from './Screens';
+import { previousScreen, Screens, type ScreenId } from './Screens';
+import { useBackHandler } from '../ui/backStack';
 import { loadGame, startOver, writeGame, type Loaded } from './store';
 
 interface Props {
@@ -67,6 +68,11 @@ export function GameApp({ t, locale, onLocale, devTools }: Props) {
   const [save, setSave] = useState<SaveGame | null>(null);
   const saveRef = useRef<SaveGame | null>(null);
   const [screen, setScreen] = useState<ScreenId | null>(null);
+  // the back gesture in a menu goes back one level (the game view asks to leave instead)
+  useBackHandler(!!screen, () => {
+    if (screen && saveRef.current) setScreen(previousScreen(screen, saveRef.current));
+    else setScreen(null);
+  });
   const [ceremony, setCeremony] = useState<number | null>(null);
   const [gate3, setGate3] = useState<Gate3Session | null>(loadGate3);
   const sim = useMemo(() => (devTools ? new SimLocation(START) : null), [devTools]);

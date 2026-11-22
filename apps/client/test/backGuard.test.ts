@@ -230,3 +230,33 @@ describe('back guard in the installed app (CloseWatcher)', () => {
     expect(cannot).toHaveBeenCalled();
   });
 });
+
+describe('back guard with an open menu (backStack): back goes back a level, no question', () => {
+  it('browser: the menu handles it and the guard is pushed again', () => {
+    const f = fakeWindow();
+    const ask = vi.fn();
+    let open = 2; // e.g. the team screen inside the menu
+    installBackGuard(f.win, ask, { handleBack: () => (open > 0 ? (open--, true) : false) });
+    f.fire('pointerdown');
+    f.swipeBack(); // team → menu
+    f.swipeBack(); // menu → game view
+    expect(ask).not.toHaveBeenCalled();
+    expect(f.win.location.href).toBe('app#/');
+    expect((f.win.history.state as { oml: string }).oml).toBe(GUARD);
+    f.swipeBack(); // on the game view: asks
+    expect(ask).toHaveBeenCalledTimes(1);
+  });
+
+  it('installed app: the menu handles it and a new watcher keeps guarding', () => {
+    const f = fakeWindow({ before: 0, installed: true, watcher: true });
+    const ask = vi.fn();
+    let open = 1;
+    installBackGuard(f.win, ask, { handleBack: () => (open > 0 ? (open--, true) : false) });
+    f.fire('pointerdown');
+    f.swipeBack(); // closes the menu
+    expect(ask).not.toHaveBeenCalled();
+    expect(f.entries).toHaveLength(1);
+    f.swipeBack(); // game view: asks (a watcher was there to catch it)
+    expect(ask).toHaveBeenCalledTimes(1);
+  });
+});

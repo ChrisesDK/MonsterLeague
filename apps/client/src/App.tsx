@@ -6,6 +6,7 @@ import { PlaytestApp } from './playtest/PlaytestApp';
 import { SetupScreen } from './SetupScreen';
 import { clearBattle, loadBattle, loadLocale, saveBattle, saveLocale } from './storage';
 import { installBackGuard } from './ui/backGuard';
+import { handleBack } from './ui/backStack';
 import { Modal } from './ui/components';
 
 // The map pulls in MapLibre; load it only when a map route is opened.
@@ -75,6 +76,7 @@ function LeaveGuard({ t }: { t: ReturnType<typeof makeT> }) {
     const g = installBackGuard(window, () => setAsking(true), {
       onCannotLeave: () => setAsking(false),
       forceInstalled,
+      handleBack,
     });
     guard.current = g;
     document.documentElement.dataset.backGuard = g.mode;
