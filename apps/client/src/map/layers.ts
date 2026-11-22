@@ -338,37 +338,40 @@ export function setBuildings3d(map: MlMap, on: boolean): void {
 }
 
 /**
- * Distance fog (owner idea: a low fog and a sky for a round world, like walking games).
- * Clear up close, thickening from the fog start to solid at the fog end (distances double
- * per zoom level out). It is drawn in screen space, as an ellipse around the player whose
- * edges are the projected fog distances ahead and to the side (see fogEllipse), so it costs
- * nothing per frame and covers distant buildings, labels and icons. (An earlier version
- * drew kilometre-wide fog polygons on the map; tiling those made zooming lag and could hang
- * the page.) The map background past the horizon takes the fog colour.
+ * Distance fog (owner idea: a fog barrier and a sky for a round world, like walking games).
+ * A static wall at FOG_M around the player, drawn in screen space by the play view's frame
+ * loop (see fogWall in orbit.ts): clear inside, fog and sky outside. It covers distant
+ * buildings, labels and icons and costs nothing per frame. (Earlier versions faded in, or
+ * drew kilometre-wide fog polygons on the map, whose tiling made zooming lag.) The map
+ * background past the horizon takes the fog colour.
  */
 /**
- * Fog distances in metres (owner request): fixed in the world, whatever the zoom. Clear
- * up to FOG_START_M, solid at FOG_END_M; 3D buildings beyond FOG_END_M are unloaded.
+ * Fog (owner request): a static wall around the player at every zoom, with no fade. Its
+ * distance is a setting (1,000–2,000 m, default FOG_M); 3D buildings load and unload
+ * BUILDINGS_BEHIND_M behind the wall.
  */
-export const FOG_START_M = 650;
-export const FOG_END_M = 1000;
-/** Fog [start, end] in metres (the zoom no longer changes them). */
-export function fogRadii(_zoom?: number): [number, number] {
-  return [FOG_START_M, FOG_END_M];
+export const FOG_M = 2000;
+export const BUILDINGS_BEHIND_M = 100;
+/** The fog wall's distance [start, end] in metres (one distance; kept as a pair). */
+export function fogRadii(distanceM = FOG_M): [number, number] {
+  return [distanceM, distanceM];
+}
+/** Where 3D buildings load and unload, for a fog distance. */
+export function buildingsRadius(fogM = FOG_M): number {
+  return fogM + BUILDINGS_BEHIND_M;
 }
 
 /** The building filter is re-centred after walking this far (each change re-processes tiles). */
-export const BUILDINGS_RECENTRE_M = 200;
+export const BUILDINGS_RECENTRE_M = 100;
 
 /**
- * Unloads 3D buildings beyond the fog: only buildings within `radiusM` of `c` are drawn.
- * The radius includes the re-centring step, so nothing inside the fog edge goes missing
- * between updates.
+ * Unloads 3D buildings beyond the fog: only buildings within `radiusM` (fog + 100 m) of `c` are
+ * drawn. Re-centred every 100 m walked, so buildings never go missing in front of the wall.
  */
 export function setBuildingsRange(
   map: MlMap,
   c: { lat: number; lng: number },
-  radiusM = FOG_END_M + BUILDINGS_RECENTRE_M,
+  radiusM = buildingsRadius(),
 ): void {
   if (!map.getLayer('buildings-3d')) return;
   map.setFilter('buildings-3d', [

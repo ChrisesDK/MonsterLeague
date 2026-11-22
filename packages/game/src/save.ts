@@ -9,7 +9,7 @@ import { z } from 'zod';
  * The tutorial creature's position is kept in memory and re-rolled after a reload; used
  * spawns are kept only until they expire (≤ 15 min) and are pruned on every save.
  */
-export const SAVE_VERSION = 5;
+export const SAVE_VERSION = 6;
 
 export type OnboardingStep = 'safety' | 'location' | 'starter' | 'tutorial' | 'done';
 
@@ -30,6 +30,8 @@ export interface Settings {
   language: 'da' | 'en';
   /** 3D buildings on the play map (opt-in; off by default). */
   buildings3d: boolean;
+  /** Distance of the fog wall around the player, in metres (1,000–2,000). */
+  fogDistance: number;
 }
 
 /**
@@ -84,6 +86,7 @@ export const DEFAULT_SETTINGS: Settings = {
   reduceMotion: false,
   language: 'da',
   buildings3d: false,
+  fogDistance: 2000,
 };
 
 export function newSave(seed: string, language: Settings['language'] = 'da'): SaveGame {
@@ -184,6 +187,7 @@ export const SaveSchema = z
         reduceMotion: z.boolean(),
         language: z.enum(['da', 'en']),
         buildings3d: z.boolean(),
+        fogDistance: z.number().int().min(1000).max(2000),
       })
       .strict(),
     journal: z
@@ -271,6 +275,12 @@ export const migrations: Record<number, (old: Record<string, unknown>, seed: str
     ...old,
     version: 5,
     settings: { ...(old.settings as Record<string, unknown>), buildings3d: false },
+  }),
+  /** v5 → v6: the fog distance setting (2,000 m, the default). */
+  5: (old) => ({
+    ...old,
+    version: 6,
+    settings: { ...(old.settings as Record<string, unknown>), fogDistance: 2000 },
   }),
 };
 

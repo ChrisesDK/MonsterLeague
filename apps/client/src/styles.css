@@ -1745,20 +1745,6 @@ html[data-theme='night'] .arena-field {
   background: var(--ink);
   color: var(--paper);
 }
-/* Sky at steep tilts, above the fogged horizon; opacity follows the tilt (hazeForPitch). */
-.map-haze {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 30%;
-  z-index: 1;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity var(--dur) linear;
-  background: linear-gradient(180deg, var(--sky) 0%, var(--sky) 25%, transparent 100%);
-}
-
 /* Phones: a drag on the map rotates the camera; it must never scroll the page or trigger the
    browser's pull-to-reload (map panning is off, so MapLibre no longer sets this itself). */
 html,
@@ -1773,11 +1759,14 @@ body {
 .map-screen .maplibregl-map .maplibregl-canvas {
   touch-action: none;
 }
-/* Distance fog: a screen-space ellipse around the player (set by the map's frame loop). It
-   covers distant ground, buildings, labels and icons, below the sky and the HUD. */
+/* Fog wall: clear within 2 km of the player, fog and sky beyond (sized by the frame loop;
+   only above the player's row). Below the sky-less HUD layers. */
 .map-fog {
   position: absolute;
-  inset: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 0;
   z-index: 1;
   pointer-events: none;
 }
@@ -1790,4 +1779,12 @@ body {
   overflow-y: auto;
   overscroll-behavior: contain;
   background: var(--paper);
+}
+.slider-row input[type='range'] {
+  flex-basis: 100%;
+  min-height: var(--tap);
+  accent-color: var(--accent);
+}
+.slider-row output {
+  font-weight: 700;
 }

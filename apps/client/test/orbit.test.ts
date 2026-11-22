@@ -4,8 +4,7 @@ import {
   FLING_DECAY_MS,
   FLING_MAX_DEG_PER_MS,
   flingVelocity,
-  fogEllipse,
-  hazeForPitch,
+  fogWall,
   ORBIT,
   pitchForZoom,
 } from '../src/map/orbit';
@@ -13,32 +12,24 @@ import {
 /** The player's screen point on a 390 × 844 phone (between the HUD rows). */
 const C = { x: 195, y: 372 };
 
-/** Plays a stroke through dragRotation: total turn, largest step-to-step change in °/px. */
+/** Plays a stroke through dragRotation: total turn, largest step-to-step change in °/step. */
 function play(points: { x: number; y: number }[]) {
   let total = 0;
-  const rates: number[] = [];
-  for (let i = 1; i < points.length; i++) {
-    const a = points[i - 1]!;
-    const b = points[i]!;
-    const len = Math.hypot(b.x - a.x, b.y - a.y);
-    const d = dragRotation(C, a, b);
-    total += d;
-    if (len > 0) rates.push(d / len);
-  }
-  let jump = 0;
-  for (let i = 1; i < rates.length; i++) jump = Math.max(jump, Math.abs(rates[i]! - rates[i - 1]!));
-  return { total, min: Math.min(...rates), max: Math.max(...rates), jump };
+  for (let i = 1; i < points.length; i++) total += dragRotation(C, points[i - 1]!, points[i]!);
+  return total;
 }
 const line = (a: { x: number; y: number }, b: { x: number; y: number }, n = 200) =>
   Array.from({ length: n + 1 }, (_, i) => ({
     x: a.x + ((b.x - a.x) * i) / n,
     y: a.y + ((b.y - a.y) * i) / n,
   }));
-const arc = (cx: number, cy: number, r: number, dir: 1 | -1, turns: number) =>
+const arc = (r: number, dir: 1 | -1, turns: number, from = Math.PI / 2) =>
   Array.from({ length: Math.round(720 * turns) + 1 }, (_, i) => {
-    const a = Math.PI / 2 + dir * (i / 720) * 2 * Math.PI;
-    return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
+    const a = from + dir * (i / 720) * 2 * Math.PI;
+    return { x: C.x + r * Math.cos(a), y: C.y + r * Math.sin(a) };
   });
+/** The angle (degrees) a point is seen at from the player. */
+const angle = (p: { x: number; y: number }) => (Math.atan2(p.y - C.y, p.x - C.x) * 180) / Math.PI;
 
 describe('tilt follows the zoom', () => {
   it('30 degrees zoomed out, 76 zoomed in', () => {
@@ -47,53 +38,53 @@ describe('tilt follows the zoom', () => {
     expect(pitchForZoom(17.5)).toBeCloseTo(53);
     expect(pitchForZoom(10)).toBe(30);
   });
-  it('the distance haze only shows at steep tilts', () => {
-    expect(hazeForPitch(30)).toBe(0);
-    expect(hazeForPitch(55)).toBe(0);
-    expect(hazeForPitch(76)).toBe(1);
-  });
 });
 
-describe('drag to rotate: motion around the player turns the map (owner feedback)', () => {
-  it('a full circle around the player turns the map about one full turn, smoothly', () => {
-    for (const [ox, oy, r] of [
-      [0, 0, 200],
-      [0, 50, 240], // around the screen's middle, a little below the player
-      [30, 40, 260],
-    ] as const) {
-      const res = play(arc(C.x + ox, C.y + oy, r, 1, 1));
-      expect(res.max).toBeLessThan(0); // always the same way round
-      expect(res.jump).toBeLessThan(0.05); // no jerk anywhere in the loop
-      expect(res.total).toBeLessThan(-300);
-      expect(res.total).toBeGreaterThan(-420);
+describe('drag to rotate: the screen follows the finger exactly (owner feedback)', () => {
+  it('one loop around the player is exactly one map turn, at any distance', () => {
+    for (const r of [20, 60, 140, 300]) {
+      expect(play(arc(r, 1, 1)), `radius ${r}`).toBeCloseTo(-360, 6);
+      expect(play(arc(r, -1, 1)), `radius ${r}`).toBeCloseTo(360, 6);
     }
   });
 
-  it('half circles in both directions turn the map both ways', () => {
-    expect(play(arc(C.x, C.y, 200, 1, 0.5)).total).toBeLessThan(-150);
-    expect(play(arc(C.x, C.y, 200, -1, 0.5)).total).toBeGreaterThan(150);
+  it('a quarter circle close to the player turns the map as much as one far away', () => {
+    const near = play(arc(30, 1, 0.25));
+    const far = play(arc(280, 1, 0.25));
+    expect(near).toBeCloseTo(-90, 6);
+    expect(far).toBeCloseTo(-90, 6);
   });
 
-  it('a swipe below the player turns the map; the same swipe above turns it the other way', () => {
-    const below = play(line({ x: 40, y: 700 }, { x: 350, y: 700 })).total;
-    const above = play(line({ x: 40, y: 120 }, { x: 350, y: 120 })).total;
-    expect(below).toBeGreaterThan(30);
-    expect(above).toBeLessThan(-30);
-  });
-
-  it('a horizontal swipe level with the player is negligible, even straight through it', () => {
-    for (const dy of [0, 10, -20, 40]) {
-      const through = play(line({ x: 15, y: C.y + dy }, { x: 375, y: C.y + dy }));
-      expect(Math.abs(through.total), `offset ${dy}`).toBeLessThan(10);
+  it('any stroke turns the map by exactly the angle the finger swept around the player', () => {
+    const strokes: [{ x: number; y: number }, { x: number; y: number }][] = [
+      [
+        { x: 40, y: 700 },
+        { x: 350, y: 700 },
+      ],
+      [
+        { x: 370, y: 650 },
+        { x: 370, y: 150 },
+      ],
+      [
+        { x: 175, y: 352 },
+        { x: 215, y: 352 },
+      ], // right next to the player (20 px above it)
+    ];
+    for (const [a, b] of strokes) {
+      let swept = angle(b) - angle(a);
+      if (swept > 180) swept -= 360;
+      if (swept < -180) swept += 360;
+      expect(play(line(a, b))).toBeCloseTo(-swept, 6);
     }
   });
 
-  it('up or down along the side turns the map', () => {
-    expect(play(line({ x: 370, y: 650 }, { x: 370, y: 150 })).total).toBeGreaterThan(60);
+  it('moving straight towards or away from the player does nothing', () => {
+    expect(play(line({ x: 195, y: 750 }, { x: 195, y: 450 }))).toBeCloseTo(0, 9);
   });
 
-  it('moving towards or away from the player does nothing', () => {
-    expect(Math.abs(play(line({ x: 195, y: 750 }, { x: 195, y: 450 })).total)).toBeLessThan(0.01);
+  it('a move that starts or ends on the player has no angle and is skipped', () => {
+    expect(dragRotation(C, C, { x: 250, y: 300 })).toBe(0);
+    expect(dragRotation(C, { x: 250, y: 300 }, { x: C.x + 1, y: C.y })).toBe(0);
   });
 });
 
@@ -113,22 +104,24 @@ describe('fling after a swipe', () => {
   });
 });
 
-describe('distance fog (screen space)', () => {
-  it('an ellipse around the player: clear inside the fog start, solid fog at its end', () => {
-    const css = fogEllipse(
+describe('fog wall (screen space, static)', () => {
+  it('clear inside the ellipse through the projected fog distance, a hard edge, sky above', () => {
+    const w = fogWall(
       { x: 195, y: 500 },
-      { x: 195, y: 300 },
       { x: 195, y: 100 },
       { x: 595, y: 500 },
-      '#123456',
+      '#aaccee',
+      '#ddeeee',
     );
-    // radii: 400 px to the side, 400 px ahead; the start is halfway
-    expect(css).toContain('ellipse 400px 400px at 195px 500px');
-    expect(css).toContain('transparent 50.0%');
-    expect(css).toContain('#123456 100%');
+    // radii: 400 px ahead and to the side; drawn down to the player's row only
+    expect(w.mask).toContain('ellipse 400px 400px at 195px 500px');
+    expect(w.mask).toContain('transparent 99.50%');
+    expect(w.height).toBe('500px');
+    // sky at the top of the screen, fog at the wall's top edge
+    expect(w.background).toBe('linear-gradient(180deg, #aaccee 0px, #ddeeee 100px)');
   });
   it('never has a zero radius', () => {
     const p = { x: 10, y: 10 };
-    expect(fogEllipse(p, p, p, p, '#000')).toContain('ellipse 1px 1px');
+    expect(fogWall(p, p, p, '#000', '#111').mask).toContain('ellipse 1px 1px');
   });
 });

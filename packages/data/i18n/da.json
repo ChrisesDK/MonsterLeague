@@ -529,5 +529,7 @@
   "settings.buildings3d": "3D-bygninger",
   "settings.buildings3dHint": "Viser byens bygninger i 3D. Slået fra er lettere for ældre telefoner.",
   "hud.nearby.button": "Væsner i nærheden: {n}",
-  "hud.collapse": "Fold sammen"
+  "hud.collapse": "Fold sammen",
+  "settings.fogDistance": "Hvor langt du kan se",
+  "settings.fogDistanceHint": "Tågevæggen omkring dig (1–2 km). Tættere på er lettere for ældre telefoner."
 }

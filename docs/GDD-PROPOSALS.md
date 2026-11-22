@@ -287,14 +287,13 @@ status here changes to `accepted` (or `rejected`, with a reason).
 - **Current text:** "tilted about 50°, with zoom limited to … 16.5–18.5 … Two-finger rotate
   is allowed; a compass button resets north."
 - **Proposed change:** "The camera is always centred on the player and never pans.
-  Dragging rotates the view around the player: strokes below or above the player, along
-  the sides, and half or full circles turn it, while a swipe level with the player barely
-  turns it; two-finger twist works too. Pinching or the scroll wheel zooms on the player:
+  Dragging rotates the view around the player by exactly the angle the finger sweeps
+  around it, near or far, so the view follows the finger; two-finger twist works too. Pinching or the scroll wheel zooms on the player:
   zoomed out the camera looks almost straight down (30°), zooming in tilts it up to 76°. A
   compass button turns north up. When the GPS position changes, the player slides to it.
-  A low fog around the player (clear to about 650 m, solid at 1 km) hides the distance;
-  buildings and icons beyond it are not drawn, and a day or night sky shows above it at
-  steep tilts."
-- **Reason / evidence:** owner requests after M2d (D120, D124–D126, D131–D134). The
+  A fog wall around the player hides the distance: a fixed edge at every zoom, 2 km by
+  default (a setting, 1–2 km), with the day or night sky colour above it. Buildings load
+  and unload 100 m behind the wall; icons beyond it are not drawn."
+- **Reason / evidence:** owner requests after M2d (D120, D124–D126, D131–D135). The
   recentre button and the snap-back from panning are gone.
 - **Status:** open (implemented at the owner's request; fold into the GDD)

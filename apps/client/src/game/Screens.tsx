@@ -707,6 +707,20 @@ function SettingsScreen({
       )}
       {toggle('reduceMotion', t('settings.reduceMotion'))}
       {toggle('buildings3d', t('settings.buildings3d'), t('settings.buildings3dHint'))}
+      <label className="setting slider-row" data-testid="setting-fogDistance">
+        <span>{t('settings.fogDistance')}</span>
+        <output>{(s.fogDistance / 1000).toFixed(1)} km</output>
+        <input
+          type="range"
+          min={1000}
+          max={2000}
+          step={100}
+          value={s.fogDistance}
+          aria-valuetext={`${(s.fogDistance / 1000).toFixed(1)} km`}
+          onChange={(e) => set('fogDistance', Number(e.target.value))}
+        />
+        <span className="muted small toggle-hint">{t('settings.fogDistanceHint')}</span>
+      </label>
       {choice(
         t('settings.language'),
         s.language,

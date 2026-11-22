@@ -1129,3 +1129,27 @@ length, position resolution and spawn tables>`.
     finger drag and a mouse drag along the same stroke now turn the map identically
     (72.2 degrees each, no cancelled pointer events). E2E tests cover the finger drag (no
     reload) and the menu (same map object, no loading screen).
+- **D135. Static fog wall (1–2 km setting), buildings 100 m behind it, exact drag rotation**
+  (owner feedback).
+  - **Why the fog seemed to come closer when zooming in:** the sky band was a fixed share
+    of the screen's height, so at steep tilts it painted over ground that was well inside
+    1 km, and the soft fade made the visible distance change with zoom.
+  - **Fog wall:** one hard edge at the fog distance, at every zoom, with no fade. Each frame
+    the ellipse through the projected ground points at that distance (ahead and to the
+    side) is clear; everything beyond it, up to the top of the screen, is fog, with the day
+    or night sky colour at the top. The separate sky band is gone.
+  - **Distance is a setting:** "How far you can see", 1,000–2,000 m in 100 m steps, default
+    2,000 m (save v6 `settings.fogDistance`; older saves get 2,000). Changing it moves the
+    wall, the icon cut-off and the building range at once.
+  - **Buildings:** 3D buildings load and unload at the fog distance + 100 m (2,100 m by
+    default), so they come and go behind the wall. The filter is re-centred after 100 m
+    walked (it was 200 m) and never on zoom.
+  - **Off-screen buildings:** MapLibre only loads and draws the map tiles the camera can
+    see (plus a small cache), so buildings out of view are not drawn. A per-building view
+    filter would re-process tiles on every turn of the camera (the lag D133 removed), so it
+    is not added.
+  - **Exact drag rotation:** the map turns by exactly the angle the finger or mouse sweeps
+    around the player, at any distance from it, so the screen always follows the finger
+    (before, strokes near the player were damped and a swipe level with the player barely
+    turned it). Only moves within 2 px of the player, which have no defined angle, are
+    skipped. The fling after a swipe is unchanged.

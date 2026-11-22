@@ -14,16 +14,11 @@ export const ORBIT = {
   /** Tilt when zoomed all the way out … */
   minPitch: 30,
   /**
-   * … and all the way in. 65 to 72 was too little to see on a phone; 76 shows clearly more
-   * ground ahead when zoomed in, and the haze covers the far edge (see .map-haze).
+   * … and all the way in. 76 shows clearly more ground ahead when zoomed in; the fog wall
+   * at 2 km hides the map's far edge (see fogWall).
    */
   maxPitch: 76,
 };
-
-/** Haze strength (0–1) for a tilt: none up to 55 degrees, full at the steepest tilt. */
-export function hazeForPitch(pitch: number): number {
-  return Math.max(0, Math.min(1, (pitch - 55) / (ORBIT.maxPitch - 55)));
-}
 
 /** Tilt for a zoom level: linear from minPitch (zoomed out) to maxPitch (zoomed in). */
 export function pitchForZoom(zoom: number): number {
@@ -32,18 +27,13 @@ export function pitchForZoom(zoom: number): number {
 }
 
 /**
- * Drag-to-rotate (owner feedback: simplified). Only motion *around* the player turns the
- * map, with the finger: a stroke below or above the player, along a side, or a half or full
- * circle around the player. A horizontal swipe level with the player moves towards or away
- * from it, so it turns the map hardly at all; nothing is blocked or ignored.
- * - Close to the player the angle swept changes very fast, so each move's rotation is
- *   damped by (r / NEAR_PX)³ there: a swipe right next to the player stays negligible.
- * - The angle is measured with an effective radius of at least MIN_RADIUS_PX (steady) and
- *   at most MAX_RADIUS_PX (far strokes near the screen edge still turn decisively).
+ * Drag-to-rotate (owner feedback: accuracy first). The map turns by exactly the angle the
+ * finger sweeps around the player, so the screen always follows the finger, at any
+ * distance from the player: close to the player a small move sweeps a large angle, far away
+ * a large move sweeps a small one, just as the finger does. Moves that start or end on the
+ * player itself (within DEAD_PX) have no defined angle and are skipped.
  */
-export const NEAR_PX = 200;
-export const MIN_RADIUS_PX = 140;
-export const MAX_RADIUS_PX = 260;
+export const DEAD_PX = 2;
 
 /** Bearing change (degrees; + = the view turns clockwise on the compass) for a finger move a → b with the player at c (screen px, y down). */
 export function dragRotation(
@@ -51,18 +41,14 @@ export function dragRotation(
   a: { x: number; y: number },
   b: { x: number; y: number },
 ): number {
-  const dx = b.x - a.x;
-  const dy = b.y - a.y;
-  const rx = (a.x + b.x) / 2 - c.x;
-  const ry = (a.y + b.y) / 2 - c.y;
-  const r = Math.hypot(rx, ry);
-  if (r < 1e-6) return 0;
-  // the part of the move that goes around the player (+ = clockwise on screen)
-  const tangential = (rx * dy - ry * dx) / r;
-  const near = Math.min(1, (r / NEAR_PX) ** 3);
-  const reff = Math.min(MAX_RADIUS_PX, Math.max(r, MIN_RADIUS_PX));
-  // the map follows the finger: clockwise finger → content turns clockwise → bearing down
-  return ((-tangential * near) / reff) * (180 / Math.PI);
+  if (Math.hypot(a.x - c.x, a.y - c.y) < DEAD_PX || Math.hypot(b.x - c.x, b.y - c.y) < DEAD_PX)
+    return 0;
+  let d = (Math.atan2(b.y - c.y, b.x - c.x) - Math.atan2(a.y - c.y, a.x - c.x)) * (180 / Math.PI);
+  if (d > 180) d -= 360;
+  if (d < -180) d += 360;
+  // the map follows the finger: clockwise on screen turns the content clockwise, so the
+  // bearing goes down
+  return -d;
 }
 
 /** Fling: after a quick swipe the map keeps turning a little and slows down. */
@@ -179,26 +165,29 @@ export function attachOrbit(map: MlMap): () => void {
 }
 
 /**
- * The fog ellipse in screen pixels, from the player's screen point and the projected points
- * at the fog start and end ahead of the player and at the fog end to the side. Returns the
- * CSS radial-gradient for the .map-fog overlay (transparent inside the start, solid fog
- * from the end outwards).
+ * The fog wall in screen space (owner request: a static barrier, no fade). Everything
+ * within the fog distance of the player is clear; beyond it is fog at the horizon and sky
+ * above. The wall is the screen ellipse through the projected fog distance ahead of the
+ * player and to its side, drawn only above the player's row (below it the ground is near
+ * the camera). Returns the overlay's height, background and mask.
  */
-export function fogEllipse(
+export function fogWall(
   player: { x: number; y: number },
-  startAhead: { x: number; y: number },
   endAhead: { x: number; y: number },
   endSide: { x: number; y: number },
-  colour: string,
-): string {
+  sky: string,
+  fog: string,
+): { height: string; background: string; mask: string } {
   const ry = Math.max(1, Math.hypot(endAhead.x - player.x, endAhead.y - player.y));
   const rx = Math.max(1, Math.hypot(endSide.x - player.x, endSide.y - player.y));
-  const ryStart = Math.hypot(startAhead.x - player.x, startAhead.y - player.y);
-  const startPct = Math.max(0, Math.min(99, (100 * ryStart) / ry));
-  const mid = startPct + (100 - startPct) * 0.55;
-  return (
-    `radial-gradient(ellipse ${rx.toFixed(0)}px ${ry.toFixed(0)}px at ${player.x.toFixed(0)}px ${player.y.toFixed(0)}px, ` +
-    `transparent ${startPct.toFixed(1)}%, ` +
-    `color-mix(in srgb, ${colour} 55%, transparent) ${mid.toFixed(1)}%, ${colour} 100%)`
-  );
+  const top = Math.max(0, player.y - ry);
+  // a hair of softening (about 2 px) so the wall edge isn't jagged
+  const edge = Math.max(0, Math.min(99.9, 100 - 200 / ry));
+  return {
+    height: `${Math.max(0, player.y).toFixed(0)}px`,
+    background: `linear-gradient(180deg, ${sky} 0px, ${fog} ${top.toFixed(0)}px)`,
+    mask:
+      `radial-gradient(ellipse ${rx.toFixed(0)}px ${ry.toFixed(0)}px at ${player.x.toFixed(0)}px ${player.y.toFixed(0)}px, ` +
+      `transparent ${edge.toFixed(2)}%, #000 100%)`,
+  };
 }

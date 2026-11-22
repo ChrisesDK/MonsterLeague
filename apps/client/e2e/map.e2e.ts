@@ -236,7 +236,8 @@ test('play camera: always on the player; drag rotates, zoom tilts (no panning)',
   const turned = Math.abs(((after.bearing - before.bearing + 540) % 360) - 180);
   expect(turned).toBeGreaterThan(15);
   expect(await centreOffset()).toBeLessThan(3);
-  // a horizontal swipe level with the player hardly turns the map …
+  // a horizontal swipe above the player turns the map (the screen follows the finger at
+  // any distance; below the player, at Kongens Have, the arena card covers the map)
   const fig = (await page.getByTestId('player-marker').boundingBox())!;
   const swipe = async (y: number) => {
     const b0 = await camera(page);
@@ -248,9 +249,6 @@ test('play camera: always on the player; drag rotates, zoom tilts (no panning)',
     const b1 = await camera(page);
     return Math.abs(((b1.bearing - b0.bearing + 540) % 360) - 180);
   };
-  expect(await swipe(fig.y + fig.height - 10)).toBeLessThan(10);
-  // … while the same swipe well above the player turns it (below it, at Kongens Have, the
-  // arena card covers the map)
   expect(await swipe(fig.y - 170)).toBeGreaterThan(25);
   expect(await centreOffset()).toBeLessThan(3);
   // the wheel zooms on the player, not on the mouse
@@ -467,16 +465,25 @@ test('3D buildings are opt-in (Settings), and facing labels stay above them', as
   await expect.poll(async () => (await layers(page)).on3d, { timeout: 10_000 }).toBe(true);
   l = await layers(page);
   expect(l.flat).toBe(false);
-  // buildings beyond the fog (1,000 m, plus the 200 m re-centring step) are unloaded
-  const filter = await page.evaluate(() =>
-    JSON.stringify(
-      (
-        window as unknown as { __omlMap: { getFilter: (id: string) => unknown } }
-      ).__omlMap.getFilter('buildings-3d'),
-    ),
-  );
-  expect(filter).toContain('"distance"');
-  expect(filter).toContain('1200');
+  // buildings load and unload 100 m behind the fog wall (2,000 m by default)
+  const filter = () =>
+    page.evaluate(() =>
+      JSON.stringify(
+        (
+          window as unknown as { __omlMap: { getFilter: (id: string) => unknown } }
+        ).__omlMap.getFilter('buildings-3d'),
+      ),
+    );
+  expect(await filter()).toContain('"distance"');
+  expect(await filter()).toContain('2100');
+  // the fog distance slider (1–2 km) moves the wall and the buildings with it, at once
+  await page.getByTestId('menu-button').click();
+  await page.getByTestId('menu-settings').click();
+  await page.locator('[data-testid=setting-fogDistance] input').fill('1000');
+  await expect(page.getByTestId('setting-fogDistance')).toContainText('1.0 km');
+  await page.getByTestId('screen-back').click();
+  await page.getByTestId('menu-map').click();
+  await expect.poll(filter, { timeout: 10_000 }).toContain('1100');
 });
 
 test('HUD on demand: the Nearby strip opens from a button; no text banner while searching', async ({

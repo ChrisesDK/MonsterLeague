@@ -529,5 +529,7 @@
   "settings.buildings3d": "3D buildings",
   "settings.buildings3dHint": "Shows the town's buildings in 3D. Off is lighter on older phones.",
   "hud.nearby.button": "Creatures nearby: {n}",
-  "hud.collapse": "Fold away"
+  "hud.collapse": "Fold away",
+  "settings.fogDistance": "How far you can see",
+  "settings.fogDistanceHint": "The fog wall around you (1–2 km). Nearer is lighter on older phones."
 }

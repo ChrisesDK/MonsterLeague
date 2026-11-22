@@ -2,23 +2,22 @@
 
 Everything built or decided since the v1.9 export that the GDD doesn't describe yet,
 grouped by GDD section, with suggested wording. Details and reasons are in
-[DECISIONS.md](DECISIONS.md) (D111–D134); open proposals are in
+[DECISIONS.md](DECISIONS.md) (D111–D135); open proposals are in
 [GDD-PROPOSALS.md](GDD-PROPOSALS.md) (P16–P20).
 
 ## Change log line (suggested)
 
-| Version | Changes                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 1.10    | M2d done and live (game feel); orbit camera (always on the player, drag rotates, zoom tilts 30–76°), distance fog to 1 km with a day/night sky, opt-in 3D buildings, loading screen, HUD on demand (folded goal card, Nearby button, GPS signal icon), menu over the live map, touch drags never scroll or reload the page, fainted creatures recover after 8 hours, short GPS dips tolerated, species art colours; accepted P16–P20 |
+| Version | Changes                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.10    | M2d done and live (game feel); orbit camera (always on the player, drag rotates, zoom tilts 30–76°), a static fog wall (2 km, adjustable 1–2 km) with a day/night sky, opt-in 3D buildings, loading screen, HUD on demand (folded goal card, Nearby button, GPS signal icon), menu over the live map, touch drags never scroll or reload the page, fainted creatures recover after 8 hours, short GPS dips tolerated, species art colours; accepted P16–P20 |
 
 ## Game feel → Map view (P20)
 
 Replace the camera paragraph with:
 
 > The camera is always centred on the player and never pans. Dragging rotates the view
-> around the player: strokes below or above the player, along the sides, and half or full
-> circles turn it with the finger, while a swipe level with the player barely turns it. A
-> quick swipe keeps turning briefly; two-finger twist works too. Pinching or the scroll
+> around the player by exactly the angle the finger sweeps around it, near or far, so the
+> view always follows the finger. A quick swipe keeps turning briefly; two-finger twist works too. Pinching or the scroll
 > wheel zooms on the player
 > (zoom about 16.5–18.5): zoomed out the camera looks almost straight down (30°), zooming
 > in tilts it up to 76°. A compass button turns north up. When the GPS position changes,
@@ -26,10 +25,11 @@ Replace the camera paragraph with:
 
 Add:
 
-- **Distance fog and sky:** a low fog lies around the player, clear to about 650 m and solid
-  at 1,000 m at every zoom, so the world reads as a round patch around the player. 3D
-  buildings and icons beyond the fog are not drawn. At steep tilts a day or night sky shows
-  above the fog.
+- **Fog wall and sky:** a fog wall stands around the player at a fixed distance, the same
+  at every zoom and with no fade, so the world reads as a round patch around the player.
+  It is 2 km by default; the setting "How far you can see" sets it between 1 and 2 km.
+  3D buildings load and unload 100 m behind the wall; icons beyond it are not drawn. The
+  day or night sky colour shows above the fog.
 - **Touch:** dragging on the map never scrolls the page or triggers the browser's
   pull-to-reload; a finger drag turns the map just like a mouse drag.
 - **Menu:** the menu opens over the live map, so closing it is instant (the map, GPS and
@@ -50,7 +50,8 @@ Add:
 - **3D buildings (setting, off by default):** buildings from the map data drawn in 3D at a
   storybook scale (about half their real height, so the street around the player stays
   visible); facing labels stay above them.
-- **Settings screen:** add "3D buildings" to the list.
+- **Settings screen:** add "3D buildings" and "How far you can see" (fog wall, 1–2 km) to
+  the list.
 - **Design system (as built):** headings in Fraunces, body text in Atkinson Hyperlegible
   (both SIL Open Font License, self-hosted); the main menu button is a red satchel.
 
@@ -118,6 +119,7 @@ Save versions since v1.9:
 | v3      | Journal progress: districts reached, route checkpoints reached, metres walked in wild areas, rest stops visited (no positions or times) |
 | v4      | Recovery clock for fainted creatures                                                                                                    |
 | v5      | The 3D buildings setting                                                                                                                |
+| v6      | The fog distance setting (1,000–2,000 m, default 2,000)                                                                                 |
 
 Region file v3: each cell carries flags for no-spawn, wild area, water edge and route
 corridor.
@@ -130,7 +132,7 @@ corridor.
 | P17      | Routes may pass through districts already unlocked when their two districts don't touch | Needs your decision; Route 3 already does this      |
 | P18      | Journal step "Beat the trainers in <district>"; trainers stand on any route through it  | Needs your decision; built this way                 |
 | P19      | Fainted creatures recover by themselves after 8 hours                                   | Built at your request; fold in                      |
-| P20      | Orbit camera, tilt 30–76°, fog and sky                                                  | Built at your request; fold in                      |
+| P20      | Orbit camera (exact drag rotation), tilt 30–76°, fog wall and sky                       | Built at your request; fold in                      |
 
 ## Development plan
 

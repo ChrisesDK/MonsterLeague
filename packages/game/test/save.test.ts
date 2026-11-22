@@ -100,11 +100,34 @@ describe('save versions and migrations', () => {
 
   it('v4 → v5 adds the 3D buildings setting, off', () => {
     const cur = chooseStarter(newSave(SEED), 'gnistkat');
-    const { buildings3d: _b, ...settings } = cur.settings;
+    const { buildings3d: _b, fogDistance: _f, ...settings } = cur.settings;
     const v4 = { ...cur, version: 4, settings };
     const r = loadSave(JSON.parse(JSON.stringify(v4)), 'other');
     expect(r.ok && r.save.settings.buildings3d).toBe(false);
     expect(r.ok && r.save.version).toBe(SAVE_VERSION);
+  });
+
+  it('v5 → v6 adds the fog distance setting, 2,000 m', () => {
+    const cur = chooseStarter(newSave(SEED), 'gnistkat');
+    const { fogDistance: _f, ...settings } = cur.settings;
+    const v5 = { ...cur, version: 5, settings };
+    const r = loadSave(JSON.parse(JSON.stringify(v5)), 'other');
+    expect(r.ok && r.save.settings.fogDistance).toBe(2000);
+    expect(r.ok && r.save.version).toBe(SAVE_VERSION);
+  });
+
+  it('the fog distance stays within 1,000–2,000 m', () => {
+    const cur = chooseStarter(newSave(SEED), 'gnistkat');
+    for (const [d, ok] of [
+      [999, false],
+      [1000, true],
+      [1500, true],
+      [2000, true],
+      [2001, false],
+    ] as const)
+      expect(
+        SaveSchema.safeParse({ ...cur, settings: { ...cur.settings, fogDistance: d } }).success,
+      ).toBe(ok);
   });
 
   it('reports corrupt or newer saves instead of throwing', () => {
