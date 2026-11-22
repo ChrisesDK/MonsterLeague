@@ -2,7 +2,7 @@
 
 Everything built or decided since the v1.9 export that the GDD doesn't describe yet,
 grouped by GDD section, with suggested wording. Details and reasons are in
-[DECISIONS.md](DECISIONS.md) (D111–D151); open proposals are in
+[DECISIONS.md](DECISIONS.md) (D111–D152); open proposals are in
 [GDD-PROPOSALS.md](GDD-PROPOSALS.md) (P16–P21).
 
 ## Change log line (suggested)
@@ -28,12 +28,11 @@ Add:
 
 - **The edge of the world and the sky:** the world is a round patch around the player that
   ends in sky at a fixed distance, the same at every zoom. It is 1,200 m by default; the
-  setting "How far you can see" sets it between 800 and 1,400 m. The edge is an invisible
-  wall painted like the sky: buildings inside stand in front of it, everything behind it
-  is hidden, and the last 150 m of ground blend softly into the sky. 3D buildings load and
-  unload at the edge. The day or night sky is drawn behind the map, so it only fills the
-  space above the horizon and never covers ground; at night it has stars, which turn with
-  the camera.
+  setting "How far you can see" sets it between 800 and 1,400 m. The edge is a tall wall
+  that is the sky itself: haze at the foot, the day or night sky colour higher up, and at
+  night the stars, fixed on it so they move with the skyline. Buildings inside stand in
+  front of it, everything behind it is hidden, and the last 150 m of ground blend softly
+  into the haze. 3D buildings load and unload at the edge.
 - **Touch:** dragging on the map never scrolls the page or triggers the browser's
   pull-to-reload; a finger drag turns the map just like a mouse drag; a pinch always
   zooms, also while the player is moving.

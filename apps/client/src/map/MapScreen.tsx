@@ -83,7 +83,7 @@ import { SimPanel } from './SimPanel';
 import type { ApiSpawn } from './spawnApi';
 import { applyPalette, NIGHT, paperStyle, PAPER } from './style';
 import { markerElement, PLAYER_SVG, STAR_SVG, START, addAttribution } from './markers';
-import { addFogWall } from './fogWall';
+import { addSkyWall } from './skyWall';
 import { LoadingScreen } from './LoadingScreen';
 import { TownMap } from './TownMap';
 import { useSpawns } from './useSpawns';
@@ -95,20 +95,7 @@ import {
   metresPerPx,
   ORBIT,
   pitchForZoom,
-  skyBackground,
 } from './orbit';
-
-/** A point `metres` away from `p` towards `bearingDeg`. */
-function offsetM(p: LatLng, metres: number, bearingDeg: number): LatLng {
-  const b = (bearingDeg * Math.PI) / 180;
-  return {
-    lat: p.lat + (metres * Math.cos(b)) / 110_540,
-    lng: p.lng + (metres * Math.sin(b)) / (111_320 * Math.cos((p.lat * Math.PI) / 180)),
-  };
-}
-const toLngLat = (p: LatLng): [number, number] => [p.lng, p.lat];
-/** A point this far ahead is drawn (practically) on the horizon. */
-const HORIZON_M = 200_000;
 
 const POIS: Poi[] = Object.values(content.pois);
 /** POI radius circles appear when the player is this much outside the radius, or closer. */
@@ -462,12 +449,18 @@ export function MapScreen({
       });
       addBuildings3d(map, paletteRef.current, saveRef.current.settings.buildings3d);
       setFogPalette(map, paletteRef.current);
-      // last, so it sits above every layer (far labels are hidden behind it too)
-      addFogWall(
+      // the sky wall: the edge of the world and the sky (with the stars at night); last, so
+      // it sits above every layer (far labels are hidden behind it too)
+      addSkyWall(
         map,
         () => fogRadii(saveRef.current.settings.fogDistance)[1],
-        () => ({ sky: paletteRef.current.sky, fog: paletteRef.current.fog }),
+        () => ({
+          sky: paletteRef.current.sky,
+          fog: paletteRef.current.fog,
+          night: paletteRef.current === NIGHT,
+        }),
       );
+      map.getContainer().style.background = paletteRef.current.sky;
       setMapReady(true);
     });
     // Drag rotates around the player; pinch and wheel zoom on the player (no panning).
@@ -542,6 +535,9 @@ export function MapScreen({
     applyPalette(map, palette);
     applyPatternPalette(map, palette);
     setFogPalette(map, palette);
+    // behind the map (never seen: the sky wall fills the screen above the horizon)
+    map.getContainer().style.background = palette.sky;
+    map.triggerRepaint(); // the sky wall reads the palette when it draws
   }, [palette, mapReady]);
 
   // Wild areas and locked districts.
@@ -600,7 +596,6 @@ export function MapScreen({
     let raf = 0;
     let prev = performance.now();
     let ringAt: LatLng | null = null;
-    let skyCss = '';
     let buildingsAt: LatLng | null = null;
     let buildingsFog = -1;
     const frame = (now: number) => {
@@ -632,23 +627,6 @@ export function MapScreen({
           type: 'FeatureCollection',
           features: [circle(next, BATTLE_RADIUS_M)],
         });
-      }
-      // the sky behind the map: sky colour at the top, fog colour at the horizon, stars at
-      // night (the fog
-      // wall itself is a layer in the 3D scene, see fogWall.ts)
-      {
-        const horizonY = map.project(toLngLat(offsetM(next, HORIZON_M, map.getBearing()))).y;
-        const sky = skyBackground(
-          horizonY,
-          paletteRef.current.sky,
-          paletteRef.current.fog,
-          // stars on the night sky, turning with the camera
-          paletteRef.current === NIGHT ? { bearing: map.getBearing() } : undefined,
-        );
-        if (sky !== skyCss) {
-          skyCss = sky;
-          map.getContainer().style.background = sky;
-        }
       }
       // 3D buildings beyond the fog are unloaded; the filter only moves every 200 m walked
       // (never on zoom), since each change re-processes the map tiles

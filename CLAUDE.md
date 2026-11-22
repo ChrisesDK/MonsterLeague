@@ -108,8 +108,9 @@ apps/client       Vite + React PWA: map game (#/; src/game = save store, onboard
   `classList` (tests: `test/marker-css.test.ts`, `e2e/map.e2e.ts`).
 - Play camera (`src/map/orbit.ts`): always looks at the player (lower on screen when zoomed
   in: look-ahead padding); drag rotates, zoom tilts. Don't re-enable panning. The play map
-  overrides MapLibre's `transform.getHorizon` so the ground reaches the fog wall (D136); the
-  fog wall is a custom 3D layer on top, painted like the sky (`fogWall.ts`, D138, D142).
+  overrides MapLibre's `transform.getHorizon` so the ground reaches the edge of the world
+  (D136); the edge is the sky wall, a custom 3D layer on top that is also the sky and the
+  stars (`skyWall.ts`, D152).
   Never `jumpTo` while a finger is down (`fingersDown`): it resets MapLibre's gestures and
   loses a starting pinch (D139).
 - UI: use the tokens and components in `apps/client/src/ui/` (day and night palettes);

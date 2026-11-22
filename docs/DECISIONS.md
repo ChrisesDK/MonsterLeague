@@ -1392,3 +1392,22 @@ length, position resolution and spawn tables>`.
   - **Dropdowns** for the settings with several options (battle speed, text size,
     language) instead of rows of buttons.
   - **Order** in Settings: … safety reminder, test items, battle playtest, walk test, save.
+- **D152. One sky wall instead of a fog wall, a sky behind the map and star tiles** (owner
+  design). The stars were painted behind the map as if infinitely far away, so they slid
+  against the skyline as the camera orbited the player (it looked laggy). Now a single wall
+  in the 3D scene (`src/map/skyWall.ts`) is both the edge of the world and the sky:
+  - a ring at the fog distance (the setting), the loading boundary as before: buildings
+    inside stand in front of it, nothing behind it is seen, buildings load and unload at
+    it, and the ground is drawn just past it;
+  - tall enough to fill the screen above the horizon at every tilt (its height is worked
+    out from the camera on every frame, with a 3° margin), so nothing behind the map is
+    ever seen; the map's background is just the sky colour as a fallback;
+  - coloured by the angle above the horizon seen from the camera: the fog colour at the
+    foot, the sky colour from 14° up (a world-fixed gradient, not screen rows);
+  - at night it carries the stars: soft dots generated in the shader in some cells of a
+    26 m grid on the wall (a whole number of cells round the ring, so no seam), fading in
+    just above the skyline. They sit where the edge of the world is, so they move exactly
+    with the skyline when the camera turns;
+  - the 150 m haze band on the ground inside it stays, in the fog colour.
+    Removed: the screen-space fog wall colouring, the CSS sky gradient and the CSS star tiles
+    (D138, D141, D142), and the per-frame horizon calculation for the background.

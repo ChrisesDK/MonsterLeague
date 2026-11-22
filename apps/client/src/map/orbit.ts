@@ -6,8 +6,7 @@ import type { Map as MlMap } from 'maplibre-gl';
  * - Pinch and the scroll wheel zoom around the player (the map centre).
  * - Zooming in tilts the camera up (30 degrees zoomed out, close to looking straight down,
  *   76 zoomed in) and moves the player lower on the screen (look-ahead, see lookAheadPadding).
- * - The fog wall (fogWall.ts) hides the world beyond the fog distance; the sky is drawn
- *   behind the map.
+ * - The sky wall (skyWall.ts) hides the world beyond the fog distance and is the sky.
  */
 export const ORBIT = {
   minZoom: 16.5,
@@ -245,72 +244,4 @@ export function lookAheadPadding(
   const yIn = Math.max(yOut, Math.min(height * playerIn, height - bottom - hudGap));
   const y = yOut + t * (yIn - yOut);
   return { top: Math.round(2 * y - height + bottom), bottom, left: 0, right: 0 };
-}
-
-/**
- * Stars on the night sky (owner request): small dots in repeating tiles, drawn in the sky
- * behind the map, so they only show above the horizon. They turn with the camera at the
- * speed the town turns at the horizon (about 22 px per degree on a phone; every tile width
- * divides one full turn, so the sky wraps without a seam) and move with the horizon when
- * the tilt changes. Each layer: [x, y, radius, opacity] in a tile of [w, h].
- */
-export const STAR_PX_PER_DEG = 22;
-const STAR_TILES: { w: number; h: number; stars: [number, number, number, number][] }[] = [
-  {
-    w: 240,
-    h: 150,
-    stars: [
-      [18, 22, 1.3, 0.9],
-      [96, 64, 1, 0.7],
-      [170, 18, 1.6, 1],
-      [214, 98, 1, 0.6],
-      [58, 120, 1.2, 0.8],
-    ],
-  },
-  {
-    w: 330,
-    h: 210,
-    stars: [
-      [40, 70, 0.9, 0.55],
-      [138, 150, 1.4, 0.85],
-      [250, 44, 1, 0.65],
-      [300, 180, 0.9, 0.5],
-    ],
-  },
-  {
-    w: 360,
-    h: 270,
-    stars: [
-      [120, 30, 1.8, 0.95],
-      [290, 120, 1.1, 0.7],
-      [24, 210, 1, 0.6],
-    ],
-  },
-];
-
-/**
- * The sky behind the map: sky colour at the top of the screen, fog colour at the horizon;
- * with `stars` (night), stars above it. Returns a CSS `background` value.
- */
-export function skyBackground(
-  horizonY: number,
-  sky: string,
-  fog: string,
-  stars?: { bearing: number },
-): string {
-  const gradient = `linear-gradient(180deg, ${sky} 0px, ${fog} ${Math.max(1, horizonY).toFixed(0)}px)`;
-  if (!stars) return gradient;
-  const pan = -(((stars.bearing % 360) + 360) % 360) * STAR_PX_PER_DEG;
-  const layers = STAR_TILES.map(({ w, h, stars: dots }) => {
-    const x = (((pan % w) + w) % w).toFixed(0);
-    const y = (((horizonY % h) + h) % h).toFixed(0);
-    const g = dots
-      .map(
-        ([sx, sy, r, a]) =>
-          `radial-gradient(circle at ${sx}px ${sy}px, rgba(255,248,230,${a}) 0 ${r}px, transparent ${(r + 0.8).toFixed(1)}px) ${x}px ${y}px / ${w}px ${h}px repeat`,
-      )
-      .join(', ');
-    return g;
-  });
-  return `${layers.join(', ')}, ${gradient}`;
 }

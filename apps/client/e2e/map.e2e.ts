@@ -376,16 +376,17 @@ test('fog wall: the ground reaches just past it at every zoom, the sky is behind
   for (const v of [out, mid]) expect(v.at1220 || v.at1220OffTop).toBe(true);
   expect(inn.at1220).toBe(true);
   for (const v of [out, mid, inn]) expect(v.at1400).toBe(false);
-  // the fog wall is a layer in the 3D scene, above every other layer (buildings in front of
-  // it stay in front); the sky is the map's background (behind the ground)
+  // the sky wall (the edge of the world and the sky) is a layer in the 3D scene, above every
+  // other layer (buildings in front of it stay in front); behind the map is just the sky
+  // colour (never seen)
   const top = await page.evaluate(() => {
     const ids = (
       window as unknown as { __omlMap: { getLayersOrder: () => string[] } }
     ).__omlMap.getLayersOrder();
     return ids[ids.length - 1];
   });
-  expect(top).toBe('fog-wall');
-  await expect.poll(async () => (await look(18.5)).sky).toContain('linear-gradient');
+  expect(top).toBe('sky-wall');
+  await expect.poll(async () => (await look(18.5)).sky).toMatch(/^rgb\(/);
 });
 
 test('Town Map: districts, arenas and routes; a card tells what a place needs', async ({
