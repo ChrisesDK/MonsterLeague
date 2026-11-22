@@ -62,14 +62,18 @@ export function App() {
 
 /** Asks before a back gesture leaves the site or closes the installed app (backGuard.ts). */
 function LeaveGuard({ t }: { t: ReturnType<typeof makeT> }) {
-  const [asking, setAsking] = useState(false);
+  const [asking, setAsking] = useState<'no' | 'ask' | 'swipe'>('no');
   const guard = useRef<ReturnType<typeof installBackGuard> | null>(null);
   useEffect(() => {
-    const g = installBackGuard(window, () => setAsking(true));
+    const g = installBackGuard(
+      window,
+      () => setAsking('ask'),
+      () => setAsking('swipe'),
+    );
     guard.current = g;
     return () => g.dispose();
   }, []);
-  if (!asking) return null;
+  if (asking === 'no') return null;
   return (
     <Modal
       title={t('leave.title')}
@@ -81,24 +85,26 @@ function LeaveGuard({ t }: { t: ReturnType<typeof makeT> }) {
             className="btn primary wide"
             data-testid="leave-stay"
             autoFocus
-            onClick={() => setAsking(false)}
+            onClick={() => {
+              guard.current?.stay();
+              setAsking('no');
+            }}
           >
             {t('leave.stay')}
           </button>
-          <button
-            className="btn wide"
-            data-testid="leave-go"
-            onClick={() => {
-              setAsking(false);
-              guard.current?.leave();
-            }}
-          >
-            {t('leave.leave')}
-          </button>
+          {asking === 'ask' && (
+            <button
+              className="btn wide"
+              data-testid="leave-go"
+              onClick={() => guard.current?.leave()}
+            >
+              {t('leave.leave')}
+            </button>
+          )}
         </>
       }
     >
-      <p>{t('leave.body')}</p>
+      <p data-testid="leave-text">{t(asking === 'swipe' ? 'leave.swipe' : 'leave.body')}</p>
     </Modal>
   );
 }

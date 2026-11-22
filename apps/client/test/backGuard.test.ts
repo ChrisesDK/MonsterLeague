@@ -68,7 +68,7 @@ describe('back guard (an edge swipe must not leave the app)', () => {
     ]);
   });
 
-  it('the first back asks instead of leaving, and asks again next time', () => {
+  it('the first back asks; while it asks, a second back really leaves', () => {
     const f = fakeWindow();
     const ask = vi.fn();
     installBackGuard(f.win, ask);
@@ -76,32 +76,49 @@ describe('back guard (an edge swipe must not leave the app)', () => {
     f.win.history.go(-1);
     expect(ask).toHaveBeenCalledTimes(1);
     expect(f.win.location.href).toBe('app');
+    // the guard is not pushed again while asking: the phone's own back leaves
+    expect((f.win.history.state as { oml: string }).oml).toBe(BASE);
+    f.win.history.go(-1);
+    expect(f.win.location.href).toBe('prev0');
+  });
+
+  it('"Stay" guards the next back again', () => {
+    const f = fakeWindow();
+    const ask = vi.fn();
+    const g = installBackGuard(f.win, ask);
+    f.fire('pointerdown');
+    f.win.history.go(-1);
+    g.stay();
     expect((f.win.history.state as { oml: string }).oml).toBe(GUARD);
     f.win.history.go(-1);
     expect(ask).toHaveBeenCalledTimes(2);
     expect(f.win.location.href).toBe('app');
   });
 
-  it('"Leave" goes back past the app to the page before it', () => {
+  it('"Leave" goes back to the page before the game', () => {
     const f = fakeWindow();
-    const g = installBackGuard(f.win, () => undefined);
+    const cannot = vi.fn();
+    const g = installBackGuard(f.win, () => undefined, cannot);
     f.fire('pointerdown');
     f.win.history.go(-1);
     g.leave();
     expect(f.win.location.href).toBe('prev0');
     f.runTimers();
     expect(f.close).not.toHaveBeenCalled();
+    expect(cannot).not.toHaveBeenCalled();
   });
 
-  it('with nothing before the app (installed app), "Leave" tries to close it', () => {
+  it('with nothing before the game (installed app), "Leave" tries to close it, else asks for one more swipe', () => {
     const f = fakeWindow(0);
-    const g = installBackGuard(f.win, () => undefined);
+    const cannot = vi.fn();
+    const g = installBackGuard(f.win, () => undefined, cannot);
     f.fire('pointerdown');
     f.win.history.go(-1);
     g.leave();
     f.runTimers();
     expect(f.close).toHaveBeenCalled();
-    // and the next back is not caught again
+    expect(cannot).toHaveBeenCalled();
+    // still on the game's own entry, unguarded: the next swipe is the phone's own back
     expect(f.at()).toBe(0);
   });
 

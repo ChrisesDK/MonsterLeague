@@ -2,7 +2,7 @@
 
 Everything built or decided since the v1.9 export that the GDD doesn't describe yet,
 grouped by GDD section, with suggested wording. Details and reasons are in
-[DECISIONS.md](DECISIONS.md) (D111–D142); open proposals are in
+[DECISIONS.md](DECISIONS.md) (D111–D143); open proposals are in
 [GDD-PROPOSALS.md](GDD-PROPOSALS.md) (P16–P20).
 
 ## Change log line (suggested)
@@ -60,7 +60,9 @@ Add:
   and "Battle playtest" (opens the playtest; the playtest has "Go to the map game") to the
   list.
 - **Leaving:** an accidental back gesture (an edge swipe) doesn't leave the site or close
-  the installed app; the game asks "Leave the game?" (Stay / Leave) first.
+  the installed app; the game asks "Leave the game?" first. Stay keeps you in the game;
+  a second back gesture or Leave leaves (where the phone doesn't let the game close
+  itself, Leave asks for one more swipe back).
 - **Logo:** the arena badge with an empty centre (cream petals, a red ring and a cream
   centre on navy). It is the app icon and appears with the game's name on the first
   screen. The swinging lantern stays the loading-screen icon.

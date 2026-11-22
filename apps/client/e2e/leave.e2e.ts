@@ -16,7 +16,7 @@ test('the first back asks "Leave the game?"; Stay keeps you here, Leave goes bac
   expect(page.url()).toContain('#/playtest');
   await page.getByTestId('leave-stay').click();
   await expect(page.getByTestId('leave-guard')).toHaveCount(0);
-  // still guarded the next time
+  // still guarded the next time (Stay guards again)
   await back();
   await expect(page.getByTestId('leave-guard')).toBeVisible();
   expect(page.url()).toContain('#/playtest');
@@ -27,9 +27,21 @@ test('the first back asks "Leave the game?"; Stay keeps you here, Leave goes bac
   await back();
   await expect(page).toHaveURL(/#\/playtest$/);
   await expect(page.getByTestId('leave-guard')).toHaveCount(0);
-  // Leave: back past the app to the page before it
+  // Leave: back to the page before the game
   await back();
   await expect(page.getByTestId('leave-guard')).toBeVisible();
   await page.getByTestId('leave-go').click();
+  await expect(page).toHaveURL('about:blank');
+});
+
+test('while it asks, a second back gesture really leaves', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('oml.locale', 'en'));
+  await page.goto('#/playtest');
+  const h = page.getByRole('heading', { name: 'Battle playtest' });
+  await h.click();
+  const back = () => page.goBack({ timeout: 2000 }).catch(() => null);
+  await back();
+  await expect(page.getByTestId('leave-guard')).toBeVisible();
+  await back();
   await expect(page).toHaveURL('about:blank');
 });

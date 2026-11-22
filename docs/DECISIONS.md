@@ -1271,3 +1271,15 @@ length, position resolution and spawn tables>`.
     from clear to 90% at the wall's foot, so the last stretch of ground blends into the sky
     instead of ending in a hard line. It is fixed in the world (no change with zoom), and
     buildings in front of it stay crisp (depth test).
+- **D143. "Leave" really leaves: the swipe does it** (owner report: Leave only closed the
+  dialog, and the next swipe left without asking).
+  - **Cause:** where the game is the first page in its history (the installed app, or a
+    tab opened straight to it) there is nothing to go back to, and no page can trigger the
+    phone's own "back and exit" or close itself (`window.close()` is blocked), so Leave
+    could only drop the guard.
+  - **Now:** when the back gesture lands on the game's own entry, the guard is not pushed
+    again while the dialog asks, so a second back gesture really leaves (the phone's own
+    back, in the browser and the installed app). "Stay" pushes the guard again. "Leave"
+    goes back to the page before the game when there is one; when there isn't, it tries
+    `window.close()` and otherwise the dialog says "Swipe back once more to leave" (that
+    swipe exits). This replaces the Leave fallback of D140.
