@@ -134,14 +134,14 @@ describe('save versions and migrations', () => {
     }
   });
 
-  it('the fog distance stays within 1,000–1,200 m', () => {
+  it('the fog distance stays within 800–1,400 m', () => {
     const cur = chooseStarter(newSave(SEED), 'gnistkat');
     for (const [d, ok] of [
-      [999, false],
-      [1000, true],
-      [1100, true],
+      [799, false],
+      [800, true],
       [1200, true],
-      [1201, false],
+      [1400, true],
+      [1401, false],
     ] as const)
       expect(
         SaveSchema.safeParse({ ...cur, settings: { ...cur.settings, fogDistance: d } }).success,

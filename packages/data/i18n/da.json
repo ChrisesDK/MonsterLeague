@@ -531,7 +531,7 @@
   "hud.nearby.button": "Væsner i nærheden: {n}",
   "hud.collapse": "Fold sammen",
   "settings.fogDistance": "Hvor langt du kan se",
-  "settings.fogDistanceHint": "Tågevæggen omkring dig (1–1,2 km). Tættere på er lettere for ældre telefoner.",
+  "settings.fogDistanceHint": "Tågevæggen omkring dig (0,8–1,4 km). Tættere på er lettere for ældre telefoner.",
   "settings.mode": "Kamptest",
   "settings.modeHint": "Spil testkampe uden at gå. Dit kortspil forbliver gemt; åbn kortet igen fra kamptesten.",
   "pt.toMap": "Gå til kortspillet"

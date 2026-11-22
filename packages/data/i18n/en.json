@@ -531,7 +531,7 @@
   "hud.nearby.button": "Creatures nearby: {n}",
   "hud.collapse": "Fold away",
   "settings.fogDistance": "How far you can see",
-  "settings.fogDistanceHint": "The fog wall around you (1–1.2 km). Nearer is lighter on older phones.",
+  "settings.fogDistanceHint": "The fog wall around you (0.8–1.4 km). Nearer is lighter on older phones.",
   "settings.mode": "Battle playtest",
   "settings.modeHint": "Play test battles without walking. Your map game stays saved; open the map again from the playtest.",
   "pt.toMap": "Go to the map game"

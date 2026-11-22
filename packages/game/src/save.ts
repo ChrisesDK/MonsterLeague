@@ -187,7 +187,7 @@ export const SaveSchema = z
         reduceMotion: z.boolean(),
         language: z.enum(['da', 'en']),
         buildings3d: z.boolean(),
-        fogDistance: z.number().int().min(1000).max(1200),
+        fogDistance: z.number().int().min(800).max(1400),
       })
       .strict(),
     journal: z

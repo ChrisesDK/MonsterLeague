@@ -1177,3 +1177,53 @@ length, position resolution and spawn tables>`.
     idea, but an arena's card at the bottom then covers the player's feet. The padding is
     set on the transform in every `move` event (`setPadding` would stop a running pinch).
     Drag rotation still turns around the player.
+- **D137. Logo, colours and switching between the map game and the battle playtest**
+  (owner feedback).
+  - **Logo:** the walker (the player figure: red knit cap with a pompom, red scarf, blue
+    coat, satchel strap) on a cream postage stamp with a perforated edge, like the stamps
+    on the map, on a Danish-red tile (`public/icon.svg`, own work). It is the app icon and
+    sits with the game's name on the first onboarding screen and the playtest start. A
+    lantern-creature mascot was tried first and dropped: the lantern stays only on the
+    loading screen.
+  - **No green and yellow:** the phone's top and navigation bars used the old green theme
+    colour; they now follow the paper colour of the current theme (cream by day, navy at
+    night; `main.tsx` keeps `<meta name="theme-color">` in step), and the manifest uses the
+    night navy. Outside the map, the `--gold` token is now copper and `--leaf` (things that
+    are done) is spruce; the map screen keeps its own leaf and gold (owner: don't change
+    the map). Health bars and the grass in the battle backdrop keep their colours.
+  - **Switching modes:** before, a player who chose the map at the location step had no way
+    to the battle playtest and back. Settings now has a "Battle playtest" section that
+    opens it, and the playtest's start screen and menu have "Go to the map game". The map
+    save is untouched by the playtest.
+- **D138. The fog wall is a wall in the 3D scene; 1,200 m by default, 800–1,400 m**
+  (owner playtest).
+  - **Buildings in front of the fog:** the screen-space fog was painted over the map with
+    no depth, so the tops of buildings inside the wall that rose above the wall's line on
+    screen were covered. The fog is now a ring-shaped wall at the fog distance, drawn as a
+    MapLibre custom layer with the depth buffer (`src/map/fogWall.ts`), the top layer:
+    buildings inside stay in front of it, and ground, buildings and labels behind it are
+    hidden. Its top is 40 m above the camera, so it ends just above the horizon, where the
+    sky (still the map's background) takes over; this leaves a thin fog band above the
+    rooftops. The vertices are relative to the player with the matrix moved in double
+    precision, so the wall doesn't jitter.
+  - **Distance:** 2 km showed too much; the default is 1,200 m and the setting runs from
+    800 to 1,400 m. Save v7 brings settings above 1,200 m (the old 2,000 m default) down to
+    1,200 m; the range was widened afterwards without a new version (no existing save is
+    outside it). 3D buildings load and unload 100 m behind the wall, and the ground is
+    drawn 300 m past it.
+  - **Icons:** arena, trainer, rest-stop and creature icons show at every zoom while they
+    are within the fog distance and not behind the camera; there is no zoom rule. With the
+    shorter fog, places more than 1,200 m away are hidden until you walk closer.
+- **D139. A pinch is no longer lost while the player glides** (owner report: pinch-zoom on
+  the phone sometimes did nothing until a one-finger rotation).
+  - **Cause:** the frame loop keeps the camera on the gliding player with `map.jumpTo()`
+    whenever the map isn't moving. `jumpTo` calls `stop()`, which resets every MapLibre
+    gesture handler, and a pinch only counts as moving once the fingers have spread past
+    MapLibre's zoom threshold. So a pinch that started while the figure glided to a new
+    GPS fix (often, since phone fixes drift) was wiped before it began, and stayed dead
+    until the fingers were lifted. Rotating seemed to help because our rotation isn't a
+    MapLibre gesture.
+  - **Fix:** no re-centring with `jumpTo` while a finger (or the mouse) is down on the map
+    (`fingersDown` in `orbit.ts`); once a gesture runs, `transformCameraUpdate` keeps the
+    camera on the player. An E2E test pinches three times during glides (it failed before
+    the fix: zoom stayed at 17.5).

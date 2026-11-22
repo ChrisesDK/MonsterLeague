@@ -89,6 +89,7 @@ import { TownMap } from './TownMap';
 import { useSpawns } from './useSpawns';
 import {
   attachOrbit,
+  fingersDown,
   horizonForReach,
   lookAheadPadding,
   metresPerPx,
@@ -671,7 +672,10 @@ export function MapScreen({
         buildingsFog = fogM;
         setBuildingsRange(map, next, buildingsRadius(fogM));
       }
-      if (offCentre && !map.isMoving()) map.jumpTo({ center: [next.lng, next.lat] });
+      // never while a finger is down: jumpTo resets MapLibre's gestures (a starting pinch
+      // was lost); once a gesture runs, transformCameraUpdate keeps the camera on the player
+      if (offCentre && !map.isMoving() && !fingersDown(map))
+        map.jumpTo({ center: [next.lng, next.lat] });
       cullMarkers(next);
     };
     // Hide icons that can't really be on screen (behind the camera, or very far away);

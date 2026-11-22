@@ -77,6 +77,20 @@ export function flingVelocity(samples: { t: number; delta: number }[], upAt: num
   return Math.max(-FLING_MAX_DEG_PER_MS, Math.min(FLING_MAX_DEG_PER_MS, v));
 }
 
+/** Fingers (or the mouse button) currently down on each map, kept by attachOrbit. */
+const fingers = new WeakMap<MlMap, Map<number, unknown>>();
+
+/**
+ * True while a finger or the mouse is down on the map. The play view must not re-centre
+ * the camera with `jumpTo` then: `jumpTo` resets every MapLibre gesture, and a pinch only
+ * counts as moving once the fingers have spread past MapLibre's zoom threshold. Re-centring
+ * on a gliding player in that gap wiped the pinch, which then did nothing until the fingers
+ * were lifted (owner report: pinch sometimes ignored on the phone).
+ */
+export function fingersDown(map: MlMap): boolean {
+  return (fingers.get(map)?.size ?? 0) > 0;
+}
+
 /** Wires the orbit gestures to a map. Returns a function that removes them. */
 export function attachOrbit(map: MlMap): () => void {
   map.dragPan.disable();
@@ -90,6 +104,7 @@ export function attachOrbit(map: MlMap): () => void {
 
   const el = map.getCanvasContainer();
   const pointers = new Map<number, { x: number; y: number }>();
+  fingers.set(map, pointers);
   let last: { x: number; y: number; t: number } | null = null;
   let moved = 0;
   /** Recent rotation steps (event time, degrees) for the fling. */
@@ -158,6 +173,7 @@ export function attachOrbit(map: MlMap): () => void {
   el.addEventListener('click', click, true);
   return () => {
     stopFling();
+    fingers.delete(map);
     el.removeEventListener('pointerdown', down);
     window.removeEventListener('pointermove', move);
     window.removeEventListener('pointerup', up);

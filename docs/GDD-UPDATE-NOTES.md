@@ -2,14 +2,14 @@
 
 Everything built or decided since the v1.9 export that the GDD doesn't describe yet,
 grouped by GDD section, with suggested wording. Details and reasons are in
-[DECISIONS.md](DECISIONS.md) (D111–D136); open proposals are in
+[DECISIONS.md](DECISIONS.md) (D111–D139); open proposals are in
 [GDD-PROPOSALS.md](GDD-PROPOSALS.md) (P16–P20).
 
 ## Change log line (suggested)
 
-| Version | Changes                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1.10    | M2d done and live (game feel); orbit camera (always on the player, drag rotates, zoom tilts 30–76° and looks ahead), a static fog wall (2 km, adjustable 1–2 km) with a day/night sky, opt-in 3D buildings, loading screen, HUD on demand (folded goal card, Nearby button, GPS signal icon), menu over the live map, touch drags never scroll or reload the page, fainted creatures recover after 8 hours, short GPS dips tolerated, species art colours; accepted P16–P20 |
+| Version | Changes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.10    | M2d done and live (game feel); orbit camera (always on the player, drag rotates, zoom tilts 30–76° and looks ahead), a fog wall in the 3D scene (1.2 km, adjustable 0.8–1.4 km) with a day/night sky, opt-in 3D buildings, loading screen, HUD on demand (folded goal card, Nearby button, GPS signal icon), menu over the live map, touch drags never scroll or reload the page, fainted creatures recover after 8 hours, short GPS dips tolerated, species art colours, new logo (the walker on a stamp) and colours without green and yellow, switching between the map game and the battle playtest; accepted P16–P20 |
 
 ## Game feel → Map view (P20)
 
@@ -28,16 +28,19 @@ Add:
 
 - **Fog wall and sky:** a fog wall stands around the player at a fixed distance, the same
   at every zoom and with no fade, so the world reads as a round patch around the player.
-  It is 2 km by default; the setting "How far you can see" sets it between 1 and 2 km.
-  The ground always reaches the wall; 3D buildings load and unload 100 m behind it and
-  icons beyond it are not drawn. The day or night sky is drawn behind the map, so it only
+  It is 1,200 m by default; the setting "How far you can see" sets it between 800 and
+  1,400 m. It is a wall in the 3D scene: buildings inside it stand in front of it, and
+  everything behind it is hidden. The ground always reaches the wall; 3D buildings load
+  and unload 100 m behind it. The day or night sky is drawn behind the map, so it only
   fills the space above the horizon and never covers ground.
 - **Touch:** dragging on the map never scrolls the page or triggers the browser's
-  pull-to-reload; a finger drag turns the map just like a mouse drag.
+  pull-to-reload; a finger drag turns the map just like a mouse drag; a pinch always
+  zooms, also while the player is moving.
 - **Menu:** the menu opens over the live map, so closing it is instant (the map, GPS and
   buildings are not reloaded).
-- **Icons:** creatures, stamps and the Journal star are hidden when they are behind the
-  camera or inside the fog.
+- **Icons:** creatures, stamps (arenas, trainers, rest stops) and the Journal star show at
+  every zoom while they are within the fog distance; they are hidden when they are behind
+  the camera or beyond the fog wall.
 
 ## Game feel → Look and feel / Screens and UX
 
@@ -52,8 +55,16 @@ Add:
 - **3D buildings (setting, off by default):** buildings from the map data drawn in 3D at a
   storybook scale (about half their real height, so the street around the player stays
   visible); facing labels stay above them.
-- **Settings screen:** add "3D buildings" and "How far you can see" (fog wall, 1–2 km) to
-  the list.
+- **Settings screen:** add "3D buildings", "How far you can see" (fog wall, 0.8–1.4 km)
+  and "Battle playtest" (opens the playtest; the playtest has "Go to the map game") to the
+  list.
+- **Logo:** the walker (the player figure in the red knit cap, red scarf and blue coat) on
+  a cream postage stamp, on a Danish-red tile. It is the app icon and appears with the
+  game's name on the first screen. The swinging lantern stays the loading-screen icon.
+- **Colours:** no green or yellow in the interface outside the map: copper for badges and
+  highlights, spruce blue for things that are done, Danish red as the main colour. The
+  phone's top and navigation bars follow the paper colour (cream by day, navy at night).
+  The map keeps its own palette; health bars keep green, yellow and red.
 - **Design system (as built):** headings in Fraunces, body text in Atkinson Hyperlegible
   (both SIL Open Font License, self-hosted); the main menu button is a red satchel.
 
@@ -121,7 +132,8 @@ Save versions since v1.9:
 | v3      | Journal progress: districts reached, route checkpoints reached, metres walked in wild areas, rest stops visited (no positions or times) |
 | v4      | Recovery clock for fainted creatures                                                                                                    |
 | v5      | The 3D buildings setting                                                                                                                |
-| v6      | The fog distance setting (1,000–2,000 m, default 2,000)                                                                                 |
+| v6      | The fog distance setting (then 1,000–2,000 m, default 2,000)                                                                            |
+| v7      | Fog distance limited: default 1,200 m, range 800–1,400 m (longer settings come down to 1,200)                                           |
 
 Region file v3: each cell carries flags for no-spawn, wild area, water edge and route
 corridor.

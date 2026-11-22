@@ -664,3 +664,52 @@ test('Settings lead to the battle playtest, and the playtest back to the map gam
   await page.waitForSelector('.maplibregl-canvas', { timeout: 60_000 });
   await expect(page.getByTestId('onboarding-safety')).toHaveCount(0);
 });
+
+test('a pinch zooms even while the player glides to a new GPS fix (no reset by re-centring)', async ({
+  page,
+  context,
+}) => {
+  await startDone(page);
+  await teleport(page, KONGENS_HAVE);
+  await page.waitForTimeout(2500);
+  const zoom = () =>
+    page.evaluate(() =>
+      (window as unknown as { __omlMap: { getZoom: () => number } }).__omlMap.getZoom(),
+    );
+  const cdp = await context.newCDPSession(page);
+  const touch = (type: string, pts: [number, number][]) =>
+    cdp.send('Input.dispatchTouchEvent', {
+      type: type as 'touchStart',
+      touchPoints: pts.map(([x, y], i) => ({ x, y, id: i + 1 })),
+    });
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const z0 = await zoom();
+    // a new fix ~150 m away: the figure glides there and the camera follows it, frame by frame
+    await teleport(page, {
+      lat: KONGENS_HAVE.lat + (attempt % 2 ? -0.0014 : 0.0014),
+      lng: KONGENS_HAVE.lng,
+    });
+    await page.waitForTimeout(50);
+    // two fingers land and spread slowly (below MapLibre's zoom threshold at first)
+    await touch('touchStart', [
+      [175, 400],
+      [215, 400],
+    ]);
+    for (let i = 1; i <= 25; i++) {
+      await touch('touchMove', [
+        [175 - i * 4, 400],
+        [215 + i * 4, 400],
+      ]);
+      await page.waitForTimeout(30);
+    }
+    await touch('touchEnd', []);
+    await page.waitForTimeout(500);
+    const z1 = await zoom();
+    expect(z1, `attempt ${attempt}`).toBeGreaterThan(Math.min(z0 + 0.4, 18.4));
+    // back out for the next attempt
+    await page.evaluate(() => {
+      (window as unknown as { __omlMap: { setZoom: (z: number) => void } }).__omlMap.setZoom(17);
+    });
+    await page.waitForTimeout(300);
+  }
+});
