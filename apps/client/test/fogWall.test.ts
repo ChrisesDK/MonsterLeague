@@ -1,17 +1,29 @@
 import { describe, expect, it } from 'vitest';
-import { rgb, translated, wallStrip } from '../src/map/fogWall';
+import { hazeStrip, rgb, skyAt, translated, wallStrip } from '../src/map/fogWall';
 
 describe('fog wall in the 3D scene', () => {
   it('is a closed ring: bottom and top at every step, first and last step meet', () => {
     const v = wallStrip(2, 0.5, 4);
-    expect(v.length).toBe(5 * 6);
-    // north first (y grows southwards in Mercator units), ground then top
-    expect([...v.slice(0, 6)].map((n) => +n.toFixed(6))).toEqual([0, -2, 0, 0, -2, 0.5]);
+    expect(v.length).toBe(5 * 8);
+    // north first (y grows southwards in Mercator units), ground then top, both solid
+    expect([...v.slice(0, 8)].map((n) => +n.toFixed(6))).toEqual([0, -2, 0, 1, 0, -2, 0.5, 1]);
     // a quarter turn on: east
-    expect(v[6]).toBeCloseTo(2);
-    expect(v[7]).toBeCloseTo(0);
-    expect(v.slice(24, 30)[0]).toBeCloseTo(v[0]!);
-    expect(v.slice(24, 30)[1]).toBeCloseTo(v[1]!);
+    expect(v[8]).toBeCloseTo(2);
+    expect(v[9]).toBeCloseTo(0);
+    expect(v[32]).toBeCloseTo(v[0]!);
+    expect(v[33]).toBeCloseTo(v[1]!);
+  });
+  it('the haze band lies on the ground, clear inside and full at the wall', () => {
+    const v = hazeStrip(1, 2, 4);
+    expect([...v.slice(0, 8)].map((n) => +n.toFixed(6))).toEqual([0, -1, 0, 0, 0, -2, 0, 1]);
+  });
+  it('is coloured like the sky behind it: sky at the top, fog at and below the horizon', () => {
+    const sky: [number, number, number] = [0, 0, 1];
+    const fog: [number, number, number] = [1, 1, 1];
+    expect(skyAt(0, 200, sky, fog)).toEqual(sky);
+    expect(skyAt(100, 200, sky, fog)).toEqual([0.5, 0.5, 1]);
+    expect(skyAt(200, 200, sky, fog)).toEqual(fog);
+    expect(skyAt(600, 200, sky, fog)).toEqual(fog);
   });
   it('moves the matrix to the player in double precision (vertices stay small)', () => {
     const id = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];

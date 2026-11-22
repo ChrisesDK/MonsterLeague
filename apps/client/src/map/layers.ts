@@ -346,12 +346,12 @@ export function setBuildings3d(map: MlMap, on: boolean): void {
  * background past the horizon takes the fog colour.
  */
 /**
- * Fog (owner request): a static wall around the player at every zoom, with no fade. Its
- * distance is a setting (1,000–2,000 m, default FOG_M); 3D buildings load and unload
- * BUILDINGS_BEHIND_M behind the wall.
+ * The edge of the world (owner request): a wall around the player at every zoom, painted
+ * with the sky's gradient so it is practically invisible (fogWall.ts). Its distance is a
+ * setting (800–1,400 m, default FOG_M); 3D buildings load and unload at the wall itself.
  */
 export const FOG_M = 1200;
-export const BUILDINGS_BEHIND_M = 100;
+export const BUILDINGS_BEHIND_M = 0;
 /** The fog wall's distance [start, end] in metres (one distance; kept as a pair). */
 export function fogRadii(distanceM = FOG_M): [number, number] {
   return [distanceM, distanceM];
@@ -365,7 +365,7 @@ export function buildingsRadius(fogM = FOG_M): number {
 export const BUILDINGS_RECENTRE_M = 100;
 
 /**
- * Unloads 3D buildings beyond the fog: only buildings within `radiusM` (fog + 100 m) of `c` are
+ * Unloads 3D buildings beyond the fog: only buildings within `radiusM` (the fog distance) of `c` are
  * drawn. Re-centred every 100 m walked, so buildings never go missing in front of the wall.
  */
 export function setBuildingsRange(

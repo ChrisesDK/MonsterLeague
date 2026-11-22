@@ -292,11 +292,12 @@ status here changes to `accepted` (or `rejected`, with a reason).
   around it, near or far, so the view follows the finger; two-finger twist works too. Pinching or the scroll wheel zooms on the player:
   zoomed out the camera looks almost straight down (30°), zooming in tilts it up to 76°. A
   compass button turns north up. When the GPS position changes, the player slides to it.
-  A fog wall around the player hides the distance: a wall in the 3D scene at a fixed
-  distance, 1,200 m by default (a setting, 800–1,400 m); buildings inside it stand in
-  front of it, and the ground always reaches it. The day or night sky is
-  drawn behind the map, so it only fills the space above the horizon. Buildings load
-  and unload 100 m behind the wall; icons beyond it are not drawn."
-- **Reason / evidence:** owner requests after M2d (D120, D124–D126, D131–D139). The
+  The world is a round patch around the player that ends in sky at a fixed distance,
+  1,200 m by default (a setting, 800–1,400 m): an invisible wall painted like the sky
+  hides everything behind it, buildings inside stand in front of it, and the last stretch
+  of ground blends into the sky. The day or night sky (with stars at night) is drawn
+  behind the map, so it only fills the space above the horizon. Buildings load and unload
+  at the edge; icons beyond it are not drawn."
+- **Reason / evidence:** owner requests after M2d (D120, D124–D126, D131–D142). The
   recentre button and the snap-back from panning are gone.
 - **Status:** open (implemented at the owner's request; fold into the GDD)

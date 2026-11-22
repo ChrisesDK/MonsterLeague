@@ -123,7 +123,7 @@ const TUTORIAL_REPLACE_M = 600;
 export const CAMERA = ORBIT;
 /** Room for the heads-up display, so the player stays in the clear middle of the screen. */
 /** The ground is drawn this far past the fog wall (so the wall, not the map's edge, ends it). */
-const REACH_PAST_FOG_M = 300;
+const REACH_PAST_FOG_M = 50;
 
 interface Props {
   t: Translate;
@@ -467,7 +467,7 @@ export function MapScreen({
       addFogWall(
         map,
         () => fogRadii(saveRef.current.settings.fogDistance)[1],
-        () => paletteRef.current.fog,
+        () => ({ sky: paletteRef.current.sky, fog: paletteRef.current.fog }),
       );
       setMapReady(true);
     });

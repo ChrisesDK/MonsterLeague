@@ -1250,3 +1250,24 @@ length, position resolution and spawn tables>`.
   fog wall. They turn with the camera at the speed the town turns at the horizon (22 px per
   degree; each tile width divides a full turn, so the sky wraps without a seam) and move
   with the horizon when the tilt changes.
+- **D142. The fog wall is painted like the sky: the round world simply ends in sky**
+  (owner request).
+  - **Why keep a wall at all:** unloading doesn't need it (the building filter, the icon
+    cut-off and the ground's drawing limit do that), but it is what makes the round
+    cut-out: MapLibre stops drawing the ground along a straight line, not a circle, and its
+    own layers can't be clipped to a circle cheaply. So the wall stays as the boundary,
+    and only its look changes.
+  - **Invisible:** the wall's shader colours every pixel with the same gradient as the sky
+    behind the map (sky colour at the top of the screen, fog colour at the horizon and
+    below, from the same horizon row), so it can't be told from the sky.
+  - **Top at the horizon:** the wall now ends 1 m above the camera's height (was 40 m), so
+    it never covers the stars above the skyline.
+  - **Buildings at the edge:** 3D buildings load and unload at the fog distance itself (was
+    100 m behind it), so nothing behind the wall can stick up above its lower top. With an
+    invisible edge, a building appearing as it crosses the edge reads like it rises into
+    view. The ground is drawn 50 m past the wall (was 300 m): nothing behind it is ever
+    seen.
+  - **Haze:** a 150 m band on the ground just inside the wall, in the sky's colours, ramps
+    from clear to 90% at the wall's foot, so the last stretch of ground blends into the sky
+    instead of ending in a hard line. It is fixed in the world (no change with zoom), and
+    buildings in front of it stay crisp (depth test).

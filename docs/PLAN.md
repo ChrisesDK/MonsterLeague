@@ -139,6 +139,7 @@
 - [x] Exact drag rotation; look-ahead zoom; a fog wall in the 3D scene (1,200 m, setting 800–1,400 m, save v6–v7) with the sky behind the map; buildings load 100 m behind the wall; menu over the live map; pinch never lost while the player glides
 - [x] New logo (the arena badge), colours without green and yellow, phone bars follow the theme; switch between the map game and the battle playtest
 - [x] A back gesture asks before leaving (site and installed app); stars on the night sky
+- [x] The fog wall painted like the sky (the round world ends in sky, with a haze at the edge); buildings load at the edge
 
 ## Next: Gate 3 — District walk test (owner, with [GATE3.md](GATE3.md))
 
