@@ -714,18 +714,31 @@ test('a pinch zooms even while the player glides to a new GPS fix (no reset by r
   }
 });
 
-test("the phone's top bar has the map's building colour, on the map and on menus", async ({
+test("the phone's top bar has the menu's paper colour, on the map and on menus", async ({
   page,
 }) => {
   await startDone(page);
   const bar = () => page.locator('meta[name="theme-color"]').getAttribute('content');
-  // beige by day, dark grey at night (whichever is on now)
-  await expect.poll(bar).toMatch(/^#(e7d8bc|2a3145)$/);
-  const onMap = await bar();
+  const paper = await page.evaluate(() =>
+    getComputedStyle(document.documentElement).getPropertyValue('--paper').trim(),
+  );
+  // cream by day, navy at night (whichever is on now)
+  expect(paper).toMatch(/^#(f5ecd7|1b2130)$/);
+  await expect.poll(bar).toBe(paper);
   await page.getByTestId('menu-button').click();
-  await expect.poll(bar).toBe(onMap);
-  await page.getByTestId('menu-map').click();
-  await expect.poll(bar).toBe(onMap);
+  // the menu's header is exactly that colour, so it seems to fill the screen
+  const head = await page
+    .locator('.screen-top')
+    .first()
+    .evaluate((el) => getComputedStyle(el).backgroundColor);
+  const hex = (c: string) =>
+    '#' +
+    (c.match(/\d+/g) ?? [])
+      .slice(0, 3)
+      .map((n) => (+n).toString(16).padStart(2, '0'))
+      .join('');
+  expect(hex(head)).toBe(paper);
+  await expect.poll(bar).toBe(paper);
 });
 
 test('map credits start closed, open and close on tap, and lie above the game buttons', async ({

@@ -1311,15 +1311,16 @@ length, position resolution and spawn tables>`.
   docs changed. Saves are kept (same domain); an installed app points at the old path and
   must be installed again from the new link. The spawn service only checks the domain, so
   it needs no change. Earlier entries keep the old name as history.
-- **D146. The phone's top bar is the building colour** (owner: the solid top and
+- **D146. The phone's top bar is the menu's paper colour** (owner: the solid top and
   navigation bars border the game; make them see-through without hiding them).
   - **Android can't make them see-through:** Chrome ignores transparency in
     `theme-color`, and an installed app's bars can only be hidden (fullscreen), which the
     owner doesn't want. A first try gave the bar the sky's top colour on the map; it only
     matched when fully zoomed in (elsewhere the top of the screen is town, or the Town
-    Map). Sampling the pixels under the bar was rejected as laggy. Now the bar is the map's
-    building colour on every screen: beige by day (`#e7d8bc`), dark grey at night
-    (`#2a3145`), set by `main.tsx` from the theme.
+    Map). Sampling the pixels under the bar was rejected as laggy. The map's building colour
+    was tried next, but then the bar didn't match the menu. Now the bar is the menu's paper
+    colour (`--paper`) on every screen, so the menu seems to fill the whole screen: cream
+    by day (`#f5ecd7`), navy at night (`#1b2130`), set by `main.tsx` from the theme.
   - **The navigation bar** at the bottom can't be coloured from the page. The page already
     asks to be drawn edge to edge (`viewport-fit=cover`, safe-area padding), which newer
     Android versions use to draw the game behind a gesture navigation bar.

@@ -38,9 +38,9 @@ export default defineConfig({
         scope: '.',
         display: 'standalone',
         orientation: 'portrait',
-        // splash: the logo's night navy; top bar: the map's building colour (see main.tsx)
+        // splash: the logo's night navy; top bar: the menu's paper colour (see main.tsx)
         background_color: '#1b2130',
-        theme_color: '#e7d8bc',
+        theme_color: '#f5ecd7',
         icons: [{ src: 'icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' }],
       },
       workbox: {
