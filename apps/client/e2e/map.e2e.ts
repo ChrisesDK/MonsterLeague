@@ -321,6 +321,68 @@ test('play camera: always on the player; drag rotates, zoom tilts (no panning)',
   await expect.poll(async () => Math.abs((await camera(page)).bearing)).toBeLessThan(0.5);
 });
 
+test('fog wall: the ground reaches just past it at every zoom, the sky is behind the map, the player sits lower zoomed in', async ({
+  page,
+}) => {
+  await startDone(page);
+  await teleport(page, KONGENS_HAVE);
+  type Tr = {
+    modelViewProjectionMatrix: ArrayLike<number>;
+    project: (c: unknown) => { x: number; y: number };
+  };
+  const look = (zoom: number) =>
+    page.evaluate((zoom) => {
+      const map = (
+        window as unknown as {
+          __omlMap: {
+            jumpTo: (o: unknown) => void;
+            project: (c: unknown) => { x: number; y: number };
+            getCenter: () => { lat: number; lng: number };
+            getContainer: () => HTMLElement;
+            transform: unknown;
+          };
+        }
+      ).__omlMap;
+      map.jumpTo({ zoom, bearing: 0 });
+      const tr = map.transform as Tr;
+      const c = map.getCenter();
+      // is a point this many metres north of the player inside MapLibre's far plane?
+      const drawn = (m: number) => {
+        const w = tr.project({ lat: c.lat + m / 111_320, lng: c.lng });
+        const M = tr.modelViewProjectionMatrix;
+        const z = M[2]! * w.x + M[6]! * w.y + M[14]!;
+        const ww = M[3]! * w.x + M[7]! * w.y + M[15]!;
+        return ww > 0 && z / ww < 1;
+      };
+      // above the top of the screen: not in view, so not drawn anyway
+      const offTop = (m: number) => map.project({ lat: c.lat + m / 111_320, lng: c.lng }).y < 0;
+      return {
+        playerY: map.project(c).y / map.getContainer().clientHeight,
+        at2100: drawn(2100),
+        at2100OffTop: offTop(2100),
+        at2700: drawn(2700),
+        sky: map.getContainer().style.background,
+      };
+    }, zoom);
+  const out = await look(16.5);
+  const mid = await look(17.5);
+  const inn = await look(18.5);
+  // look-ahead: the player moves down the screen as you zoom in (60% of the way down)
+  expect(out.playerY).toBeLessThan(0.47);
+  expect(mid.playerY).toBeGreaterThan(out.playerY + 0.03);
+  expect(inn.playerY).toBeGreaterThan(0.58);
+  // the ground is drawn to just past the 2 km wall, or to the top of the screen when that
+  // is nearer, and nothing beyond (before, zoomed in, MapLibre stopped about 850 m ahead)
+  for (const v of [out, mid]) expect(v.at2100 || v.at2100OffTop).toBe(true);
+  expect(inn.at2100).toBe(true);
+  for (const v of [out, mid, inn]) expect(v.at2700).toBe(false);
+  // the fog wall is a drawn outline; the sky is the map's background (behind the ground)
+  await expect
+    .poll(async () => (await page.getByTestId('map-fog').locator('path').getAttribute('d')) ?? '')
+    .toMatch(/^M.*Z$/);
+  await expect.poll(async () => (await look(18.5)).sky).toContain('linear-gradient');
+});
+
 test('Town Map: districts, arenas and routes; a card tells what a place needs', async ({
   page,
 }) => {

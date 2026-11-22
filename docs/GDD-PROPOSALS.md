@@ -286,14 +286,16 @@ status here changes to `accepted` (or `rejected`, with a reason).
 - **GDD section:** Game feel → Map view
 - **Current text:** "tilted about 50°, with zoom limited to … 16.5–18.5 … Two-finger rotate
   is allowed; a compass button resets north."
-- **Proposed change:** "The camera is always centred on the player and never pans.
+- **Proposed change:** "The camera always looks at the player and never pans; zooming in
+  moves the player lower on the screen (look-ahead) so more of the ground ahead shows.
   Dragging rotates the view around the player by exactly the angle the finger sweeps
   around it, near or far, so the view follows the finger; two-finger twist works too. Pinching or the scroll wheel zooms on the player:
   zoomed out the camera looks almost straight down (30°), zooming in tilts it up to 76°. A
   compass button turns north up. When the GPS position changes, the player slides to it.
   A fog wall around the player hides the distance: a fixed edge at every zoom, 2 km by
-  default (a setting, 1–2 km), with the day or night sky colour above it. Buildings load
+  default (a setting, 1–2 km), and the ground always reaches it. The day or night sky is
+  drawn behind the map, so it only fills the space above the horizon. Buildings load
   and unload 100 m behind the wall; icons beyond it are not drawn."
-- **Reason / evidence:** owner requests after M2d (D120, D124–D126, D131–D135). The
+- **Reason / evidence:** owner requests after M2d (D120, D124–D126, D131–D136). The
   recentre button and the snap-back from panning are gone.
 - **Status:** open (implemented at the owner's request; fold into the GDD)

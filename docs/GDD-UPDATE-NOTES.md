@@ -2,34 +2,36 @@
 
 Everything built or decided since the v1.9 export that the GDD doesn't describe yet,
 grouped by GDD section, with suggested wording. Details and reasons are in
-[DECISIONS.md](DECISIONS.md) (D111–D135); open proposals are in
+[DECISIONS.md](DECISIONS.md) (D111–D136); open proposals are in
 [GDD-PROPOSALS.md](GDD-PROPOSALS.md) (P16–P20).
 
 ## Change log line (suggested)
 
-| Version | Changes                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1.10    | M2d done and live (game feel); orbit camera (always on the player, drag rotates, zoom tilts 30–76°), a static fog wall (2 km, adjustable 1–2 km) with a day/night sky, opt-in 3D buildings, loading screen, HUD on demand (folded goal card, Nearby button, GPS signal icon), menu over the live map, touch drags never scroll or reload the page, fainted creatures recover after 8 hours, short GPS dips tolerated, species art colours; accepted P16–P20 |
+| Version | Changes                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.10    | M2d done and live (game feel); orbit camera (always on the player, drag rotates, zoom tilts 30–76° and looks ahead), a static fog wall (2 km, adjustable 1–2 km) with a day/night sky, opt-in 3D buildings, loading screen, HUD on demand (folded goal card, Nearby button, GPS signal icon), menu over the live map, touch drags never scroll or reload the page, fainted creatures recover after 8 hours, short GPS dips tolerated, species art colours; accepted P16–P20 |
 
 ## Game feel → Map view (P20)
 
 Replace the camera paragraph with:
 
-> The camera is always centred on the player and never pans. Dragging rotates the view
-> around the player by exactly the angle the finger sweeps around it, near or far, so the
-> view always follows the finger. A quick swipe keeps turning briefly; two-finger twist works too. Pinching or the scroll
-> wheel zooms on the player
-> (zoom about 16.5–18.5): zoomed out the camera looks almost straight down (30°), zooming
-> in tilts it up to 76°. A compass button turns north up. When the GPS position changes,
-> the player slides to it instead of jumping.
+> The camera always looks at the player and never pans. Dragging rotates the view around
+> the player by exactly the angle the finger sweeps around it, near or far, so the view
+> always follows the finger. A quick swipe keeps turning briefly; two-finger twist works
+> too. Pinching or the scroll wheel zooms on the player (zoom about 16.5–18.5): zoomed out
+> the camera looks almost straight down (30°), and zooming in tilts it up to 76° and moves
+> the player lower on the screen (from just above the middle to 60% of the way down), so
+> zooming in means looking ahead. A compass button turns north up. When the GPS position
+> changes, the player slides to it instead of jumping.
 
 Add:
 
 - **Fog wall and sky:** a fog wall stands around the player at a fixed distance, the same
   at every zoom and with no fade, so the world reads as a round patch around the player.
   It is 2 km by default; the setting "How far you can see" sets it between 1 and 2 km.
-  3D buildings load and unload 100 m behind the wall; icons beyond it are not drawn. The
-  day or night sky colour shows above the fog.
+  The ground always reaches the wall; 3D buildings load and unload 100 m behind it and
+  icons beyond it are not drawn. The day or night sky is drawn behind the map, so it only
+  fills the space above the horizon and never covers ground.
 - **Touch:** dragging on the map never scrolls the page or triggers the browser's
   pull-to-reload; a finger drag turns the map just like a mouse drag.
 - **Menu:** the menu opens over the live map, so closing it is instant (the map, GPS and

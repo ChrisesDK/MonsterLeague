@@ -1153,3 +1153,27 @@ length, position resolution and spawn tables>`.
     (before, strokes near the player were damped and a swipe level with the player barely
     turned it). Only moves within 2 px of the player, which have no defined angle, are
     skipped. The fling after a swipe is unchanged.
+- **D136. The ground reaches the fog wall, the sky is behind the map, look-ahead zoom**
+  (owner feedback: zoomed in, the sky still took ground near the skyline).
+  - **Real cause:** MapLibre stops drawing the ground where the view reaches 85% of the way
+    (in screen pixels) from the centre to the horizon (`Transform.getHorizon()`). Fully
+    zoomed in (76°) that edge was only about 850 m ahead, so the ground ended well before
+    the 2 km fog and the empty band above it read as sky. Half zoomed in, the whole screen
+    was ground, which is why you could see further there.
+  - **Ground reach:** the play map replaces `getHorizon()` on its transform with
+    `horizonForReach`, which makes MapLibre draw the ground exactly to the fog distance
+    - 300 m ahead of the player (or to the top of the screen when that is nearer), at every
+      tilt and padding, and no further, so nothing beyond the wall is loaded. This is MapLibre
+      internals (4.7.1); an e2e test checks the far plane in the browser.
+  - **Fog wall outline:** the far half of the fog circle is projected onto the screen (48
+    points) and the fog fills the screen above it, up to the horizon, as an SVG path. The
+    ellipse used before dipped below the real line towards the screen's sides.
+  - **Sky behind the map (owner idea):** the sky is the map container's background (sky
+    colour at the top, fog colour at the horizon), so it only shows where no ground is
+    drawn and can never cover ground.
+  - **Look-ahead (owner idea):** the camera still looks at the player, but MapLibre's
+    padding moves the player down the screen as you zoom in: where it always stood when
+    zoomed out (44% down on a phone), 60% down when fully zoomed in. Two thirds was the first
+    idea, but an arena's card at the bottom then covers the player's feet. The padding is
+    set on the transform in every `move` event (`setPadding` would stop a running pinch).
+    Drag rotation still turns around the player.

@@ -4,8 +4,10 @@ import type { Map as MlMap } from 'maplibre-gl';
  * Play-view camera (owner requests after M2d): the camera always looks at the player.
  * - One-finger (or mouse) drag rotates the map around the player, never pans it.
  * - Pinch and the scroll wheel zoom around the player (the map centre).
- * - Zooming in tilts the camera up (30 degrees zoomed out, close to looking straight down, 76 zoomed in); a haze along the
- *   top of the map hides where the map's far edge ends.
+ * - Zooming in tilts the camera up (30 degrees zoomed out, close to looking straight down,
+ *   76 zoomed in) and moves the player lower on the screen (look-ahead, see lookAheadPadding).
+ * - The fog wall (fogPath) hides the world beyond the fog distance; the sky is drawn behind
+ *   the map.
  */
 export const ORBIT = {
   minZoom: 16.5,
@@ -164,30 +166,91 @@ export function attachOrbit(map: MlMap): () => void {
   };
 }
 
+/** Ground metres per screen pixel at the map centre (MapLibre's 512 px world tiles). */
+export function metresPerPx(lat: number, zoom: number): number {
+  return (40075016.686 * Math.cos((lat * Math.PI) / 180)) / (512 * 2 ** zoom);
+}
+
 /**
- * The fog wall in screen space (owner request: a static barrier, no fade). Everything
- * within the fog distance of the player is clear; beyond it is fog at the horizon and sky
- * above. The wall is the screen ellipse through the projected fog distance ahead of the
- * player and to its side, drawn only above the player's row (below it the ground is near
- * the camera). Returns the overlay's height, background and mask.
+ * How far MapLibre draws the ground (owner report: zoomed in, the ground ended before the
+ * fog). MapLibre stops drawing where the view reaches 85% of the way (in screen pixels) from
+ * the centre to the horizon: zoomed all the way in that was only about 850 m ahead, short of
+ * the fog wall, and with the look-ahead padding it would draw almost to the real horizon
+ * (tens of kilometres of tiles). MapLibre takes that line from `Transform.getHorizon()`, so
+ * the play map replaces it with this: the horizon value (px above the centre) at which the
+ * ground is drawn exactly `aheadM` past the centre (the player), and no further.
+ *
+ * `offsetY` is the centre's offset from the middle of the screen (padding, + = lower), which
+ * MapLibre's far-plane formula scales the horizon angle by; solved by bisection.
  */
-export function fogWall(
-  player: { x: number; y: number },
-  endAhead: { x: number; y: number },
-  endSide: { x: number; y: number },
-  sky: string,
-  fog: string,
-): { height: string; background: string; mask: string } {
-  const ry = Math.max(1, Math.hypot(endAhead.x - player.x, endAhead.y - player.y));
-  const rx = Math.max(1, Math.hypot(endSide.x - player.x, endSide.y - player.y));
-  const top = Math.max(0, player.y - ry);
-  // a hair of softening (about 2 px) so the wall edge isn't jagged
-  const edge = Math.max(0, Math.min(99.9, 100 - 200 / ry));
-  return {
-    height: `${Math.max(0, player.y).toFixed(0)}px`,
-    background: `linear-gradient(180deg, ${sky} 0px, ${fog} ${top.toFixed(0)}px)`,
-    mask:
-      `radial-gradient(ellipse ${rx.toFixed(0)}px ${ry.toFixed(0)}px at ${player.x.toFixed(0)}px ${player.y.toFixed(0)}px, ` +
-      `transparent ${edge.toFixed(2)}%, #000 100%)`,
-  };
+export function horizonForReach(
+  pitchDeg: number,
+  cameraToCenterPx: number,
+  mPerPx: number,
+  aheadM: number,
+  offsetY = 0,
+): number {
+  const f = cameraToCenterPx;
+  const p = (pitchDeg * Math.PI) / 180;
+  const toHorizon = Math.PI / 2 - p; // angle from the centre ray up to the true horizon
+  // angle above the centre ray of the ground point aheadM past the centre
+  const target = toHorizon - Math.atan((f * Math.cos(p)) / (f * Math.sin(p) + aheadM / mPerPx));
+  // the angle MapLibre's far plane reaches for a horizon value (its formula, see _calcMatrices)
+  const reach = (hz: number) => Math.atan(hz / f) * (1 + offsetY / hz);
+  let lo = 1e-3;
+  let hi = Math.tan(toHorizon) * f * 0.9999;
+  if (reach(hi) <= target) return hi;
+  for (let i = 0; i < 50; i++) {
+    const mid = (lo + hi) / 2;
+    if (reach(mid) < target) lo = mid;
+    else hi = mid;
+  }
+  return hi;
+}
+
+/**
+ * Look ahead when zoomed in (owner idea): the camera still looks at the player, but the
+ * player sits lower on the screen the further you zoom in, leaving more of the screen for
+ * the ground ahead and the sky. Zoomed out the player stands where it always did (between
+ * the HUD rows); zoomed all the way in, 60% of the way down: clear of the place card at the
+ * bottom (an arena's card reaches up to about two thirds of the screen), and kept above the
+ * bottom HUD on short screens.
+ */
+export const LOOK_AHEAD = { top: 130, bottom: 230, playerIn: 0.6, hudGap: 50 };
+
+/** MapLibre padding for a zoom and screen height (the player is drawn at the padded centre). */
+export function lookAheadPadding(
+  zoom: number,
+  height: number,
+): { top: number; bottom: number; left: number; right: number } {
+  const t = Math.max(0, Math.min(1, (zoom - ORBIT.minZoom) / (ORBIT.maxZoom - ORBIT.minZoom)));
+  const { top, bottom, playerIn, hudGap } = LOOK_AHEAD;
+  const yOut = (height + top - bottom) / 2;
+  const yIn = Math.max(yOut, Math.min(height * playerIn, height - bottom - hudGap));
+  const y = yOut + t * (yIn - yOut);
+  return { top: Math.round(2 * y - height + bottom), bottom, left: 0, right: 0 };
+}
+
+/**
+ * The fog wall (owner request: a static barrier, no fade, and the sky never covers ground).
+ * `arc` is the far half of the circle at the fog distance projected onto the screen, from
+ * the player's right to its left (both ends on the player's row); the fog fills the screen
+ * above that outline, up to the horizon. Above the horizon the sky shows through: it is drawn
+ * behind the map, so it can only fill space where there is no ground. Returns an SVG path.
+ */
+export function fogPath(arc: { x: number; y: number }[], horizonY: number, width: number): string {
+  if (arc.length < 2) return '';
+  const lim = 8 * Math.max(1, width);
+  const cx = (x: number) => Math.max(-lim, Math.min(width + lim, x));
+  const n = (v: number) => v.toFixed(1);
+  const pts = arc.map((q) => `${n(cx(q.x))} ${n(q.y)}`);
+  const top = Math.min(horizonY, ...arc.map((q) => q.y));
+  const first = arc[0]!;
+  const last = arc[arc.length - 1]!;
+  return `M${pts.join('L')}` + `L${n(cx(last.x))} ${n(top)}L${n(cx(first.x))} ${n(top)}Z`;
+}
+
+/** The sky behind the map: sky colour at the top of the screen, fog colour at the horizon. */
+export function skyBackground(horizonY: number, sky: string, fog: string): string {
+  return `linear-gradient(180deg, ${sky} 0px, ${fog} ${Math.max(1, horizonY).toFixed(0)}px)`;
 }

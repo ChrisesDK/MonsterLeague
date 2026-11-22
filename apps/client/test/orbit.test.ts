@@ -4,9 +4,13 @@ import {
   FLING_DECAY_MS,
   FLING_MAX_DEG_PER_MS,
   flingVelocity,
-  fogWall,
+  fogPath,
+  horizonForReach,
+  lookAheadPadding,
+  metresPerPx,
   ORBIT,
   pitchForZoom,
+  skyBackground,
 } from '../src/map/orbit';
 
 /** The player's screen point on a 390 × 844 phone (between the HUD rows). */
@@ -104,24 +108,91 @@ describe('fling after a swipe', () => {
   });
 });
 
-describe('fog wall (screen space, static)', () => {
-  it('clear inside the ellipse through the projected fog distance, a hard edge, sky above', () => {
-    const w = fogWall(
-      { x: 195, y: 500 },
-      { x: 195, y: 100 },
-      { x: 595, y: 500 },
-      '#aaccee',
-      '#ddeeee',
+describe('fog wall: the exact outline of the fog circle, sky behind the map', () => {
+  it('fog fills the screen above the projected far half of the circle, up to the horizon', () => {
+    const arc = [
+      { x: 900, y: 500 },
+      { x: 195, y: 120 },
+      { x: -500, y: 500 },
+    ];
+    expect(fogPath(arc, 80, 390)).toBe(
+      'M900.0 500.0L195.0 120.0L-500.0 500.0L-500.0 80.0L900.0 80.0Z',
     );
-    // radii: 400 px ahead and to the side; drawn down to the player's row only
-    expect(w.mask).toContain('ellipse 400px 400px at 195px 500px');
-    expect(w.mask).toContain('transparent 99.50%');
-    expect(w.height).toBe('500px');
-    // sky at the top of the screen, fog at the wall's top edge
-    expect(w.background).toBe('linear-gradient(180deg, #aaccee 0px, #ddeeee 100px)');
   });
-  it('never has a zero radius', () => {
-    const p = { x: 10, y: 10 };
-    expect(fogWall(p, p, p, '#000', '#111').mask).toContain('ellipse 1px 1px');
+  it('never reaches above the horizon (the sky behind the map shows there)', () => {
+    const arc = [
+      { x: 400, y: 300 },
+      { x: 0, y: 300 },
+    ];
+    expect(fogPath(arc, 150, 390)).toContain('L0.0 150.0L400.0 150.0Z');
+  });
+  it('clamps far-off side points (they lie thousands of px off screen at a steep tilt)', () => {
+    const d = fogPath(
+      [
+        { x: 1e6, y: 500 },
+        { x: -1e6, y: 500 },
+      ],
+      100,
+      390,
+    );
+    expect(d).toContain('3510.0 500.0');
+    expect(d).toContain('-3120.0 500.0');
+  });
+  it('the sky goes from sky colour at the top to fog colour at the horizon', () => {
+    expect(skyBackground(120, '#aaccee', '#ddeeee')).toBe(
+      'linear-gradient(180deg, #aaccee 0px, #ddeeee 120px)',
+    );
+  });
+});
+
+describe('the ground reaches past the fog at every tilt (owner report)', () => {
+  // MapLibre's camera geometry: the camera-to-centre distance is 1.5 × the screen height
+  // (36.87° field of view); its far plane reaches this far past the centre for a horizon value
+  const f = 1.5 * 844;
+  const reachedM = (pitch: number, hz: number, mPerPx: number, offsetY = 0) => {
+    const p = (pitch * Math.PI) / 180;
+    const a = Math.atan(hz / f) * (1 + offsetY / hz); // angle above the centre ray
+    const below = Math.PI / 2 - p - a; // ray angle below the horizontal
+    if (below <= 0) return Infinity; // at or past the horizon
+    return ((f * Math.cos(p)) / Math.tan(below) - f * Math.sin(p)) * mPerPx;
+  };
+  const m = metresPerPx(55.4, ORBIT.maxZoom);
+
+  it("MapLibre's own horizon stops the ground about 850 m ahead when zoomed in", () => {
+    const own = Math.tan(((90 - 76) * Math.PI) / 180) * f * 0.85;
+    expect(reachedM(76, own, m)).toBeGreaterThan(700);
+    expect(reachedM(76, own, m)).toBeLessThan(1000);
+  });
+  // look-ahead puts the centre at or below the screen's middle when tilted (offset ≥ 0)
+  it('the replacement draws the ground to the requested distance, with the look-ahead padding', () => {
+    for (const offsetY of [0, 45, 141]) {
+      const hz = horizonForReach(76, f, m, 2300, offsetY);
+      expect(reachedM(76, hz, m, offsetY), `offset ${offsetY}`).toBeCloseTo(2300, -1);
+    }
+  });
+  it('and no further: with the look-ahead MapLibre itself would draw almost to the horizon', () => {
+    const own = Math.tan(((90 - 76) * Math.PI) / 180) * f * 0.85;
+    expect(reachedM(76, own, m, 141)).toBeGreaterThan(50_000);
+    expect(reachedM(76, horizonForReach(76, f, m, 2300, 141), m, 141)).toBeCloseTo(2300, -1);
+  });
+  it('metres per pixel at Odense', () => {
+    expect(metresPerPx(55.4, 18.5)).toBeCloseTo(0.12, 2);
+  });
+});
+
+describe('look-ahead: the player sits lower on the screen when zoomed in', () => {
+  it('zoomed out it stands where it always did, zoomed in 60% of the way down', () => {
+    const y = (zoom: number) => {
+      const p = lookAheadPadding(zoom, 844);
+      return (844 + p.top - p.bottom) / 2;
+    };
+    expect(y(ORBIT.minZoom)).toBe(372);
+    expect(Math.abs(y(ORBIT.maxZoom) - 0.6 * 844)).toBeLessThanOrEqual(1);
+    expect(y(17.5)).toBeGreaterThan(372);
+    expect(y(17.5)).toBeLessThan(0.6 * 844);
+  });
+  it('stays above the bottom HUD on a short screen', () => {
+    const p = lookAheadPadding(ORBIT.maxZoom, 600);
+    expect((600 + p.top - p.bottom) / 2).toBeLessThanOrEqual(600 - 230 - 50);
   });
 });

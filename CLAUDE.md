@@ -106,8 +106,9 @@ apps/client       Vite + React PWA: map game (#/; src/game = save store, onboard
 - Map markers: MapLibre owns the marker root's `transform` and its `maplibregl-marker`
   classes. Animate only the inner `.marker-body`, and toggle state classes with
   `classList` (tests: `test/marker-css.test.ts`, `e2e/map.e2e.ts`).
-- Play camera (`src/map/orbit.ts`): always centred on the player; drag rotates, zoom tilts.
-  Don't re-enable panning.
+- Play camera (`src/map/orbit.ts`): always looks at the player (lower on screen when zoomed
+  in: look-ahead padding); drag rotates, zoom tilts. Don't re-enable panning. The play map
+  overrides MapLibre's `transform.getHorizon` so the ground reaches the fog wall (D136).
 - UI: use the tokens and components in `apps/client/src/ui/` (day and night palettes);
   map labels may only use glyphs U+0000–01FF (`glyphSafe`).
 - A player side with a fainted active creature gets `needsReplacement`; the next

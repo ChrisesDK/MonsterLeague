@@ -86,7 +86,16 @@ import { markerElement, PLAYER_SVG, STAR_SVG, START } from './markers';
 import { LoadingScreen } from './LoadingScreen';
 import { TownMap } from './TownMap';
 import { useSpawns } from './useSpawns';
-import { attachOrbit, fogWall, ORBIT, pitchForZoom } from './orbit';
+import {
+  attachOrbit,
+  fogPath,
+  horizonForReach,
+  lookAheadPadding,
+  metresPerPx,
+  ORBIT,
+  pitchForZoom,
+  skyBackground,
+} from './orbit';
 
 /** A point `metres` away from `p` towards `bearingDeg`. */
 function offsetM(p: LatLng, metres: number, bearingDeg: number): LatLng {
@@ -97,6 +106,10 @@ function offsetM(p: LatLng, metres: number, bearingDeg: number): LatLng {
   };
 }
 const toLngLat = (p: LatLng): [number, number] => [p.lng, p.lat];
+/** Points on the far half of the fog circle (the wall's outline on screen). */
+const FOG_ARC_STEPS = 48;
+/** A point this far ahead is drawn (practically) on the horizon. */
+const HORIZON_M = 200_000;
 
 const POIS: Poi[] = Object.values(content.pois);
 /** POI radius circles appear when the player is this much outside the radius, or closer. */
@@ -110,7 +123,8 @@ const TUTORIAL_REPLACE_M = 600;
 /** GDD v1.9 camera: always on the player, tilted 50–68° by zoom, zoom about street level. */
 export const CAMERA = ORBIT;
 /** Room for the heads-up display, so the player stays in the clear middle of the screen. */
-const PADDING = { top: 130, bottom: 230, left: 0, right: 0 };
+/** The ground is drawn this far past the fog wall (so the wall, not the map's edge, ends it). */
+const REACH_PAST_FOG_M = 300;
 
 interface Props {
   t: Translate;
@@ -213,7 +227,7 @@ export function MapScreen({
   const mapRef = useRef<MlMap | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   /** Distance fog overlay (screen space, updated by the frame loop). */
-  const fogRef = useRef<HTMLDivElement | null>(null);
+  const fogRef = useRef<SVGPathElement | null>(null);
   const markers = useRef(new Map<string, Marker>());
   const poiMarkers = useRef(new Map<string, { marker: Marker; img: HTMLImageElement }>());
   const player = useRef<{ figure: Marker; cone: Marker } | null>(null);
@@ -389,7 +403,24 @@ export function MapScreen({
       pitchWithRotate: false,
       touchPitch: false,
     });
-    map.setPadding(PADDING);
+    map.setPadding(lookAheadPadding(CAMERA.zoom, map.getContainer().clientHeight));
+    // Look-ahead: the player sits lower on the screen the further in you zoom. Set on the
+    // transform during every camera update (before the markers follow it); setPadding would
+    // stop a running pinch.
+    const tr = map.transform;
+    map.on('move', () => {
+      tr.padding = lookAheadPadding(tr.zoom, tr.height);
+    });
+    // The ground is drawn to just past the fog wall at every tilt, and no further (see
+    // horizonForReach): nothing beyond the wall is loaded or drawn.
+    tr.getHorizon = () =>
+      horizonForReach(
+        tr.pitch,
+        tr.cameraToCenterDistance,
+        metresPerPx(tr.center.lat, tr.zoom),
+        saveRef.current.settings.fogDistance + REACH_PAST_FOG_M,
+        tr.centerOffset.y,
+      );
     map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
     map.on('load', () => {
       addWorldLayers(map, paletteRef.current, {
@@ -616,25 +647,24 @@ export function MapScreen({
           features: [circle(next, accuracyM.current)],
         });
       }
-      // the fog wall (static, at the fog distance; sky above it), in screen space
+      // the fog wall (static, at the fog distance) and the sky behind the map
       if (fogRef.current) {
         const [, end] = fogRadii(saveRef.current.settings.fogDistance);
         const b = map.getBearing();
-        const w = fogWall(
-          map.project([next.lng, next.lat]),
-          map.project(toLngLat(offsetM(next, end, b))),
-          map.project(toLngLat(offsetM(next, end, b + 90))),
-          paletteRef.current.sky,
-          paletteRef.current.fog,
-        );
-        const key = w.height + w.background + w.mask;
+        const arc: { x: number; y: number }[] = [];
+        for (let k = 0; k <= FOG_ARC_STEPS; k++) {
+          const q = map.project(toLngLat(offsetM(next, end, b + 90 - (180 * k) / FOG_ARC_STEPS)));
+          arc.push({ x: q.x, y: q.y });
+        }
+        const horizonY = map.project(toLngLat(offsetM(next, HORIZON_M, b))).y;
+        const d = fogPath(arc, horizonY, map.getContainer().clientWidth);
+        const sky = skyBackground(horizonY, paletteRef.current.sky, paletteRef.current.fog);
+        const key = d + sky + paletteRef.current.fog;
         if (key !== fogCss) {
           fogCss = key;
-          const st = fogRef.current.style;
-          st.height = w.height;
-          st.background = w.background;
-          st.maskImage = w.mask;
-          st.webkitMaskImage = w.mask;
+          fogRef.current.setAttribute('d', d);
+          fogRef.current.setAttribute('fill', paletteRef.current.fog);
+          map.getContainer().style.background = sky;
         }
       }
       // 3D buildings beyond the fog are unloaded; the filter only moves every 200 m walked
@@ -1267,8 +1297,10 @@ export function MapScreen({
   return (
     <main className="map-screen" data-night={night ? 'true' : 'false'}>
       <div ref={containerRef} className="map" data-testid="play-map" />
-      {/* Haze over the far distance: hides where the map's far edge ends at a steep tilt. */}
-      <div className="map-fog" ref={fogRef} data-testid="map-fog" aria-hidden />
+      {/* The fog wall beyond the fog distance (the sky is the map's own background). */}
+      <svg className="map-fog" data-testid="map-fog" aria-hidden>
+        <path ref={fogRef} />
+      </svg>
       <div className="hud-top">
         <div className="hud-left">
           {card}
