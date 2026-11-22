@@ -145,8 +145,6 @@ interface Props {
 
 export { START };
 let protocolAdded = false;
-/** The loading screen shows on the first map of a session only (not after battles). */
-let loadedOnce = false;
 /** Never keep the player waiting longer than this (GPS or tiles slow): show the map. */
 export const LOADING_MAX_MS = 20_000;
 
@@ -221,7 +219,12 @@ export function MapScreen({
   const [nearbyOpen, setNearbyOpen] = useState(false);
   /** The map went idle (tiles and 3D buildings in place) after the player was placed. */
   const [townBuilt, setTownBuilt] = useState(false);
-  const [loading, setLoading] = useState(!loadedOnce);
+  /**
+   * The loading screen covers every build of the map (owner: also when the map game is
+   * opened from the battle test, after a badge ceremony and after battles), until the
+   * position is found and the town is built.
+   */
+  const [loading, setLoading] = useState(true);
   const [loadingTimedOut, setLoadingTimedOut] = useState(false);
   const mapRef = useRef<MlMap | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -368,6 +371,10 @@ export function MapScreen({
   // ---- map setup ------------------------------------------------------------------------
   useEffect(() => {
     if (inBattle || !containerRef.current) return;
+    // a new map: show the loading screen until it is built again
+    setTownBuilt(false);
+    setLoadingTimedOut(false);
+    setLoading(true);
     if (!protocolAdded) {
       maplibregl.addProtocol('pmtiles', new Protocol().tile);
       protocolAdded = true;
@@ -1235,7 +1242,6 @@ export function MapScreen({
   const loadingDone = (!!goodFix && townBuilt) || loadingTimedOut || !!gpsError;
   useEffect(() => {
     if (!loading || !loadingDone) return;
-    loadedOnce = true;
     const id = setTimeout(() => setLoading(false), 450); // fade out
     return () => clearTimeout(id);
   }, [loading, loadingDone]);

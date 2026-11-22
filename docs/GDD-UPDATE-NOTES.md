@@ -2,7 +2,7 @@
 
 Everything built or decided since the v1.9 export that the GDD doesn't describe yet,
 grouped by GDD section, with suggested wording. Details and reasons are in
-[DECISIONS.md](DECISIONS.md) (D111–D148); open proposals are in
+[DECISIONS.md](DECISIONS.md) (D111–D149); open proposals are in
 [GDD-PROPOSALS.md](GDD-PROPOSALS.md) (P16–P21).
 
 ## Change log line (suggested)
@@ -51,8 +51,10 @@ Add:
   - The Nearby strip opens from a paw button showing how many creatures are around.
   - No "looking for creatures" message. A weak or missing GPS fix is a small signal icon,
     not a sentence. A denied GPS permission still shows a message.
-- **Loading screen:** on the first map of a session, "Finding your position" and "Building
-  the town" are ticked off; it never waits more than 20 seconds.
+- **Loading screen:** whenever the map is built (opening the game, coming from the battle
+  playtest, after a battle or a badge ceremony), "Finding your position" and "Building the
+  town" are ticked off; it never waits more than 20 seconds. Closing the menu doesn't
+  rebuild the map, so there's no loading screen then.
 - **3D buildings (setting, off by default):** buildings from the map data drawn in 3D at a
   storybook scale (about half their real height, so the street around the player stays
   visible); facing labels stay above them.

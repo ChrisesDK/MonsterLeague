@@ -1349,3 +1349,12 @@ length, position resolution and spawn tables>`.
     (one per tap, `addToBag` in `packages/game`), plus "Get a Basic Charm" and "Get a
     Small Tonic" so early testing doesn't stall on running out. It is for everyone for now
     and should go once the game hands the items out.
+- **D149. The loading screen covers every build of the map** (owner report: opening the map
+  game from the battle test showed no loading screen while the position was found and the
+  town built). It used to show on the first map of a browser session only (a module-level
+  "loaded once" flag), so a map built again later (coming from the battle test, after a
+  badge ceremony, after a battle) appeared half-built. Now every time the play map is
+  created, the loading screen shows until the position is found and the town is built
+  (or the 20-second limit, or a GPS error). Closing the menu doesn't rebuild the map, so
+  no loading screen there. After a battle the position is already known and the tiles are
+  cached, so it shows briefly while the town is redrawn.

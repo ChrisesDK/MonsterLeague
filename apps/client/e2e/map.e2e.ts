@@ -847,3 +847,18 @@ test('Settings → Test items gives a Revive Blossom; the bag uses it to revive 
   expect(after).toBeGreaterThan(1);
   expect((await dev()).bag.revive_blossom ?? 0).toBe(0);
 });
+
+test('the loading screen shows when the map game opens from the battle test (a new map and GPS search)', async ({
+  page,
+}) => {
+  await startDone(page);
+  // map → battle test → map: a new map and a new GPS search, so the loading screen shows
+  await page.getByTestId('menu-button').click();
+  await page.getByTestId('menu-settings').click();
+  await page.getByTestId('to-playtest').click();
+  await expect(page).toHaveURL(/#\/playtest$/);
+  await page.getByTestId('to-map').click();
+  await expect(page.getByTestId('loading-screen')).toBeVisible();
+  await expect(page.getByTestId('loading-screen')).toHaveCount(0, { timeout: 30_000 });
+  await expect(page.locator('.maplibregl-canvas')).toBeVisible();
+});
