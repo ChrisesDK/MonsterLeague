@@ -1179,12 +1179,14 @@ length, position resolution and spawn tables>`.
     Drag rotation still turns around the player.
 - **D137. Logo, colours and switching between the map game and the battle playtest**
   (owner feedback).
-  - **Logo:** the walker (the player figure: red knit cap with a pompom, red scarf, blue
-    coat, satchel strap) on a cream postage stamp with a perforated edge, like the stamps
-    on the map, on a Danish-red tile (`public/icon.svg`, own work). It is the app icon and
-    sits with the game's name on the first onboarding screen and the playtest start. A
-    lantern-creature mascot was tried first and dropped: the lantern stays only on the
-    loading screen.
+  - **Logo:** the arena badge (the game's own rosette of 12 round petals) with an empty
+    centre: cream petals, a Danish-red ring and a cream centre on a navy tile
+    (`public/icon.svg`, own work), since collecting arena badges is the heart of the game.
+    It is the app icon and sits with the game's name on the first onboarding screen and the
+    playtest start. Tried first and dropped: a lantern-creature mascot (the lantern stays
+    the loading-screen icon), the walker on a stamp (too detailed when small), and logos
+    from non-starter creatures (Grimælling, Loftnisse, Lygtling, Brokrabbe). The owner
+    chose the badge from four colourings for how it reads at small sizes.
   - **No green and yellow:** the phone's top and navigation bars used the old green theme
     colour; they now follow the paper colour of the current theme (cream by day, navy at
     night; `main.tsx` keeps `<meta name="theme-color">` in step), and the manifest uses the

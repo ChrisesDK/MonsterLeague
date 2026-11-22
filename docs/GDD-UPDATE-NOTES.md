@@ -7,9 +7,9 @@ grouped by GDD section, with suggested wording. Details and reasons are in
 
 ## Change log line (suggested)
 
-| Version | Changes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1.10    | M2d done and live (game feel); orbit camera (always on the player, drag rotates, zoom tilts 30–76° and looks ahead), a fog wall in the 3D scene (1.2 km, adjustable 0.8–1.4 km) with a day/night sky, opt-in 3D buildings, loading screen, HUD on demand (folded goal card, Nearby button, GPS signal icon), menu over the live map, touch drags never scroll or reload the page, fainted creatures recover after 8 hours, short GPS dips tolerated, species art colours, new logo (the walker on a stamp) and colours without green and yellow, switching between the map game and the battle playtest; accepted P16–P20 |
+| Version | Changes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.10    | M2d done and live (game feel); orbit camera (always on the player, drag rotates, zoom tilts 30–76° and looks ahead), a fog wall in the 3D scene (1.2 km, adjustable 0.8–1.4 km) with a day/night sky, opt-in 3D buildings, loading screen, HUD on demand (folded goal card, Nearby button, GPS signal icon), menu over the live map, touch drags never scroll or reload the page, fainted creatures recover after 8 hours, short GPS dips tolerated, species art colours, new logo (the arena badge) and colours without green and yellow, switching between the map game and the battle playtest; accepted P16–P20 |
 
 ## Game feel → Map view (P20)
 
@@ -58,9 +58,9 @@ Add:
 - **Settings screen:** add "3D buildings", "How far you can see" (fog wall, 0.8–1.4 km)
   and "Battle playtest" (opens the playtest; the playtest has "Go to the map game") to the
   list.
-- **Logo:** the walker (the player figure in the red knit cap, red scarf and blue coat) on
-  a cream postage stamp, on a Danish-red tile. It is the app icon and appears with the
-  game's name on the first screen. The swinging lantern stays the loading-screen icon.
+- **Logo:** the arena badge with an empty centre (cream petals, a red ring and a cream
+  centre on navy). It is the app icon and appears with the game's name on the first
+  screen. The swinging lantern stays the loading-screen icon.
 - **Colours:** no green or yellow in the interface outside the map: copper for badges and
   highlights, spruce blue for things that are done, Danish red as the main colour. The
   phone's top and navigation bars follow the paper colour (cream by day, navy at night).
