@@ -4,8 +4,7 @@ import { join } from 'node:path';
 
 const ENDPOINT = 'https://overpass-api.de/api/interpreter';
 /** Generic client name: no personal details in requests (CLAUDE.md privacy rules). */
-const USER_AGENT =
-  'OdenseMonsterLeague-region-builder/0.1 (+https://github.com/chrisesdk/OdenseMonsterLeague)';
+const USER_AGENT = 'MonsterLeague-region-builder/0.1 (+https://github.com/chrisesdk/MonsterLeague)';
 
 /** One Overpass QL query for everything the biome and noSpawn classification needs. */
 export function buildQuery([west, south, east, north]: [number, number, number, number]): string {

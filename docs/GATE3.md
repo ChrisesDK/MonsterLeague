@@ -34,7 +34,7 @@
   deleting the save in Settings.
 
 - **Check the live build** at the start of the route:
-  - open <https://www.christianrasmussen.dk/OdenseMonsterLeague/> on Wi-Fi so it is
+  - open <https://www.christianrasmussen.dk/MonsterLeague/> on Wi-Fi so it is
     cached;
   - allow location;
   - check that creatures appear.

@@ -11,8 +11,8 @@ playable: save, onboarding, trainers, rest stops, arena 1, badge), M2c (GDD v1.7
 arena order, open common wildlife with per-player levels, arena 2 and district 2) and
 **M2d** (GDD v1.9 game feel: tilted follow camera, wild areas, routes, Town Map, Journal,
 design system) are done.
-**Live:** https://www.christianrasmussen.dk/OdenseMonsterLeague/ (deployed from `main` by
-`.github/workflows/pages.yml`; Vite base `/OdenseMonsterLeague/`, see docs/DEPLOY.md). The
+**Live:** https://www.christianrasmussen.dk/MonsterLeague/ (deployed from `main` by
+`.github/workflows/pages.yml`; Vite base `/MonsterLeague/`, see docs/DEPLOY.md). The
 spawn-service Worker is redeployed by CI (docs/DEPLOY.md). **Next: Gate 3**, the district
 walk test the owner runs with docs/GATE3.md (verify the POIs on site first). Multiplayer
 is M5; don't build any of it before then. See [docs/PLAN.md](docs/PLAN.md) and
@@ -164,4 +164,4 @@ by `tools/sim/test/balance.test.ts`. If a content change breaks them, re-tune wi
   in `docs/DECISIONS.md`. When the GDD itself seems wrong, write a proposal instead.
 - Keep `docs/PLAN.md` checkboxes current. Commit in small steps. Never push unless the
   owner asks in that milestone; the only remote is `origin` =
-  github.com/chrisesdk/OdenseMonsterLeague (public). Never touch the owner's other repos.
+  github.com/chrisesdk/MonsterLeague (public). Never touch the owner's other repos.

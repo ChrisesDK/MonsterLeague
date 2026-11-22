@@ -1,9 +1,9 @@
 /**
  * Fails if a production build references root-absolute URLs that ignore the Vite base
- * (e.g. "/assets/x.js" when the site lives at /OdenseMonsterLeague/). GitHub Pages serves
+ * (e.g. "/assets/x.js" when the site lives at /MonsterLeague/). GitHub Pages serves
  * project sites from a sub-path, so such URLs would 404 for testers.
  *
- * Usage (after `vite build`): VITE_BASE=/OdenseMonsterLeague/ tsx scripts/check-base.ts [distDir]
+ * Usage (after `vite build`): VITE_BASE=/MonsterLeague/ tsx scripts/check-base.ts [distDir]
  */
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';

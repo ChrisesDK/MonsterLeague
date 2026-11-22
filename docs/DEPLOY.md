@@ -16,10 +16,10 @@ created yet: these are the steps for you. Either way, testers get a public URL; 
 
 **Live:**
 
-- **Link for testers:** <https://www.christianrasmussen.dk/OdenseMonsterLeague/>
-- Repo: <https://github.com/chrisesdk/OdenseMonsterLeague> (public, source available,
+- **Link for testers:** <https://www.christianrasmussen.dk/MonsterLeague/>
+- Repo: <https://github.com/chrisesdk/MonsterLeague> (public, source available,
   all rights reserved).
-- `https://chrisesdk.github.io/OdenseMonsterLeague/` also works, but redirects: the
+- `https://chrisesdk.github.io/MonsterLeague/` also works, but redirects: the
   user site `chrisesdk.github.io` (the portfolio repo) has the custom domain
   `www.christianrasmussen.dk`, and GitHub serves every project site under it.
 
@@ -36,7 +36,7 @@ created yet: these are the steps for you. Either way, testers get a public URL; 
   every push to `main` (and manually via _Actions → Deploy client to GitHub Pages → Run
   workflow_). It validates content, runs all tests, builds the client, checks the base
   path, and deploys. In a private repo it skips pushes (see option B).
-- **Base path:** the workflow sets `VITE_BASE=/<repo name>/` = `/OdenseMonsterLeague/`.
+- **Base path:** the workflow sets `VITE_BASE=/<repo name>/` = `/MonsterLeague/`.
   The repo name's casing matters: the URL path is case-sensitive. Locally `VITE_BASE` is
   unset, so `pnpm dev` and `pnpm --filter @oml/client preview` keep serving at `/`.
 - **Everything follows the base:**
@@ -46,9 +46,9 @@ created yet: these are the steps for you. Either way, testers get a public URL; 
   - hash routing (`#/dev`) needs no 404 fallback.
 - **Guard:** `pnpm --filter @oml/client check:base` (`apps/client/scripts/check-base.ts`)
   fails if the built `dist/` references a root-absolute URL outside the base. It runs in
-  the deploy job and in CI (a build with `VITE_BASE=/OdenseMonsterLeague/`).
+  the deploy job and in CI (a build with `VITE_BASE=/MonsterLeague/`).
 - **Pages settings:** _Source: GitHub Actions_ (set via
-  `gh api -X POST repos/chrisesdk/OdenseMonsterLeague/pages -f build_type=workflow`).
+  `gh api -X POST repos/chrisesdk/MonsterLeague/pages -f build_type=workflow`).
   No CNAME file and no account-level changes.
 
 **Redeploying:** push to `main`, or re-run the workflow. Phones pick up the new version on
@@ -157,7 +157,7 @@ From the project folder, in a terminal:
 5. **Tell the client where it is.** This is a repository variable, not a secret, because
    the URL is public anyway:
    ```sh
-   gh variable set SPAWN_SERVICE_URL --repo chrisesdk/OdenseMonsterLeague --body "https://oml-spawn-service.<your-subdomain>.workers.dev"
+   gh variable set SPAWN_SERVICE_URL --repo chrisesdk/MonsterLeague --body "https://oml-spawn-service.<your-subdomain>.workers.dev"
    ```
    The Pages workflow passes it to the build as `VITE_SPAWN_SERVICE_URL`. Then push (or
    re-run the Pages workflow) and the live map shows creatures.
@@ -201,13 +201,13 @@ spawn service → Run workflow_.
 7. Store it as a GitHub **secret** named `CLOUDFLARE_API_TOKEN`. Paste it when prompted, so
    it never lands in your shell history:
    ```sh
-   gh secret set CLOUDFLARE_API_TOKEN --repo chrisesdk/OdenseMonsterLeague
+   gh secret set CLOUDFLARE_API_TOKEN --repo chrisesdk/MonsterLeague
    ```
 8. Store your account ID as a GitHub **variable** (it isn't secret). Find it in the
    dashboard under _Workers & Pages_ (right-hand side, "Account ID"), or with
    `pnpm --filter @oml/spawn-service exec wrangler whoami`:
    ```sh
-   gh variable set CLOUDFLARE_ACCOUNT_ID --repo chrisesdk/OdenseMonsterLeague --body "<account id>"
+   gh variable set CLOUDFLARE_ACCOUNT_ID --repo chrisesdk/MonsterLeague --body "<account id>"
    ```
 
 `SPAWN_SECRET` stays a Worker secret in Cloudflare; deploys keep it, and it is never in

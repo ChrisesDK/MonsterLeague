@@ -3,8 +3,8 @@
 A free, walk-to-play, location-based monster-collecting RPG set in Odense, Denmark
 (working title). It ships first as a mobile web app (PWA) and runs entirely on the phone.
 
-**Play:** <https://www.christianrasmussen.dk/OdenseMonsterLeague/>
-(also reachable via <https://chrisesdk.github.io/OdenseMonsterLeague/>). Open it once on
+**Play:** <https://www.christianrasmussen.dk/MonsterLeague/>
+(also reachable via <https://chrisesdk.github.io/MonsterLeague/>). Open it once on
 Wi-Fi; after that it also works offline.
 
 ## About this project

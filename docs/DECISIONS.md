@@ -1302,3 +1302,12 @@ length, position resolution and spawn tables>`.
   unchanged. Names considered: Wild Atlas, Wanderfolk, Waymark (open); Fableway and Rosette
   League were dropped as too tied to Odense, and anything echoing "GO" or "Wayfarer" as too
   close to another game.
+- **D145. The repository is renamed MonsterLeague** (owner, with the app name of D144).
+  `github.com/chrisesdk/OdenseMonsterLeague` → `github.com/chrisesdk/MonsterLeague`. GitHub
+  redirects the old repository URL, but not the Pages path: the game now lives at
+  <https://www.christianrasmussen.dk/MonsterLeague/> (the github.io address redirects
+  there), and the old `/OdenseMonsterLeague/` link no longer works. The deploy takes its
+  base path from the repository name, so only CI's check build, the base-path test and the
+  docs changed. Saves are kept (same domain); an installed app points at the old path and
+  must be installed again from the new link. The spawn service only checks the domain, so
+  it needs no change. Earlier entries keep the old name as history.

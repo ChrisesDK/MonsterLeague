@@ -25,7 +25,7 @@ jobs:
       - name: Base-path check (GitHub Pages sub-path build)
         run: pnpm --filter @oml/client build && pnpm --filter @oml/client check:base
         env:
-          VITE_BASE: /OdenseMonsterLeague/
+          VITE_BASE: /MonsterLeague/
       - name: Spawn density targets (GDD)
         run: pnpm spawn:report
       - name: Spawn service bundles (Wrangler dry run, no account needed)

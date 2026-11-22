@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { findBaseViolations, urlOk } from '../scripts/check-base';
 
-const BASE = '/OdenseMonsterLeague/';
+const BASE = '/MonsterLeague/';
 
 describe('base-path check', () => {
   it('accepts relative, external and base-prefixed URLs', () => {

@@ -66,8 +66,8 @@
 
 ## M1.8 — Publish to GitHub Pages ✅
 
-- [x] Public repo github.com/chrisesdk/OdenseMonsterLeague (source available, all rights reserved)
-- [x] Build under the sub-path `/OdenseMonsterLeague/` (VITE_BASE in the workflow) + `check:base` guard in CI and deploy
+- [x] Public repo github.com/chrisesdk/MonsterLeague (source available, all rights reserved)
+- [x] Build under the sub-path `/MonsterLeague/` (VITE_BASE in the workflow) + `check:base` guard in CI and deploy
 - [x] Public-repo hygiene: no secrets/local paths in files or history; .gitignore for .env* and playtest exports; noreply commit email
 - [x] Pages from GitHub Actions; deploy green; live site verified (battle, rating, export, offline, no console errors)
 
