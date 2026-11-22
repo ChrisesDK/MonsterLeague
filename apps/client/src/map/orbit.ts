@@ -6,8 +6,8 @@ import type { Map as MlMap } from 'maplibre-gl';
  * - Pinch and the scroll wheel zoom around the player (the map centre).
  * - Zooming in tilts the camera up (30 degrees zoomed out, close to looking straight down,
  *   76 zoomed in) and moves the player lower on the screen (look-ahead, see lookAheadPadding).
- * - The fog wall (fogPath) hides the world beyond the fog distance; the sky is drawn behind
- *   the map.
+ * - The fog wall (fogWall.ts) hides the world beyond the fog distance; the sky is drawn
+ *   behind the map.
  */
 export const ORBIT = {
   minZoom: 16.5,
@@ -229,25 +229,6 @@ export function lookAheadPadding(
   const yIn = Math.max(yOut, Math.min(height * playerIn, height - bottom - hudGap));
   const y = yOut + t * (yIn - yOut);
   return { top: Math.round(2 * y - height + bottom), bottom, left: 0, right: 0 };
-}
-
-/**
- * The fog wall (owner request: a static barrier, no fade, and the sky never covers ground).
- * `arc` is the far half of the circle at the fog distance projected onto the screen, from
- * the player's right to its left (both ends on the player's row); the fog fills the screen
- * above that outline, up to the horizon. Above the horizon the sky shows through: it is drawn
- * behind the map, so it can only fill space where there is no ground. Returns an SVG path.
- */
-export function fogPath(arc: { x: number; y: number }[], horizonY: number, width: number): string {
-  if (arc.length < 2) return '';
-  const lim = 8 * Math.max(1, width);
-  const cx = (x: number) => Math.max(-lim, Math.min(width + lim, x));
-  const n = (v: number) => v.toFixed(1);
-  const pts = arc.map((q) => `${n(cx(q.x))} ${n(q.y)}`);
-  const top = Math.min(horizonY, ...arc.map((q) => q.y));
-  const first = arc[0]!;
-  const last = arc[arc.length - 1]!;
-  return `M${pts.join('L')}` + `L${n(cx(last.x))} ${n(top)}L${n(cx(first.x))} ${n(top)}Z`;
 }
 
 /** The sky behind the map: sky colour at the top of the screen, fog colour at the horizon. */

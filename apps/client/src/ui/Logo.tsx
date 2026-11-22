@@ -1,4 +1,4 @@
-/** The game's logo (the lantern creature, public/icon.svg) with the name beside it. */
+/** The game's logo (the walker on a stamp, public/icon.svg) with the name beside it. */
 export function Logo({ size = 64 }: { size?: number }) {
   return (
     <div className="logo" data-testid="logo">

@@ -343,7 +343,7 @@ button.row:active {
   display: block;
 }
 
-/* Logo: the lantern creature and the name (first screen, playtest start). */
+/* Logo: the walker stamp and the name (first screen, playtest start). */
 .logo {
   display: flex;
   align-items: center;

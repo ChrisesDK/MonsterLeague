@@ -350,7 +350,7 @@ export function setBuildings3d(map: MlMap, on: boolean): void {
  * distance is a setting (1,000–2,000 m, default FOG_M); 3D buildings load and unload
  * BUILDINGS_BEHIND_M behind the wall.
  */
-export const FOG_M = 2000;
+export const FOG_M = 1200;
 export const BUILDINGS_BEHIND_M = 100;
 /** The fog wall's distance [start, end] in metres (one distance; kept as a pair). */
 export function fogRadii(distanceM = FOG_M): [number, number] {

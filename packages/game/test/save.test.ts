@@ -107,23 +107,41 @@ describe('save versions and migrations', () => {
     expect(r.ok && r.save.version).toBe(SAVE_VERSION);
   });
 
-  it('v5 → v6 adds the fog distance setting, 2,000 m', () => {
+  it('v5 → v6 adds the fog distance setting (2,000 m, then limited to 1,200 m by v7)', () => {
     const cur = chooseStarter(newSave(SEED), 'gnistkat');
     const { fogDistance: _f, ...settings } = cur.settings;
     const v5 = { ...cur, version: 5, settings };
+    const v6 = migrations[5]!(JSON.parse(JSON.stringify(v5)), 'other') as {
+      settings: { fogDistance: number };
+    };
+    expect(v6.settings.fogDistance).toBe(2000);
     const r = loadSave(JSON.parse(JSON.stringify(v5)), 'other');
-    expect(r.ok && r.save.settings.fogDistance).toBe(2000);
+    expect(r.ok && r.save.settings.fogDistance).toBe(1200);
     expect(r.ok && r.save.version).toBe(SAVE_VERSION);
   });
 
-  it('the fog distance stays within 1,000–2,000 m', () => {
+  it('v6 → v7 limits the fog to 1,200 m and keeps nearer settings', () => {
+    const cur = chooseStarter(newSave(SEED), 'gnistkat');
+    for (const [d, want] of [
+      [2000, 1200],
+      [1500, 1200],
+      [1100, 1100],
+      [1000, 1000],
+    ] as const) {
+      const v6 = { ...cur, version: 6, settings: { ...cur.settings, fogDistance: d } };
+      const r = loadSave(JSON.parse(JSON.stringify(v6)), 'other');
+      expect(r.ok && r.save.settings.fogDistance, `from ${d}`).toBe(want);
+    }
+  });
+
+  it('the fog distance stays within 1,000–1,200 m', () => {
     const cur = chooseStarter(newSave(SEED), 'gnistkat');
     for (const [d, ok] of [
       [999, false],
       [1000, true],
-      [1500, true],
-      [2000, true],
-      [2001, false],
+      [1100, true],
+      [1200, true],
+      [1201, false],
     ] as const)
       expect(
         SaveSchema.safeParse({ ...cur, settings: { ...cur.settings, fogDistance: d } }).success,

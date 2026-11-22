@@ -713,7 +713,7 @@ function SettingsScreen({
         <input
           type="range"
           min={1000}
-          max={2000}
+          max={1200}
           step={100}
           value={s.fogDistance}
           aria-valuetext={`${(s.fogDistance / 1000).toFixed(1)} km`}

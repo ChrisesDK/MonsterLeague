@@ -9,7 +9,7 @@ import { z } from 'zod';
  * The tutorial creature's position is kept in memory and re-rolled after a reload; used
  * spawns are kept only until they expire (≤ 15 min) and are pruned on every save.
  */
-export const SAVE_VERSION = 6;
+export const SAVE_VERSION = 7;
 
 export type OnboardingStep = 'safety' | 'location' | 'starter' | 'tutorial' | 'done';
 
@@ -86,7 +86,7 @@ export const DEFAULT_SETTINGS: Settings = {
   reduceMotion: false,
   language: 'da',
   buildings3d: false,
-  fogDistance: 2000,
+  fogDistance: 1200,
 };
 
 export function newSave(seed: string, language: Settings['language'] = 'da'): SaveGame {
@@ -187,7 +187,7 @@ export const SaveSchema = z
         reduceMotion: z.boolean(),
         language: z.enum(['da', 'en']),
         buildings3d: z.boolean(),
-        fogDistance: z.number().int().min(1000).max(2000),
+        fogDistance: z.number().int().min(1000).max(1200),
       })
       .strict(),
     journal: z
@@ -282,6 +282,12 @@ export const migrations: Record<number, (old: Record<string, unknown>, seed: str
     version: 6,
     settings: { ...(old.settings as Record<string, unknown>), fogDistance: 2000 },
   }),
+  /** v6 → v7: the fog is limited to 1,200 m (owner playtest); longer distances come down. */
+  6: (old) => {
+    const settings = old.settings as Record<string, unknown>;
+    const d = typeof settings.fogDistance === 'number' ? settings.fogDistance : 1200;
+    return { ...old, version: 7, settings: { ...settings, fogDistance: Math.min(d, 1200) } };
+  },
 };
 
 /** GDD v1.7 renumbering, old district → new district (1 and 3 stay). */

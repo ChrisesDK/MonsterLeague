@@ -1759,17 +1759,6 @@ body {
 .map-screen .maplibregl-map .maplibregl-canvas {
   touch-action: none;
 }
-/* Fog wall: clear within the fog distance of the player, fog beyond it up to the horizon
-   (the path is drawn by the frame loop). The sky is the map's background, behind the map. */
-.map-fog {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  pointer-events: none;
-}
-
 /* Menu screens over the live map (the map isn't rebuilt when the menu closes). */
 .screen-overlay {
   position: fixed;

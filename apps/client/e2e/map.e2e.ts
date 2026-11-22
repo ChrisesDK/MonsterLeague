@@ -358,9 +358,9 @@ test('fog wall: the ground reaches just past it at every zoom, the sky is behind
       const offTop = (m: number) => map.project({ lat: c.lat + m / 111_320, lng: c.lng }).y < 0;
       return {
         playerY: map.project(c).y / map.getContainer().clientHeight,
-        at2100: drawn(2100),
-        at2100OffTop: offTop(2100),
-        at2700: drawn(2700),
+        at1300: drawn(1300),
+        at1300OffTop: offTop(1300),
+        at1800: drawn(1800),
         sky: map.getContainer().style.background,
       };
     }, zoom);
@@ -371,15 +371,20 @@ test('fog wall: the ground reaches just past it at every zoom, the sky is behind
   expect(out.playerY).toBeLessThan(0.47);
   expect(mid.playerY).toBeGreaterThan(out.playerY + 0.03);
   expect(inn.playerY).toBeGreaterThan(0.58);
-  // the ground is drawn to just past the 2 km wall, or to the top of the screen when that
+  // the ground is drawn to just past the 1.2 km wall, or to the top of the screen when that
   // is nearer, and nothing beyond (before, zoomed in, MapLibre stopped about 850 m ahead)
-  for (const v of [out, mid]) expect(v.at2100 || v.at2100OffTop).toBe(true);
-  expect(inn.at2100).toBe(true);
-  for (const v of [out, mid, inn]) expect(v.at2700).toBe(false);
-  // the fog wall is a drawn outline; the sky is the map's background (behind the ground)
-  await expect
-    .poll(async () => (await page.getByTestId('map-fog').locator('path').getAttribute('d')) ?? '')
-    .toMatch(/^M.*Z$/);
+  for (const v of [out, mid]) expect(v.at1300 || v.at1300OffTop).toBe(true);
+  expect(inn.at1300).toBe(true);
+  for (const v of [out, mid, inn]) expect(v.at1800).toBe(false);
+  // the fog wall is a layer in the 3D scene, above every other layer (buildings in front of
+  // it stay in front); the sky is the map's background (behind the ground)
+  const top = await page.evaluate(() => {
+    const ids = (
+      window as unknown as { __omlMap: { getLayersOrder: () => string[] } }
+    ).__omlMap.getLayersOrder();
+    return ids[ids.length - 1];
+  });
+  expect(top).toBe('fog-wall');
   await expect.poll(async () => (await look(18.5)).sky).toContain('linear-gradient');
 });
 
@@ -527,7 +532,7 @@ test('3D buildings are opt-in (Settings), and facing labels stay above them', as
   await expect.poll(async () => (await layers(page)).on3d, { timeout: 10_000 }).toBe(true);
   l = await layers(page);
   expect(l.flat).toBe(false);
-  // buildings load and unload 100 m behind the fog wall (2,000 m by default)
+  // buildings load and unload 100 m behind the fog wall (1,200 m by default)
   const filter = () =>
     page.evaluate(() =>
       JSON.stringify(
@@ -537,7 +542,7 @@ test('3D buildings are opt-in (Settings), and facing labels stay above them', as
       ),
     );
   expect(await filter()).toContain('"distance"');
-  expect(await filter()).toContain('2100');
+  expect(await filter()).toContain('1300');
   // the fog distance slider (1–2 km) moves the wall and the buildings with it, at once
   await page.getByTestId('menu-button').click();
   await page.getByTestId('menu-settings').click();

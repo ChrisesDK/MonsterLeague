@@ -4,7 +4,6 @@ import {
   FLING_DECAY_MS,
   FLING_MAX_DEG_PER_MS,
   flingVelocity,
-  fogPath,
   horizonForReach,
   lookAheadPadding,
   metresPerPx,
@@ -108,36 +107,7 @@ describe('fling after a swipe', () => {
   });
 });
 
-describe('fog wall: the exact outline of the fog circle, sky behind the map', () => {
-  it('fog fills the screen above the projected far half of the circle, up to the horizon', () => {
-    const arc = [
-      { x: 900, y: 500 },
-      { x: 195, y: 120 },
-      { x: -500, y: 500 },
-    ];
-    expect(fogPath(arc, 80, 390)).toBe(
-      'M900.0 500.0L195.0 120.0L-500.0 500.0L-500.0 80.0L900.0 80.0Z',
-    );
-  });
-  it('never reaches above the horizon (the sky behind the map shows there)', () => {
-    const arc = [
-      { x: 400, y: 300 },
-      { x: 0, y: 300 },
-    ];
-    expect(fogPath(arc, 150, 390)).toContain('L0.0 150.0L400.0 150.0Z');
-  });
-  it('clamps far-off side points (they lie thousands of px off screen at a steep tilt)', () => {
-    const d = fogPath(
-      [
-        { x: 1e6, y: 500 },
-        { x: -1e6, y: 500 },
-      ],
-      100,
-      390,
-    );
-    expect(d).toContain('3510.0 500.0');
-    expect(d).toContain('-3120.0 500.0');
-  });
+describe('the sky behind the map', () => {
   it('the sky goes from sky colour at the top to fog colour at the horizon', () => {
     expect(skyBackground(120, '#aaccee', '#ddeeee')).toBe(
       'linear-gradient(180deg, #aaccee 0px, #ddeeee 120px)',
