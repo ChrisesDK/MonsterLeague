@@ -37,18 +37,24 @@ export function markerElement(
 
 /**
  * The map credits (OpenStreetMap contributors, Protomaps) as a small "i" button that starts
- * closed (owner request); tapping it opens and closes the credits. MapLibre's compact
- * credits start open and only fold away on the first map drag, which the play view never
- * makes (drag rotates, it doesn't pan).
+ * closed and prefers to stay closed (owner request): tapping it opens the credits, and they
+ * fold away again on the next touch anywhere else (the map, a button, a rotation or zoom).
+ * MapLibre's compact credits start open and only fold away on the first map drag, which the
+ * play view never makes (drag rotates, it doesn't pan).
  */
 export function addAttribution(map: MlMap, ctrl: IControl): void {
   map.addControl(ctrl, 'bottom-right');
-  const fold = () =>
-    map
-      .getContainer()
-      .querySelector('.maplibregl-ctrl-attrib.maplibregl-compact')
-      ?.classList.remove('maplibregl-compact-show');
+  const el = () =>
+    map.getContainer().querySelector<HTMLElement>('.maplibregl-ctrl-attrib.maplibregl-compact');
+  const fold = () => el()?.classList.remove('maplibregl-compact-show');
   fold();
   // the credits text arrives with the map data; keep it folded until the player opens it
   map.once('load', fold);
+  // any touch outside the credits folds them again
+  const outside = (e: Event) => {
+    const c = el();
+    if (c && !c.contains(e.target as Node)) fold();
+  };
+  document.addEventListener('pointerdown', outside, true);
+  map.on('remove', () => document.removeEventListener('pointerdown', outside, true));
 }

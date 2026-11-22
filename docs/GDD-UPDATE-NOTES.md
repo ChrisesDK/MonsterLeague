@@ -62,7 +62,8 @@ Add:
 - **App name:** "Monster League" for now (was "Odense Monster League", "OML" on the
   home screen); Odense becomes the first region rather than part of the name.
 - **Map credits:** the OpenStreetMap / Protomaps credits are a small "i" button in the
-  corner of both maps, closed at start; a tap opens them above the game's buttons.
+  corner of both maps, closed at start; a tap opens them above the game's buttons, and the next touch anywhere
+  else closes them again.
 - **Leaving:** an accidental back gesture (an edge swipe) doesn't leave the site or close
   the installed app; the game asks "Leave the game?" first. Stay closes the dialog and the
   swipe has no effect; Leave, or a second swipe, closes the installed app (in the browser:

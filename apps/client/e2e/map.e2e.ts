@@ -770,6 +770,11 @@ test('map credits start closed, open and close on tap, and lie above the game bu
   }
   await button.click();
   await expect(text('.map-screen')).toBeHidden();
+  // they prefer to be closed: open, then a touch anywhere else folds them away
+  await button.click();
+  await expect(text('.map-screen')).toBeVisible();
+  await page.mouse.click(195, 420);
+  await expect(text('.map-screen')).toBeHidden();
   // Town Map: closed at start too
   await page.getByTestId('townmap-button').click();
   await expect(page.getByTestId('town-map')).toBeVisible();

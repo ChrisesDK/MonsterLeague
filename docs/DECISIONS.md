@@ -1329,7 +1329,8 @@ length, position resolution and spawn tables>`.
   Protomaps" credits are MapLibre's compact attribution control, which starts open and only
   folds away on the first map drag; the play view never drags (it rotates), so it stayed
   open. Both maps now start with only the small "i" button (`addAttribution` in
-  `markers.ts`); tapping it opens and closes the credits. In the play view the bottom HUD
+  `markers.ts`); tapping it opens and closes the credits, and they prefer to be closed: the
+  next touch anywhere else (the map, a button, a rotation or zoom) folds them away again. In the play view the bottom HUD
   row covered the button and took its taps; the credits control now sits above the game's
   buttons (z-index 6, clear of the phone's navigation bar), so open, the credits lie on top
   of the satchel button. The credits stay one tap away, as the map data licences require.
