@@ -1,6 +1,7 @@
 /**
- * Haptics for feedback moments (M2d). Respects "reduce motion" (no buzz either) and only
- * vibrates after a user gesture (browsers block it otherwise).
+ * Haptics for feedback moments (M2d). Follows the Vibration setting (D151; it used to
+ * follow "reduce motion") and only vibrates after a user gesture (browsers block it
+ * otherwise).
  */
 export const HAPTICS = {
   encounter: [120],
@@ -13,7 +14,7 @@ export const HAPTICS = {
 
 export function buzz(kind: keyof typeof HAPTICS): void {
   try {
-    if (document.documentElement.dataset.reduceMotion === 'true') return;
+    if (document.documentElement.dataset.vibration === 'off') return;
     const ua = (navigator as Navigator & { userActivation?: { hasBeenActive: boolean } })
       .userActivation;
     if (ua && !ua.hasBeenActive) return;

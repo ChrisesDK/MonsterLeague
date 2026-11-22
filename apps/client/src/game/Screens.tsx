@@ -661,7 +661,11 @@ function SettingsScreen({
   const set = <K extends keyof SaveGame['settings']>(k: K, v: SaveGame['settings'][K]) =>
     update((s) => ({ ...s, settings: { ...s.settings, [k]: v } }));
   const s = save.settings;
-  const toggle = (k: 'sound' | 'reduceMotion' | 'buildings3d', label: string, hint?: string) => (
+  const toggle = (
+    k: 'sound' | 'vibration' | 'reduceMotion' | 'buildings3d',
+    label: string,
+    hint?: string,
+  ) => (
     <label className="toggle-row" data-testid={`setting-${k}`}>
       <span>{label}</span>
       <input
@@ -673,34 +677,33 @@ function SettingsScreen({
       {hint && <span className="muted small toggle-hint">{hint}</span>}
     </label>
   );
+  /** A setting with several options: a dropdown (owner request). */
   function choice<V extends string>(
+    id: string,
     label: string,
     value: V,
     options: [V, string][],
     on: (v: V) => void,
   ) {
     return (
-      <div className="setting">
+      <label className="setting select-row" data-testid={`setting-${id}`}>
         <span>{label}</span>
-        <div className="chip-row">
+        <select value={value} onChange={(e) => on(e.target.value as V)}>
           {options.map(([v, l]) => (
-            <button
-              key={v}
-              className={`btn choice${value === v ? ' on' : ''}`}
-              aria-pressed={value === v}
-              onClick={() => on(v)}
-            >
+            <option key={v} value={v}>
               {l}
-            </button>
+            </option>
           ))}
-        </div>
-      </div>
+        </select>
+      </label>
     );
   }
   return (
     <Shell t={t} title={t('menu.settings')} onBack={onBack} testId="screen-settings">
       {toggle('sound', t('settings.sound'))}
+      {toggle('vibration', t('settings.vibration'))}
       {choice(
+        'speed',
         t('settings.speed'),
         s.speed,
         [
@@ -710,6 +713,7 @@ function SettingsScreen({
         (v) => set('speed', v),
       )}
       {choice(
+        'textSize',
         t('settings.textSize'),
         s.textSize,
         [
@@ -736,6 +740,7 @@ function SettingsScreen({
         <span className="muted small toggle-hint">{t('settings.fogDistanceHint')}</span>
       </label>
       {choice(
+        'language',
         t('settings.language'),
         s.language,
         [
@@ -761,8 +766,6 @@ function SettingsScreen({
 
       <TestItems t={t} save={save} update={update} />
 
-      {gate3}
-
       <section className="panel-section" data-testid="setting-mode">
         <h2>{t('settings.mode')}</h2>
         <p className="muted small">{t('settings.modeHint')}</p>
@@ -770,6 +773,8 @@ function SettingsScreen({
           {t('map.toPlaytest')}
         </a>
       </section>
+
+      {gate3}
 
       <section className="panel-section">
         <h2>{t('settings.save')}</h2>

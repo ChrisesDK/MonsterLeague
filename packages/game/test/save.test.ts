@@ -120,6 +120,18 @@ describe('save versions and migrations', () => {
     expect(r.ok && r.save.version).toBe(SAVE_VERSION);
   });
 
+  it('v7 → v8 adds the Vibration setting: off only if reduce motion was on', () => {
+    const cur = chooseStarter(newSave(SEED), 'gnistkat');
+    const { vibration: _v, ...settings } = cur.settings;
+    for (const reduceMotion of [false, true]) {
+      const v7 = { ...cur, version: 7, settings: { ...settings, reduceMotion } };
+      const r = loadSave(JSON.parse(JSON.stringify(v7)), 'other');
+      expect(r.ok && r.save.settings.vibration).toBe(!reduceMotion);
+      expect(r.ok && r.save.settings.reduceMotion).toBe(reduceMotion);
+      expect(r.ok && r.save.version).toBe(SAVE_VERSION);
+    }
+  });
+
   it('v6 → v7 limits the fog to 1,200 m and keeps nearer settings', () => {
     const cur = chooseStarter(newSave(SEED), 'gnistkat');
     for (const [d, want] of [

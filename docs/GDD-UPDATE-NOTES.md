@@ -2,7 +2,7 @@
 
 Everything built or decided since the v1.9 export that the GDD doesn't describe yet,
 grouped by GDD section, with suggested wording. Details and reasons are in
-[DECISIONS.md](DECISIONS.md) (D111–D150); open proposals are in
+[DECISIONS.md](DECISIONS.md) (D111–D151); open proposals are in
 [GDD-PROPOSALS.md](GDD-PROPOSALS.md) (P16–P21).
 
 ## Change log line (suggested)
@@ -65,7 +65,9 @@ Add:
 - **3D buildings (setting, off by default):** buildings from the map data drawn in 3D at a
   storybook scale (about half their real height, so the street around the player stays
   visible); facing labels stay above them.
-- **Settings screen:** add "3D buildings", "How far you can see" (fog wall, 0.8–1.4 km)
+- **Settings screen:** "Vibration" is its own switch under "Sound" ("Reduce motion" no
+  longer turns vibration off); battle speed, text size and language are dropdowns. Add
+  "3D buildings", "How far you can see" (fog wall, 0.8–1.4 km)
   and "Battle playtest" (opens the playtest; the playtest has "Go to the map game") to the
   list.
 - **App name:** "Monster League" for now (was "Odense Monster League", "OML" on the
@@ -162,6 +164,7 @@ Save versions since v1.9:
 | v5      | The 3D buildings setting                                                                                                                |
 | v6      | The fog distance setting (then 1,000–2,000 m, default 2,000)                                                                            |
 | v7      | Fog distance limited: default 1,200 m, range 800–1,400 m (longer settings come down to 1,200)                                           |
+| v8      | Vibration setting (on by default; off if reduce motion was on)                                                                          |
 
 Region file v3: each cell carries flags for no-spawn, wild area, water edge and route
 corridor.

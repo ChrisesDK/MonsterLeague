@@ -542,5 +542,6 @@
   "settings.testItems": "Test items",
   "settings.testItemsHint": "For testing only: adds items to your bag. Revive Blossoms can't be found in the game yet.",
   "settings.getItem": "Get a {item}",
-  "settings.gotItem": "Added a {item} to your bag ({n} in total)."
+  "settings.gotItem": "Added a {item} to your bag ({n} in total).",
+  "settings.vibration": "Vibration"
 }

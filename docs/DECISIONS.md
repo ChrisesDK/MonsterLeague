@@ -1382,3 +1382,13 @@ length, position resolution and spawn tables>`.
     game?", also when the Journal card or the Nearby strip is open there (they don't
     handle back). Works in the browser (history guard) and the installed app (close
     watcher).
+- **D151. Settings: a Vibration toggle, dropdowns, the battle playtest above the walk test**
+  (owner request).
+  - **Vibration** is its own switch, right under Sound (save v8 `settings.vibration`,
+    default on). Before, "Reduce motion" also switched vibration off, which its name didn't
+    say; it now only reduces animations. The v7 → v8 migration keeps what the player had:
+    vibration starts off if reduce motion was on. `buzz` follows `data-vibration` on
+    `<html>`.
+  - **Dropdowns** for the settings with several options (battle speed, text size,
+    language) instead of rows of buttons.
+  - **Order** in Settings: … safety reminder, test items, battle playtest, walk test, save.

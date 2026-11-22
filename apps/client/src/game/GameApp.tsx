@@ -59,6 +59,7 @@ function applySettingsToDocument(save: SaveGame | null, night: boolean) {
   const root = document.documentElement;
   root.dataset.textSize = save?.settings.textSize ?? 'normal';
   root.dataset.reduceMotion = save?.settings.reduceMotion ? 'true' : 'false';
+  root.dataset.vibration = save?.settings.vibration === false ? 'off' : 'on';
   // GDD v1.9: night style after sunset (the whole game, not only the map).
   root.dataset.theme = night ? 'night' : 'day';
 }

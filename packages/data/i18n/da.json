@@ -542,5 +542,6 @@
   "settings.testItems": "Testgenstande",
   "settings.testItemsHint": "Kun til test: lægger genstande i tasken. Livsblomster kan ikke findes i spillet endnu.",
   "settings.getItem": "Få en {item}",
-  "settings.gotItem": "Lagt en {item} i tasken ({n} i alt)."
+  "settings.gotItem": "Lagt en {item} i tasken ({n} i alt).",
+  "settings.vibration": "Vibration"
 }

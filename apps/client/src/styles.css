@@ -318,6 +318,24 @@
   height: 28px;
   accent-color: var(--accent);
 }
+/* settings with several options: a dropdown (owner request) */
+.select-row select {
+  min-height: var(--tap);
+  min-width: 9.5em;
+  padding: 0 var(--sp-6) 0 var(--sp-3);
+  border: 2px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  background:
+    linear-gradient(45deg, transparent 50%, var(--ink-2) 50%) calc(100% - 18px) 55% / 6px 6px
+      no-repeat,
+    linear-gradient(135deg, var(--ink-2) 50%, transparent 50%) calc(100% - 12px) 55% / 6px 6px
+      no-repeat,
+    var(--card);
+  color: var(--ink);
+  font-weight: 700;
+  appearance: none;
+  cursor: pointer;
+}
 
 /* ---------- onboarding and ceremony ---------- */
 .onboarding .setup-header h1 {

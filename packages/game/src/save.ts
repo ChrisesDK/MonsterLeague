@@ -9,7 +9,7 @@ import { z } from 'zod';
  * The tutorial creature's position is kept in memory and re-rolled after a reload; used
  * spawns are kept only until they expire (≤ 15 min) and are pruned on every save.
  */
-export const SAVE_VERSION = 7;
+export const SAVE_VERSION = 8;
 
 export type OnboardingStep = 'safety' | 'location' | 'starter' | 'tutorial' | 'done';
 
@@ -24,13 +24,15 @@ export type PostBattleChoice =
 
 export interface Settings {
   sound: boolean;
+  /** Vibration (haptics) for encounters, catches, level-ups … */
+  vibration: boolean;
   speed: 'normal' | 'fast';
   textSize: 'normal' | 'large' | 'larger';
   reduceMotion: boolean;
   language: 'da' | 'en';
   /** 3D buildings on the play map (opt-in; off by default). */
   buildings3d: boolean;
-  /** Distance of the fog wall around the player, in metres (1,000–2,000). */
+  /** Distance of the fog wall around the player, in metres (800–1,400). */
   fogDistance: number;
 }
 
@@ -81,6 +83,7 @@ export interface SaveGame {
 
 export const DEFAULT_SETTINGS: Settings = {
   sound: true,
+  vibration: true,
   speed: 'normal',
   textSize: 'normal',
   reduceMotion: false,
@@ -182,6 +185,7 @@ export const SaveSchema = z
     settings: z
       .object({
         sound: z.boolean(),
+        vibration: z.boolean(),
         speed: z.enum(['normal', 'fast']),
         textSize: z.enum(['normal', 'large', 'larger']),
         reduceMotion: z.boolean(),
@@ -287,6 +291,18 @@ export const migrations: Record<number, (old: Record<string, unknown>, seed: str
     const settings = old.settings as Record<string, unknown>;
     const d = typeof settings.fogDistance === 'number' ? settings.fogDistance : 1200;
     return { ...old, version: 7, settings: { ...settings, fogDistance: Math.min(d, 1200) } };
+  },
+  /**
+   * v7 → v8: a Vibration setting of its own (owner: "Reduce motion" also switched off
+   * vibration, which wasn't clear). Keeps what the player had: off if reduce motion was on.
+   */
+  7: (old) => {
+    const settings = old.settings as Record<string, unknown>;
+    return {
+      ...old,
+      version: 8,
+      settings: { ...settings, vibration: settings.reduceMotion !== true },
+    };
   },
 };
 

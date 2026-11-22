@@ -819,11 +819,12 @@ test('Settings → Test items gives a Revive Blossom; the bag uses it to revive 
   const order = await page.evaluate(() =>
     [
       ...document.querySelectorAll(
-        '[data-testid="setting-safety"], [data-testid="setting-test-items"], [data-testid="gate3-panel"]',
+        '[data-testid="setting-safety"], [data-testid="setting-test-items"], [data-testid="setting-mode"], [data-testid="gate3-panel"]',
       ),
     ].map((e) => e.getAttribute('data-testid')),
   );
-  expect(order).toEqual(['setting-safety', 'setting-test-items', 'gate3-panel']);
+  // the battle playtest sits above the walk test
+  expect(order).toEqual(['setting-safety', 'setting-test-items', 'setting-mode', 'gate3-panel']);
   await page.getByTestId('get-revive_blossom').click();
   await expect(page.getByTestId('test-items-msg')).toContainText('Revive Blossom');
   expect((await dev()).bag.revive_blossom).toBe(1);
@@ -998,3 +999,38 @@ for (const mode of ['browser', 'installed app'] as const)
     await back();
     await expect(leave).toBeVisible();
   });
+
+test('Settings: Vibration has its own toggle under Sound; options with several choices are dropdowns', async ({
+  page,
+}) => {
+  await startDone(page);
+  await page.getByTestId('menu-button').click();
+  await page.getByTestId('menu-settings').click();
+  // Vibration comes right after Sound, as a switch like it
+  const ids = await page.evaluate(() =>
+    [...document.querySelectorAll('[data-testid="screen-settings"] [data-testid^="setting-"]')].map(
+      (e) => e.getAttribute('data-testid'),
+    ),
+  );
+  expect(ids.indexOf('setting-vibration')).toBe(ids.indexOf('setting-sound') + 1);
+  const vib = page.locator('[data-testid=setting-vibration] input[role=switch]');
+  await expect(page.getByTestId('setting-vibration')).toContainText('Vibration');
+  await expect(vib).toBeChecked();
+  await vib.uncheck();
+  await expect(page.locator('html')).toHaveAttribute('data-vibration', 'off');
+  // "reduce motion" no longer switches vibration off
+  await vib.check();
+  await page.locator('[data-testid=setting-reduceMotion] input').check();
+  await expect(page.locator('html')).toHaveAttribute('data-vibration', 'on');
+  await page.locator('[data-testid=setting-reduceMotion] input').uncheck();
+  // battle speed, text size and language are dropdowns
+  for (const id of ['speed', 'textSize', 'language'])
+    await expect(page.locator(`[data-testid=setting-${id}] select`)).toHaveCount(1);
+  await page.locator('[data-testid=setting-speed] select').selectOption('fast');
+  await expect(page.locator('[data-testid=setting-speed] select')).toHaveValue('fast');
+  await page.locator('[data-testid=setting-language] select').selectOption('da');
+  await expect(page.getByTestId('setting-vibration')).toContainText('Vibration');
+  await expect(page.getByTestId('setting-sound')).toContainText('Lyd');
+  await page.locator('[data-testid=setting-language] select').selectOption('en');
+  await expect(page.getByTestId('setting-sound')).toContainText('Sound');
+});
