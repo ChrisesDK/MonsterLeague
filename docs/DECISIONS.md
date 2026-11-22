@@ -1414,3 +1414,6 @@ length, position resolution and spawn tables>`.
   - the 150 m haze band on the ground inside it stays, in the fog colour.
     Removed: the screen-space fog wall colouring, the CSS sky gradient and the CSS star tiles
     (D138, D141, D142), and the per-frame horizon calculation for the background.
+- **D153. Credits in Settings** (owner request). The very last line of the Settings screen
+  reads "Developed by Christian Bröchner Rasmussen with Claude" (Danish: "Udviklet af
+  Christian Bröchner Rasmussen med Claude"), centred and small (`settings.credits`).

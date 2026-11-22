@@ -1035,3 +1035,18 @@ test('Settings: Vibration has its own toggle under Sound; options with several c
   await page.locator('[data-testid=setting-language] select').selectOption('en');
   await expect(page.getByTestId('setting-sound')).toContainText('Sound');
 });
+
+test('Settings end with the credits line', async ({ page }) => {
+  await startDone(page);
+  await page.getByTestId('menu-button').click();
+  await page.getByTestId('menu-settings').click();
+  const credits = page.getByTestId('settings-credits');
+  await expect(credits).toHaveText('Developed by Christian Bröchner Rasmussen with Claude');
+  // the very last thing on the screen
+  const last = await page.evaluate(() => {
+    const screen = document.querySelector('[data-testid="screen-settings"]')!;
+    const all = [...screen.querySelectorAll('*')].filter((e) => e.getClientRects().length > 0);
+    return all[all.length - 1]?.closest('[data-testid="settings-credits"]') !== null;
+  });
+  expect(last).toBe(true);
+});

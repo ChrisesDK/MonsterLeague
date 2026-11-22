@@ -2,7 +2,7 @@
 
 Everything built or decided since the v1.9 export that the GDD doesn't describe yet,
 grouped by GDD section, with suggested wording. Details and reasons are in
-[DECISIONS.md](DECISIONS.md) (D111–D152); open proposals are in
+[DECISIONS.md](DECISIONS.md) (D111–D153); open proposals are in
 [GDD-PROPOSALS.md](GDD-PROPOSALS.md) (P16–P21).
 
 ## Change log line (suggested)
@@ -78,6 +78,8 @@ Add:
   the installed app; the game asks "Leave the game?" first. Stay closes the dialog and the
   swipe has no effect; Leave, or a second swipe, closes the installed app (in the browser:
   goes back to the page before).
+- **Credits:** the last line of Settings: "Developed by Christian Bröchner Rasmussen with
+  Claude".
 - **Logo:** the arena badge with an empty centre (cream petals, a red ring and a cream
   centre on navy). It is the app icon and appears with the game's name on the first
   screen. The swinging lantern stays the loading-screen icon.

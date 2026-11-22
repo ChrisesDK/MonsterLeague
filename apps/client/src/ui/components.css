@@ -369,3 +369,9 @@ button.row:active {
 .modal.leave-guard {
   z-index: 100;
 }
+
+/* The credits line at the very bottom of Settings. */
+.credits {
+  margin: var(--sp-5) 0 var(--sp-3);
+  text-align: center;
+}

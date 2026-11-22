@@ -805,6 +805,10 @@ function SettingsScreen({
         )}
       </section>
       {devTools && <DevSection t={t} save={save} update={update} />}
+
+      <p className="credits muted small" data-testid="settings-credits">
+        {t('settings.credits')}
+      </p>
     </Shell>
   );
 }
