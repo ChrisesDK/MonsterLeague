@@ -713,3 +713,21 @@ test('a pinch zooms even while the player glides to a new GPS fix (no reset by r
     await page.waitForTimeout(300);
   }
 });
+
+test("the phone's top bar blends into the sky on the map, and into the paper on menus", async ({
+  page,
+}) => {
+  await startDone(page);
+  const bar = () => page.locator('meta[name="theme-color"]').getAttribute('content');
+  const css = (v: string) =>
+    page.evaluate(
+      (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim(),
+      v,
+    );
+  // the map's sky colour (day or night palette, whichever is on)
+  await expect.poll(bar).toMatch(/^#(b9d3e6|0e1424)$/);
+  await page.getByTestId('menu-button').click();
+  await expect.poll(bar).toBe(await css('--paper'));
+  await page.getByTestId('menu-map').click();
+  await expect.poll(bar).toMatch(/^#(b9d3e6|0e1424)$/);
+});

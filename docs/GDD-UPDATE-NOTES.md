@@ -2,7 +2,7 @@
 
 Everything built or decided since the v1.9 export that the GDD doesn't describe yet,
 grouped by GDD section, with suggested wording. Details and reasons are in
-[DECISIONS.md](DECISIONS.md) (D111–D144); open proposals are in
+[DECISIONS.md](DECISIONS.md) (D111–D146); open proposals are in
 [GDD-PROPOSALS.md](GDD-PROPOSALS.md) (P16–P20).
 
 ## Change log line (suggested)
@@ -71,7 +71,9 @@ Add:
 - **Colours:** no green or yellow in the interface outside the map: copper for badges and
   highlights, spruce blue for things that are done, Danish red as the main colour. The
   phone's top and navigation bars follow the paper colour (cream by day, navy at night).
-  The map keeps its own palette; health bars keep green, yellow and red.
+  The map keeps its own palette; health bars keep green, yellow and red. On the map
+  the phone's top bar takes the sky's colour, so it blends into the game (on iPhone it is
+  see-through).
 - **Design system (as built):** headings in Fraunces, body text in Atkinson Hyperlegible
   (both SIL Open Font License, self-hosted); the main menu button is a red satchel.
 

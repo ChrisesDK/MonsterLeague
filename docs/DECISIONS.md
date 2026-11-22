@@ -1311,3 +1311,17 @@ length, position resolution and spawn tables>`.
   docs changed. Saves are kept (same domain); an installed app points at the old path and
   must be installed again from the new link. The spawn service only checks the domain, so
   it needs no change. Earlier entries keep the old name as history.
+- **D146. The phone's top bar blends into the game** (owner: the solid top and navigation
+  bars border the game; make them see-through without hiding them).
+  - **Android can't make them see-through:** Chrome ignores transparency in
+    `theme-color`, and an installed app's bars can only be hidden (fullscreen), which the
+    owner doesn't want. So the top bar takes the colour of what is right below it: the
+    sky's top colour while the map shows (day or night), the paper colour on menus,
+    battles and the loading screen. The map sets `--bar-top`; `main.tsx` copies it into
+    `<meta name="theme-color">`.
+  - **The navigation bar** at the bottom can't be coloured from the page. The page already
+    asks to be drawn edge to edge (`viewport-fit=cover`, safe-area padding), which newer
+    Android versions use to draw the game behind a gesture navigation bar.
+  - **iPhone:** the installed app's status bar is see-through
+    (`apple-mobile-web-app-status-bar-style: black-translucent`), with the game drawn below
+    it; the HUD already keeps clear of it with `safe-area-inset-top`.
