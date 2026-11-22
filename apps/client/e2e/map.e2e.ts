@@ -781,3 +781,54 @@ test('map credits start closed, open and close on tap, and lie above the game bu
   await page.locator('.town-map .maplibregl-ctrl-attrib-button').click();
   await expect(text('.town-map')).toBeVisible();
 });
+
+test('Settings → Test items gives a Revive Blossom; the bag uses it to revive with full HP', async ({
+  page,
+}) => {
+  await startDone(page);
+  type Dev = {
+    setTeamHp: (hp: number) => void;
+    save: () => { team: { uid: string; hp: number }[]; bag: Record<string, number> } | null;
+  };
+  const dev = () =>
+    page.evaluate(() => {
+      const s = (window as unknown as { __omlDev: Dev }).__omlDev.save()!;
+      return { team: s.team, bag: s.bag };
+    });
+  await page.evaluate(() => {
+    (window as unknown as { __omlDev: Dev }).__omlDev.setTeamHp(0);
+  });
+  await expect.poll(async () => (await dev()).team[0]!.hp).toBe(0);
+  const uid = (await dev()).team[0]!.uid;
+  // Settings: between the walk test and the battle playtest
+  await page.getByTestId('menu-button').click();
+  await page.getByTestId('menu-settings').click();
+  const order = await page.evaluate(() =>
+    [...document.querySelectorAll('[data-testid^="setting-"]')].map((e) =>
+      e.getAttribute('data-testid'),
+    ),
+  );
+  expect(order.indexOf('setting-test-items')).toBe(order.indexOf('setting-mode') - 1);
+  await page.getByTestId('get-revive_blossom').click();
+  await expect(page.getByTestId('test-items-msg')).toContainText('Revive Blossom');
+  expect((await dev()).bag.revive_blossom).toBe(1);
+  // charms and tonics too, so testing doesn't stall on running out
+  const before = (await dev()).bag;
+  await page.getByTestId('get-basic_charm').click();
+  await page.getByTestId('get-small_tonic').click();
+  await expect.poll(async () => (await dev()).bag.basic_charm).toBe((before.basic_charm ?? 0) + 1);
+  expect((await dev()).bag.small_tonic).toBe((before.small_tonic ?? 0) + 1);
+  // the bag: like a tonic, choose the creature; it comes back with full HP
+  await page.getByTestId('screen-back').click();
+  await page.getByTestId('menu-bag').click();
+  await page.getByTestId('bag-revive_blossom').click();
+  await page.getByTestId(`use-on-${uid}`).click();
+  await expect.poll(async () => (await dev()).team[0]!.hp).toBeGreaterThan(0);
+  const after = await page.evaluate(() => {
+    const s = (window as unknown as { __omlDev: Dev }).__omlDev.save()!;
+    return s.team[0]!.hp;
+  });
+  // revived (the exact full-HP amount is checked by the game's unit test)
+  expect(after).toBeGreaterThan(1);
+  expect((await dev()).bag.revive_blossom ?? 0).toBe(0);
+});

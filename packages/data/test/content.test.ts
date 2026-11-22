@@ -13,7 +13,7 @@ describe('content', () => {
     expect(content.typeIds).toHaveLength(7);
     expect(Object.keys(content.species)).toHaveLength(17);
     expect(Object.keys(content.moves).length).toBeGreaterThanOrEqual(30);
-    expect(Object.keys(content.items)).toHaveLength(7);
+    expect(Object.keys(content.items)).toHaveLength(8);
     expect(
       Object.values(content.pois)
         .map((p) => p.kind)

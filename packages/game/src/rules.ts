@@ -530,7 +530,17 @@ export function canUseItem(c: CreatureInstance, itemId: string, dex: Dex = conte
   }
 }
 
-/** Uses a tonic, clear drops or revive leaf on a team or storage creature (by uid). */
+/**
+ * Adds items to the bag. For now only the Settings "Test items" button uses it (owner: a
+ * way to test revive items before the game hands them out); content decides real sources.
+ */
+export function addToBag(save: SaveGame, itemId: string, n = 1, dex: Dex = content): SaveGame {
+  if (!dex.items[itemId]) throw new Error(`Unknown item ${itemId}`);
+  if (!Number.isInteger(n) || n < 1) throw new Error(`Bad item count ${n}`);
+  return { ...save, bag: { ...save.bag, [itemId]: (save.bag[itemId] ?? 0) + n } };
+}
+
+/** Uses a tonic, clear drops or revive item on a team or storage creature (by uid). */
 export function applyItem(
   save: SaveGame,
   itemId: string,

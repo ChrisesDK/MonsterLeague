@@ -2,8 +2,8 @@
 
 Everything built or decided since the v1.9 export that the GDD doesn't describe yet,
 grouped by GDD section, with suggested wording. Details and reasons are in
-[DECISIONS.md](DECISIONS.md) (D111–D147); open proposals are in
-[GDD-PROPOSALS.md](GDD-PROPOSALS.md) (P16–P20).
+[DECISIONS.md](DECISIONS.md) (D111–D148); open proposals are in
+[GDD-PROPOSALS.md](GDD-PROPOSALS.md) (P16–P21).
 
 ## Change log line (suggested)
 
@@ -129,6 +129,13 @@ Change "losing faints the whole team until a rest stop or items" to:
 > … until a rest stop, items, or 8 hours: a fainted creature recovers fully by itself
 > 8 hours after it fainted. The team screen shows the time left.
 
+Add to the item table (P21):
+
+> | Revive Blossom | Revive at full HP | (to be decided) |
+
+Until its source is decided, Settings → Test items adds one to the bag (for testing),
+alongside Basic Charms and Small Tonics.
+
 ## Creatures → placeholder roster
 
 Add: placeholder art uses each species' own colours (body and accent, set in
@@ -159,6 +166,7 @@ corridor.
 | P18      | Journal step "Beat the trainers in <district>"; trainers stand on any route through it  | Needs your decision; built this way                 |
 | P19      | Fainted creatures recover by themselves after 8 hours                                   | Built at your request; fold in                      |
 | P20      | Orbit camera (exact drag rotation), tilt 30–76°, fog wall and sky                       | Built at your request; fold in                      |
+| P21      | Revive Blossom (revive at full HP): where players get it                                | Built at your request; source needs your decision   |
 
 ## Development plan
 

@@ -1336,3 +1336,15 @@ length, position resolution and spawn tables>`.
   row covered the button and took its taps; the credits control now sits above the game's
   buttons (z-index 6, clear of the phone's navigation bar), so open, the credits lie on top
   of the satchel button. The credits stay one tap away, as the map data licences require.
+- **D148. Revive Blossom, and test items in Settings** (owner request).
+  - **Item:** `revive_blossom`, kind revive at 100% (the existing item kind; Revive Leaf
+    is the same at 50%). It is used like a tonic: in the bag, choose the creature; only a
+    fainted one can take it, and it comes back with full HP. It works in battle like Revive
+    Leaf (on a fainted bench creature). Named Revive Blossom (Danish "Livsblomst") because
+    "Full Revive", the owner's working name, is a Pokémon item (hard rule 1); "Full
+    Revive" and "Max Revive" are added to the franchise-term deny-list. GDD proposal P21.
+  - **No way to find it in the game yet.** For testing, Settings has a "Test items"
+    section, between the walk test and the battle playtest, with "Get a Revive Blossom"
+    (one per tap, `addToBag` in `packages/game`), plus "Get a Basic Charm" and "Get a
+    Small Tonic" so early testing doesn't stall on running out. It is for everyone for now
+    and should go once the game hands the items out.

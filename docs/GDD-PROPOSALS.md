@@ -301,3 +301,17 @@ status here changes to `accepted` (or `rejected`, with a reason).
 - **Reason / evidence:** owner requests after M2d (D120, D124–D126, D131–D142). The
   recentre button and the snap-back from panning are gone.
 - **Status:** open (implemented at the owner's request; fold into the GDD)
+
+### P21. A full revive item: Revive Blossom
+
+- **GDD section:** Battle system → Items (v1)
+- **Current text:** the item table has Revive Leaf (revive at 50% HP) as the only revive.
+- **Proposed change:** add a row: "Revive Blossom | Revive at full HP | (to be decided)".
+  The owner calls it a "Full Revive"; that is the name of a Pokémon item, which hard rule 1
+  forbids, so it is named Revive Blossom (the leaf revives at half, the blossom fully;
+  Danish "Livsblomst" beside "Livsblad"). "Full Revive" and "Max Revive" are now on the
+  franchise-term deny-list.
+- **Reason / evidence:** owner request (D148). Until the GDD names where it comes from,
+  there is no way to find it in the game; for testing, Settings → Test items adds one to
+  the bag.
+- **Status:** open (built at the owner's request; where it comes from needs a decision)

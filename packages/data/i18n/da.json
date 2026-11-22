@@ -538,5 +538,11 @@
   "leave.title": "Forlad spillet?",
   "leave.body": "Dine fremskridt er gemt på denne telefon. Vil du forlade Monster League?",
   "leave.stay": "Bliv",
-  "leave.leave": "Forlad"
+  "leave.leave": "Forlad",
+  "item.revive_blossom.name": "Livsblomst",
+  "item.revive_blossom.desc": "Vækker et besvimet væsen med fuld HP.",
+  "settings.testItems": "Testgenstande",
+  "settings.testItemsHint": "Kun til test: lægger genstande i tasken. Livsblomster kan ikke findes i spillet endnu.",
+  "settings.getItem": "Få en {item}",
+  "settings.gotItem": "Lagt en {item} i tasken ({n} i alt)."
 }

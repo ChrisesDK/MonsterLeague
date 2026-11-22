@@ -14,6 +14,7 @@ import {
   setLead,
   swapWithStorage,
   teachFieldAbility,
+  addToBag,
   applyItem,
   isDistrictUnlocked,
   journal,
@@ -747,6 +748,8 @@ function SettingsScreen({
 
       {gate3}
 
+      <TestItems t={t} save={save} update={update} />
+
       <section className="panel-section" data-testid="setting-mode">
         <h2>{t('settings.mode')}</h2>
         <p className="muted small">{t('settings.modeHint')}</p>
@@ -785,6 +788,49 @@ function SettingsScreen({
       </section>
       {devTools && <DevSection t={t} save={save} update={update} />}
     </Shell>
+  );
+}
+
+/**
+ * Test items (owner request): revive items can't be found in the game yet, and early
+ * testing shouldn't stall on running out of charms or tonics, so the player can add them
+ * here. Remove once the game hands them out.
+ */
+const TEST_ITEMS = ['revive_blossom', 'basic_charm', 'small_tonic'] as const;
+function TestItems({
+  t,
+  save,
+  update,
+}: {
+  t: Translate;
+  save: SaveGame;
+  update: (fn: (s: SaveGame) => SaveGame) => void;
+}) {
+  const [msg, setMsg] = useState<string | null>(null);
+  return (
+    <section className="panel-section" data-testid="setting-test-items">
+      <h2>{t('settings.testItems')}</h2>
+      <p className="muted small">{t('settings.testItemsHint')}</p>
+      {TEST_ITEMS.map((id) => (
+        <button
+          key={id}
+          className="btn wide"
+          data-testid={`get-${id}`}
+          onClick={() => {
+            update((s) => addToBag(s, id));
+            const item = t(`item.${id}.name`);
+            setMsg(t('settings.gotItem', { item, n: (save.bag[id] ?? 0) + 1 }));
+          }}
+        >
+          {t('settings.getItem', { item: t(`item.${id}.name`) })}
+        </button>
+      ))}
+      {msg && (
+        <p className="small" role="status" data-testid="test-items-msg">
+          {msg}
+        </p>
+      )}
+    </section>
   );
 }
 

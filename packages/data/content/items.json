@@ -40,6 +40,12 @@
       "kind": "revive",
       "percent": 50,
       "placeholder": true
+    },
+    {
+      "id": "revive_blossom",
+      "kind": "revive",
+      "percent": 100,
+      "placeholder": true
     }
   ]
 }

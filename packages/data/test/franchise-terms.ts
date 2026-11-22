@@ -35,6 +35,9 @@ export const DENIED_TERMS: readonly string[] = [
   'Defog',
   'Rock Climb',
   'HM',
+  // Item names a player would recognise
+  'Full Revive',
+  'Max Revive',
 ];
 
 const normalise = (s: string) =>

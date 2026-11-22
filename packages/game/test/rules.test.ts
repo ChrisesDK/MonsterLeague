@@ -10,6 +10,8 @@ import {
 } from '@oml/engine';
 import { describe, expect, it } from 'vitest';
 import {
+  addToBag,
+  canUseItem,
   answerPending,
   canRestock,
   canTeach,
@@ -303,6 +305,31 @@ describe('items outside battle', () => {
     save = applyItem(save, 'revive_leaf', uid);
     expect(save.team[0]!.hp).toBe(Math.floor(max / 2));
     expect(save.bag).toEqual({ small_tonic: 0, clear_drops: 0, revive_leaf: 0 });
+  });
+
+  it('Revive Blossom (test item from Settings) revives with full HP, only when fainted', () => {
+    let save = chooseStarter(newSave(SEED), 'gnistkat');
+    const uid = save.team[0]!.uid;
+    const max = getMaxHp(save.team[0]!);
+    save = addToBag(save, 'revive_blossom');
+    save = addToBag(save, 'revive_blossom');
+    expect(save.bag.revive_blossom).toBe(2);
+    // a healthy creature can't use it
+    expect(canUseItem(save.team[0]!, 'revive_blossom')).toBe(false);
+    expect(() => applyItem(save, 'revive_blossom', uid)).toThrow();
+    save = { ...save, team: [{ ...save.team[0]!, hp: 0 }] };
+    expect(canUseItem(save.team[0]!, 'revive_blossom')).toBe(true);
+    save = applyItem(save, 'revive_blossom', uid);
+    expect(save.team[0]!.hp).toBe(max);
+    expect(save.bag.revive_blossom).toBe(1);
+  });
+
+  it('addToBag only takes known items and whole counts', () => {
+    const save = chooseStarter(newSave(SEED), 'gnistkat');
+    expect(() => addToBag(save, 'no_such_item')).toThrow();
+    expect(() => addToBag(save, 'revive_blossom', 0)).toThrow();
+    // adds to what the bag already holds
+    expect(addToBag(save, 'small_tonic', 3).bag.small_tonic).toBe((save.bag.small_tonic ?? 0) + 3);
   });
 });
 
