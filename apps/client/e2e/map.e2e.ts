@@ -813,15 +813,17 @@ test('Settings → Test items gives a Revive Blossom; the bag uses it to revive 
   });
   await expect.poll(async () => (await dev()).team[0]!.hp).toBe(0);
   const uid = (await dev()).team[0]!.uid;
-  // Settings: between the walk test and the battle playtest
+  // Settings: below the safety reminder, above the walk test
   await page.getByTestId('menu-button').click();
   await page.getByTestId('menu-settings').click();
   const order = await page.evaluate(() =>
-    [...document.querySelectorAll('[data-testid^="setting-"]')].map((e) =>
-      e.getAttribute('data-testid'),
-    ),
+    [
+      ...document.querySelectorAll(
+        '[data-testid="setting-safety"], [data-testid="setting-test-items"], [data-testid="gate3-panel"]',
+      ),
+    ].map((e) => e.getAttribute('data-testid')),
   );
-  expect(order.indexOf('setting-test-items')).toBe(order.indexOf('setting-mode') - 1);
+  expect(order).toEqual(['setting-safety', 'setting-test-items', 'gate3-panel']);
   await page.getByTestId('get-revive_blossom').click();
   await expect(page.getByTestId('test-items-msg')).toContainText('Revive Blossom');
   expect((await dev()).bag.revive_blossom).toBe(1);

@@ -1345,7 +1345,7 @@ length, position resolution and spawn tables>`.
     "Full Revive", the owner's working name, is a Pokémon item (hard rule 1); "Full
     Revive" and "Max Revive" are added to the franchise-term deny-list. GDD proposal P21.
   - **No way to find it in the game yet.** For testing, Settings has a "Test items"
-    section, between the walk test and the battle playtest, with "Get a Revive Blossom"
+    section, below the safety reminder and above the walk test, with "Get a Revive Blossom"
     (one per tap, `addToBag` in `packages/game`), plus "Get a Basic Charm" and "Get a
     Small Tonic" so early testing doesn't stall on running out. It is for everyone for now
     and should go once the game hands the items out.

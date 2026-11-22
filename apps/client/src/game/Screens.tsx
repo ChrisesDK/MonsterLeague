@@ -732,7 +732,7 @@ function SettingsScreen({
         (v) => set('language', v),
       )}
 
-      <section className="panel-section">
+      <section className="panel-section" data-testid="setting-safety">
         <button className="btn wide" onClick={() => setSafety((v) => !v)}>
           {t('settings.safety')}
         </button>
@@ -746,9 +746,9 @@ function SettingsScreen({
         )}
       </section>
 
-      {gate3}
-
       <TestItems t={t} save={save} update={update} />
+
+      {gate3}
 
       <section className="panel-section" data-testid="setting-mode">
         <h2>{t('settings.mode')}</h2>
