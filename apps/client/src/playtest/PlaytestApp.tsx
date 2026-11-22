@@ -377,7 +377,7 @@ function StartScreen({
   return (
     <main className="setup">
       <header className="setup-header">
-        <Logo />
+        <Logo name={t('ui.title')} />
         <h1>{t('pt.title')}</h1>
         <p>{t('pt.intro')}</p>
       </header>

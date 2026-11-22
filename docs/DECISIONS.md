@@ -1293,3 +1293,12 @@ length, position resolution and spawn tables>`.
   - **Tests:** unit tests for both ways; E2E runs the installed-app way in Chromium (a test
     switch, `oml.e2e.installed`, forces it; Escape is a close request like the back
     gesture) and checks that the history never grows and that Leave calls `window.close()`.
+- **D144. The app is called "Monster League" for now** (owner). The installed app was
+  labelled "OML", and the name shouldn't tie the game to Odense: the aim is one app with
+  travel between cities and regions (each with its own badge style). Until the owner picks
+  a final name, the app name, home-screen name, page title, the name beside the logo and
+  the "Leave …?" text say "Monster League"; the logo's name now comes from the
+  translations (`ui.title`). The repository, package names and the GDD's working title are
+  unchanged. Names considered: Wild Atlas, Wanderfolk, Waymark (open); Fableway and Rosette
+  League were dropped as too tied to Odense, and anything echoing "GO" or "Wayfarer" as too
+  close to another game.

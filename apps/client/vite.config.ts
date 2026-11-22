@@ -30,8 +30,8 @@ export default defineConfig({
       injectRegister: 'auto',
       includeAssets: ['icon.svg'],
       manifest: {
-        name: 'Odense Monster League',
-        short_name: 'OML',
+        name: 'Monster League',
+        short_name: 'Monster League',
         description: 'Walk Odense, meet creatures and battle the arenas',
         lang: 'da',
         start_url: '.',

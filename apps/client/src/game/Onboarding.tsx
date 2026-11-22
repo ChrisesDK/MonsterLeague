@@ -18,7 +18,7 @@ export function SafetyScreen({
   return (
     <main className="setup onboarding" data-testid="onboarding-safety">
       <header className="setup-header">
-        <Logo />
+        <Logo name={t('ui.title')} />
         <h1>{t('onboarding.safety.title')}</h1>
       </header>
       <ul className="safety-list">

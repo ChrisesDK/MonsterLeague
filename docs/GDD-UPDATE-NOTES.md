@@ -2,7 +2,7 @@
 
 Everything built or decided since the v1.9 export that the GDD doesn't describe yet,
 grouped by GDD section, with suggested wording. Details and reasons are in
-[DECISIONS.md](DECISIONS.md) (D111–D143); open proposals are in
+[DECISIONS.md](DECISIONS.md) (D111–D144); open proposals are in
 [GDD-PROPOSALS.md](GDD-PROPOSALS.md) (P16–P20).
 
 ## Change log line (suggested)
@@ -59,6 +59,8 @@ Add:
 - **Settings screen:** add "3D buildings", "How far you can see" (fog wall, 0.8–1.4 km)
   and "Battle playtest" (opens the playtest; the playtest has "Go to the map game") to the
   list.
+- **App name:** "Monster League" for now (was "Odense Monster League", "OML" on the
+  home screen); Odense becomes the first region rather than part of the name.
 - **Leaving:** an accidental back gesture (an edge swipe) doesn't leave the site or close
   the installed app; the game asks "Leave the game?" first. Stay closes the dialog and the
   swipe has no effect; Leave, or a second swipe, closes the installed app (in the browser:

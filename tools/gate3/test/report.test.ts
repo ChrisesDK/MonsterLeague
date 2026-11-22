@@ -64,7 +64,9 @@ describe('Gate 3 sessions', () => {
   });
 
   it('exports contain no location data', () => {
-    const file = JSON.parse(gate3Json([a, b], new Date())) as { sessions: Gate3Session[] };
+    // a fixed export time: a real clock at hh:mm:55.xxx would match the coordinate pattern
+    const at = new Date('2026-05-01T10:20:30.000Z');
+    const file = JSON.parse(gate3Json([a, b], at)) as { sessions: Gate3Session[] };
     for (const s of file.sessions)
       for (const k of Object.keys(s)) expect(k).not.toMatch(LOCATION_KEY);
     const header = gate3Csv([a]).split('\n')[0]!.split(',');

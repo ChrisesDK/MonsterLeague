@@ -88,7 +88,7 @@
   "stat.def": "Defence",
   "stat.spd": "Speed",
   "stat.hp": "HP",
-  "ui.title": "Odense Monster League",
+  "ui.title": "Monster League",
   "ui.subtitle": "Battle test page",
   "ui.yourTeam": "Your team",
   "ui.opponent": "Opponent",
@@ -536,7 +536,7 @@
   "settings.modeHint": "Play test battles without walking. Your map game stays saved; open the map again from the playtest.",
   "pt.toMap": "Go to the map game",
   "leave.title": "Leave the game?",
-  "leave.body": "Your progress is saved on this phone. Do you want to leave Odense Monster League?",
+  "leave.body": "Your progress is saved on this phone. Do you want to leave Monster League?",
   "leave.stay": "Stay",
   "leave.leave": "Leave"
 }

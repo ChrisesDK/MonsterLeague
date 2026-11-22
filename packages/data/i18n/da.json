@@ -88,7 +88,7 @@
   "stat.def": "Forsvar",
   "stat.spd": "Fart",
   "stat.hp": "HP",
-  "ui.title": "Odense Monster League",
+  "ui.title": "Monster League",
   "ui.subtitle": "Kamp-testside",
   "ui.yourTeam": "Dit hold",
   "ui.opponent": "Modstander",
@@ -536,7 +536,7 @@
   "settings.modeHint": "Spil testkampe uden at gå. Dit kortspil forbliver gemt; åbn kortet igen fra kamptesten.",
   "pt.toMap": "Gå til kortspillet",
   "leave.title": "Forlad spillet?",
-  "leave.body": "Dine fremskridt er gemt på denne telefon. Vil du forlade Odense Monster League?",
+  "leave.body": "Dine fremskridt er gemt på denne telefon. Vil du forlade Monster League?",
   "leave.stay": "Bliv",
   "leave.leave": "Forlad"
 }

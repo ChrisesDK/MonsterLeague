@@ -361,6 +361,8 @@ button.row:active {
   line-height: 1.1;
   color: var(--accent);
   letter-spacing: 0.01em;
+  /* two lines: "Monster" over "League" */
+  max-width: 6em;
 }
 
 /* The leave question sits above everything, menus included. */
