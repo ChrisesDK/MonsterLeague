@@ -1311,20 +1311,22 @@ length, position resolution and spawn tables>`.
   docs changed. Saves are kept (same domain); an installed app points at the old path and
   must be installed again from the new link. The spawn service only checks the domain, so
   it needs no change. Earlier entries keep the old name as history.
-- **D146. The phone's top bar blends into the game** (owner: the solid top and navigation
-  bars border the game; make them see-through without hiding them).
+- **D146. The phone's top bar is the building colour** (owner: the solid top and
+  navigation bars border the game; make them see-through without hiding them).
   - **Android can't make them see-through:** Chrome ignores transparency in
     `theme-color`, and an installed app's bars can only be hidden (fullscreen), which the
-    owner doesn't want. So the top bar takes the colour of what is right below it: the
-    sky's top colour while the map shows (day or night), the paper colour on menus,
-    battles and the loading screen. The map sets `--bar-top`; `main.tsx` copies it into
-    `<meta name="theme-color">`.
+    owner doesn't want. A first try gave the bar the sky's top colour on the map; it only
+    matched when fully zoomed in (elsewhere the top of the screen is town, or the Town
+    Map). Sampling the pixels under the bar was rejected as laggy. Now the bar is the map's
+    building colour on every screen: beige by day (`#e7d8bc`), dark grey at night
+    (`#2a3145`), set by `main.tsx` from the theme.
   - **The navigation bar** at the bottom can't be coloured from the page. The page already
     asks to be drawn edge to edge (`viewport-fit=cover`, safe-area padding), which newer
     Android versions use to draw the game behind a gesture navigation bar.
   - **iPhone:** the installed app's status bar is see-through
     (`apple-mobile-web-app-status-bar-style: black-translucent`), with the game drawn below
-    it; the HUD already keeps clear of it with `safe-area-inset-top`.
+    it; the HUD keeps clear of it with `safe-area-inset-top`. iPhone web apps have no
+    navigation bar, only the home indicator, which the game is already drawn under.
 - **D147. Map credits start closed** (owner request). The "© OpenStreetMap contributors ·
   Protomaps" credits are MapLibre's compact attribution control, which starts open and only
   folds away on the first map drag; the play view never drags (it rotates), so it stayed

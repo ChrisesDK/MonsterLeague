@@ -141,8 +141,6 @@ interface Props {
   sim?: SimLocation | null;
   /** Dev only: extra spawns injected by tests. */
   devSpawns?: ApiSpawn[];
-  /** A menu screen covers the map. */
-  covered?: boolean;
 }
 
 export { START };
@@ -202,7 +200,6 @@ export function MapScreen({
   onGate3,
   sim = null,
   devSpawns,
-  covered = false,
 }: Props) {
   const [fixes, setFixes] = useState<Fix[]>([]);
   /** The newest accurate fix (kept through short GPS dips, see playableFix). */
@@ -1236,17 +1233,6 @@ export function MapScreen({
     return () => clearTimeout(id);
   }, [loading]);
   const loadingDone = (!!goodFix && townBuilt) || loadingTimedOut || !!gpsError;
-  // The phone's top bar blends into the sky while the map shows (owner: no solid bar
-  // bordering the game; a see-through bar isn't possible on Android, see main.tsx)
-  const skyBar = !loading && !inBattle && !covered;
-  useEffect(() => {
-    if (!skyBar) return;
-    const root = document.documentElement;
-    root.style.setProperty('--bar-top', palette.sky);
-    return () => {
-      root.style.removeProperty('--bar-top');
-    };
-  }, [skyBar, palette.sky]);
   useEffect(() => {
     if (!loading || !loadingDone) return;
     loadedOnce = true;

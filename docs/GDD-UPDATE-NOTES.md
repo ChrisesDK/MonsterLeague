@@ -74,9 +74,9 @@ Add:
 - **Colours:** no green or yellow in the interface outside the map: copper for badges and
   highlights, spruce blue for things that are done, Danish red as the main colour. The
   phone's top and navigation bars follow the paper colour (cream by day, navy at night).
-  The map keeps its own palette; health bars keep green, yellow and red. On the map
-  the phone's top bar takes the sky's colour, so it blends into the game (on iPhone it is
-  see-through).
+  The map keeps its own palette; health bars keep green, yellow and red. The phone's
+  top bar is the map's building colour (beige by day, dark grey at night); on iPhone it is
+  see-through.
 - **Design system (as built):** headings in Fraunces, body text in Atkinson Hyperlegible
   (both SIL Open Font License, self-hosted); the main menu button is a red satchel.
 

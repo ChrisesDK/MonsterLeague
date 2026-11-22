@@ -294,7 +294,6 @@ export function GameApp({ t, locale, onLocale, devTools }: Props) {
         onGate3={gate3 && !gate3.endedAt ? onGate3 : undefined}
         sim={sim}
         devSpawns={devTools ? devSpawns : undefined}
-        covered={!!screen}
       />
       {save.pending.length > 0 && !save.battle && !screen && (
         <ChoiceModal t={t} save={save} update={update} />
