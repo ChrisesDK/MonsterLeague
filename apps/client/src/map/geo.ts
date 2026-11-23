@@ -96,6 +96,23 @@ export const GLIDE_SECONDS = 0.45;
 export const GLIDE_SNAP_M = 300;
 
 /**
+ * Dead zone for the shown player position (owner: the figure shook while standing still).
+ * GPS drifts 1–3 m even when the phone doesn't move; the figure only moves to a fix that is
+ * at least this far from where it is going. The game itself (battle range, spawns) still
+ * uses the real position.
+ */
+export const DEAD_ZONE_M = 3;
+
+/** Where the figure should go: the new fix, or where it already goes if the fix is close. */
+export function steadyTarget(
+  current: { lat: number; lng: number } | null,
+  fix: { lat: number; lng: number },
+  deadZoneM = DEAD_ZONE_M,
+): { lat: number; lng: number } {
+  return current && distanceM(current, fix) < deadZoneM ? current : fix;
+}
+
+/**
  * One animation step of the shown player position towards the newest fix: exponential
  * easing, so a GPS correction slides into place instead of jumping (owner request).
  */

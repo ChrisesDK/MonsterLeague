@@ -62,6 +62,7 @@ import {
   SHOW_RADIUS_M,
   distanceM,
   speedKmh,
+  steadyTarget,
   tooFast,
   type Fix,
 } from './geo';
@@ -84,6 +85,7 @@ import type { ApiSpawn } from './spawnApi';
 import { applyPalette, NIGHT, paperStyle, PAPER } from './style';
 import { markerElement, PLAYER_SVG, STAR_SVG, START, addAttribution } from './markers';
 import { addSkyWall } from './skyWall';
+import { ringPath, scanPhase, scanRing } from './scanRing';
 import { LoadingScreen } from './LoadingScreen';
 import { TownMap } from './TownMap';
 import { useSpawns } from './useSpawns';
@@ -220,6 +222,10 @@ export function MapScreen({
   const markers = useRef(new Map<string, Marker>());
   const poiMarkers = useRef(new Map<string, { marker: Marker; img: HTMLImageElement }>());
   const player = useRef<{ figure: Marker } | null>(null);
+  /** The scan circle's path (see scanRing.ts). */
+  const scanRef = useRef<SVGPathElement | null>(null);
+  /** Whether the scan should run (not while loading or in a battle, not with reduce motion). */
+  const scanOn = useRef(false);
   /** Where the player figure is drawn (glides towards `fixTarget`). */
   const drawnAt = useRef<LatLng | null>(null);
   const fixTarget = useRef<LatLng | null>(null);
@@ -493,11 +499,27 @@ export function MapScreen({
       poiMarkers.current.set(poi.id, { marker, img });
     }
 
+    // The scan inside the battle range: an SVG right after the canvas, so it lies above the
+    // map and below every marker (they are appended to the same container later).
+    const scanSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    scanSvg.setAttribute('class', 'scan-ring');
+    scanSvg.setAttribute('aria-hidden', 'true');
+    scanSvg.innerHTML = '<path fill="none" stroke-width="2.5" />';
+    map.getCanvas().after(scanSvg);
+    scanRef.current = scanSvg.querySelector('path');
+
     // The player: a standing figure (owner: no heading cone; the compass was often off).
     const figure = markerElement('div', 'player-marker', PLAYER_SVG);
     figure.dataset.testid = 'player-marker';
     player.current = {
-      figure: new maplibregl.Marker({ element: figure, anchor: 'bottom', offset: [0, 6] })
+      // sub-pixel positions: MapLibre otherwise rounds when we move the figure but not when
+      // the camera moves, and the two alternated (a half-pixel tremble)
+      figure: new maplibregl.Marker({
+        element: figure,
+        anchor: 'bottom',
+        offset: [0, 6],
+        subpixelPositioning: true,
+      })
         .setLngLat([start.lng, start.lat])
         .addTo(map),
     };
@@ -569,7 +591,8 @@ export function MapScreen({
   const playerAt = goodFix ?? last;
   useEffect(() => {
     if (!playerAt || !last) return;
-    fixTarget.current = { lat: playerAt.lat, lng: playerAt.lng };
+    // a dead zone: GPS drift of a few metres while standing still doesn't move the figure
+    fixTarget.current = steadyTarget(fixTarget.current, { lat: playerAt.lat, lng: playerAt.lng });
   }, [playerAt, last]);
 
   // POI radius circles near the player (per fix).
@@ -608,13 +631,30 @@ export function MapScreen({
       const goal = fixTarget.current;
       if (!goal) return;
       const before = drawnAt.current;
-      const next = glideStep(before, goal, dt);
+      // While a finger is on the map the camera can't follow with jumpTo (D139): it only
+      // catches up on the next finger move, so a gliding figure and the camera took turns
+      // being a step ahead (the figure shook while rotating). Hold the figure still until
+      // the finger is lifted; it then glides on.
+      const next = before && fingersDown(map) ? before : glideStep(before, goal, dt);
       drawnAt.current = next;
       const centre = map.getCenter();
       const offCentre =
         Math.abs(centre.lat - next.lat) > 1e-7 || Math.abs(centre.lng - next.lng) > 1e-7;
       if (next !== before) {
         player.current?.figure.setLngLat([next.lng, next.lat]);
+      }
+      // the scan: a circle growing from the player to the range ring, fading out
+      const scan = scanRef.current;
+      if (scan) {
+        if (!scanOn.current) {
+          if (scan.getAttribute('d')) scan.setAttribute('d', '');
+        } else {
+          const { radiusM, opacity } = scanRing(scanPhase(now), BATTLE_RADIUS_M);
+          const ring = circle(next, Math.max(0.5, radiusM)).geometry.coordinates[0]!;
+          scan.setAttribute('d', ringPath(ring.map(([lng, lat]) => map.project([lng!, lat!]))));
+          scan.setAttribute('stroke', paletteRef.current.accuracy);
+          scan.setAttribute('stroke-opacity', opacity.toFixed(3));
+        }
       }
       // The battle range (40 m) around the player (owner: not the GPS accuracy). Only when
       // the ring really moves: re-sending it every frame kept the map from ever going idle
@@ -1192,6 +1232,7 @@ export function MapScreen({
     return () => clearTimeout(id);
   }, [loading]);
   const loadingDone = (!!goodFix && townBuilt) || loadingTimedOut || !!gpsError;
+  scanOn.current = !loading && !inBattle && !save.settings.reduceMotion;
   useEffect(() => {
     if (!loading || !loadingDone) return;
     const id = setTimeout(() => setLoading(false), 450); // fade out

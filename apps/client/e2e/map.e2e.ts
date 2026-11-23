@@ -1050,3 +1050,53 @@ test('Settings end with the credits line', async ({ page }) => {
   });
   expect(last).toBe(true);
 });
+
+test('a steady player: GPS drift under 3 m is ignored, the figure holds still while a finger is down; the scan sweeps the range', async ({
+  page,
+  context,
+}) => {
+  await startDone(page);
+  await teleport(page, KONGENS_HAVE);
+  await page.waitForTimeout(1500);
+  const centre = () =>
+    page.evaluate(() => {
+      const c = (
+        window as unknown as { __omlMap: { getCenter: () => { lat: number; lng: number } } }
+      ).__omlMap.getCenter();
+      return { lat: c.lat, lng: c.lng };
+    });
+  const metres = (a: { lat: number; lng: number }, b: { lat: number; lng: number }) =>
+    Math.hypot((a.lat - b.lat) * 110_540, (a.lng - b.lng) * 63_000);
+  // settled on Kongens Have first (the first glide there is long)
+  await expect
+    .poll(async () => metres(await centre(), KONGENS_HAVE), { timeout: 10_000 })
+    .toBeLessThan(0.1);
+  const c0 = await centre();
+  // drift of ~1.5 m: the figure (and the camera on it) stays put
+  await teleport(page, { lat: KONGENS_HAVE.lat + 1.5 / 110_540, lng: KONGENS_HAVE.lng });
+  await page.waitForTimeout(1000);
+  expect(metres(await centre(), c0)).toBeLessThan(0.1);
+  // a real move of ~10 m is followed
+  await teleport(page, { lat: KONGENS_HAVE.lat + 10 / 110_540, lng: KONGENS_HAVE.lng });
+  const ten = { lat: KONGENS_HAVE.lat + 10 / 110_540, lng: KONGENS_HAVE.lng };
+  await expect.poll(async () => metres(await centre(), ten), { timeout: 5000 }).toBeLessThan(0.1);
+  // while a finger is on the map, a new fix doesn't move the figure (no shake while turning)
+  const c1 = await centre();
+  const cdp = await context.newCDPSession(page);
+  await cdp.send('Input.dispatchTouchEvent', {
+    type: 'touchStart',
+    touchPoints: [{ x: 100, y: 400, id: 1 }], // on the map, clear of the HUD
+  });
+  await teleport(page, { lat: KONGENS_HAVE.lat + 30 / 110_540, lng: KONGENS_HAVE.lng });
+  await page.waitForTimeout(800);
+  expect(metres(await centre(), c1)).toBeLessThan(0.5);
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  // let go: it glides on to the new fix
+  await expect.poll(async () => metres(await centre(), c1), { timeout: 5000 }).toBeGreaterThan(19);
+  // the scan: a path that changes as it sweeps
+  const d = () => page.locator('.scan-ring path').getAttribute('d');
+  await expect.poll(async () => ((await d()) ?? '').length).toBeGreaterThan(20);
+  const d1 = await d();
+  await page.waitForTimeout(300);
+  expect(await d()).not.toBe(d1);
+});

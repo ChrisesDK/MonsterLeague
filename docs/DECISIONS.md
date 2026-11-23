@@ -1417,3 +1417,20 @@ length, position resolution and spawn tables>`.
 - **D153. Credits in Settings** (owner request). The very last line of the Settings screen
   reads "Developed by Christian Bröchner Rasmussen with Claude" (Danish: "Udviklet af
   Christian Bröchner Rasmussen med Claude"), centred and small (`settings.credits`).
+- **D154. A steady player figure, and a scan inside the battle range** (owner feedback: the
+  figure shook up and down, much more while rotating).
+  - **Causes:** (1) while a finger is on the map the camera can't re-centre with `jumpTo`
+    (D139), so it only caught up with the gliding figure on the next finger move; the
+    figure and the camera took turns being a step ahead (at full zoom 1 m is about 8 px);
+    (2) MapLibre rounds a marker to whole pixels when the page moves it but not when the
+    camera moves it, and the two alternated (a half-pixel tremble); (3) GPS drifts 1–3 m
+    while standing still, and the figure followed every drift.
+  - **Fixes:** the figure holds still while a finger is down and glides on when it is
+    lifted; the figure marker uses `subpixelPositioning`; a 3 m dead zone (`steadyTarget`,
+    `DEAD_ZONE_M`): the figure only moves to a fix at least 3 m from where it is going.
+    The game itself (battle range, spawns, checkpoints) still uses the real position.
+  - **Scan:** a thin circle on the ground grows from the player to the 40 m ring every
+    2.4 s (easing out) and fades towards the edge (`scanRing.ts`). It is drawn from
+    projected ground points into an SVG right after the map canvas (above the map, below
+    every marker), so the map doesn't redraw every frame; off while loading, in battle and
+    with "Reduce motion".

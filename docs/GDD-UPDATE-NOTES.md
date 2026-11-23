@@ -2,7 +2,7 @@
 
 Everything built or decided since the v1.9 export that the GDD doesn't describe yet,
 grouped by GDD section, with suggested wording. Details and reasons are in
-[DECISIONS.md](DECISIONS.md) (D111–D153); open proposals are in
+[DECISIONS.md](DECISIONS.md) (D111–D154); open proposals are in
 [GDD-PROPOSALS.md](GDD-PROPOSALS.md) (P16–P21).
 
 ## Change log line (suggested)
@@ -41,7 +41,9 @@ Add:
 - **Battle range:** a dashed 40 m ring around the player shows how close you must be to
   battle (it replaced the GPS accuracy ring). Creatures beyond it are a little see-through,
   creatures within it solid with a soft glow, and the phone vibrates when one comes within
-  range (no message). The player figure has no direction cone.
+  range (no message). The player figure has no direction cone. A thin circle sweeps out
+  from the player to the ring every few seconds, like a scanner. The figure ignores GPS
+  drift under 3 m, so it stands still when you do.
 - **Nearby strip:** each creature shows its name; choosing one turns the camera towards it.
 - **Back gesture:** in a menu it goes back one level, on the Town Map it closes the map;
   only on the game view does it ask "Leave the game?".
