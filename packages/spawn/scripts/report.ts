@@ -20,7 +20,7 @@ import { computeSpawns, decodeRegion, windowOf, type RegionCell, type Spawn } fr
 
 const file = RegionFileSchema.parse(
   JSON.parse(
-    readFileSync(new URL('../../data/region/region.odense.json', import.meta.url), 'utf8'),
+    readFileSync(new URL('../../data/region/odense/region.json', import.meta.url), 'utf8'),
   ),
 );
 const region = decodeRegion(file);

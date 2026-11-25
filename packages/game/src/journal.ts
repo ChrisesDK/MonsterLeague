@@ -12,7 +12,7 @@
  * Steps can be completed in any order; the current goal is the first open step of the next
  * arena.
  *
- * Side goals (content/goals.json) are finite and never daily: explore the district's wild
+ * Side goals (content/odense/goals.json) are finite and never daily: explore the district's wild
  * areas, catch a creature of its typical type, meet its rare creature.
  */
 import { content, type Dex, type Poi, type Route, type SideGoal, type TypeId } from '@oml/data';

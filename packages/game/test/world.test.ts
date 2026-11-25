@@ -11,7 +11,7 @@ import {
   TUTORIAL_MAX_M,
   TUTORIAL_MIN_M,
 } from '../src/index';
-import regionFile from '../../data/region/region.odense.json';
+import regionFile from '../../data/region/odense/region.json';
 
 const region = decodeRegion(regionFile as unknown as RegionFile);
 
