@@ -1,22 +1,23 @@
 /**
  * Basemap extract (region v4): copies the vector tiles that cover Odense Kommune (plus a margin
- * for the fog distance) from a Protomaps planet build into apps/client/public/tiles/odense.pmtiles.
+ * for the fog distance) from a Protomaps planet build into apps/client/public/tiles/<region>.pmtiles
+ * (`--region <id>`, P27).
  * Does what `pmtiles extract` did before, using the `pmtiles` JS reader and a small PMTiles v3
  * writer, so no extra program is needed.
  *
  *   pnpm --filter @oml/region-builder basemap [YYYYMMDD]   (default: yesterday's build)
  */
 import { writeFileSync, readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
 import { bboxPolygon, booleanIntersects, buffer } from '@turf/turf';
 import type { Feature, FeatureCollection, MultiPolygon } from 'geojson';
 import { FetchSource, PMTiles, zxyToTileId } from 'pmtiles';
 import { MAP_FRAMES } from '@oml/data';
+import { REGION, regionPaths } from './config';
 import { serializeDirectory, writeHeader, type Entry } from './pmtiles-write';
 
-const root = (p: string) => fileURLToPath(new URL(`../../../${p}`, import.meta.url));
-const OUT = root('apps/client/public/tiles/odense.pmtiles');
+const paths = regionPaths(REGION.id);
+const OUT = paths.tiles;
 /** Tiles further than this from the border are left out (fog distance is at most 1.4 km). */
 const MARGIN_KM = 1.6;
 const MAX_ZOOM = 15;
@@ -28,7 +29,9 @@ const MAX_ZOOM = 15;
 const FRAME_MAX_ZOOM = 13;
 
 const day =
-  process.argv[2] ?? new Date(Date.now() - 86_400_000).toISOString().slice(0, 10).replace(/-/g, '');
+  // the build date (YYYYMMDD) anywhere among the arguments, else yesterday's build
+  process.argv.slice(2).find((a) => /^\d{8}$/.test(a)) ??
+  new Date(Date.now() - 86_400_000).toISOString().slice(0, 10).replace(/-/g, '');
 const url = `https://build.protomaps.com/${day}.pmtiles`;
 const src = new PMTiles(new FetchSource(url));
 const header = await src.getHeader();
@@ -37,12 +40,15 @@ console.log(`Source ${url}: zoom ${header.minZoom}–${header.maxZoom}`);
 
 const boundary = (
   JSON.parse(
-    readFileSync(root('packages/data/content/odense/boundary.geojson'), 'utf8'),
+    readFileSync(paths.content('boundary.geojson'), 'utf8'),
   ) as FeatureCollection<MultiPolygon>
 ).features[0]!;
 const area = buffer(boundary, MARGIN_KM, { units: 'kilometers' }) as Feature;
 
-const [west, south, east, north] = MAP_FRAMES.odense!;
+const frameBox = MAP_FRAMES[REGION.id];
+if (!frameBox)
+  throw new Error(`No MAP_FRAMES entry for ${REGION.id} (packages/data/src/municipalities.ts)`);
+const [west, south, east, north] = frameBox;
 const frame = bboxPolygon([west, south, east, north]);
 const lon2x = (lon: number, z: number) => Math.floor(((lon + 180) / 360) * 2 ** z);
 const lat2y = (lat: number, z: number) => {

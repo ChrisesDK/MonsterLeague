@@ -1,0 +1,130 @@
+import type { RegionConfig } from '../config';
+
+/** Svendborg Kommune (P27): the mainland, Tåsinge, Thurø and the ferry islands. */
+export const svendborg: RegionConfig = {
+  id: 'svendborg',
+  osmName: 'Svendborg Kommune',
+  bbox: [10.33, 54.92, 10.84, 55.24],
+  tiles: [4, 3],
+  /**
+   * The badge path (main) runs harbour → Christiansminde → Thurø, then from the harbour over
+   * the Svendborgsund bridge to Tåsinge → Troense → Valdemars Slot → back over the sound →
+   * Hvidkilde → Egebjerg → north to Gudme. Vindebyøre is on Tåsinge, reached from Vindeby.
+   * The ferry quay is in the start town, where several routes meet, so no one walks back the
+   * way they came after deciding not to sail.
+   */
+  routes: [
+    { number: 1, from: 'svb_centrum', to: 'svb_christiansminde', kind: 'main', via: [] },
+    { number: 2, from: 'svb_christiansminde', to: 'svb_thuroe', kind: 'main', via: [] },
+    { number: 3, from: 'svb_centrum', to: 'svb_vindeby', kind: 'main', via: [] },
+    { number: 4, from: 'svb_vindeby', to: 'svb_troense', kind: 'main', via: [] },
+    { number: 5, from: 'svb_troense', to: 'svb_valdemars', kind: 'main', via: [] },
+    { number: 6, from: 'svb_valdemars', to: 'svb_bregninge', kind: 'main', via: [] },
+    { number: 7, from: 'svb_bregninge', to: 'svb_sanktjoergens', kind: 'main', via: [] },
+    { number: 8, from: 'svb_sanktjoergens', to: 'svb_skovsbo', kind: 'main', via: [] },
+    { number: 9, from: 'svb_skovsbo', to: 'svb_hvidkilde', kind: 'main', via: [] },
+    { number: 10, from: 'svb_hvidkilde', to: 'svb_egebjerg', kind: 'main', via: [] },
+    { number: 11, from: 'svb_egebjerg', to: 'svb_kirkeby', kind: 'main', via: [] },
+    { number: 12, from: 'svb_kirkeby', to: 'svb_alminden', kind: 'main', via: [] },
+    { number: 13, from: 'svb_alminden', to: 'svb_gudbjerg', kind: 'main', via: [] },
+    { number: 14, from: 'svb_gudbjerg', to: 'svb_gudme', kind: 'main', via: [] },
+    { number: 15, from: 'svb_centrum', to: 'svb_tved', kind: 'alt', via: [] },
+    { number: 16, from: 'svb_tved', to: 'svb_byskovene', kind: 'alt', via: [] },
+    { number: 17, from: 'svb_byskovene', to: 'svb_hestehaven', kind: 'alt', via: [] },
+    { number: 18, from: 'svb_hestehaven', to: 'svb_christiansminde', kind: 'alt', via: [] },
+    { number: 19, from: 'svb_centrum', to: 'svb_sanktjoergens', kind: 'alt', via: [] },
+    { number: 20, from: 'svb_sanktjoergens', to: 'svb_vindeby', kind: 'alt', via: [] },
+    { number: 21, from: 'svb_vindeby', to: 'svb_vindebyoere', kind: 'explore', via: [] },
+    { number: 22, from: 'svb_hestehaven', to: 'svb_skaarup', kind: 'alt', via: [] },
+    { number: 23, from: 'svb_skaarup', to: 'svb_hovgaard', kind: 'alt', via: [] },
+    { number: 24, from: 'svb_hovgaard', to: 'svb_oure', kind: 'alt', via: [] },
+    { number: 25, from: 'svb_oure', to: 'svb_gudme', kind: 'alt', via: [] },
+    { number: 26, from: 'svb_thuroe', to: 'svb_smoermose', kind: 'explore', via: [] },
+    { number: 27, from: 'svb_skaarup', to: 'svb_aabyskov', kind: 'explore', via: [] },
+    { number: 28, from: 'svb_tved', to: 'svb_hovgaard', kind: 'alt', via: [] },
+    { number: 29, from: 'svb_valdemars', to: 'svb_kohaverne', kind: 'explore', via: [] },
+    { number: 30, from: 'svb_bregninge', to: 'svb_lundby', kind: 'explore', via: [] },
+    { number: 31, from: 'svb_lundby', to: 'svb_bjerreby', kind: 'explore', via: [] },
+    { number: 32, from: 'svb_lundby', to: 'svb_vaaroe', kind: 'explore', via: [] },
+    { number: 33, from: 'svb_lundby', to: 'svb_vejlen', kind: 'explore', via: [] },
+    { number: 34, from: 'svb_egebjerg', to: 'svb_svinehaverne', kind: 'explore', via: [] },
+    { number: 35, from: 'svb_hvidkilde', to: 'svb_kirkebyskov', kind: 'explore', via: [] },
+    { number: 36, from: 'svb_hvidkilde', to: 'svb_ollerupsoe', kind: 'explore', via: [] },
+    { number: 37, from: 'svb_ollerupsoe', to: 'svb_vesterskerninge', kind: 'explore', via: [] },
+    { number: 38, from: 'svb_vesterskerninge', to: 'svb_ulboelle', kind: 'explore', via: [] },
+    { number: 39, from: 'svb_skovsbo', to: 'svb_lehnskov', kind: 'explore', via: [] },
+    { number: 40, from: 'svb_kirkeby', to: 'svb_stenstrup', kind: 'explore', via: [] },
+    { number: 41, from: 'svb_gudme', to: 'svb_tangeskov', kind: 'explore', via: [] },
+    { number: 42, from: 'svb_tangeskov', to: 'svb_lundeborg', kind: 'explore', via: [] },
+    { number: 43, from: 'svb_gudme', to: 'svb_hesselager', kind: 'explore', via: [] },
+    { number: 44, from: 'svb_hesselager', to: 'svb_klintholm', kind: 'explore', via: [] },
+    { number: 45, from: 'svb_oure', to: 'svb_elsehoved', kind: 'explore', via: [] },
+  ],
+  /**
+   * Ferry crossings (P27): the real sailing lanes from OSM (Svendborg–Skarø–Drejø, way
+   * 93308405, split at Skarø; Svendborg–Hjortø, way 197575169), simplified to 25 m. Drawn as
+   * loose dotted lines; the islands open on arrival.
+   */
+  ferries: [
+    {
+      number: 46,
+      from: 'svb_centrum',
+      to: 'svb_skaroe',
+      path: [
+        [10.6149, 55.05925],
+        [10.61614, 55.0574],
+        [10.61562, 55.05436],
+        [10.61214, 55.04979],
+        [10.59094, 55.04279],
+        [10.58284, 55.04079],
+        [10.57356, 55.04],
+        [10.56283, 55.03649],
+        [10.48533, 55.01499],
+        [10.47263, 55.01178],
+        [10.47289, 55.01117],
+      ],
+    },
+    {
+      number: 47,
+      from: 'svb_skaroe',
+      to: 'svb_drejoe',
+      path: [
+        [10.47289, 55.01117],
+        [10.47275, 55.01175],
+        [10.48466, 55.01473],
+        [10.4883, 55.01423],
+        [10.50376, 55.00567],
+        [10.50382, 55.00042],
+        [10.50325, 54.99928],
+        [10.50081, 54.99707],
+        [10.47989, 54.98254],
+        [10.46143, 54.97047],
+        [10.45619, 54.96572],
+        [10.43969, 54.96513],
+        [10.43703, 54.96597],
+      ],
+    },
+    {
+      number: 48,
+      from: 'svb_centrum',
+      to: 'svb_hjortoe',
+      path: [
+        [10.61462, 55.05777],
+        [10.61641, 55.05579],
+        [10.61615, 55.05427],
+        [10.61261, 55.04966],
+        [10.58977, 55.04215],
+        [10.5823, 55.0404],
+        [10.5737, 55.03978],
+        [10.56357, 55.03633],
+        [10.50885, 55.0111],
+        [10.5051, 55.00071],
+        [10.5037, 54.99883],
+        [10.48089, 54.98268],
+        [10.48107, 54.9816],
+        [10.48786, 54.9701],
+        [10.49183, 54.96663],
+      ],
+    },
+  ],
+};

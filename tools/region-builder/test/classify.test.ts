@@ -165,3 +165,34 @@ describe('Overpass query', () => {
       expect(q).toContain(t);
   });
 });
+
+describe('closeRings (P27)', () => {
+  it('closes an open ring and drops rings too short to be an area', async () => {
+    const { closeRings } = await import('../src/classify');
+    const open = closeRings({
+      type: 'Polygon',
+      coordinates: [
+        [
+          [0, 0],
+          [1, 0],
+          [1, 1],
+        ],
+        [
+          [0, 0],
+          [1, 1],
+        ],
+      ],
+    });
+    expect(open).toEqual({
+      type: 'Polygon',
+      coordinates: [
+        [
+          [0, 0],
+          [1, 0],
+          [1, 1],
+          [0, 0],
+        ],
+      ],
+    });
+  });
+});

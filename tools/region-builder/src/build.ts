@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { bboxPolygon, booleanPointInPolygon, simplify as simplifyGeo } from '@turf/turf';
@@ -13,7 +13,7 @@ import {
 } from 'h3-js';
 import osmtogeojson from 'osmtogeojson';
 import {
-  content,
+  PoisFileSchema,
   RegionFileSchema,
   RoutesFileSchema,
   ZonesFileSchema,
@@ -25,6 +25,7 @@ import {
   FLAG,
   isDestination,
   REGION,
+  regionPaths,
   ROUTE_CORRIDOR_M,
   ROUTE_CORRIDOR_MIN_POINTS,
   wildFlags,
@@ -34,18 +35,20 @@ import { basemapWater } from './basemap-water';
 import { buildExtraQuery, buildQuery, fetchOverpassTiled } from './overpass';
 import { closeBorder, zoneEdges } from './borders';
 
-const root = (p: string) => fileURLToPath(new URL(`../../../${p}`, import.meta.url));
 const cacheDir = fileURLToPath(new URL('../cache', import.meta.url));
-const OUT = root('packages/data/region/odense/region.json');
-const HAZARDS_OUT = root('packages/data/region/odense/hazards.json');
-const VERSION_OUT = root('packages/data/region/odense/version.json');
-const DISTRICTS = root('packages/data/content/odense/districts.geojson');
-const ZONES_GEO = root('packages/data/content/odense/zones.geojson');
-const BORDERS_GEO = root('packages/data/content/odense/borders.geojson');
-const ZONES = root('packages/data/content/odense/zones.json');
-const BOUNDARY = root('packages/data/content/odense/boundary.geojson');
-const ROUTES = root('packages/data/content/odense/routes.json');
-const BASEMAP = root('apps/client/public/tiles/odense.pmtiles');
+// P27: everything is read from and written to the selected region's own folders.
+const paths = regionPaths(REGION.id);
+const OUT = paths.region('region.json');
+const HAZARDS_OUT = paths.region('hazards.json');
+const VERSION_OUT = paths.region('version.json');
+const DISTRICTS = paths.content('districts.geojson');
+const ZONES_GEO = paths.content('zones.geojson');
+const BORDERS_GEO = paths.content('borders.geojson');
+const ZONES = paths.content('zones.json');
+const BOUNDARY = paths.content('boundary.geojson');
+const ROUTES = paths.content('routes.json');
+const POIS = paths.content('pois.json');
+const BASEMAP = paths.tiles;
 
 const started = performance.now();
 const osm = await fetchOverpassTiled(
@@ -154,10 +157,9 @@ let destinationCells = 0;
  * lies just across a border would show, e.g., a rest stop's wildlife as "too wild".
  */
 const poiCellZone = new Map(
-  Object.values(content.pois).map((p) => [
-    latLngToCell(p.lat, p.lng, REGION.h3Res),
-    zoneList.findIndex((z) => z.id === p.zone),
-  ]),
+  (existsSync(POIS) ? PoisFileSchema.parse(JSON.parse(readFileSync(POIS, 'utf8'))).pois : []).map(
+    (p) => [latLngToCell(p.lat, p.lng, REGION.h3Res), zoneList.findIndex((z) => z.id === p.zone)],
+  ),
 );
 /**
  * Every cell inside the border gets a zone, also cells without map data (they have no row in

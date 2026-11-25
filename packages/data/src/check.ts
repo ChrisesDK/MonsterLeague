@@ -1,5 +1,5 @@
 import type { Dex } from './index';
-import { MUNICIPALITIES } from './municipalities';
+import { MUNICIPALITIES, REGION_ID_PREFIX } from './municipalities';
 import type { I18nTable } from './schemas';
 import { TYPE_IDS } from './schemas';
 
@@ -236,7 +236,8 @@ function checkWorld(dex: Dex): string[] {
   const numbers = new Set<number>();
   const links = new Map<string, string[]>();
   for (const r of Object.values(dex.routes)) {
-    if (r.id !== `route${r.number}`) errors.push(`routes: id ${r.id} must be route${r.number}`);
+    const want = `${REGION_ID_PREFIX[dex.region] ?? ''}route${r.number}`;
+    if (r.id !== want) errors.push(`routes: id ${r.id} must be ${want}`);
     if (numbers.has(r.number)) errors.push(`routes: duplicate route number ${r.number}`);
     numbers.add(r.number);
     for (const end of [r.from, r.to])
@@ -321,6 +322,92 @@ export function checkI18n(dex: Dex, tables: Record<string, I18nTable>): string[]
           errors.push(`i18n ${other}: missing key "${key}" (present in ${locale})`);
       }
     }
+  }
+  return errors;
+}
+
+/** Text keys that belong to a region (its own i18n/<region>/ files), not to the shared UI. */
+export const REGION_TEXT_PREFIXES = [
+  'species',
+  'trainer',
+  'poi',
+  'district',
+  'badge',
+  'arenaSite',
+  'zone',
+  'route',
+] as const;
+const ID_KEYS = new Set(['species', 'trainer', 'poi', 'zone', 'route']);
+
+/**
+ * P27: regions never overlap or mix. Every id in a region starts with the region's prefix
+ * (Odense keeps unprefixed ids, and none of them may start with another region's prefix);
+ * no id is used by two regions; region texts live only in the region's own files and only
+ * name that region's ids; the shared texts hold no region texts.
+ */
+export function checkSeparation(
+  dexes: Record<string, Dex>,
+  shared: Record<string, I18nTable>,
+  perRegion: Record<string, Record<string, I18nTable>>,
+): string[] {
+  const errors: string[] = [];
+  const ids = (d: Dex): [string, string][] => [
+    ...Object.keys(d.species).map((i) => ['species', i] as [string, string]),
+    ...Object.keys(d.trainers).map((i) => ['trainer', i] as [string, string]),
+    ...Object.keys(d.pois).map((i) => ['poi', i] as [string, string]),
+    ...Object.keys(d.zones).map((i) => ['zone', i] as [string, string]),
+    ...Object.keys(d.routes).map((i) => ['route', i] as [string, string]),
+    ...Object.keys(d.playerTeams).map((i) => ['player team', i] as [string, string]),
+    ...d.sideGoals.map((g) => ['goal', g.id] as [string, string]),
+  ];
+  const owner = new Map<string, string>();
+  const prefixes = Object.entries(REGION_ID_PREFIX).filter(([, p]) => p) as [string, string][];
+  for (const [region, d] of Object.entries(dexes)) {
+    const prefix = REGION_ID_PREFIX[region as keyof typeof REGION_ID_PREFIX] ?? '';
+    for (const [kind, id] of ids(d)) {
+      if (prefix && !id.startsWith(prefix))
+        errors.push(`${region}: ${kind} "${id}" must start with "${prefix}"`);
+      for (const [other, p] of prefixes)
+        if (other !== region && id.startsWith(p))
+          errors.push(`${region}: ${kind} "${id}" uses ${other}'s prefix "${p}"`);
+      const key = `${kind}:${id}`;
+      const first = owner.get(key);
+      if (first && first !== region)
+        errors.push(`${kind} "${id}" is in both ${first} and ${region}`);
+      else owner.set(key, region);
+    }
+  }
+  // region texts are "<kind>.<id>.<field>" (zone.centrum.name) or numbered (badge.1.name);
+  // two-part keys like trainer.battle are shared UI
+  const regionKey = (key: string) =>
+    (REGION_TEXT_PREFIXES as readonly string[]).includes(key.split('.')[0]!) &&
+    key.split('.').length >= 3;
+  for (const [locale, table] of Object.entries(shared))
+    for (const key of Object.keys(table))
+      if (regionKey(key))
+        errors.push(`shared ${locale} text "${key}" belongs in a region's text file`);
+  for (const [region, locales] of Object.entries(perRegion)) {
+    const d = dexes[region];
+    for (const [locale, table] of Object.entries(locales))
+      for (const key of Object.keys(table)) {
+        if (shared[locale]?.[key] !== undefined)
+          errors.push(`${region} ${locale} text "${key}" is also a shared text`);
+        const [kind, id, field] = key.split('.');
+        if (d && kind && id && field && ID_KEYS.has(kind)) {
+          const known =
+            kind === 'species'
+              ? d.species[id]
+              : kind === 'trainer'
+                ? d.trainers[id]
+                : kind === 'poi'
+                  ? d.pois[id]
+                  : kind === 'zone'
+                    ? d.zones[id]
+                    : d.routes[id];
+          if (!known)
+            errors.push(`${region} ${locale} text "${key}" names no ${kind} of ${region}`);
+        }
+      }
   }
   return errors;
 }

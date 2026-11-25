@@ -543,5 +543,12 @@
   "welcome.feedback": "Menu → Feedback: bugs, ideas, or anything that feels too hard or too easy. Your location is never sent.",
   "welcome.known": "Good to know: the creature drawings are placeholders, and some things will change between versions.",
   "welcome.go": "Let’s go",
-  "settings.welcome": "Tester guide"
+  "settings.welcome": "Tester guide",
+  "trainer.battle": "Battle",
+  "trainer.refuse": "\"Come back with the {badge}.\"",
+  "trainer.won": "You beat {name}!",
+  "trainer.lost": "{name} won this time.",
+  "trainer.reward": "You got {n}× {item}.",
+  "trainer.refuseZone": "\"Walk a route here first, then we can battle in {zone}.\"",
+  "trainer.coins": "You got {n} skilling."
 }

@@ -6,6 +6,28 @@ import { BIOME_PRIORITY, BUFFERS_M, NO_SPAWN_SHARE, type Biome } from './config'
 
 type Tags = Record<string, string | undefined>;
 
+/**
+ * OSM sometimes has a polygon ring that doesn't end where it starts (a mapping slip; met in
+ * Svendborg, P27). Close such rings, and drop rings too short to be an area.
+ */
+export function closeRings(g: Geometry | null): Geometry | null {
+  if (!g || (g.type !== 'Polygon' && g.type !== 'MultiPolygon')) return g;
+  const fix = (rings: Position[][]) =>
+    rings
+      .map((r) => {
+        const a = r[0];
+        const b = r[r.length - 1];
+        return a && b && (a[0] !== b[0] || a[1] !== b[1]) ? [...r, a] : r;
+      })
+      .filter((r) => r.length >= 4);
+  if (g.type === 'Polygon') {
+    const rings = fix(g.coordinates);
+    return rings.length ? { type: 'Polygon', coordinates: rings } : null;
+  }
+  const polys = g.coordinates.map(fix).filter((p) => p.length > 0);
+  return polys.length ? { type: 'MultiPolygon', coordinates: polys } : null;
+}
+
 /** What a feature contributes: a biome, a noSpawn zone, or both. */
 export interface Rule {
   biome?: Biome;
@@ -163,7 +185,7 @@ export class FeatureIndex {
 
   addFeature(feature: Feature<Geometry | null>): void {
     const tags = (feature.properties ?? {}) as Tags;
-    const g = feature.geometry;
+    const g = closeRings(feature.geometry);
     if (!g) return;
     if (g.type === 'Polygon' || g.type === 'MultiPolygon') {
       const rules = areaRules(tags);

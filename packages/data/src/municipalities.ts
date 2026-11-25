@@ -12,6 +12,16 @@ export const MUNICIPALITIES = [
   'langeland',
 ] as const;
 export type MunicipalityId = (typeof MUNICIPALITIES)[number];
+/**
+ * P27: every id in a region's content (zones, routes, POIs, trainers, species…) starts with
+ * the region's prefix, so no two regions can ever share an id. Odense, the first region,
+ * keeps its unprefixed ids. Checked by test/regions.test.ts.
+ */
+export const REGION_ID_PREFIX: Partial<Record<MunicipalityId, string>> = {
+  odense: '',
+  svendborg: 'svb_',
+};
+
 /** Municipalities whose region can be inspected today (P22: Odense is the first region). */
 export const PLAYABLE_MUNICIPALITIES: readonly MunicipalityId[] = ['odense'];
 
@@ -23,6 +33,7 @@ export const PLAYABLE_MUNICIPALITIES: readonly MunicipalityId[] = ['odense'];
  */
 export const MAP_FRAMES: Partial<Record<MunicipalityId, [number, number, number, number]>> = {
   odense: [10.1442, 55.27, 10.6085, 55.5001],
+  svendborg: [10.3292, 54.925, 10.8439, 55.2397],
 };
 /** The map frame's margin around the region's bounding box, in km. */
 export const MAP_FRAME_MARGIN_KM = 2;

@@ -18,6 +18,17 @@ import odenseZonesJson from '../content/odense/zones.json';
 import odenseGoalsJson from '../content/odense/goals.json';
 import odenseEnJson from '../i18n/odense/en.json';
 import odenseDaJson from '../i18n/odense/da.json';
+import svendborgSpeciesJson from '../content/svendborg/species.json';
+import svendborgTrainersJson from '../content/svendborg/trainers.json';
+import svendborgPlayerTeamsJson from '../content/svendborg/player-teams.json';
+import svendborgSpawnsJson from '../content/svendborg/spawns.json';
+import svendborgPoisJson from '../content/svendborg/pois.json';
+import svendborgArenasJson from '../content/svendborg/arenas.json';
+import svendborgRoutesJson from '../content/svendborg/routes.json';
+import svendborgZonesJson from '../content/svendborg/zones.json';
+import svendborgGoalsJson from '../content/svendborg/goals.json';
+import svendborgEnJson from '../i18n/svendborg/en.json';
+import svendborgDaJson from '../i18n/svendborg/da.json';
 import {
   I18nSchema,
   ItemsFileSchema,
@@ -50,13 +61,20 @@ import {
 } from './schemas';
 
 export * from './schemas';
-export { checkContent, checkI18n, FALLBACK_MOVE_ID } from './check';
+export {
+  checkContent,
+  checkI18n,
+  checkSeparation,
+  FALLBACK_MOVE_ID,
+  REGION_TEXT_PREFIXES,
+} from './check';
+import { checkSeparation } from './check';
 
 export * from './municipalities';
 
 /** All game content, validated and indexed by id. */
 /** Regions with content in this package (P27). Each is its own campaign. */
-export const REGION_IDS = ['odense'] as const;
+export const REGION_IDS = ['odense', 'svendborg'] as const;
 export type RegionId = (typeof REGION_IDS)[number];
 
 export interface Dex {
@@ -169,6 +187,18 @@ export const rawContentByRegion: Record<RegionId, RawContent> = {
     zones: odenseZonesJson,
     goals: odenseGoalsJson,
   },
+  svendborg: {
+    ...shared,
+    species: svendborgSpeciesJson,
+    trainers: svendborgTrainersJson,
+    playerTeams: svendborgPlayerTeamsJson,
+    spawns: svendborgSpawnsJson,
+    pois: svendborgPoisJson,
+    arenas: svendborgArenasJson,
+    routes: svendborgRoutesJson,
+    zones: svendborgZonesJson,
+    goals: svendborgGoalsJson,
+  },
 };
 
 /** Validated content per region. */
@@ -192,7 +222,13 @@ export const sharedI18n: Record<Locale, I18nTable> = {
 /** Each region's own texts (species, trainers, places, zones, routes, badges…). */
 export const regionI18n: Record<RegionId, Record<Locale, I18nTable>> = {
   odense: { en: I18nSchema.parse(odenseEnJson), da: I18nSchema.parse(odenseDaJson) },
+  svendborg: { en: I18nSchema.parse(svendborgEnJson), da: I18nSchema.parse(svendborgDaJson) },
 };
+
+/** P27: the regions never overlap or mix (prefixes, unique ids, texts in their own files). */
+export function checkRegionSeparation(): string[] {
+  return checkSeparation(regions, sharedI18n, regionI18n);
+}
 /** The texts for one region: shared UI plus the region's own. */
 export function i18nFor(region: RegionId): Record<Locale, I18nTable> {
   return {

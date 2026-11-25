@@ -41,6 +41,25 @@ is M5; don't build any of it before then. See [docs/PLAN.md](docs/PLAN.md) and
   wrong, fix the GDD (with a version line) when the right answer is clear, and add a
   backlog item when it needs the owner.
 
+## Regions (P27)
+
+Each Fyn municipality is its own region and campaign: Odense (playable) and Svendborg (being
+built). **[docs/REGIONS.md](docs/REGIONS.md)** says where each region's files live, each
+region's level and features, and holds the **update queue**;
+**[docs/REGION-RECIPE.md](docs/REGION-RECIPE.md)** says how a region is built.
+
+- **Never mix regions.** Region content goes only in that region's folders
+  (`content/<region>/`, `i18n/<region>/`, `region/<region>/`, `docs/regions/<region>/`,
+  `tools/region-builder/src/regions/<region>.ts`); shared things only in `shared/`. Every
+  Svendborg id starts with `svb_`. `pnpm validate` (`checkSeparation`) fails on any overlap.
+  Tools take `--region <id>` (default Odense).
+- **Update pipeline.** After building an update (in a region or the shared app), add a row to
+  the update queue in REGIONS.md (decision number, from, date, a status per region: the
+  origin `done`, others `pending` or `n/a: reason`), then run `pnpm regions:status`. When it
+  says a region has 3 or more pending updates, **ask the owner** which to bring there (apply,
+  adapt or skip); never bring an update to another region on your own.
+- Bump the region's level in REGIONS.md with each content change.
+
 ## Hard rules
 
 1. **No Pokémon content of any kind.** No Pokémon names, species, moves, items, terms
@@ -170,7 +189,8 @@ pnpm region:build  # rebuild region.odense.json, its version file and the zone/d
                    # (Overpass tiles cached in tools/region-builder/cache; fetch: pnpm --filter @oml/region-builder fetch)
 pnpm --filter @oml/region-builder basemap [YYYYMMDD]   # re-extract the basemap tiles for the municipality
 pnpm spawn:report  # spawn density per km walked vs GDD targets (CI gate, ~7 min)
-pnpm docs:content  # regenerate docs/CREATURES.md, docs/TEAMS.md and docs/creatures/*.svg
+pnpm regions:status  # region update queue: says when to ask the owner (docs/REGIONS.md)
+pnpm docs:content  # regenerate docs/regions/<region>/ (CREATURES.md, TEAMS.md, spawn maps)
                    # after any species, spawn, trainer or POI change (a test checks it)
 pnpm art:build     # regenerate A1 sprites + assets.json after adding species
 pnpm --filter @oml/spawn-service dev    # Worker on :8787 (needs apps/spawn-service/.dev.vars)

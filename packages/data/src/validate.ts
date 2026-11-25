@@ -1,36 +1,60 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { ZodError } from 'zod';
 import { cellToChildren, cellToLatLng, latLngToCell } from 'h3-js';
-import { content } from './index';
 import { RegionFileSchema, RegionVersionFileSchema, type RegionFile } from './schemas';
-import { checkContent, checkI18n, i18n, parseContent, rawContent, type Dex } from './index';
+import {
+  checkContent,
+  checkI18n,
+  checkRegionSeparation,
+  i18nFor,
+  parseContent,
+  rawContentByRegion,
+  REGION_IDS,
+  type Dex,
+} from './index';
+
+/** The region being checked (P27: every region is validated on its own, from its own folders). */
+let dex: Dex;
 
 function main(): number {
-  let dex: Dex;
-  try {
-    dex = parseContent(rawContent);
-  } catch (err) {
-    if (err instanceof ZodError) {
-      for (const issue of err.issues)
-        console.error(`schema: ${issue.path.join('.')}: ${issue.message}`);
-    } else {
-      console.error(err);
+  let failed = 0;
+  const separation = checkRegionSeparation();
+  for (const e of separation) console.error(`✗ regions: ${e}`);
+  failed += separation.length;
+  for (const region of REGION_IDS) {
+    try {
+      dex = parseContent(rawContentByRegion[region], region);
+    } catch (err) {
+      if (err instanceof ZodError) {
+        for (const issue of err.issues)
+          console.error(`✗ ${region}: schema: ${issue.path.join('.')}: ${issue.message}`);
+      } else {
+        console.error(err);
+      }
+      failed++;
+      continue;
     }
-    return 1;
-  }
-  const errors = [...checkContent(dex), ...checkI18n(dex, i18n), ...checkRegion()];
-  for (const e of errors) console.error(`✗ ${e}`);
-  if (errors.length > 0) {
-    console.error(`\n${errors.length} content error(s).`);
-    return 1;
+    const texts = i18nFor(region);
+    const errors = [...checkContent(dex), ...checkI18n(dex, texts), ...checkRegion()];
+    for (const e of errors) console.error(`✗ ${region}: ${e}`);
+    failed += errors.length;
+    if (errors.length === 0)
+      console.log(
+        `✓ ${region}: ${Object.keys(dex.species).length} species, ` +
+          `${Object.keys(dex.trainers).length} trainers, ${Object.keys(dex.zones).length} zones, ` +
+          `${Object.keys(dex.routes).length} routes, ${Object.keys(dex.pois).length} POIs, ` +
+          `${Object.keys(texts.en).length} texts × 2 locales, region file ok`,
+      );
   }
   console.log(
-    `✓ content valid: ${dex.typeIds.length} types, ${Object.keys(dex.species).length} species, ` +
-      `${Object.keys(dex.moves).length} moves, ${Object.keys(dex.items).length} items, ` +
-      `${Object.keys(dex.trainers).length} trainers, ${Object.keys(dex.fieldAbilities).length} field abilities, ` +
-      `${Object.keys(i18n.en).length} i18n keys × 2 locales, region odense ok`,
+    `  shared: ${dex.typeIds.length} types, ${Object.keys(dex.moves).length} moves, ` +
+      `${Object.keys(dex.items).length} items, ${Object.keys(dex.fieldAbilities).length} field abilities`,
   );
+  if (failed > 0) {
+    console.error(`\n${failed} content error(s).`);
+    return 1;
+  }
   return 0;
 }
 
@@ -39,40 +63,38 @@ function checkRegion(): string[] {
   const errors: string[] = [];
   const read = (rel: string) =>
     JSON.parse(readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8'));
-  const parsed = RegionFileSchema.safeParse(read('../region/odense/region.json'));
+  if (!existsSync(fileURLToPath(new URL(`../region/${dex.region}/region.json`, import.meta.url))))
+    return [`no region file yet: run pnpm region:build --region ${dex.region}`];
+  const parsed = RegionFileSchema.safeParse(read(`../region/${dex.region}/region.json`));
   if (!parsed.success) {
     for (const i of parsed.error.issues.slice(0, 5))
-      errors.push(`region.odense.json: ${i.path.join('.')}: ${i.message}`);
+      errors.push(`region.json: ${i.path.join('.')}: ${i.message}`);
     return errors;
   }
   const region = parsed.data;
-  const version = RegionVersionFileSchema.safeParse(read('../region/odense/version.json'));
+  const version = RegionVersionFileSchema.safeParse(read(`../region/${dex.region}/version.json`));
   if (!version.success || version.data.dataVersion !== region.dataVersion)
-    errors.push(
-      'region.odense.version.json does not match region.odense.json: run pnpm region:build',
-    );
-  const geo = read('../content/odense/districts.geojson') as {
+    errors.push('version.json does not match region.json: run pnpm region:build');
+  const geo = read(`../content/${dex.region}/districts.geojson`) as {
     features: { properties: { id: number; wildLevels: [number, number]; draft: boolean } }[];
   };
   const ids = geo.features.map((f) => f.properties.id).sort((a, b) => a - b);
   if (ids.join() !== '1,2,3,4,5,6,7,8')
-    errors.push(`districts.odense.geojson: expected districts 1–8, got ${ids.join(',')}`);
+    errors.push(`districts.geojson: expected districts 1–8, got ${ids.join(',')}`);
   for (const f of geo.features) {
     const [lo, hi] = f.properties.wildLevels;
     if (!(lo <= hi)) errors.push(`district ${f.properties.id}: wildLevels ${lo}–${hi}`);
     const r = region.districts.find((d) => d.id === f.properties.id);
     if (!r || r.wildLevels.join() !== f.properties.wildLevels.join())
-      errors.push(
-        `region.odense.json is stale for district ${f.properties.id}: run pnpm region:build`,
-      );
+      errors.push(`region.json is stale for district ${f.properties.id}: run pnpm region:build`);
   }
-  const zoneIds = Object.keys(content.zones);
+  const zoneIds = Object.keys(dex.zones);
   if (region.zones.join() !== zoneIds.join())
-    errors.push('region.odense.json zones differ from zones.odense.json: run pnpm region:build');
+    errors.push('region.json zones differ from zones.json: run pnpm region:build');
   for (const [cell, row] of Object.entries(region.cells)) {
     if (!region.districts.some((d) => d.id === row[0]))
       errors.push(`region cell ${cell}: unknown district ${row[0]}`);
-    const zone = content.zones[region.zones[row[1]!] ?? ''];
+    const zone = dex.zones[region.zones[row[1]!] ?? ''];
     if (!zone || zone.district !== row[0])
       errors.push(`region cell ${cell}: zone ${row[1]} is not in district ${row[0]}`);
     const sum = row.slice(3, 11).reduce((a, b) => a + b, 0);
@@ -92,7 +114,7 @@ function checkRoutes(region: RegionFile): string[] {
   const hazards = (
     JSON.parse(
       readFileSync(
-        fileURLToPath(new URL('../region/odense/hazards.json', import.meta.url)),
+        fileURLToPath(new URL(`../region/${dex.region}/hazards.json`, import.meta.url)),
         'utf8',
       ),
     ) as { lines: { coords: number[][] }[] }
@@ -106,8 +128,17 @@ function checkRoutes(region: RegionFile): string[] {
     const row = region.cells[latLngToCell(p[1]!, p[0]!, region.h3Res)];
     return row ? region.zones[row[1]!] : undefined;
   };
-  for (const r of Object.values(content.routes)) {
+  for (const r of Object.values(dex.routes)) {
     const where = `route ${r.id}`;
+    if (r.kind === 'ferry') {
+      // P27: a crossing to an island that opens on arrival; drawn over the water, not walked
+      const to = dex.zones[r.to];
+      if (!to?.opensOnArrival) errors.push(`${where}: a ferry must lead to an island zone`);
+      if (zoneOf(r.path[0]!) !== r.from) errors.push(`${where}: does not start in zone ${r.from}`);
+      if (zoneOf(r.path[r.path.length - 1]!) !== r.to)
+        errors.push(`${where}: does not end in zone ${r.to}`);
+      continue;
+    }
     if (zoneOf(r.path[0]!) !== r.from) errors.push(`${where}: does not start in zone ${r.from}`);
     if (zoneOf(r.path[r.path.length - 1]!) !== r.to)
       errors.push(`${where}: does not end in zone ${r.to}`);
@@ -196,16 +227,16 @@ function checkPois(region: RegionFile): string[] {
   const errors: string[] = [];
   const read = (rel: string) =>
     JSON.parse(readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8'));
-  const zones = read('../content/odense/zones.geojson') as {
+  const zones = read(`../content/${dex.region}/zones.geojson`) as {
     features: {
       properties: { id: string };
       geometry: { type: string; coordinates: number[][][] | number[][][][] };
     }[];
   };
-  const hazards = read('../region/odense/hazards.json') as {
+  const hazards = read(`../region/${dex.region}/hazards.json`) as {
     lines: { kind: string; coords: number[][] }[];
   };
-  for (const p of Object.values(content.pois)) {
+  for (const p of Object.values(dex.pois)) {
     const where = `poi ${p.id}`;
     const pt: [number, number] = [p.lng, p.lat];
     const d = zones.features.find((f) => f.properties.id === p.zone);

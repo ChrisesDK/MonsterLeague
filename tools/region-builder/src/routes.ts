@@ -3,7 +3,7 @@
  * search over the OSM foot network (no routing service) through each route's waypoints.
  * The cost favours footpaths, park paths, wild areas and the river path, and avoids busy
  * roads, steps and no-spawn areas (railways, schools, …). Arena zones start and end at the
- * arena site, other zones at their centre. Writes packages/data/content/odense/routes.json.
+ * arena site, other zones at their centre. Writes packages/data/content/<region>/routes.json.
  *
  *   pnpm routes:build            (uses the Overpass cache in tools/region-builder/cache)
  */
@@ -16,8 +16,9 @@ import {
   RoutesFileSchema,
   ZonesFileSchema,
   type Route,
+  REGION_ID_PREFIX,
 } from '@oml/data';
-import { FLAG, REGION, wildFlags } from './config';
+import { FLAG, REGION, regionPaths, wildFlags } from './config';
 import { buildFootQuery, fetchOverpassTiled } from './overpass';
 import {
   ROUTES,
@@ -29,19 +30,19 @@ import {
   type LngLat,
 } from './route-lib';
 
-const root = (p: string) => fileURLToPath(new URL(`../../../${p}`, import.meta.url));
 const cacheDir = fileURLToPath(new URL('../cache', import.meta.url));
-const OUT = root('packages/data/content/odense/routes.json');
+const paths = regionPaths(REGION.id);
+const OUT = paths.content('routes.json');
 
 const region = RegionFileSchema.parse(
-  JSON.parse(readFileSync(root('packages/data/region/odense/region.json'), 'utf8')),
+  JSON.parse(readFileSync(paths.region('region.json'), 'utf8')),
 );
 const arenas = ArenasFileSchema.parse(
-  JSON.parse(readFileSync(root('packages/data/content/odense/arenas.json'), 'utf8')),
+  JSON.parse(readFileSync(paths.content('arenas.json'), 'utf8')),
 ).arenas;
 
 const zones = ZonesFileSchema.parse(
-  JSON.parse(readFileSync(root('packages/data/content/odense/zones.json'), 'utf8')),
+  JSON.parse(readFileSync(paths.content('zones.json'), 'utf8')),
 ).zones;
 
 /** District and flags of a position's region cell (null outside the region). */
@@ -64,7 +65,7 @@ function anchor(zoneId: string): LngLat {
 const hazardGrid = new Map<string, [LngLat, LngLat][]>();
 const gridKey = (p: LngLat) => `${Math.floor(p[0] / 0.002)},${Math.floor(p[1] / 0.001)}`;
 for (const line of (
-  JSON.parse(readFileSync(root('packages/data/region/odense/hazards.json'), 'utf8')) as {
+  JSON.parse(readFileSync(paths.region('hazards.json'), 'utf8')) as {
     lines: { coords: LngLat[] }[];
   }
 ).lines)
@@ -244,6 +245,8 @@ function nearestNodes(p: LngLat, allowed: Set<number> | null, n: number): number
 }
 
 const routes: Route[] = [];
+/** P27: every id in a region starts with its prefix (Odense: none, Svendborg: svb_). */
+const idPrefix = REGION_ID_PREFIX[REGION.id] ?? '';
 for (const def of ROUTES) {
   const points = [anchor(def.from), ...def.via, anchor(def.to)];
   const path: LngLat[] = [];
@@ -268,7 +271,7 @@ for (const def of ROUTES) {
   );
   const m = routeMetrics(simple, (p) => cellInfo(p));
   routes.push({
-    id: `route${def.number}`,
+    id: `${idPrefix}route${def.number}`,
     number: def.number,
     from: def.from,
     to: def.to,
@@ -281,6 +284,22 @@ for (const def of ROUTES) {
     `Route ${def.number} ${def.from}→${def.to} (${def.kind}): ${Math.round(m.lengthM)} m, ` +
       `${Math.round(m.wildShare * 100)}% wild, ${simple.length} points`,
   );
+}
+
+// Ferry crossings (P27): the sailing lane as given, never walked (no wild share).
+for (const f of REGION.ferries ?? []) {
+  const m = routeMetrics(f.path, () => null);
+  routes.push({
+    id: `${idPrefix}route${f.number}`,
+    number: f.number,
+    from: f.from,
+    to: f.to,
+    kind: 'ferry',
+    lengthM: Math.round(m.lengthM),
+    wildShare: 0,
+    path: [...f.path],
+  });
+  console.log(`Ferry ${f.number} ${f.from}→${f.to}: ${Math.round(m.lengthM)} m`);
 }
 
 const file = RoutesFileSchema.parse({ region: REGION.id, routes });

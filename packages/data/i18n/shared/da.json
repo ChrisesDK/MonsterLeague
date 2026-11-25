@@ -543,5 +543,12 @@
   "welcome.feedback": "Menu → Feedback: fejl, idéer eller noget, der føles for svært eller for let. Din placering sendes aldrig.",
   "welcome.known": "Godt at vide: væsnernes tegninger er pladsholdere, og nogle ting ændrer sig mellem versionerne.",
   "welcome.go": "Kom i gang",
-  "settings.welcome": "Testerguide"
+  "settings.welcome": "Testerguide",
+  "trainer.battle": "Kæmp",
+  "trainer.refuse": "\"Kom tilbage med {badge}.\"",
+  "trainer.won": "Du slog {name}!",
+  "trainer.lost": "{name} vandt denne gang.",
+  "trainer.reward": "Du fik {n}× {item}.",
+  "trainer.refuseZone": "\"Gå en rute hertil først, så kæmper vi i {zone}.\"",
+  "trainer.coins": "Du fik {n} skilling."
 }

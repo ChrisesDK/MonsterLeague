@@ -1,13 +1,46 @@
-/** Region-builder configuration for Odense (one place to change the area). */
-export const REGION = {
-  id: 'odense',
-  /**
-   * [west, south, east, north] in degrees (WGS84): Odense Kommune (region v4, GDD P22); cells
-   * outside the municipality border (content/odense/boundary.geojson) are dropped.
-   */
-  bbox: [10.17, 55.28, 10.59, 55.49] as [number, number, number, number],
+import { fileURLToPath } from 'node:url';
+import type { LngLat } from './route-lib';
+import { odense } from './regions/odense';
+import { svendborg } from './regions/svendborg';
+
+/** One region's builder settings (P27): src/regions/<region>.ts. */
+export interface RegionConfig {
+  id: 'odense' | 'svendborg';
+  /** The municipality's name in OSM (boundary=administrative, admin_level=7). */
+  osmName: string;
+  /** [west, south, east, north] in degrees (WGS84), a little larger than the municipality. */
+  bbox: [number, number, number, number];
   /** Overpass requests are split into this grid of tiles (columns, rows). */
-  tiles: [4, 3] as [number, number],
+  tiles: [number, number];
+  /** Routes between zones: badge path (main), other ways (alt), destinations (explore). */
+  routes: readonly {
+    number: number;
+    from: string;
+    to: string;
+    kind: 'main' | 'alt' | 'explore';
+    via: LngLat[];
+  }[];
+  /** P27: ferry crossings to islands that open on arrival; a path over the water. */
+  ferries?: readonly { number: number; from: string; to: string; path: LngLat[] }[];
+}
+
+export const REGION_CONFIGS = { odense, svendborg } as const;
+
+/**
+ * The region to build: `--region <id>` on the command line or OML_REGION, else Odense.
+ * Every output goes to that region's own folders (never another region's).
+ */
+function selectedRegion(): RegionConfig['id'] {
+  const i = process.argv.indexOf('--region');
+  const id = (i >= 0 ? process.argv[i + 1] : process.env.OML_REGION) ?? 'odense';
+  if (!(id in REGION_CONFIGS))
+    throw new Error(`Unknown region "${id}" (${Object.keys(REGION_CONFIGS).join(', ')})`);
+  return id as RegionConfig['id'];
+}
+
+/** The selected region's settings plus the shared cell resolutions. */
+export const REGION = {
+  ...REGION_CONFIGS[selectedRegion()],
   /** Gameplay cell resolution (GDD: H3 res 10, ~65 m edge, ~15,000 m²). */
   h3Res: 10,
   /** Sample-point resolution for area shares: the 49 res-12 children of each res-10 cell. */
@@ -15,6 +48,16 @@ export const REGION = {
   /** Coarse resolution the client sends to the spawn service (GDD privacy: res 7). */
   coarseRes: 7,
 };
+
+const root = (p: string) => fileURLToPath(new URL(`../../../${p}`, import.meta.url));
+/** Where a region's files live (P27: one folder per region, nothing shared by accident). */
+export function regionPaths(id: RegionConfig['id']) {
+  return {
+    content: (f: string) => root(`packages/data/content/${id}/${f}`),
+    region: (f: string) => root(`packages/data/region/${id}/${f}`),
+    tiles: root(`apps/client/public/tiles/${id}.pmtiles`),
+  };
+}
 
 /** Buffer radii in metres for features mapped as lines or points. */
 /** GDD P10: a cell is noSpawn when at least this share of it lies in no-spawn areas. */

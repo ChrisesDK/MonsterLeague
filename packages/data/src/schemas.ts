@@ -422,7 +422,12 @@ export const ZoneSchema = z
     /** Open from the start (exactly one zone). */
     start: z.boolean().optional(),
     /** What the Town Map shows for a destination (D165): what the zone mostly is. */
-    icon: z.enum(['forest', 'field', 'lake', 'town']).optional(),
+    icon: z.enum(['forest', 'field', 'lake', 'town', 'island']).optional(),
+    /**
+     * P27: an island reached only by ferry. It opens when the player arrives there (a ferry
+     * can't be walked), and it is never needed for a badge.
+     */
+    opensOnArrival: z.boolean().optional(),
   })
   .strict();
 export type Zone = z.infer<typeof ZoneSchema>;
@@ -459,7 +464,11 @@ export const RouteSchema = z
     number: z.number().int().min(1).max(99),
     from: id,
     to: id,
-    kind: z.enum(['main', 'alt', 'explore']),
+    /**
+     * main: the badge path; alt: other ways; explore: out to a destination; ferry (P27): a
+     * crossing to an island, drawn as a loose dotted line over the water and never walked.
+     */
+    kind: z.enum(['main', 'alt', 'explore', 'ferry']),
     lengthM: z.number().int().positive(),
     /** Share of the length that runs through wild-area cells, 0–1. */
     wildShare: z.number().min(0).max(1),
