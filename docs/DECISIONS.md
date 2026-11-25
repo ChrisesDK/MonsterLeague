@@ -1589,3 +1589,71 @@ length, position resolution and spawn tables>`.
   reach closes it. Out of reach, a toast says how many metres to walk. No card appears by
   itself any more. E2E taps stamps (`tapPoi`); the "first tap" in the range-ring test is
   a key press, because a tap on the map at Kongens Have now lands on a stamp.
+- **D167. Roster v2: 20 wild lines with rarities; destinations for catching** (owner
+  request: every creature with a second or a second and third stage, a rarity, some only in
+  destinations, and forests, fields and lakes worth travelling to; GDD v1.13).
+  - **Roster:** the 11 wild species became lines (Torvdue → Kirkedue → Vinddue, Rendsnude →
+    Rottekonge, Mosbille → Skovbille → Eghjort, Grimælling → Svaneunge → Kongesvane,
+    Brokrabbe → Kæmpekrabbe, Kulingmåge → Stormmåge, Lygtling → Lygtemand, Loftnisse →
+    Gårdnisse, Søormling → Lindorm, Kampetrold → Bjergtrold, Ellepige → Ellekonge) and 9
+    new lines were added (Gløding, Rokkeling, Mosling, Lynspurv, Dugpust, Flintling,
+    Ræveling, Nøkkeling, Ildflue). Starters get a third stage at 36 (Brandløve, Havodder,
+    Lundekonge). 55 species, all `placeholder: true`. Existing species keep their stats
+    and learnsets; new ones get stats from a role (fast, tank, bruiser, balanced) and a
+    base-stat total, and learnsets from a per-type ladder plus their second type's moves
+    (4–8 moves, a level-1 move, levels ≤ 50, as `check.ts` requires). 14 new moves
+    (one mid and one top attack per type; no effects). Generated once by a script; the
+    files are now edited by hand.
+  - **Havodder is Water/Folk, not Water/Stone:** as Water/Stone it resisted the Storm
+    leader and hit it super effectively, so the "disadvantaged" water starter won 89 % at
+    arena 8.
+  - **`rarity`** on every species (common, uncommon, rare, very rare); starters count as
+    common (they never spawn). A spawn entry's own `rarity` stays the level rule (common
+    = player's band, rare = district's band): uncommons are "common" entries, rares and
+    very rares "rare" entries. Table weights follow the species rarity: 25 / 9 / 2.5 /
+    0.8; each district doubles one featured uncommon; field-ability entries weigh 4.
+  - **Destinations:** region flag 16, set by the region builder for cells in a `wild` or
+    `water` zone whose nature share (water + forest + park + meadow + farmland) is at
+    least 50 % (farmland counts here, unlike the wild flag, so fields are destinations).
+    11,000+ cells. Spawn entries may be `destinationOnly` (weight 0 elsewhere); rare
+    entries weigh ×3 in destinations (`DESTINATION_RARE_BOOST`). Density factors:
+    destination 2.3, other wild 1.4, route corridor 1.0 (was 1.6 with wild), street 0.8
+    (was 0.9). SPAWN_ALGORITHM 5; the golden region has a destination cell.
+  - **spawn:report** now splits destination / wild / route / streets with the new targets
+    and gates the rare-share ratio (≥ 2×; measured 4.9×) and a 30-minute destination walk
+    (15–22; measured 17.8). Region file version stays 4: the new flag bit is ignored by
+    older code.
+- **D168. Arenas 3–8, route trainer teams, arena e2e** (owner request: all arena and trainer
+  teams, a full experience for testers).
+  - Leaders `leader_grove` (4), `leader_spirit` (5), `leader_fire` (6), `leader_mixed`
+    (7, no theme: neutral for every starter) and `leader_storm` (8) join `leader_water`
+    (3); each arena has one junior (`arenaN_junior`) and a POI at its arena site (radius
+    80). Presets `arena4`–`arena8` (one creature more than the leader, evolved like a
+    player's). Levels were tuned with a level-offset search against the sim (seed 4242,
+    N 600, the CI guard) and checked with a second seed (N 1,500); team changes made where
+    a single creature decided a match-up (arena 7: Rottekonge, pure Folk, could not touch
+    the Spirit-typed grove starter, and Lindorm took 4× from Grove; arena 8's preset lost
+    its Stone creatures). Arenas 4, 5, 6 and 8 end 1–4 points outside a band in the full
+    report; left for tester feedback.
+  - Leader rewards: Revive Leaf ×1 (3–4), ×2 (5–6), Revive Blossom ×1 (7–8). Juniors: Good
+    Charms (3–5), Great Charms (6–8).
+  - The sim's `playerTeamSide` follows the whole evolution chain (third stages at 36).
+  - **Route trainers** keep their ids, places, levels, sizes and rewards; teams were re-drawn
+    from the 17 non-starter, non-very-rare first stages with a type theme per trainer
+    (hashed from the id), rares only from the third slot, each creature at the stage that
+    fits its level. A content test keeps every trainer's first stages below their
+    evolution level + 3.
+  - `e2e/arenas.e2e.ts` plays arenas 3–8 in order (junior, leader, badge ceremony), a
+    route trainer in district 8 (coins paid) and a market purchase, with a level-100 team
+    of final stages (dev-made creatures don't evolve; they win even when ignoring orders).
+  - The Stone leader's defeat line still named the old "Cathedral badge": now "Castle Mound
+    badge" / "Voldsted-mærket".
+- **D169. Content docs are generated** (owner request: documents to keep track of all teams
+  and creatures). `tools/docs` (`pnpm docs:content`) writes docs/CREATURES.md (lines,
+  rarity, spawn chance in destinations and elsewhere, where, every creature's stats and
+  moves, spawn tables per district), small SVG spawn maps (docs/creatures/: circles on zone
+  centres sized by the line's share) and docs/TEAMS.md (arenas with juniors, leaders,
+  rewards and presets; route trainers by route; other and unplaced trainers). Spawn
+  chances are exact expectations from the spawn rules (min(density, 3) per cell, split by
+  entry weight, day and night half each), not samples. A test fails when the docs are
+  stale. The generated files are left out of Prettier.

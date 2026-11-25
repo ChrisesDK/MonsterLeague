@@ -1,6 +1,6 @@
 # Odense Monster League — Game Design Document
 
-Version 1.12 · Nov 25, 2026 · maintained in the repository (see Change log)
+Version 1.13 · Nov 25, 2026 · maintained in the repository (see Change log)
 
 ## Overview
 
@@ -137,18 +137,16 @@ The only immunities are Folk ↔ Spirit. Changes since v1.0: Storm → Stone wen
 
 **Stats:** HP, Attack, Defence, Speed. Each species has base stats with a total of 240–400. Stat at level L = floor(base × 2 × L / 100) + 5. HP = floor(base × 3 × L / 100) + 2L + 10 (raised in M1.5 so battles last long enough to make decisions). There are no individual values or natures in v1. Stat stages run from −6 to +6, ×1.5 per stage up and ÷1.5 per stage down.
 
-**Roster structure for the v1 slice (15 species):**
+**Roster (v1.13): 55 creatures in 23 evolution lines, each line two or three stages.** Every line has a **rarity**, which decides how often it spawns:
 
-| Role | Count | Example concepts (original, folklore-inspired) |
-| --- | --- | --- |
-| Starters, 2-stage lines | 3 lines = 6 | Fire ember-cat, Water river-otter, Grove beech-sprite |
-| Common early creatures | 4 | Folk pigeon, Folk rat, Grove beetle, Water duckling |
-| Biome specials | 3 | Stone cobble-crab (historic), Storm gull (harbour), Spirit will-o'-wisp *lygtemand* (night) |
-| Arena-only / rare | 2 | A *nisse* (Folk/Spirit), a young *lindorm* (Stone/Water) |
+| Rarity | Lines | Spawn weight | Level | Notes |
+| --- | --- | --- | --- | --- |
+| Common | 6 (Torvdue, Rendsnude, Mosbille, Grimælling, Mosling, Ræveling) | 25 | Player's band | Mosling only in destinations |
+| Uncommon | 9 (Brokrabbe, Kulingmåge, Lygtling, Gløding, Rokkeling, Lynspurv, Dugpust, Flintling, Ildflue) | 9 (18 for the district's featured one) | Player's band | Rokkeling, Dugpust and Ildflue only in destinations; Lygtling and Ildflue at night |
+| Rare | 4 (Loftnisse, Søormling, Kampetrold, Ellepige) | 2.5 | District's band | Søormling and Ellepige only in destinations; locked with their zone |
+| Very rare | 1 (Nøkkeling) | 0.8 | District's band | Only at lakes and other water in destinations |
 
-Every species needs: an ID, name, types, base stats, a learnset by level, catch rate, base XP, evolution rule, biome weights, and a sprite plus 3 animations (idle, attack, faint). Names must be original and checked against existing monster-game names before use.
-
-**Current placeholder roster** (Danish names, all marked `placeholder: true` in `packages/data/content/species.json`, which is the source of truth for species data): starter lines Gnistkat → Bålkat (Fire), Åodder → Strømodder (Water), Bøgling → Bøgevætte (Grove), plus Grimælling, Rendsnude, Lygtling, Loftnisse, Søormling, Kampetrold (Stone) and Ellepige (Grove/Spirit) and others: 17 species, after P14 added the last two as rares (Kampetrold for the Stone district, Ellepige for the Grove district). Starter lines never appear in the wild. Placeholder art uses each species' own colours (body and accent, set in species.json), with the type colour kept on the map marker's ring.
+The three starter lines get a third stage at level 36 (Brandløve Fire/Folk, Havodder Water/Folk, Lundekonge Grove/Spirit) and never appear in the wild. Of the 20 wild lines, 6 have three stages (Torvdue → Kirkedue → Vinddue, Mosbille → Skovbille → Eghjort, Grimælling → Svaneunge → Kongesvane, Gløding → Glødøgle → Essedrage, Mosling → Mostrold → Lyngkonge, Lynspurv → Tordenkrage → Tordenravn) and 14 have two. Second stages evolve at 14–30, third stages at 32–38; a final stage often gains a second type. Base-stat totals rise from 245–320 (first stages) to 385–400 (final stages). Fourteen new moves give every type a mid-level attack (60–70 power) and a top attack (90–100 power, learned at 34–40). **docs/CREATURES.md** lists every creature with its rarity, types, stats, evolutions, moves, spawn chance (in destinations and elsewhere), where it spawns and a small spawn map; it is generated from the content by `pnpm docs:content`, so it always matches the game. Names are original Danish words and folklore (lindorm, nøkken, mosekone, ellekonge), checked against existing monster-game names. All species stay `placeholder: true` (`packages/data/content/species.json` is the source of truth). Placeholder art uses each species' own colours (body and accent, set in species.json), with the type colour kept on the map marker's ring; a third stage gets a tall crest.
 
 **Coverage moves:** each starter line learns one move of another type early so it is never stuck with a single type: Fire learns Squall Slap (Storm, L12); Water and Grove learn Cobble Toss (Stone, L11 and L12). Søormling (Stone/Water) is a rare creature, kept off early arena teams.
 
@@ -226,7 +224,7 @@ A charm is used up even when the catch fails. Catching is only possible in wild 
 | Clear Drops | Cure status | Rest stops |
 | Basic / Good / Great Charm | Catch item, ×1 / ×1.5 / ×2 | Rest stops; Good after badge 2, Great after badge 5 |
 | Revive Leaf | Revive at 50% HP | Hidden items, arena and route-trainer rewards |
-| Revive Blossom | Revive at full HP | To be decided (backlog P21); for testing, Settings → Test items adds one |
+| Revive Blossom | Revive at full HP | Markets (2,000 skilling), arena 7 and 8 leader rewards (v1.13); a found source is still open (backlog P21) |
 
 **Skilling and markets (v1.12).** The game's coin is the *skilling* (an old Danish coin). Beating a trainer pays once: the trainer's highest creature level × 25 (arena leaders × 60), so a Centrum route trainer pays about 200. Markets sell every priced item and buy items back for half their price; Good Charms need badge 2 and Great Charms badge 5. Rest stops still give a free restock once per hour (for example 5 Basic Charms, 2 Small Tonics), so a player who never visits a market can still play. Prices (skilling): Basic Charm 100, Good Charm 300, Great Charm 600, Small Tonic 150, Medium Tonic 350, Large Tonic 600, Clear Drops 200, Revive Leaf 800, Revive Blossom 2,000. Ways to find items while walking (items on the ground, creatures that find things on routes) are still open (backlog P26).
 
@@ -240,7 +238,7 @@ A charm is used up even when the catch fails. Catching is only possible in wild 
 2. Cover the region with H3 cells at resolution 10 (about 65 m edge, \~15,000 m² per cell).
 3. For each cell, compute the share of each biome by area: Water (lakes, harbour, and rivers and streams buffered from their lines), Forest, Park, Meadow/field, Farmland, Urban, Industrial, Historic. Mark the cell `noSpawn` if at least 25% of its area is covered by schools, kindergartens, cemeteries, hospitals, military areas, airports, railway tracks or motorway/trunk roads. The light rail (letbanen) does not count as railway, because it runs along ordinary streets. Separately, no spawn is ever placed inside one of those areas, or on the light-rail tracks, whatever its cell (accepted P10, P11).
 4. Keep the cells inside the region border and give each the nearest zone centre's zone, and that zone's district (a POI's own cell always counts as the POI's zone).
-5. Write `region.<id>.json`: cells → {district, zone, biomes, flags (noSpawn, wild, water edge, route corridor)}, plus the zone and district outlines and the border lines for the maps.
+5. Write `region.<id>.json`: cells → {district, zone, biomes, flags (noSpawn, wild, water edge, route corridor, destination)}, plus the zone and district outlines and the border lines for the maps.
 
 **Spawn service (server):**
 
@@ -258,13 +256,17 @@ A charm is used up even when the catch fails. Catching is only possible in wild 
 4. Each player can battle each spawn (spawn ID) once; the save records which IDs were used.
 5. Without a connection, the cached list for the current window keeps working; after that the map says "No signal: the creatures are hiding".
 
-**Density targets (v1.9):** wild areas (park, forest, meadow/field, water edge) and route corridors: one battle-able creature per 100–150 m walked, about one every 1.5–2 minutes at walking pace. Streets: one per 300–400 m. A 30-minute walk at 4 km/h (about 2 km) through a park, partly along streets, should offer about 10–16 creatures, of which a player battles perhaps half (accepted P16; measured over Odense Kommune in v1.11: wild areas 1 per 131 m, streets 1 per 318 m, park walk 13.0). Tuned with `spawn:report` and the GPS simulator, then checked in Gate 3. The first walk after choosing a starter follows the onboarding script. In M2 the server only decides what spawns; checking catches on the server comes with accounts in the multiplayer phase.
+**Destinations are for catching; paths and the inner city are for trainers and arenas (v1.13).** A *destination* is real nature (water, forest, park, meadow or farmland making up at least half of the cell) in one of the forest, field or lake zones that the Town Map shows as destination stamps; the region builder marks these cells. In a destination, spawns are denser, rare and very rare creatures are three times as likely, and seven lines spawn only there (Mosling, Rokkeling, Dugpust, Ildflue, Søormling, Ellepige, Nøkkeling), so travelling out to the woods, fields and lakes is how a player fills the field guide. Routes and streets keep a calmer stream of everyday creatures.
+
+**Density targets (v1.13):** destinations: one battle-able creature per 70–110 m walked; other wild areas (city parks and green strips): one per 100–170 m; route corridors outside wild areas: one per 200–400 m; streets: one per 300–450 m. Rare creatures make up at least twice the share of finds in destinations as elsewhere. A 30-minute walk at 4 km/h (about 2 km) in a destination should offer about 15–22 creatures, of which a player battles perhaps half. Measured over Odense Kommune in v1.13: destinations 1 per 103 m, other wild areas 1 per 158 m, routes 1 per 301 m, streets 1 per 358 m; rares 4.9 times as common in destinations; destination walk 17.8. (v1.9 targets, replaced: wild areas and route corridors 1 per 100–150 m, streets 300–400 m, park walk 10–16, accepted P16.) Tuned with `spawn:report` and the GPS simulator, then checked in Gate 3. The first walk after choosing a starter follows the onboarding script. In M2 the server only decides what spawns; checking catches on the server comes with accounts in the multiplayer phase.
 
 **Example spawn table entry:**
 
 ```json
-{ "species": "<a stone species id>", "district": 4, "weight": 10,
+{ "species": "<a stone species id>", "district": 4, "weight": 10, "rarity": "rare",
   "biomes": { "historic": 3.0, "urban": 1.0 }, "time": "any", "requires": "runereader" }
+{ "species": "<a lake species id>", "district": 3, "weight": 0.8, "rarity": "rare",
+  "biomes": { "water": 2.0 }, "time": "any", "destinationOnly": true }
 ```
 
 Real spawn tables live in `packages/data/content/spawns.json` (accepted P8).
@@ -283,18 +285,20 @@ Real spawn tables live in `packages/data/content/spawns.json` (accepted P8).
 
 **Arena leaders.** Each has a name, a personality tied to the place, a 2–6 creature team on its type theme (see Arena difficulty), one signature tactic (for example the Water leader sets up rain-like Speed boosts) and a short pre- and post-battle line. Losing keeps all XP gained.
 
-**Arena difficulty.** The leader team grows by about +6 levels per arena and +1 creature every two arenas. The *expected player team* (used by the sim and by level design) is one creature more than the leader, at the same levels.
+**Arena difficulty.** The leader team grows by about +5 to +6 levels per arena and from 2 creatures (arena 1) to 5 (arenas 7 and 8); arena 8 reaches the level cap of 50. The *expected player team* (used by the sim and by level design) is one creature more than the leader, at about the same levels, with creatures evolved as a player's would be.
 
-| Arena | Place | Theme | Leader team | Leader levels | Expected player team | Status |
+| Arena | Place | Theme | Leader (junior first) | Leader team | Expected player team | Win rate (Fire / Water / Grove starter) |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | Kongens Have | Folk | 2 (Rendsnude, Loftnisse) | 9–10 | 3 at L9–10 | Built, on target |
-| 2 | Næsbyhoved Slotsbanke | Stone | 3 (Kampetrold, Kulingmåge, Brokrabbe); signature tactic: Storm attacks | 13–15 | 4 at L13–15 | Built, on target (Fire 24%, Water 75%, Grove 81%) |
-| 3 | Stige Ø | Water | 4 (the former arena-4 Water leader, scaled down; four creatures, since three met no level setting's targets) | 19–22 | 5 at L21–22 | Team on target (Fire 26%, Water 44%, Grove 88%); POI in M3 |
-| 4 | H.C. Andersen Skoven | Grove | 4 | 25–27 | 5 | Planned |
-| 5 | Hollufgård | Spirit | 4 | 31–33 | 5 | Planned |
-| 6 | Den Fynske Landsby | Fire | 5 | 37–39 | 6 | Planned |
-| 7 | Odense Zoo | Mixed | 5, ace Søormling | 43–45 | 6 | Planned |
-| 8 | Tusindårsskoven | Storm | 6 | 48–50 | 6 | Planned |
+| 1 | Kongens Have | Folk | Søren (Gardener Jens) | Rendsnude 9, Loftnisse 10 | 3 at L9–10 | 55 / 55 / 54 % |
+| 2 | Næsbyhoved Slotsbanke | Stone | Dorthe (Bell-ringer Poul); Storm attacks | Kampetrold 14, Kulingmåge 13, Brokrabbe 15 | 4 at L13–15 | 24 / 75 / 80 % |
+| 3 | Stige Ø | Water | Ingrid (Fisher Karen) | Grimælling 19, Kulingmåge 20, Strømodder 22 and 21 | 5 at L21–22 | 27 / 43 / 89 % |
+| 4 | H.C. Andersen Skoven | Grove | Forester Asger (Scout Mads) | Mostrold 29, Skovbille 30, Ellepige 31, Bøgevætte 32 | 5 at L26–28 | 85 / 31 / 39 % |
+| 5 | Hollufgård | Spirit | Sculptor Mette (Miller Ane) | Lygtemand 33, Mosekone 33, Nøkkeling 34, Loftnisse 35 | 5 at L31–33 | 44 / 64 / 57 % |
+| 6 | Den Fynske Landsby | Fire | Smith Niels (Baker Lars) | Glødøgle 35, Lygtemand 37, Essedrage 36, Brandløve 39 | 5 at L36–38 | 57 / 74 / 17 % |
+| 7 | Odense Zoo | Mixed | Keeper Fatima (Guide Yasmin) | Kongesvane 40, Eghjort 42, Lygtemand 40, Tordenravn 43, Essedrage 42 | 6 at L41–43 | 50 / 46 / 48 % |
+| 8 | Tusindårsskoven | Storm | Weatherwatcher Bo (Runner Freja) | Stormmåge 49, Tordenravn 49, Rokkevinge 48, Vinddue 49, Essedrage 49 | 6 at L44–46 | 55 / 14 / 31 % |
+
+All eight arenas are built (v1.13): each has its POI at the arena site with a junior trainer before the leader. Leaders reward a Revive Leaf (arenas 1–4: one, 5–6: two) or a Revive Blossom (arenas 7–8); juniors reward charms. Win rates are from `pnpm sim:report` (docs/BALANCE.md); the CI guard allows ±5 points, and arenas 4, 5, 6 and 8 sit within 1–4 points of their bands, to be tuned with testers' results. The expected player teams avoid creatures that make one starter's match-up meaningless (for example no Stone creatures against the Storm leader). **docs/TEAMS.md** lists every arena and trainer team, generated by `pnpm docs:content`.
 
 **Win-rate targets** for the expected player team vs. the leader, measured with `pnpm sim:report`: 40–60% with neutral types, 75–90% with a type advantage, 15–30% with a disadvantage, never 0%. Measured in M1.5: arena 1 at 53–55% for all three starters. Route trainers have no target, but should be beatable by the expected team for their district: their levels sit inside the district's band, below the leader's.
 
@@ -437,7 +441,7 @@ The save never stores a location history: only progress. Route progress is saved
 | M2c / M2d — Arena loop, game feel | 9–10 | Open wildlife, Town Map, Journal, camera and design system | Districts 1–2 playable with routes 1–3 | Done |
 | Region rework (P22) | 10 | Odense Kommune as a region | 39 zones, 50 routes that open them, route trainers on every route, 24 rest stops, new arena loop, Fyn map | Done |
 | Gate 3 — Region walk test | 11 | Does walking the routes feel good and worth travelling for? | Spawn density on target; testers want to keep walking | Next (the owner tests with GPS) |
-| M3 — Full Odense single-player | 12–19 | The whole campaign | Arenas 3–8 with leaders and POIs, \~35 creatures, all field abilities, Championship; A2 art | Planned |
+| M3 — Full Odense single-player | 12–19 | The whole campaign | Arenas 3–8 with leaders and POIs, \~35 creatures, all field abilities, Championship; A2 art | Started: arenas 3–8, 55 creatures and route trainer teams done (v1.13) |
 | M4 — Field test | 19–20 | Two weeks with 15–25 players | Return rate and ratings from the fun-test plan | Planned |
 | M5 — Multiplayer and social | after M4 | Play together | Friend battles, trades, friends list, party strong encounters | Later |
 | Art track | parallel | Real creature art | A3 artist submissions replace placeholders | Ongoing |
@@ -523,7 +527,8 @@ M1.7 (done, 148 tests): field abilities are data in `field-abilities.json`; a fr
 
 **M3 — Full Odense single-player, M4 — Field test, M5 — Multiplayer**
 
-- [ ] M3: arenas 3–8 with leaders, juniors and POIs (after the map has been tested); \~35 creatures; all six field abilities; arena rematches; the Odense Championship; A2 art
+- [x] M3: arenas 3–8 with leaders, juniors and POIs; 55 creatures in 23 lines with rarities (v1.13)
+- [ ] M3: all six field abilities; arena rematches; the Odense Championship; A2 art
 - [ ] M3: onboarding, safety screen, settings, opt-in telemetry without coordinates, in-app feedback
 - [ ] M4: two-week field test with 15–25 players on 3+ Android and 2+ iOS phones
 - [ ] M5: accounts, friends via QR, friend battles, trades, trainer cards, party strong encounters (see Multiplayer and social)
@@ -565,6 +570,7 @@ M1.7 (done, 148 tests): field abilities are data in `field-abilities.json`; a fr
 
 | Version | Date | Changes |
 | --- | --- | --- |
+| 1.13 | 2026-11-25 | Roster v2: 55 creatures in 23 lines of two or three stages (20 wild lines, starters get a third stage at 36), a rarity per line (common, uncommon, rare, very rare) and 14 new moves; destinations (nature in forest, field and lake zones) get denser spawns, triple rare odds and seven destination-only lines, while routes and streets get fewer; new density targets; arenas 3–8 built with leaders, juniors and POIs, all inside the win-rate guard; route trainer teams use the new roster; docs/CREATURES.md and docs/TEAMS.md generated from the content |
 | 1.12 | 2026-11-25 | Skilling (coins from trainers) and 9 markets that buy and sell items (replaces "no shop and no currency"); Medium Tonic; the Town Map shows trainers, rest stops, markets and destination stamps (forest, field, lake, town) and gets a filter; points of interest are pressed (tap the stamp within reach, with 15 m GPS slack) instead of a card popping up |
 | 1.11 | 2026-11-25 | The GDD moves into the repository and is maintained by Claude Code; folded in everything since v1.10 (orbit camera details, the sky wall at the edge of the world, 3D buildings, HUD on demand, loading screen, back gesture, settings, logo and colours) and accepted P22 (Odense Kommune as the region: 39 zones opened by walking 50 routes, route progress bars, new arena loop Næsbyhoved–Stige Ø–H.C. Andersen Skoven–Hollufgård–Den Fynske Landsby–Zoo–Tusindårsskoven, Water leader moved to arena 3, the Fyn map) and P23 (route progress saved as checkpoint numbers); route trainers on every route (about one per 1.5 km); region border includes the harbour and canal; campaign length 14–30 days; P17 and P18 replaced by P22 |
 | 1.10 | 2026-11-21 | M2d done and live; accepted P16 (walk target stated at 4 km/h, 10–16 creatures), P17 (routes may cross unlocked districts), P18 (Journal: beat the district's trainers), P19 (fainted creatures recover after 8 hours), P20 (always-centred camera that rotates on drag and tilts as you zoom); 90-second GPS grace before the weak-signal note |
