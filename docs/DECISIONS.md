@@ -1694,3 +1694,26 @@ length, position resolution and spawn tables>`.
   tiles) and only tiles within 1.6 km of the border above that, so the file grows little.
   The Town Map paints an opaque `frame-mask` (the earth colour) over everything outside the
   frame, so the map ends in a straight, even edge, and pans only a little beyond it.
+- **D173. The field guide names destination creatures' homes** (owner request: players must
+  know where to travel). `guideHints` returns each entry's `zones` and whether it is the
+  creature's main home (highest weight); the guide then says "Lives only at Kirkendrup
+  Skov: its home, the best place to find it" and "Also lives at …, but rarer there"
+  instead of the biome hint. Shown also before the creature is seen, as a goal.
+- **D174. Save import; version in Settings** (owner request: testers must not lose
+  progress). Settings → Import save reads a file exported earlier, checks and migrates it
+  like a stored save (`readGameFile` → `loadSave`) and replaces the save only after a
+  second tap that names the badges and creatures in it; a bad file shows why. The save help
+  text suggests exporting now and then. Settings shows "Version <git hash>".
+- **D175. Feedback from the menu** (owner request: not a pop-up). A Feedback tile in the
+  menu opens a screen with a kind (bug, idea, too hard/easy, other) and a text box. "Send"
+  opens the phone's share sheet (or copies the text) with the message plus the version,
+  language, date, badges, team levels and a few counts: never a position or the current
+  zone. Nothing pops up after battles or other events.
+- **D176. Tester welcome at first launch; no battle-test link in onboarding** (owner
+  request). The game route (`#/`) shows a one-time welcome before onboarding: what the game
+  is, what to try, how to keep the save (add to home screen, with iPhone or Android steps,
+  hidden when already installed; export), how to send feedback and what is known to be
+  unfinished. It is a phone flag (`oml.welcome.v1` in localStorage), so existing testers
+  see it once too; Settings → Tester guide shows it again. Not on the dev map. The
+  location step no longer links to the battle playtest (Settings still does), so a first
+  launch always goes into the map game.

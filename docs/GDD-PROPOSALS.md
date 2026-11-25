@@ -12,6 +12,7 @@ entry here then gets the status `accepted (GDD v1.x)` (or `rejected`, with a rea
 | P21  | Where the Revive Blossom (revive at full HP) comes from                                                                                                                         |
 | P24  | Leaderboards (for example longest distance walked) and a competitive scene for players with all 8 badges: what to show, and how it fits the privacy rules (no location history) |
 | P25  | Tourism content for visitors (later; the campaigns are made mainly for residents)                                                                                               |
+| P27  | Regions as separate campaigns, and Svendborg as the second region: arena sites and themes, badges, starters, islands reachable by ferry                                         |
 
 ## Template
 
@@ -404,4 +405,80 @@ entry here then gets the status `accepted (GDD v1.x)` (or `rejected`, with a rea
   ground (the GDD's hidden items, 30 m radius, some behind a field ability), or creatures
   in the team that "find" items while walking routes.
 - **To decide:** which, how often, and what they give.
+- **Status:** open
+
+### P27. Regions as separate campaigns; Svendborg as the second region
+
+- **GDD sections:** Overview, World, Creatures, Arenas, Data model, Development plan
+- **Idea (owner, 2026-11-25):** testers in Svendborg Kommune can't come to Odense. Each
+  municipality becomes its own region, like separate games in one app: its own starters,
+  creatures, arenas, badges, routes and progress. Odense creatures stay in Odense,
+  Svendborg creatures in Svendborg. Entering a region the player has no campaign in starts
+  that region's campaign (starter choice); the other campaign stays as it was. Svendborg is
+  a waterfront town with islands: lean into that. Build it with the recipe from Odense
+  ([REGION-RECIPE.md](REGION-RECIPE.md)) and track both regions in
+  [REGIONS.md](REGIONS.md).
+
+**Proposed: how regions work (shared, built first; Odense plays exactly as now)**
+
+- The save becomes a set of campaigns, one per region, plus shared settings (save v11; the
+  current save becomes the Odense campaign). Each campaign has its own team, storage, bag,
+  skilling, badges, opened zones, route progress, field guide and Journal. Nothing crosses
+  between regions.
+- The phone decides the region from its own copy of the municipality outlines (no new data
+  is sent; the spawn service still only gets the res-7 cell, now with the region id it
+  already accepts). Outside every playable region the map says so and the Fyn map shows
+  where the regions are.
+- First time in a new region: a short "Welcome to <region>" start (the safety screen is
+  not repeated), the region's starter choice, then that region's map. The Town Map shows the
+  region the player is in; the Fyn map opens every playable region.
+- Content per region: species, spawn tables, trainers, POIs, zones, routes, arenas, goals
+  and presets get a region id (files in `content/<region>/`); types, moves, items, field
+  abilities and the engine stay shared. Every content check, the balance sim, the spawn
+  report, the docs and the e2e tests run per region.
+
+**Proposed: Svendborg (to decide; places to be checked in OSM and on site)**
+
+- **Size:** 416 km² in six pieces (the mainland, Tåsinge and Thurø by bridge or causeway,
+  and Skarø, Hjortø and Drejø by ferry); Odense is 303 km² in one. More countryside and
+  coast, a compact town.
+- **Starters:** a new triangle that fits the coast, **Water → Stone → Storm → Water** (a
+  harbour seal pup, a beach-pebble crab, a tern), three stages each. The alternative is
+  new Fire/Water/Grove lines like Odense's.
+- **Arenas and badges** (a loop from the harbour; themes give the new starters a fair spread,
+  arena 1 neutral for all three):
+
+| #   | Site                                                | Theme  | Badge (da / en)                |
+| --- | --------------------------------------------------- | ------ | ------------------------------ |
+| 1   | Svendborg's old harbour (Frederiksøen)              | Spirit | Lygte-mærket / Lantern badge   |
+| 2   | Christiansminde (beach forest east of town)         | Fire   | Bål-mærket / Bonfire badge     |
+| 3   | Thurø                                               | Water  | Ø-mærket / Island badge        |
+| 4   | Troense (the old skipper village, Tåsinge)          | Storm  | Skipper-mærket / Skipper badge |
+| 5   | Valdemars Slot (Tåsinge)                            | Folk   | Slots-mærket / Castle badge    |
+| 6   | Egebjerg Mølle (the hills north of town)            | Stone  | Mølle-mærket / Mill badge      |
+| 7   | Hvidkilde (manor, lake and woods)                   | Grove  | Skov-mærket / Forest badge     |
+| 8   | Gudme and Lundeborg (Iron Age gold, the east coast) | Mixed  | Guld-mærket / Gold badge       |
+
+- **Islands without a bridge** (Skarø, Hjortø, Drejø): optional destinations, never needed
+  for a badge, each home to an island-only creature. Their zone opens when the player
+  arrives there (the ferry can't be "walked"), instead of by a route.
+- **Roster:** about 20 new wild lines with rarities, folklore and coast names (for example
+  a sea-mist spirit, a sound eel, a manor-garden beetle), seven destination creatures with
+  homes along Øhavsstien (the archipelago trail), the beaches and the islands.
+- **Routes:** about 50, many along the coast and Øhavsstien; the bridges to Tåsinge and the
+  causeway to Thurø as routes.
+
+**Proposed: order of work**
+
+1. Shared multi-region support (campaigns, region detection, per-region content, Fyn map);
+   Odense unchanged, all its tests green.
+2. Svendborg world: boundary, region file, zones, routes, POIs, basemap (recipe steps 1–5,
+   10).
+3. Svendborg content: starters, roster, spawn tables, trainers, arenas tuned with the sim,
+   texts, docs (steps 6–9).
+4. Checks, e2e for Svendborg's arenas, deploy; the owner checks Svendborg's POIs on site;
+   then Svendborg testers.
+
+- **To decide:** the starter triangle; the arena sites, themes and badge names; whether
+  ferry islands open on arrival; anything Svendborg should have that Odense doesn't.
 - **Status:** open

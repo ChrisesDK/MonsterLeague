@@ -1,6 +1,6 @@
 # Odense Monster League — Game Design Document
 
-Version 1.15 · Nov 25, 2026 · maintained in the repository (see Change log)
+Version 1.16 · Nov 25, 2026 · maintained in the repository (see Change log)
 
 ## Overview
 
@@ -570,6 +570,7 @@ M1.7 (done, 148 tests): field abilities are data in `field-abilities.json`; a fr
 
 | Version | Date | Changes |
 | --- | --- | --- |
+| 1.16 | 2026-11-25 | Tester features: a one-time welcome (what to try, add to home screen, export, feedback), Feedback in the menu (share sheet, never a location), save import, the field guide names destination creatures' homes; first launch goes straight into the map game |
 | 1.15 | 2026-11-25 | Destination creatures spawn only at their 1–3 home destinations, with one main home each, spread over the municipality; the Town Map ends in an even frame 2 km around the region |
 | 1.14 | 2026-11-25 | No spawns on golf courses, allotment gardens, care homes, prisons, places of worship or campsites; playgrounds, open water, the zoo and Den Fynske Landsby stay open |
 | 1.13 | 2026-11-25 | Roster v2: 55 creatures in 23 lines of two or three stages (20 wild lines, starters get a third stage at 36), a rarity per line (common, uncommon, rare, very rare) and 14 new moves; destinations (nature in forest, field and lake zones) get denser spawns, triple rare odds and seven destination-only lines, while routes and streets get fewer; new density targets; arenas 3–8 built with leaders, juniors and POIs, all inside the win-rate guard; route trainer teams use the new roster; docs/CREATURES.md and docs/TEAMS.md generated from the content |
