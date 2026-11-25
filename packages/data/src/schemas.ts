@@ -107,15 +107,43 @@ export const MoveSchema = z
   .strict();
 export type Move = z.infer<typeof MoveSchema>;
 
+/**
+ * Market fields (D165): what an item costs in skilling at a market (sold back for half), and
+ * the badge a market needs before it sells it. No price = not sold at markets.
+ */
+const market = {
+  price: z.number().int().min(1).optional(),
+  marketBadge: z.number().int().min(1).max(8).optional(),
+};
 export const ItemSchema = z.discriminatedUnion('kind', [
-  z.object({ id, kind: z.literal('heal'), amount: z.number().int().min(1), placeholder }).strict(),
-  z.object({ id, kind: z.literal('cure'), placeholder }).strict(),
   z
-    .object({ id, kind: z.literal('charm'), catchBonus: z.number().positive(), placeholder })
+    .object({
+      id,
+      kind: z.literal('heal'),
+      amount: z.number().int().min(1),
+      ...market,
+      placeholder,
+    })
+    .strict(),
+  z.object({ id, kind: z.literal('cure'), ...market, placeholder }).strict(),
+  z
+    .object({
+      id,
+      kind: z.literal('charm'),
+      catchBonus: z.number().positive(),
+      ...market,
+      placeholder,
+    })
     .strict(),
   /** Revives a fainted creature at `percent` of max HP (GDD: Revive Leaf, 50%). */
   z
-    .object({ id, kind: z.literal('revive'), percent: z.number().min(1).max(100), placeholder })
+    .object({
+      id,
+      kind: z.literal('revive'),
+      percent: z.number().min(1).max(100),
+      ...market,
+      placeholder,
+    })
     .strict(),
 ]);
 export type Item = z.infer<typeof ItemSchema>;
@@ -322,6 +350,8 @@ export const PoiSchema = z.discriminatedUnion('kind', [
       route: id.optional(),
     })
     .strict(),
+  /** A market (D165): buy items for skilling and sell them back for half. */
+  z.object({ ...poiBase, kind: z.literal('market'), radius: z.literal(40) }).strict(),
   z
     .object({
       ...poiBase,
@@ -379,6 +409,8 @@ export const ZoneSchema = z
     arena: z.number().int().min(1).max(8).optional(),
     /** Open from the start (exactly one zone). */
     start: z.boolean().optional(),
+    /** What the Town Map shows for a destination (D165): what the zone mostly is. */
+    icon: z.enum(['forest', 'field', 'lake', 'town']).optional(),
   })
   .strict();
 export type Zone = z.infer<typeof ZoneSchema>;

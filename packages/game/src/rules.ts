@@ -12,7 +12,7 @@ import {
   type CreatureInstance,
   type SideConfig,
 } from '@oml/engine';
-import type { ActiveBattle, PostBattleChoice, SaveGame } from './save';
+import { payoutFor, type ActiveBattle, type PostBattleChoice, type SaveGame } from './save';
 import { noteRestStop } from './journal';
 
 // ---------------------------------------------------------------------------
@@ -331,7 +331,7 @@ export type TrainerStatus =
  * arenas wait until their zone is open; an arena's leader also needs badge n − 1.
  */
 export function trainerStatus(save: SaveGame, poi: Poi, dex: Dex = content): TrainerStatus | null {
-  if (poi.kind === 'restStop') return null;
+  if (poi.kind === 'restStop' || poi.kind === 'market') return null;
   if (!isZoneOpen(save, poi.zone, dex)) return { kind: 'zoneLocked', zone: poi.zone };
   if (poi.kind === 'arena' && poi.arena > 1 && !save.badges.includes(poi.arena - 1))
     return { kind: 'locked', badge: badgeNeededFor(poi.arena) };
@@ -436,6 +436,8 @@ export interface BattleOutcome {
   caught: CreatureInstance | null;
   caughtTo: 'team' | 'storage' | null;
   reward: { itemId: string; count: number } | null;
+  /** Skilling won (D165); 0 when nothing was paid. */
+  coins: number;
   badge: number | null;
 }
 
@@ -465,6 +467,7 @@ export function finishBattle(
   let caught: CreatureInstance | null = null;
   let caughtTo: BattleOutcome['caughtTo'] = null;
   let reward: BattleOutcome['reward'] = null;
+  let coins = 0;
   let badge: number | null = null;
 
   if (finalState.caught && battle.kind !== 'trainer') {
@@ -491,6 +494,10 @@ export function finishBattle(
         reward = trainer.reward;
         next = { ...next, bag: addItems(next.bag, { [reward.itemId]: reward.count }) };
       }
+      if (trainer) {
+        coins = payoutFor(trainer);
+        next = { ...next, coins: next.coins + coins };
+      }
       if (trainer?.tier === 'leader' && trainer.arena && !next.badges.includes(trainer.arena)) {
         badge = trainer.arena;
         next = { ...next, badges: [...next.badges, badge].sort((a, b) => a - b) };
@@ -501,7 +508,52 @@ export function finishBattle(
   if (battle.kind === 'tutorial' && save.onboarding === 'tutorial' && caught) {
     next = { ...next, onboarding: 'done' };
   }
-  return { save: next, won, caught, caughtTo, reward, badge };
+  return { save: next, won, caught, caughtTo, reward, coins, badge };
+}
+
+// ---------------------------------------------------------------------------
+// Markets (D165)
+
+/** What a market sells to this player: priced items, minus those behind a badge. */
+export function marketStock(save: Pick<SaveGame, 'badges'>, dex: Dex = content): string[] {
+  return Object.values(dex.items)
+    .filter((i) => i.price !== undefined && (!i.marketBadge || save.badges.includes(i.marketBadge)))
+    .map((i) => i.id);
+}
+
+/** What a market pays for one item: half its price (0 = it can't be sold). */
+export function sellPrice(itemId: string, dex: Dex = content): number {
+  const p = dex.items[itemId]?.price;
+  return p ? Math.floor(p / 2) : 0;
+}
+
+/** Buys `count` of an item; null when it isn't for sale or the player can't afford it. */
+export function buyItem(
+  save: SaveGame,
+  itemId: string,
+  count = 1,
+  dex: Dex = content,
+): SaveGame | null {
+  const item = dex.items[itemId];
+  if (!item?.price || count < 1 || !marketStock(save, dex).includes(itemId)) return null;
+  const cost = item.price * count;
+  if (cost > save.coins) return null;
+  return { ...save, coins: save.coins - cost, bag: addItems(save.bag, { [itemId]: count }) };
+}
+
+/** Sells `count` of an item for half price; null when the player doesn't have that many. */
+export function sellItem(
+  save: SaveGame,
+  itemId: string,
+  count = 1,
+  dex: Dex = content,
+): SaveGame | null {
+  const price = sellPrice(itemId, dex);
+  const have = save.bag[itemId] ?? 0;
+  if (!price || count < 1 || count > have) return null;
+  const bag = { ...save.bag, [itemId]: have - count };
+  if (bag[itemId] === 0) delete bag[itemId];
+  return { ...save, coins: save.coins + price * count, bag };
 }
 
 // ---------------------------------------------------------------------------

@@ -220,9 +220,11 @@ test('onboarding to badge 2 (districts 1 and 2, open wildlife), with reloads', a
   await fight(page, { move: 'Beech Lash' });
   await expect(page.getByTestId('result-card')).toContainText('You beat');
   await expect(page.getByTestId('reward')).toBeVisible();
+  await expect(page.getByTestId('reward-coins')).toContainText('skilling');
   await page.locator('[data-testid=result-card] .btn').click();
   save = await devSave(page);
   expect(save.defeatedTrainers).toContain('route1_ole');
+  expect((save as unknown as { coins: number }).coins).toBeGreaterThan(0);
   expect(save.bag.clear_drops).toBe(1);
   await expect(page.locator('[data-testid=poi-card][data-poi=trainer_ole]')).toHaveAttribute(
     'data-state',

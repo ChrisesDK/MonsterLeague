@@ -13,7 +13,9 @@ describe('content', () => {
     expect(content.typeIds).toHaveLength(7);
     expect(Object.keys(content.species)).toHaveLength(17);
     expect(Object.keys(content.moves).length).toBeGreaterThanOrEqual(30);
-    expect(Object.keys(content.items)).toHaveLength(8);
+    expect(Object.keys(content.items)).toHaveLength(9); // + Medium Tonic (D165)
+    // every item has a market price (D165)
+    for (const i of Object.values(content.items)) expect(i.price, i.id).toBeGreaterThan(0);
     const kinds = Object.values(content.pois).map((p) => p.kind);
     expect(kinds.filter((k) => k === 'arena')).toHaveLength(2);
     // D163: route trainers on every route (about one per 1.5 km), plus Lise by Kongens Have

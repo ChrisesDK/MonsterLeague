@@ -122,7 +122,7 @@ export function checkContent(dex: Dex): string[] {
           errors.push(`${where}: junior "${id}" must be a trainer, not a leader`);
       });
       if (p.trainers.length > 3) errors.push(`${where}: GDD allows 1–2 junior trainers`);
-    } else {
+    } else if (p.kind === 'restStop') {
       for (const itemId of Object.keys(p.restock))
         if (!dex.items[itemId]) errors.push(`${where}: restock item "${itemId}" does not exist`);
     }

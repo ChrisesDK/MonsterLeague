@@ -5,13 +5,32 @@
 const INK = '#3b2a20';
 const PAPER = '#fbf4e6';
 
-export type StampKind = 'arena' | 'trainer' | 'restStop';
-export const STAMP_KINDS: StampKind[] = ['arena', 'trainer', 'restStop'];
+/**
+ * POI stamps (arena, trainer, rest stop, market) and Town Map destination stamps (forest,
+ * field, lake, town: what a zone mostly is, D165).
+ */
+export type StampKind =
+  'arena' | 'trainer' | 'restStop' | 'market' | 'forest' | 'field' | 'lake' | 'town';
+export const STAMP_KINDS: StampKind[] = [
+  'arena',
+  'trainer',
+  'restStop',
+  'market',
+  'forest',
+  'field',
+  'lake',
+  'town',
+];
 
 const STAMP_COLOUR: Record<StampKind, string> = {
   arena: '#c8553d',
   trainer: '#3d6fa8',
   restStop: '#4f9a63',
+  market: '#d08a2e',
+  forest: '#3f7d4a',
+  field: '#a9a243',
+  lake: '#3d8fb8',
+  town: '#9a6b8a',
 };
 
 /** Postage-stamp edge: a rounded square with scalloped perforation dots. */
@@ -53,6 +72,39 @@ const ICON: Record<StampKind, string> = {
     `<path d="M32 18 V33" stroke="${INK}" stroke-width="1.8"/>`,
     `<path d="M18 40 H46 M20 46 V40 M44 46 V40 M18 36 H46" stroke="${PAPER}" stroke-width="3" stroke-linecap="round"/>`,
     `<path d="M18 40 H46 M20 46 V40 M44 46 V40 M18 36 H46" stroke="${INK}" stroke-width="1.2" stroke-linecap="round" fill="none"/>`,
+  ].join(''),
+  // A market stall: a striped awning over a counter, with a coin.
+  market: [
+    `<path d="M14 26 L18 16 H46 L50 26 Z" fill="${PAPER}" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>`,
+    `<path d="M23 16 L21 26 M32 16 V26 M41 16 L43 26" stroke="#c8553d" stroke-width="4"/>`,
+    `<path d="M14 26 Q18 31 22 26 Q26 31 30 26 Q34 31 38 26 Q42 31 46 26 Q50 31 50 26" fill="none" stroke="${INK}" stroke-width="2"/>`,
+    `<path d="M18 30 V47 M46 30 V47 M16 47 H48" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/>`,
+    `<circle cx="32" cy="40" r="6" fill="#f2c14e" stroke="${INK}" stroke-width="2"/>`,
+  ].join(''),
+  // Two fir trees: a forest.
+  forest: [
+    `<path d="M24 14 L33 30 H28 L35 42 H13 L20 30 H15 Z" fill="#b9da9c" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>`,
+    `<path d="M41 20 L49 34 H45 L51 44 H31 L37 34 H33 Z" fill="#9cc47e" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>`,
+    `<path d="M24 42 V48 M41 44 V48" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/>`,
+  ].join(''),
+  // Rolling grass and a flower: a field or meadow.
+  field: [
+    `<path d="M12 44 Q22 32 32 40 Q42 30 52 40 V52 H12 Z" fill="#cfe3a0" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>`,
+    `<path d="M20 44 l-2 -6 M24 44 l0 -7 M28 44 l2 -6 M40 42 l-2 -6 M44 42 l0 -7" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/>`,
+    `<path d="M34 33 V22" stroke="${INK}" stroke-width="2"/>`,
+    `<circle cx="34" cy="20" r="5" fill="#f2c14e" stroke="${INK}" stroke-width="2"/>`,
+  ].join(''),
+  // Waves and a fish: a lake or the fjord.
+  lake: [
+    `<ellipse cx="32" cy="38" rx="20" ry="11" fill="#bfe0f2" stroke="${INK}" stroke-width="2.2"/>`,
+    `<path d="M18 38 q4 -3 8 0 t8 0 t8 0 t8 0" fill="none" stroke="${INK}" stroke-width="1.8"/>`,
+    `<path d="M27 22 q6 -6 12 0 q-6 6 -12 0 Z M39 22 l5 -4 v8 Z" fill="${PAPER}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>`,
+  ].join(''),
+  // Two houses: a town or village.
+  town: [
+    `<path d="M14 46 V30 L22 22 L30 30 V46 Z" fill="${PAPER}" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>`,
+    `<path d="M30 46 V26 L40 16 L50 26 V46 Z" fill="#f3d9b5" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>`,
+    `<path d="M19 46 V38 H25 V46 M36 32 H44 V38 H36 Z" fill="${INK}"/>`,
   ].join(''),
 };
 

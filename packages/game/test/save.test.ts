@@ -94,7 +94,7 @@ describe('save versions and migrations', () => {
     const r = loadSave(JSON.parse(JSON.stringify(v8)), 'other');
     expect(r.ok).toBe(true);
     if (!r.ok) return;
-    expect(r.save.version).toBe(9);
+    expect(r.save.version).toBe(SAVE_VERSION);
     // Spirit 3 → 5, Water 4 → 3, Grove 6 → 4, Fire 7 → 6
     expect(r.save.seen).toEqual({ torvdue: [1, 3, 4, 5, 6] });
     expect(r.save.caught).toEqual({ ellepige: [4] });

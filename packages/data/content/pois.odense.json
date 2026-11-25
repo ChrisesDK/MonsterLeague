@@ -1828,6 +1828,105 @@
       "route": "route50",
       "verified": false,
       "note": "On Route 50, placed from the map (route trainers on every route, D163); check on site"
+    },
+    {
+      "id": "market_vestergade",
+      "kind": "market",
+      "district": 1,
+      "zone": "munkemose",
+      "lat": 55.39539,
+      "lng": 10.3855,
+      "radius": 40,
+      "verified": false,
+      "note": "Vestergade, the pedestrian shopping street (D165: placed from the map; check on site)"
+    },
+    {
+      "id": "market_havnen",
+      "kind": "market",
+      "district": 2,
+      "zone": "havnen",
+      "lat": 55.4072,
+      "lng": 10.38815,
+      "radius": 40,
+      "verified": false,
+      "note": "By Storms Pakhus, the street-food market hall at the harbour (D165: placed from the map; check on site)"
+    },
+    {
+      "id": "market_rosengaard",
+      "kind": "market",
+      "district": 4,
+      "zone": "oerbaek",
+      "lat": 55.3866,
+      "lng": 10.4335,
+      "radius": 40,
+      "verified": false,
+      "note": "By Rosengårdcentret, the shopping centre (D165: placed from the map; check on site)"
+    },
+    {
+      "id": "market_tarup",
+      "kind": "market",
+      "district": 2,
+      "zone": "stavis",
+      "lat": 55.40964,
+      "lng": 10.3395,
+      "radius": 40,
+      "verified": false,
+      "note": "By Tarup Center (D165: placed from the map; check on site)"
+    },
+    {
+      "id": "market_hjallese",
+      "kind": "market",
+      "district": 6,
+      "zone": "hjallese",
+      "lat": 55.3588,
+      "lng": 10.404,
+      "radius": 40,
+      "verified": false,
+      "note": "Hjallese Torv, the square by the station (D165: placed from the map; check on site)"
+    },
+    {
+      "id": "market_dalum",
+      "kind": "market",
+      "district": 6,
+      "zone": "fynskelandsby",
+      "lat": 55.3667,
+      "lng": 10.3695,
+      "radius": 40,
+      "verified": false,
+      "note": "Dalum, by the shops on Dalumvej (D165: placed from the map; check on site)"
+    },
+    {
+      "id": "market_bellinge",
+      "kind": "market",
+      "district": 6,
+      "zone": "bellinge",
+      "lat": 55.3372,
+      "lng": 10.3145,
+      "radius": 40,
+      "verified": false,
+      "note": "Bellinge, by the village shops (D165: placed from the map; check on site)"
+    },
+    {
+      "id": "market_korup",
+      "kind": "market",
+      "district": 8,
+      "zone": "korup",
+      "lat": 55.4185,
+      "lng": 10.2725,
+      "radius": 40,
+      "verified": false,
+      "note": "Korup, by the village shops (D165: placed from the map; check on site)"
+    },
+    {
+      "id": "market_fraugde",
+      "kind": "market",
+      "district": 5,
+      "zone": "fraugde",
+      "lat": 55.3545,
+      "lng": 10.489,
+      "radius": 40,
+      "verified": false,
+      "note": "Fraugde, by the village shop (D165: placed from the map; check on site)"
     }
   ]
 }

@@ -5,6 +5,10 @@ import { getMaxHp, getStats, xpForLevel, type CreatureInstance } from '@oml/engi
 import {
   canTeach,
   canUseItem,
+  buyItem,
+  marketStock,
+  sellItem,
+  sellPrice,
   fieldAbilitiesUnlocked,
   forgetFieldAbility,
   guideHints,
@@ -39,14 +43,16 @@ export type ScreenId =
   | 'guide'
   | 'badges'
   | 'settings'
-  | `creature:${string}`;
+  | `creature:${string}`
+  /** A market (D165): opened from its card on the map; back returns to the game view. */
+  | `market:${string}`;
 
 /**
  * The screen one level up, as the screens' own back buttons go (null: back to the game
  * view). Used for the back gesture (owner: in a menu it goes back a level).
  */
 export function previousScreen(screen: ScreenId, save: SaveGame): ScreenId | null {
-  if (screen === 'menu' || screen === 'journal') return null;
+  if (screen === 'menu' || screen === 'journal' || screen.startsWith('market:')) return null;
   if (screen.startsWith('creature:')) {
     const uid = screen.slice('creature:'.length);
     return save.storage.some((c) => c.uid === uid) ? 'storage' : 'team';
@@ -223,6 +229,11 @@ function ScreensInner({ t, screen, onScreen, save, update, devTools, gate3, onCl
         </div>
       </Shell>
     );
+  }
+
+  if (screen.startsWith('market:')) {
+    const poiId = screen.slice('market:'.length);
+    return <MarketScreen t={t} poiId={poiId} save={save} update={update} onBack={onClose} />;
   }
 
   if (screen.startsWith('creature:')) {
@@ -473,6 +484,9 @@ function BagScreen({
   const targets = [...save.team, ...save.storage];
   return (
     <Shell t={t} title={t('menu.bag')} onBack={onBack} testId="screen-bag">
+      <p className="coins-line" data-testid="bag-coins">
+        <Icon name="coin" /> {t('coins.amount', { n: save.coins })}
+      </p>
       {msg && (
         <p className="notice" role="status">
           {msg}
@@ -526,6 +540,108 @@ function BagScreen({
               {t('ui.back')}
             </button>
           </div>
+        </div>
+      )}
+    </Shell>
+  );
+}
+
+/**
+ * Market (D165): buy items for skilling, sell items from the bag for half their price. Items
+ * behind a badge (Good Charm: badge 2, Great Charm: badge 5) say which badge they need.
+ */
+function MarketScreen({
+  t,
+  poiId,
+  save,
+  update,
+  onBack,
+}: {
+  t: Translate;
+  poiId: string;
+  save: SaveGame;
+  update: (fn: (s: SaveGame) => SaveGame) => void;
+  onBack: () => void;
+}) {
+  const [tab, setTab] = useState<'buy' | 'sell'>('buy');
+  const [msg, setMsg] = useState<string | null>(null);
+  const stock = marketStock(save);
+  const priced = Object.values(content.items).filter((i) => i.price !== undefined);
+  const sellable = Object.entries(save.bag).filter(([id, n]) => n > 0 && sellPrice(id) > 0);
+  const buy = (id: string) => {
+    const next = buyItem(save, id);
+    if (!next) return setMsg(t('market.cantAfford'));
+    update(() => next);
+    setMsg(t('market.bought', { item: t(`item.${id}.name`) }));
+  };
+  const sell = (id: string) => {
+    const next = sellItem(save, id);
+    if (!next) return;
+    update(() => next);
+    setMsg(t('market.sold', { item: t(`item.${id}.name`), n: sellPrice(id) }));
+  };
+  return (
+    <Shell t={t} title={t(`poi.${poiId}.name`)} onBack={onBack} testId="screen-market">
+      <p className="coins-line" data-testid="market-coins">
+        <Icon name="coin" /> {t('coins.amount', { n: save.coins })}
+      </p>
+      <Tabs
+        tabs={[
+          { id: 'buy', label: t('market.buy') },
+          { id: 'sell', label: t('market.sell') },
+        ]}
+        value={tab}
+        onChange={(v) => {
+          setTab(v);
+          setMsg(null);
+        }}
+      />
+      {msg && (
+        <p className="notice" role="status" data-testid="market-msg">
+          {msg}
+        </p>
+      )}
+      {tab === 'buy' ? (
+        <div className="list-panel">
+          {priced.map((i) => {
+            const open = stock.includes(i.id);
+            return (
+              <button
+                key={i.id}
+                className="btn list-btn"
+                data-testid={`buy-${i.id}`}
+                disabled={!open || i.price! > save.coins}
+                onClick={() => buy(i.id)}
+              >
+                <span>
+                  {t(`item.${i.id}.name`)} <span className="muted">×{save.bag[i.id] ?? 0}</span>
+                </span>
+                <span className="muted small">
+                  {open
+                    ? `${t(`item.${i.id}.desc`)} · ${t('coins.amount', { n: i.price! })}`
+                    : t('market.needsBadge', { badge: t(`badge.${i.marketBadge}.name`) })}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      ) : sellable.length === 0 ? (
+        <p className="muted">{t('market.nothingToSell')}</p>
+      ) : (
+        <div className="list-panel">
+          {sellable.map(([id, n]) => (
+            <button
+              key={id}
+              className="btn list-btn"
+              data-testid={`sell-${id}`}
+              onClick={() => sell(id)}
+            >
+              <span>
+                {t(`item.${id}.name`)} <span className="muted">×{n}</span>
+              </span>
+              <span className="muted small">{t('market.sellFor', { n: sellPrice(id) })}</span>
+            </button>
+          ))}
         </div>
       )}
     </Shell>

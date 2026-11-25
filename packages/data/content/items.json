@@ -4,47 +4,64 @@
       "id": "small_tonic",
       "kind": "heal",
       "amount": 20,
+      "price": 150,
+      "placeholder": true
+    },
+    {
+      "id": "medium_tonic",
+      "kind": "heal",
+      "amount": 40,
+      "price": 350,
       "placeholder": true
     },
     {
       "id": "large_tonic",
       "kind": "heal",
       "amount": 60,
+      "price": 600,
       "placeholder": true
     },
     {
       "id": "clear_drops",
       "kind": "cure",
+      "price": 200,
       "placeholder": true
     },
     {
       "id": "basic_charm",
       "kind": "charm",
       "catchBonus": 1,
+      "price": 100,
       "placeholder": true
     },
     {
       "id": "good_charm",
       "kind": "charm",
       "catchBonus": 1.5,
+      "price": 300,
+      "marketBadge": 2,
       "placeholder": true
     },
     {
       "id": "great_charm",
       "kind": "charm",
       "catchBonus": 2,
+      "price": 600,
+      "marketBadge": 5,
       "placeholder": true
     },
     {
       "id": "revive_leaf",
       "kind": "revive",
       "percent": 50,
+      "price": 800,
       "placeholder": true
     },
     {
       "id": "revive_blossom",
       "kind": "revive",
       "percent": 100,
+      "price": 2000,
       "placeholder": true
     }
   ]

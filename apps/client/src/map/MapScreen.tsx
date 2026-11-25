@@ -122,6 +122,8 @@ interface Props {
   save: SaveGame;
   update: (fn: (s: SaveGame) => SaveGame) => void;
   onMenu: () => void;
+  /** Opens the market screen for a market POI (D165). */
+  onMarket?: (poiId: string) => void;
   onJournal: () => void;
   onBadge: (arena: number) => void;
   night: boolean;
@@ -157,7 +159,13 @@ function circle(center: LatLng, radiusM: number): GeoJSON.Feature<GeoJSON.Polygo
 const nowSeconds = () => Math.floor(Date.now() / 1000);
 
 type ResultCard =
-  | { kind: 'trainer'; trainerId: string; won: boolean; reward: BattleOutcome['reward'] }
+  | {
+      kind: 'trainer';
+      trainerId: string;
+      won: boolean;
+      reward: BattleOutcome['reward'];
+      coins: number;
+    }
   | { kind: 'text'; text: string };
 
 function poiDone(p: Poi, save: SaveGame): boolean {
@@ -182,6 +190,7 @@ export function MapScreen({
   save,
   update,
   onMenu,
+  onMarket,
   onJournal,
   onBadge,
   night,
@@ -619,7 +628,12 @@ export function MapScreen({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady || !playerAt) return;
-    const colours = { arena: '#c8553d', trainer: '#3d6fa8', restStop: '#4f9a63' };
+    const colours = {
+      arena: '#c8553d',
+      trainer: '#3d6fa8',
+      restStop: '#4f9a63',
+      market: '#d08a2e',
+    };
     (map.getSource('poi-radius') as GeoJSONSource | undefined)?.setData({
       type: 'FeatureCollection',
       features: POIS.filter((p) => distanceM(playerAt, p) <= p.radius + RADIUS_SHOW_M).map((p) => ({
@@ -977,7 +991,13 @@ export function MapScreen({
       }
     } else if (battle.kind === 'trainer') {
       if (out.won) onGate3?.({ type: 'trainerBeaten' });
-      setResult({ kind: 'trainer', trainerId: battle.trainerId, won: out.won, reward: out.reward });
+      setResult({
+        kind: 'trainer',
+        trainerId: battle.trainerId,
+        won: out.won,
+        reward: out.reward,
+        coins: out.coins,
+      });
     } else if (out.caught) {
       setResult({
         kind: 'text',
@@ -1047,6 +1067,20 @@ export function MapScreen({
           </div>
           <Button variant="primary" data-testid="poi-action" onClick={() => rest(here)}>
             {t('rest.button')}
+          </Button>
+        </div>
+      );
+    }
+    if (here.kind === 'market') {
+      return (
+        <div className="poi-card" data-testid="poi-card" data-poi={here.id}>
+          <img src={stampUrl('market')} alt="" className="poi-card-stamp" />
+          <div>
+            <strong>{title}</strong>
+            <p className="muted small">{t('market.prompt', { coins: save.coins })}</p>
+          </div>
+          <Button variant="primary" data-testid="poi-action" onClick={() => onMarket?.(here.id)}>
+            {t('market.open')}
           </Button>
         </div>
       );
@@ -1405,6 +1439,11 @@ export function MapScreen({
                       ? `“${t(`trainer.${result.trainerId}.defeated`)}”`
                       : t('map.lostTrainer')}
                   </p>
+                  {result.coins > 0 && (
+                    <p className="small" data-testid="reward-coins">
+                      {t('trainer.coins', { n: result.coins })}
+                    </p>
+                  )}
                   {result.reward && (
                     <p className="small" data-testid="reward">
                       {t('trainer.reward', {

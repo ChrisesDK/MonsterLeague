@@ -11,7 +11,7 @@ import { z } from 'zod';
  * progress (P22, owner decision) is kept as numbered checkpoints of the game's own routes:
  * no coordinates, no times, never sent anywhere.
  */
-export const SAVE_VERSION = 9;
+export const SAVE_VERSION = 10;
 
 export type OnboardingStep = 'safety' | 'location' | 'starter' | 'tutorial' | 'done';
 
@@ -64,6 +64,8 @@ export interface SaveGame {
   badges: number[];
   /** Zones opened by finished routes (P22); the start zone is always open and not listed. */
   zones: string[];
+  /** Skilling, the game's coins (D165): earned from trainers, spent at markets. */
+  coins: number;
   defeatedTrainers: string[];
   /** species id → districts it was seen / caught in (field guide). */
   seen: Record<string, number[]>;
@@ -108,6 +110,7 @@ export function newSave(seed: string, language: Settings['language'] = 'da'): Sa
     bag: {},
     badges: [],
     zones: [],
+    coins: 0,
     defeatedTrainers: [],
     seen: {},
     caught: {},
@@ -175,6 +178,7 @@ export const SaveSchema = z
     bag: Counts,
     badges: z.array(z.number().int().min(1).max(8)),
     zones: z.array(z.string()),
+    coins: z.number().int().min(0),
     defeatedTrainers: z.array(z.string()),
     seen: Districts,
     caught: Districts,
@@ -357,6 +361,25 @@ export const migrations: Record<number, (old: Record<string, unknown>, seed: str
     };
   },
 };
+
+/**
+ * v9 → v10 (D165): skilling. Trainers already beaten pay out now, as they would have.
+ */
+migrations[9] = (old) => {
+  const beaten = Array.isArray(old.defeatedTrainers) ? (old.defeatedTrainers as string[]) : [];
+  let coins = 0;
+  for (const id of beaten) {
+    const t = content.trainers[id];
+    if (t) coins += payoutFor(t);
+  }
+  return { ...old, version: 10, coins };
+};
+
+/** Skilling paid for beating a trainer (D165): highest level × 25, leaders × 60. */
+export function payoutFor(t: { tier: 'trainer' | 'leader'; team: { level: number }[] }): number {
+  const top = Math.max(1, ...t.team.map((m) => m.level));
+  return top * (t.tier === 'leader' ? 60 : 25);
+}
 
 /**
  * P22 new arena order, old district → new district: each theme keeps its spawn table and

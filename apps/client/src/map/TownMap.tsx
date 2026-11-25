@@ -6,6 +6,7 @@ import {
   arenaReady,
   distanceM,
   isZoneOpen,
+  nextRouteToward,
   routeProgress,
   type LatLng,
   type SaveGame,
@@ -28,7 +29,34 @@ import { paperStyle, type Palette } from './style';
  * the overview of all regions on Fyn (FynMap); back closes that first.
  */
 type Selected =
-  { kind: 'arena'; arena: number } | { kind: 'route'; id: string } | { kind: 'rest'; id: string };
+  | { kind: 'arena'; arena: number }
+  | { kind: 'route'; id: string }
+  | { kind: 'rest'; id: string }
+  | { kind: 'trainer'; id: string }
+  | { kind: 'market'; id: string }
+  | { kind: 'zone'; id: string };
+
+/** What the filter can hide (D165), remembered on the phone (a view setting, not progress). */
+export const LAYERS = [
+  'arenas',
+  'routes',
+  'trainers',
+  'restStops',
+  'markets',
+  'destinations',
+] as const;
+export type LayerId = (typeof LAYERS)[number];
+const FILTER_KEY = 'oml.townMap.hidden';
+function loadHidden(): LayerId[] {
+  try {
+    const v = JSON.parse(localStorage.getItem(FILTER_KEY) ?? '[]') as unknown;
+    return Array.isArray(v)
+      ? (v.filter((x) => (LAYERS as readonly string[]).includes(x)) as LayerId[])
+      : [];
+  } catch {
+    return [];
+  }
+}
 
 /**
  * Odense Kommune with a margin: the map can't be dragged out of the region. Extra room above
@@ -41,6 +69,9 @@ export const REGION_BOUNDS: [[number, number], [number, number]] = [
 const TOWN = { minZoom: 10.3, maxZoom: 16, zoom: 13 };
 /** Below this zoom only arenas show (route numbers and rest stops would crowd the map). */
 const FAR_ZOOM = 11.8;
+/** Destinations show from this zoom; trainers (there are over a hundred) from NEAR_ZOOM. */
+const DEST_ZOOM = 11;
+const NEAR_ZOOM = 13;
 
 function appBase(): string {
   return new URL(import.meta.env.BASE_URL, window.location.href).href;
@@ -87,6 +118,9 @@ export function TownMap({
   const mapRef = useRef<MlMap | null>(null);
   const [ready, setReady] = useState(false);
   const [far, setFar] = useState(false);
+  const [zoomClass, setZoomClass] = useState('');
+  const [hidden, setHidden] = useState<LayerId[]>(loadHidden);
+  const [filterOpen, setFilterOpen] = useState(false);
   const [selected, setSelected] = useState<Selected | null>(null);
   const [fyn, setFyn] = useState(false);
   useBackHandler(fyn, () => setFyn(false));
@@ -118,7 +152,11 @@ export function TownMap({
         new maplibregl.Marker({ element: el, anchor }).setLngLat([p.lng, p.lat]).addTo(map),
       );
 
-    const onZoom = () => setFar(map.getZoom() < FAR_ZOOM);
+    const onZoom = () => {
+      const z = map.getZoom();
+      setFar(z < FAR_ZOOM);
+      setZoomClass(`${z < DEST_ZOOM ? ' veryfar' : ''}${z >= NEAR_ZOOM ? ' near' : ''}`);
+    };
     map.on('zoom', onZoom);
     onZoom();
     map.on('load', () => {
@@ -135,7 +173,7 @@ export function TownMap({
       img.alt = '';
       img.src = badgeUrl(site.arena);
       const won = save.badges.includes(site.arena);
-      const el = markerElement('button', `tm-marker${won ? '' : ' locked'}`, img);
+      const el = markerElement('button', `tm-marker cat-arenas${won ? '' : ' locked'}`, img);
       el.dataset.testid = `tm-arena-${site.arena}`;
       el.setAttribute(
         'aria-label',
@@ -144,22 +182,51 @@ export function TownMap({
       el.addEventListener('click', () => setSelected({ kind: 'arena', arena: site.arena }));
       add(el, site);
     }
-    for (const poi of Object.values(content.pois)) {
-      if (poi.kind !== 'restStop') continue;
+    // Destinations (D165): what each zone is, at its centre.
+    for (const z of Object.values(content.zones)) {
+      if (!z.icon) continue;
       const img = document.createElement('img');
       img.alt = '';
-      img.src = stampUrl('restStop');
-      const el = markerElement('button', 'tm-marker small', img);
-      el.dataset.testid = `tm-rest-${poi.id}`;
-      el.setAttribute('aria-label', t(`poi.${poi.id}.name`));
-      el.addEventListener('click', () => setSelected({ kind: 'rest', id: poi.id }));
+      img.src = stampUrl(z.icon);
+      const el = markerElement('button', 'tm-marker dest cat-destinations', img);
+      el.dataset.testid = `tm-zone-${z.id}`;
+      el.setAttribute('aria-label', t(`zone.${z.id}.name`));
+      el.addEventListener('click', () => setSelected({ kind: 'zone', id: z.id }));
+      add(el, z);
+    }
+    // Rest stops, markets and trainers as stamps (arenas stay badges).
+    for (const poi of Object.values(content.pois)) {
+      if (poi.kind === 'arena') continue;
+      const img = document.createElement('img');
+      img.alt = '';
+      const cat =
+        poi.kind === 'restStop' ? 'restStops' : poi.kind === 'market' ? 'markets' : 'trainers';
+      img.src = stampUrl(
+        poi.kind,
+        poi.kind === 'trainer' && save.defeatedTrainers.includes(poi.trainer),
+      );
+      const el = markerElement('button', `tm-marker small cat-${cat}`, img);
+      el.dataset.testid = `tm-${poi.kind === 'restStop' ? 'rest' : poi.kind}-${poi.id}`;
+      el.setAttribute(
+        'aria-label',
+        poi.kind === 'trainer' ? t(`trainer.${poi.trainer}.name`) : t(`poi.${poi.id}.name`),
+      );
+      el.addEventListener('click', () =>
+        setSelected(
+          poi.kind === 'restStop'
+            ? { kind: 'rest', id: poi.id }
+            : poi.kind === 'market'
+              ? { kind: 'market', id: poi.id }
+              : { kind: 'trainer', id: poi.id },
+        ),
+      );
       add(el, poi);
     }
     for (const r of Object.values(content.routes)) {
       const p = routeProgress(save, r);
       const el = markerElement(
         'button',
-        `tm-marker small route ${r.kind}${p.done ? ' done' : ''}`,
+        `tm-marker small route cat-routes ${r.kind}${p.done ? ' done' : ''}`,
         `<span class="tm-body">${r.number}</span>`,
       );
       el.dataset.testid = `tm-route-${r.id}`;
@@ -207,6 +274,22 @@ export function TownMap({
     setRouteProgress(map, save);
   }, [ready, region, save, t]);
 
+  // The filter (D165): hidden layers are remembered; route lines follow the routes toggle.
+  useEffect(() => {
+    try {
+      localStorage.setItem(FILTER_KEY, JSON.stringify(hidden));
+    } catch {
+      // private mode: the filter just isn't remembered
+    }
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    for (const id of ['routes', 'routes-walked', 'route-labels'])
+      if (map.getLayer(id))
+        map.setLayoutProperty(id, 'visibility', hidden.includes('routes') ? 'none' : 'visible');
+  }, [hidden, ready]);
+  const toggle = (id: LayerId) =>
+    setHidden((h) => (h.includes(id) ? h.filter((x) => x !== id) : [...h, id]));
+
   const card = (() => {
     if (!selected) return null;
     const away = (p: LatLng) =>
@@ -247,13 +330,41 @@ export function TownMap({
             m: formatM(r.lengthM),
             wild: Math.round(r.wildShare * 100),
           });
+    } else if (selected.kind === 'zone') {
+      const z = content.zones[selected.id]!;
+      title = t(`zone.${z.id}.name`);
+      icon = stampUrl(z.icon ?? 'field');
+      zone = z.id;
+      distance = away(z);
+      needsLabel = t('townMap.destination');
+      const routesIn = Object.values(content.routes)
+        .filter((r) => r.from === z.id || r.to === z.id)
+        .map((r) => r.number)
+        .sort((a, b) => a - b);
+      const next = nextRouteToward(save, z.id);
+      needs = `${t(`townMap.icon.${z.icon ?? 'field'}`)} · ${t('townMap.routesIn', {
+        routes: routesIn.join(', '),
+      })}${next ? ` · ${t('townMap.walkRoute', { n: next.number })}` : ''}`;
+    } else if (selected.kind === 'trainer') {
+      const poi = content.pois[selected.id]!;
+      const trainerId = poi.kind === 'trainer' ? poi.trainer : '';
+      title = t(`trainer.${trainerId}.name`);
+      const beaten = save.defeatedTrainers.includes(trainerId);
+      icon = stampUrl('trainer', beaten);
+      zone = poi.zone;
+      distance = away(poi);
+      needs = beaten
+        ? t('townMap.trainerBeaten')
+        : !isZoneOpen(save, poi.zone)
+          ? t('townMap.needsZone', { zone: t(`zone.${poi.zone}.name`) })
+          : t('townMap.trainerReady', { place: t(`poi.${poi.id}.name`) });
     } else {
       const poi = content.pois[selected.id]!;
       title = t(`poi.${poi.id}.name`);
-      icon = stampUrl('restStop');
+      icon = stampUrl(poi.kind === 'market' ? 'market' : 'restStop');
       zone = poi.zone;
       distance = away(poi);
-      needs = t('townMap.restOpen');
+      needs = t(poi.kind === 'market' ? 'townMap.marketOpen' : 'townMap.restOpen');
     }
     return (
       <div className="town-map-card" data-testid="townmap-card">
@@ -287,13 +398,22 @@ export function TownMap({
 
   return (
     <section
-      className={`town-map${far ? ' far' : ''}`}
+      className={`town-map${far ? ' far' : ''}${zoomClass}${hidden.map((h) => ` hide-${h}`).join('')}`}
       data-testid="town-map"
       aria-label={t('townMap.title')}
     >
       <div ref={ref} className="map" />
       <header className="town-map-head">
         <h1>{t('townMap.title')}</h1>
+        <Button
+          round
+          variant={filterOpen ? 'primary' : 'ghost'}
+          icon="filter"
+          data-testid="townmap-filter"
+          aria-label={t('townMap.filter')}
+          aria-expanded={filterOpen}
+          onClick={() => setFilterOpen((o) => !o)}
+        />
         <Button
           variant="ghost"
           icon="map"
@@ -314,6 +434,26 @@ export function TownMap({
           onClick={onClose}
         />
       </header>
+      {filterOpen && (
+        <div
+          className="town-map-filter"
+          data-testid="townmap-filter-menu"
+          role="group"
+          aria-label={t('townMap.filter')}
+        >
+          {LAYERS.map((id) => (
+            <label key={id} className="filter-row" data-testid={`filter-${id}`}>
+              <input
+                type="checkbox"
+                role="switch"
+                checked={!hidden.includes(id)}
+                onChange={() => toggle(id)}
+              />
+              <span>{t(`townMap.layer.${id}`)}</span>
+            </label>
+          ))}
+        </div>
+      )}
       {card}
       {fyn && <FynMap t={t} save={save} palette={palette} onClose={() => setFyn(false)} />}
     </section>

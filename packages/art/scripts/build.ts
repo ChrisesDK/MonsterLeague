@@ -63,5 +63,5 @@ for (let arena = 1; arena <= 8; arena++) {
 }
 writeFileSync(root('assets.json'), JSON.stringify({ assets, fonts: FONTS }, null, 2) + '\n');
 console.log(
-  `Wrote ${assets.length} assets (${Object.keys(content.species).length} species × sprite + marker, 1 hint, 6 stamps, 16 badges).`,
+  `Wrote ${assets.length} assets (${Object.keys(content.species).length} species × sprite + marker, 1 hint, ${STAMP_KINDS.length * 2} stamps, 16 badges).`,
 );

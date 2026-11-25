@@ -27,6 +27,15 @@ const PATHS = {
       <path d="M15 17l1.2-1.2L17.4 17" />
     </>
   ),
+  /** Filter: the standard funnel. */
+  filter: <path d="M3.5 5h17l-6.5 7.8V19l-4 1.8v-8L3.5 5Z" />,
+  /** A coin (skilling). */
+  coin: (
+    <>
+      <circle cx="12" cy="12" r="8" />
+      <path d="M12 7.5v9M9.6 9.6h3.6a1.6 1.6 0 0 1 0 3.2h-2.4a1.6 1.6 0 0 0 0 3.2h3.6" />
+    </>
+  ),
   /** Folded paper map. */
   map: (
     <>

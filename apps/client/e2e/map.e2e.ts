@@ -496,6 +496,67 @@ test('Fyn map: the regions of Fyn, only Odense opens; badges grey until won; hel
   await expect(page.getByTestId('play-map')).toBeVisible();
 });
 
+test('Market (D165): buy with skilling, sell back for half; back returns to the map', async ({
+  page,
+}) => {
+  await startDone(page);
+  await dev(page, 'addCoins', 300);
+  const market = (
+    JSON.parse(
+      readFileSync(
+        new URL('../../../packages/data/content/pois.odense.json', import.meta.url),
+        'utf8',
+      ),
+    ) as { pois: { id: string; lat: number; lng: number }[] }
+  ).pois.find((p) => p.id === 'market_vestergade')!;
+  await teleport(page, market);
+  const card = page.locator('[data-testid=poi-card][data-poi=market_vestergade]');
+  await expect(card).toBeVisible();
+  await card.getByTestId('poi-action').click();
+  await expect(page.getByTestId('screen-market')).toBeVisible();
+  await expect(page.getByTestId('market-coins')).toContainText('300');
+  // Good Charms wait for badge 2
+  await expect(page.getByTestId('buy-good_charm')).toBeDisabled();
+  await page.getByTestId('buy-basic_charm').click();
+  await expect(page.getByTestId('market-coins')).toContainText('200');
+  await page.getByTestId('tab-sell').click();
+  await page.getByTestId('sell-basic_charm').click();
+  await expect(page.getByTestId('market-coins')).toContainText('250');
+  await page.getByTestId('screen-back').click();
+  await expect(page.getByTestId('play-map')).toBeVisible();
+});
+
+test('Town Map (D165): destinations, markets and trainers as stamps; the filter hides kinds and is remembered', async ({
+  page,
+}) => {
+  await startDone(page);
+  await teleport(page, KONGENS_HAVE);
+  await page.getByTestId('townmap-button').click();
+  await page.waitForFunction(() => '__omlTownMap' in window);
+  await expect(page.locator('[data-testid^=tm-zone-]').first()).toBeAttached();
+  await expect(page.getByTestId('tm-zone-elmelund')).toHaveCount(1);
+  await expect(page.locator('[data-testid^=tm-market-]')).toHaveCount(9);
+  await expect(page.locator('[data-testid^=tm-trainer-]').first()).toBeAttached();
+  await page.getByTestId('tm-zone-munkemose').evaluate((e) => (e as HTMLElement).click());
+  await expect(page.getByTestId('townmap-needs')).toContainText('Lake');
+  // the filter: one button in the top bar, a short menu of switches
+  await page.getByTestId('townmap-filter').click();
+  await expect(page.getByTestId('townmap-filter-menu')).toBeVisible();
+  await page.locator('[data-testid=filter-trainers] input').uncheck();
+  await expect(page.getByTestId('town-map')).toHaveClass(/hide-trainers/);
+  await page.locator('[data-testid=filter-routes] input').uncheck();
+  const vis = await page.evaluate(() =>
+    (
+      window as unknown as { __omlTownMap: { getLayoutProperty: (l: string, p: string) => string } }
+    ).__omlTownMap.getLayoutProperty('routes', 'visibility'),
+  );
+  expect(vis).toBe('none');
+  await page.getByTestId('townmap-close').click();
+  await page.getByTestId('townmap-button').click();
+  await expect(page.getByTestId('town-map')).toHaveClass(/hide-trainers/);
+  await expect(page.getByTestId('town-map')).toHaveClass(/hide-routes/);
+});
+
 test('Journal: walking Route 1 with the GPS simulator fills it and opens Næsbyhoved', async ({
   page,
 }) => {

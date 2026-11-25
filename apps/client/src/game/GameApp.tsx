@@ -54,6 +54,8 @@ export interface OmlDev {
   }) => string;
   setFast: () => void;
   setBadges: (badges: number[]) => void;
+  /** D165: add skilling (tests; markets). */
+  addCoins: (n: number) => void;
   /** P22: open these zones (as if routes to them were finished). */
   openZones: (zones: string[]) => void;
   /** P22: mark every checkpoint of a route as reached (then its zones open as usual). */
@@ -214,6 +216,7 @@ export function GameApp({ t, locale, onLocale, devTools }: Props) {
       },
       setFast: () => update((s) => ({ ...s, settings: { ...s.settings, speed: 'fast' } })),
       setBadges: (badges) => update((s) => ({ ...s, badges })),
+      addCoins: (n) => update((s) => ({ ...s, coins: s.coins + n })),
       openZones: (zones) =>
         update((s) => ({ ...s, zones: [...new Set([...s.zones, ...zones])].sort() })),
       walkRoute: (routeId) =>
@@ -313,6 +316,7 @@ export function GameApp({ t, locale, onLocale, devTools }: Props) {
         save={save}
         update={update}
         onMenu={() => setScreen('menu')}
+        onMarket={(id) => setScreen(`market:${id}`)}
         onJournal={() => setScreen('journal')}
         night={night}
         onBadge={setCeremony}

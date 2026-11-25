@@ -49,21 +49,24 @@
       "kind": "water",
       "district": 1,
       "lat": 55.3913,
-      "lng": 10.3826
+      "lng": 10.3826,
+      "icon": "lake"
     },
     {
       "id": "bolbro",
       "kind": "wild",
       "district": 1,
       "lat": 55.4022,
-      "lng": 10.3475
+      "lng": 10.3475,
+      "icon": "field"
     },
     {
       "id": "sktjoergen",
       "kind": "wild",
       "district": 1,
       "lat": 55.3976,
-      "lng": 10.4114
+      "lng": 10.4114,
+      "icon": "field"
     },
     {
       "id": "naesbyhoved",
@@ -78,42 +81,48 @@
       "kind": "town",
       "district": 2,
       "lat": 55.4085,
-      "lng": 10.3895
+      "lng": 10.3895,
+      "icon": "town"
     },
     {
       "id": "maylandskoven",
       "kind": "wild",
       "district": 2,
       "lat": 55.4197,
-      "lng": 10.3668
+      "lng": 10.3668,
+      "icon": "forest"
     },
     {
       "id": "stavis",
       "kind": "wild",
       "district": 2,
       "lat": 55.4173,
-      "lng": 10.3421
+      "lng": 10.3421,
+      "icon": "forest"
     },
     {
       "id": "odins",
       "kind": "wild",
       "district": 2,
       "lat": 55.4276,
-      "lng": 10.3288
+      "lng": 10.3288,
+      "icon": "field"
     },
     {
       "id": "kirkendrup",
       "kind": "wild",
       "district": 2,
       "lat": 55.4413,
-      "lng": 10.3324
+      "lng": 10.3324,
+      "icon": "forest"
     },
     {
       "id": "lumby",
       "kind": "water",
       "district": 2,
       "lat": 55.4493,
-      "lng": 10.375
+      "lng": 10.375,
+      "icon": "lake"
     },
     {
       "id": "stige",
@@ -128,21 +137,24 @@
       "kind": "wild",
       "district": 3,
       "lat": 55.4222,
-      "lng": 10.404
+      "lng": 10.404,
+      "icon": "forest"
     },
     {
       "id": "hindemosen",
       "kind": "wild",
       "district": 3,
       "lat": 55.4166,
-      "lng": 10.417
+      "lng": 10.417,
+      "icon": "field"
     },
     {
       "id": "seden",
       "kind": "water",
       "district": 3,
       "lat": 55.439,
-      "lng": 10.456
+      "lng": 10.456,
+      "icon": "lake"
     },
     {
       "id": "hcaskoven",
@@ -157,28 +169,32 @@
       "kind": "wild",
       "district": 4,
       "lat": 55.4054,
-      "lng": 10.4563
+      "lng": 10.4563,
+      "icon": "forest"
     },
     {
       "id": "raeveskov",
       "kind": "wild",
       "district": 4,
       "lat": 55.4131,
-      "lng": 10.4824
+      "lng": 10.4824,
+      "icon": "forest"
     },
     {
       "id": "botanisk",
       "kind": "town",
       "district": 4,
       "lat": 55.3994,
-      "lng": 10.4295
+      "lng": 10.4295,
+      "icon": "town"
     },
     {
       "id": "oerbaek",
       "kind": "wild",
       "district": 4,
       "lat": 55.3851,
-      "lng": 10.4339
+      "lng": 10.4339,
+      "icon": "field"
     },
     {
       "id": "hollufgaard",
@@ -193,42 +209,48 @@
       "kind": "wild",
       "district": 5,
       "lat": 55.369,
-      "lng": 10.43
+      "lng": 10.43,
+      "icon": "forest"
     },
     {
       "id": "kohave",
       "kind": "wild",
       "district": 5,
       "lat": 55.3786,
-      "lng": 10.466
+      "lng": 10.466,
+      "icon": "forest"
     },
     {
       "id": "fraugde",
       "kind": "town",
       "district": 5,
       "lat": 55.3552,
-      "lng": 10.4875
+      "lng": 10.4875,
+      "icon": "town"
     },
     {
       "id": "romantiskehave",
       "kind": "wild",
       "district": 5,
       "lat": 55.3512,
-      "lng": 10.5328
+      "lng": 10.5328,
+      "icon": "field"
     },
     {
       "id": "tarupdavinde",
       "kind": "water",
       "district": 5,
       "lat": 55.329,
-      "lng": 10.53
+      "lng": 10.53,
+      "icon": "lake"
     },
     {
       "id": "hoejby",
       "kind": "wild",
       "district": 5,
       "lat": 55.3345,
-      "lng": 10.42
+      "lng": 10.42,
+      "icon": "forest"
     },
     {
       "id": "fynskelandsby",
@@ -243,21 +265,24 @@
       "kind": "wild",
       "district": 6,
       "lat": 55.3579,
-      "lng": 10.421
+      "lng": 10.421,
+      "icon": "forest"
     },
     {
       "id": "stenloese",
       "kind": "wild",
       "district": 6,
       "lat": 55.35,
-      "lng": 10.3637
+      "lng": 10.3637,
+      "icon": "forest"
     },
     {
       "id": "bellinge",
       "kind": "town",
       "district": 6,
       "lat": 55.3381,
-      "lng": 10.3126
+      "lng": 10.3126,
+      "icon": "town"
     },
     {
       "id": "zoo",
@@ -272,7 +297,8 @@
       "kind": "water",
       "district": 7,
       "lat": 55.3675,
-      "lng": 10.3213
+      "lng": 10.3213,
+      "icon": "lake"
     },
     {
       "id": "tusindaar",
@@ -287,35 +313,40 @@
       "kind": "wild",
       "district": 8,
       "lat": 55.3835,
-      "lng": 10.2985
+      "lng": 10.2985,
+      "icon": "forest"
     },
     {
       "id": "hesbjerg",
       "kind": "wild",
       "district": 8,
       "lat": 55.3695,
-      "lng": 10.223
+      "lng": 10.223,
+      "icon": "forest"
     },
     {
       "id": "braendekilde",
       "kind": "wild",
       "district": 8,
       "lat": 55.356,
-      "lng": 10.265
+      "lng": 10.265,
+      "icon": "field"
     },
     {
       "id": "holeskov",
       "kind": "wild",
       "district": 8,
       "lat": 55.412,
-      "lng": 10.248
+      "lng": 10.248,
+      "icon": "forest"
     },
     {
       "id": "korup",
       "kind": "town",
       "district": 8,
       "lat": 55.4196,
-      "lng": 10.2711
+      "lng": 10.2711,
+      "icon": "town"
     }
   ]
 }
