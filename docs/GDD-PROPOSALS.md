@@ -12,7 +12,6 @@ entry here then gets the status `accepted (GDD v1.x)` (or `rejected`, with a rea
 | P21  | Where the Revive Blossom (revive at full HP) comes from                                                                                                                         |
 | P24  | Leaderboards (for example longest distance walked) and a competitive scene for players with all 8 badges: what to show, and how it fits the privacy rules (no location history) |
 | P25  | Tourism content for visitors (later; the campaigns are made mainly for residents)                                                                                               |
-| P27  | Regions as separate campaigns, and Svendborg as the second region: arena sites and themes, badges, starters, islands reachable by ferry                                         |
 
 ## Template
 
@@ -481,4 +480,12 @@ entry here then gets the status `accepted (GDD v1.x)` (or `rejected`, with a rea
 
 - **To decide:** the starter triangle; the arena sites, themes and badge names; whether
   ferry islands open on arrival; anything Svendborg should have that Odense doesn't.
-- **Status:** open
+- **Owner's decisions (2026-11-25):** starters Water → Stone → Storm; the eight arena sites
+  as proposed, every badge a different design (Odense's redesigned too); ferry islands as
+  optional destinations that open on arrival, with a loose dotted line over the water and
+  more than one walking route to the ferry; creatures clearly different from Odense's but
+  similar in spirit; build the map first, the creature lines later; files organised so the
+  regions never overlap, documented, with an update pipeline that asks the owner before an
+  update in one region is brought to another.
+- **Status:** accepted (GDD v1.17); creatures, trainers and campaigns per region still to
+  build

@@ -1,6 +1,6 @@
 # Odense Monster League — Game Design Document
 
-Version 1.16 · Nov 25, 2026 · maintained in the repository (see Change log)
+Version 1.17 · Nov 25, 2026 · maintained in the repository (see Change log)
 
 ## Overview
 
@@ -116,6 +116,27 @@ Rules:
 - **100 %** is every zone opened and every badge; walking every route is a bonus.
 - **Home zone.** Onboarding works anywhere; the map then points to Centrum.
 - **Championship.** After 8 badges, the Odense Championship is a 4-battle gauntlet at a central landmark (for example Rådhuset's square).
+
+## Regions: one campaign per municipality (v1.17)
+
+**Every Fyn municipality becomes its own region, like a separate game in the same app: its own starters, creatures, arenas, badges, routes and progress. Odense creatures stay in Odense and Svendborg creatures in Svendborg.** Entering a region the player has no campaign in starts that region's campaign with its own starter choice; the other campaigns stay as they were (the save becomes one campaign per region, with shared settings). The type chart, battle rules, moves, items and the app are shared. Regions are built with the recipe in docs/REGION-RECIPE.md and tracked in docs/REGIONS.md, including an update queue: an update made in one region is offered to the others, and the owner decides for each region whether it comes as it is, adapted, or not at all (P27).
+
+**Svendborg (the second region, being built).** 415 km² in twelve pieces: the mainland, Tåsinge (by the Svendborgsund bridge), Thurø (by causeway), the ferry islands Skarø, Hjortø and Drejø, and islets. 44 zones in 8 districts with the same level bands as Odense. Starters form a coastal triangle, **Water → Stone → Storm → Water**, three stages each. Its creatures are its own: clearly different from Odense's, but in the same spirit (folklore and local names, the same rarities and destination homes).
+
+| # | Arena site | Theme | Badge (da / en) |
+| --- | --- | --- | --- |
+| 1 | The old harbour (Frederiksø), start town | Spirit | Lygte-mærket / Lantern badge |
+| 2 | Christiansminde (beach and beech wood) | Fire | Bål-mærket / Bonfire badge |
+| 3 | Thurø | Water | Ø-mærket / Island badge |
+| 4 | Troense (skipper village) | Storm | Skipper-mærket / Skipper badge |
+| 5 | Valdemars Slot | Folk | Slots-mærket / Castle badge |
+| 6 | Egebjerg Mølle | Stone | Mølle-mærket / Mill badge |
+| 7 | Hvidkilde (manor, lake, woods) | Grove | Skov-mærket / Forest badge |
+| 8 | Gudme (Iron Age gold) | Mixed | Guld-mærket / Gold badge |
+
+The badge path runs from the harbour to Christiansminde and Thurø, over the Svendborgsund bridge to Troense and Valdemars Slot on Tåsinge, back over the sound to Hvidkilde and Egebjerg, and north to Gudme (45 walking routes: 14 on the badge path, 11 other ways, 20 to destinations). **Ferry islands** (Skarø, Hjortø, Drejø) are optional destinations, never needed for a badge: the Town Map draws each crossing as a loose dotted line over the water along the real sailing lane, and an island's zone opens when the player arrives there. The ferries leave from the harbour in the start town, where several routes meet, so a player who walks to the quay and decides not to sail never has to walk back the way they came.
+
+**Badges.** Every badge has its own design: its own outline, emblem and colour, taken from its arena's place (Odense: crown, castle mound, fjord, fairy-tale tree, snail spiral of Sneglehøjen, smithy anvil, paw, storm over the hill; Svendborg: lantern, bonfire, island, anchor on a ship's wheel, castle, windmill, oak leaf, gold bracteate). No two badges share an outline within a region.
 
 ## Creatures, types and stats
 
@@ -570,6 +591,7 @@ M1.7 (done, 148 tests): field abilities are data in `field-abilities.json`; a fr
 
 | Version | Date | Changes |
 | --- | --- | --- |
+| 1.17 | 2026-11-25 | Regions: one campaign per municipality, with an update queue between regions (P27); Svendborg designed: Water/Stone/Storm starters, eight arenas and badges, ferry islands that open on arrival with dotted crossings, its own creatures; every badge its own design |
 | 1.16 | 2026-11-25 | Tester features: a one-time welcome (what to try, add to home screen, export, feedback), Feedback in the menu (share sheet, never a location), save import, the field guide names destination creatures' homes; first launch goes straight into the map game |
 | 1.15 | 2026-11-25 | Destination creatures spawn only at their 1–3 home destinations, with one main home each, spread over the municipality; the Town Map ends in an even frame 2 km around the region |
 | 1.14 | 2026-11-25 | No spawns on golf courses, allotment gardens, care homes, prisons, places of worship or campsites; playgrounds, open water, the zoo and Den Fynske Landsby stay open |

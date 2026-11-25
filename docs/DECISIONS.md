@@ -1717,3 +1717,39 @@ length, position resolution and spawn tables>`.
   see it once too; Settings → Tester guide shows it again. Not on the dev map. The
   location step no longer links to the battle playtest (Settings still does), so a first
   launch always goes into the map game.
+- **D177. One folder per region; regions never overlap** (owner request, P27). Content,
+  texts, region files, docs and builder settings are split into `shared/` and one folder per
+  region (`content/<region>/`, `i18n/<region>/`, `region/<region>/`, `docs/regions/<region>/`,
+  `tools/region-builder/src/regions/<region>.ts`); files moved with `git mv`. `@oml/data`
+  parses each region into its own Dex (`regions.odense`, `regions.svendborg`, each with
+  `region`); `content` and `i18n` stay the Odense defaults until campaigns per region exist,
+  and `i18nFor(region)` merges the shared UI texts with a region's own. Region texts are the
+  keys `<kind>.<id>.<field>` for species, trainers, POIs, zones and routes, and the numbered
+  district, badge and arena-site keys; two-part keys such as `trainer.battle` are shared UI
+  (the first split put them in Odense's file; the new check caught it). Every Svendborg id
+  starts with `svb_` (`REGION_ID_PREFIX`); Odense keeps unprefixed ids. `checkSeparation`
+  (run by `pnpm validate` before each region's own checks) fails when an id lacks its
+  prefix, uses another region's prefix or exists in two regions, when a region text names
+  an id that isn't the region's, or when a shared text belongs to a region. The region
+  builder picks the region with `--region <id>` (default Odense; `regionPaths` gives every
+  input and output path), and a new `boundary` tool fetches the municipality outline from OSM
+  (admin_level 7), simplifies it to about 20 m and drops slivers and pieces outside the
+  region's box (Svendborg: Vresen, an uninhabited reserve island in the Great Belt). Route
+  ids carry the prefix (`svb_route1`). The docs generator writes `docs/regions/<region>/`.
+  `pnpm regions:status` reads the update queue in REGIONS.md and says when to ask the owner
+  (3 or more pending updates for a region); a test keeps the queue well formed.
+- **D178. Every badge its own design** (owner request). `packages/art/src/badges.ts` draws
+  each region's eight badges with their own outline (no outline repeats within a region),
+  colour and emblem from the arena's place; the empty slot is the same outline in grey.
+  Files are `generated/badges/<region>_badge<n>.svg`; `badgeUrl(arena, earned, region)`
+  defaults to Odense.
+- **D179. Svendborg's map: zones, routes and ferry crossings** (owner decisions, P27, GDD
+  v1.17). 44 zones (8 arena, 9 town, 21 wild, 6 water) placed from OSM (places, manors,
+  mills, named forests, lakes, beaches); the three ferry islands are `wild` zones with
+  `opensOnArrival` and the new Town Map icon `island`. Routes: 14 on the badge path, 11
+  other ways, 20 to destinations, built from the OSM foot network like Odense's. Ferry
+  crossings are routes of the new kind `ferry` (numbers 46–48): their path is the real
+  sailing lane from OSM (Svendborg–Skarø–Drejø, split at Skarø's quay; Svendborg–Hjortø),
+  simplified to 25 m, never walked, so validation only checks that they start and end in
+  their zones and lead to an island. The quay is in the start town (Frederiksø), where
+  several routes meet. Map frame: the boundary's box plus 2 km.

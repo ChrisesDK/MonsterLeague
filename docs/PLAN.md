@@ -188,4 +188,14 @@
 - [ ] Levelling pace: estimate the walking (km, days) needed per arena from spawn rates and the XP rules; compare with testers' levels at each arena
 - [ ] Long battles: some leader fights take 30–50 turns in the sim (arena 4 grove ~95); tune teams or battle length
 - [ ] Field abilities Nightseer, Sealbreaker and Homing: wait until there are proper uses for them (owner)
-- [ ] Svendborg as the second region: plan in [REGIONS.md](REGIONS.md) and [REGION-RECIPE.md](REGION-RECIPE.md), backlog P27
+
+## Regions: Svendborg (P27, GDD v1.17)
+
+- [x] One folder per region, id prefixes, separation checks, per-region tools and docs (D177)
+- [x] Update pipeline: queue in REGIONS.md, `pnpm regions:status` asks the owner after 3 pending updates (D177)
+- [x] Every badge its own design, Odense redesigned, Svendborg's eight (D178)
+- [x] Svendborg map: boundary, region file, 44 zones, 45 routes, 3 ferry crossings, 24 rest stops, 6 markets, basemap, map frame, README with map (D179)
+- [ ] Campaigns per region (save v11, region from the phone's position, starter choice on entering a region, Town Map and Fyn map per region, islands open on arrival)
+- [ ] Svendborg creatures: Water/Stone/Storm starters and about 20 wild lines (after the map, owner)
+- [ ] Svendborg trainers, arena leaders and juniors, balance, Journal goals, e2e
+- [ ] Owner checks Svendborg's places on site; Svendborg testers
