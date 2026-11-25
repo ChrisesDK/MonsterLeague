@@ -192,6 +192,18 @@ importers:
         specifier: ^4.1.0
         version: 4.5.0
 
+  tools/docs:
+    dependencies:
+      '@oml/data':
+        specifier: workspace:*
+        version: link:../../packages/data
+      '@oml/game':
+        specifier: workspace:*
+        version: link:../../packages/game
+      '@oml/spawn':
+        specifier: workspace:*
+        version: link:../../packages/spawn
+
   tools/gate2:
     dependencies:
       '@oml/playtest':

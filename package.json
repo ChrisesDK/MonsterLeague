@@ -23,7 +23,8 @@
     "region:build": "pnpm --filter @oml/region-builder region",
     "routes:build": "pnpm --filter @oml/region-builder routes",
     "spawn:report": "pnpm --filter @oml/spawn report",
-    "art:build": "pnpm --filter @oml/art build"
+    "art:build": "pnpm --filter @oml/art build",
+    "docs:content": "pnpm --filter @oml/docs build"
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",
