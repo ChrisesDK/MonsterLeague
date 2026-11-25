@@ -12,7 +12,7 @@ import { gzipSync } from 'node:zlib';
 import { bboxPolygon, booleanIntersects, buffer } from '@turf/turf';
 import type { Feature, FeatureCollection, MultiPolygon } from 'geojson';
 import { FetchSource, PMTiles, zxyToTileId } from 'pmtiles';
-import { REGION } from './config';
+import { MAP_FRAMES } from '@oml/data';
 import { serializeDirectory, writeHeader, type Entry } from './pmtiles-write';
 
 const root = (p: string) => fileURLToPath(new URL(`../../../${p}`, import.meta.url));
@@ -20,6 +20,12 @@ const OUT = root('apps/client/public/tiles/odense.pmtiles');
 /** Tiles further than this from the border are left out (fog distance is at most 1.4 km). */
 const MARGIN_KM = 1.6;
 const MAX_ZOOM = 15;
+/**
+ * D172: up to this zoom (the Town Map's levels: its tiles are 512 px, so map zoom 10.3–14)
+ * every tile inside the map frame is taken, so the map ends in an even edge; above it only
+ * tiles near the border, which keeps the file small.
+ */
+const FRAME_MAX_ZOOM = 13;
 
 const day =
   process.argv[2] ?? new Date(Date.now() - 86_400_000).toISOString().slice(0, 10).replace(/-/g, '');
@@ -36,7 +42,8 @@ const boundary = (
 ).features[0]!;
 const area = buffer(boundary, MARGIN_KM, { units: 'kilometers' }) as Feature;
 
-const [west, south, east, north] = REGION.bbox;
+const [west, south, east, north] = MAP_FRAMES.odense!;
+const frame = bboxPolygon([west, south, east, north]);
 const lon2x = (lon: number, z: number) => Math.floor(((lon + 180) / 360) * 2 ** z);
 const lat2y = (lat: number, z: number) => {
   const r = (lat * Math.PI) / 180;
@@ -54,7 +61,7 @@ for (let z = 0; z <= MAX_ZOOM; z++) {
     for (let y = y0; y <= y1; y++) {
       if (z >= 8) {
         const tile = bboxPolygon([x2lon(x, z), y2lat(y + 1, z), x2lon(x + 1, z), y2lat(y, z)]);
-        if (!booleanIntersects(tile, area)) continue;
+        if (!booleanIntersects(tile, z <= FRAME_MAX_ZOOM ? frame : area)) continue;
       }
       wanted.push({ z, x, y, id: zxyToTileId(z, x, y) });
     }
@@ -143,7 +150,7 @@ const headerBuf = writeHeader({
   tileContents: blobs.length,
   minZoom: 0,
   maxZoom: MAX_ZOOM,
-  bbox: REGION.bbox,
+  bbox: [west, south, east, north],
   center: [(west + east) / 2, (south + north) / 2],
 });
 writeFileSync(OUT, Buffer.concat([headerBuf, rootDir, meta, leaves, tileData]));

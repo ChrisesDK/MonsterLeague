@@ -1657,3 +1657,40 @@ length, position resolution and spawn tables>`.
   chances are exact expectations from the spawn rules (min(density, 3) per cell, split by
   entry weight, day and night half each), not samples. A test fails when the docs are
   stale. The generated files are left out of Prettier.
+- **D170. More no-spawn areas** (owner request; GDD v1.14). Golf courses
+  (`leisure=golf_course`), allotment gardens (`landuse=allotments`, no longer park), care
+  homes (`amenity=nursing_home`, `social_facility=nursing_home|assisted_living`), prisons,
+  places of worship and campsites (`tourism=camp_site|caravan_site`) are no-spawn areas, by
+  the same two rules as schools (a cell ≥ 25 % covered gets no spawns; elsewhere no spawn is
+  placed inside one; points get 30 m). Playgrounds, open water, Odense Zoo and Den Fynske
+  Landsby stay open (owner decision). The new tags come from a second Overpass query
+  (`buildExtraQuery`), tiled and cached on its own, so the main tiles were not downloaded
+  again. No-spawn cells: 4.6 %. Eight POIs that now stood in blocked spots moved to the
+  nearest valid spot (route trainers along their own route): Freja 5 m, Botanisk rest stop
+  25 m, r8a 3 m, r11a 26 m, r23a 91 m, r23c 39 m, r35a 155 m, Hjallese market about 45 m.
+  Ten routes' `wildShare` was recomputed from the new region (allotments no longer count as
+  green); route paths are unchanged, so saved route progress stays valid.
+- **D171. Destination creatures live only at their homes** (owner request: a lucky city
+  catch must not remove the reason to travel; 1–3 homes, preferably one, with one clear main
+  home). Spawn entries get `zones` (1–3 destination zones in the entry's district, with
+  `destinationOnly`); `entryWeight` is 0 outside them (SPAWN_ALGORITHM 6). Homes, main
+  first, spread over the municipality: Mosling Kirkendrup Skov, Ræveskov, Stenløse Skov;
+  Dugpust Brændekilde, Hindemosen; Ildflue Lungs Grave, Ørbækparken; Rokkeling Sanderum Sø,
+  Lumby Mølle; Søormling Seden Strand, Lumby Mølle; Ellepige Hesbjerg, Fællesskov;
+  Nøkkeling Tarup-Davinde only. Field-ability layers of these creatures sit at the main
+  home too (Søormling's Angler layer at Seden Strand); Ellepige's Forager layer in district
+  4 was dropped (Forager keeps Mosbille in district 1). `validate` requires every entry of a
+  destination creature to have zones, at most 3 homes and a single highest weight; a docs
+  test checks the main home by weight is also where it really spawns most (Dugpust's main
+  home became Brændekilde: the bigger meadow won even with a lower weight). Weights were set
+  for the share of a home's nature spawns (common ≈ 30 %, uncommon 9–16 %, rare 6–11 %, very
+  rare 3–4 %, shown in CREATURES.md as "chance at its main home"; Rokkeling's 500 is high
+  because Sanderum is mostly woodland around a small lake). Journal rare goals: district 4
+  is now Kampetrold, district 8 Ellepige.
+- **D172. Map frame** (owner request: the Town Map ended in ragged tile edges, with a top
+  middle tile but not its neighbours). `MAP_FRAMES.odense` (in `@oml/data`) is the region's
+  bounding box plus an even 2 km margin (a test checks it against the boundary). The
+  basemap extract takes every tile in the frame up to zoom 13 (the Town Map's levels; 512 px
+  tiles) and only tiles within 1.6 km of the border above that, so the file grows little.
+  The Town Map paints an opaque `frame-mask` (the earth colour) over everything outside the
+  frame, so the map ends in a straight, even edge, and pans only a little beyond it.

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import maplibregl, { type Map as MlMap, type Marker } from 'maplibre-gl';
 import { badgeUrl, stampUrl } from '@oml/art';
-import { content } from '@oml/data';
+import { content, MAP_FRAMES } from '@oml/data';
 import {
   arenaReady,
   distanceM,
@@ -62,10 +62,17 @@ function loadHidden(): LayerId[] {
  * Odense Kommune with a margin: the map can't be dragged out of the region. Extra room above
  * and below, so a phone held upright can zoom out to the whole municipality.
  */
-export const REGION_BOUNDS: [[number, number], [number, number]] = [
-  [10.12, 55.18],
-  [10.64, 55.59],
-];
+/**
+ * How far the Town Map pans (D172): the map frame plus a little room, so a tall phone
+ * screen still fits at the furthest zoom; beyond the frame the map is plain.
+ */
+export const REGION_BOUNDS: [[number, number], [number, number]] = (() => {
+  const [w, s, e, n] = MAP_FRAMES.odense!;
+  return [
+    [w - 0.02, s - 0.03],
+    [e + 0.02, n + 0.03],
+  ];
+})();
 const TOWN = { minZoom: 10.3, maxZoom: 16, zoom: 13 };
 /** Below this zoom only arenas show (route numbers and rest stops would crowd the map). */
 const FAR_ZOOM = 11.8;

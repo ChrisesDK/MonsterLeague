@@ -191,6 +191,7 @@ export function paletteProps(p: Palette): [string, string, unknown][] {
     ['district-labels', 'text-halo-color', p.halo],
     ['locked-zones', 'fill-color', p.locked],
     ['outside-region', 'fill-color', p.earth],
+    ['frame-mask', 'fill-color', p.earth],
     ['zone-edges', 'line-color', p.district],
     ['zone-labels', 'text-color', p.district],
     ['zone-labels', 'text-halo-color', p.halo],

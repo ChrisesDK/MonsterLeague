@@ -4,7 +4,7 @@
  * whose walked part is drawn solid (the progress bar) and the player's accuracy ring.
  */
 import type { GeoJSONSource, Map as MlMap } from 'maplibre-gl';
-import { content } from '@oml/data';
+import { content, MAP_FRAMES } from '@oml/data';
 import { routeCheckpoints, type SaveGame } from '@oml/game';
 import districtsRaw from '@oml/data/content/districts.odense.geojson?raw';
 import zonesRaw from '@oml/data/content/zones.odense.geojson?raw';
@@ -36,6 +36,37 @@ export const zonesGeo = JSON.parse(zonesRaw) as GeoJSON.FeatureCollection<
   GeoJSON.Polygon | GeoJSON.MultiPolygon,
   { id: string; district: number; kind: string }
 >;
+
+/**
+ * D172: the world with the map frame cut out. On the Town Map it is painted plain, so the
+ * basemap ends in an even edge 2 km around the region instead of at ragged tile edges.
+ */
+const frameMaskGeo: GeoJSON.Feature = (() => {
+  const [w, s, e, n] = MAP_FRAMES.odense!;
+  return {
+    type: 'Feature',
+    properties: {},
+    geometry: {
+      type: 'Polygon',
+      coordinates: [
+        [
+          [-180, -85],
+          [180, -85],
+          [180, 85],
+          [-180, 85],
+          [-180, -85],
+        ],
+        [
+          [w, s],
+          [w, n],
+          [e, n],
+          [e, s],
+          [w, s],
+        ],
+      ],
+    },
+  };
+})();
 
 /** The world with the region cut out (for the wash outside the region). */
 const outsideGeo: GeoJSON.Feature = (() => {
@@ -249,6 +280,16 @@ export function addWorldLayers(
     filter: ['==', ['get', 'id'], ''],
     paint: { 'fill-color': p.locked, 'fill-opacity': opts.mode === 'town' ? 0.1 : 0.08 },
   });
+  // D172: nothing of the basemap shows beyond the map frame on the Town Map.
+  if (opts.mode === 'town') {
+    map.addSource('frame-mask', { type: 'geojson', data: frameMaskGeo });
+    map.addLayer({
+      id: 'frame-mask',
+      type: 'fill',
+      source: 'frame-mask',
+      paint: { 'fill-color': p.earth, 'fill-opacity': 1 },
+    });
+  }
   // A pale wash outside the region, so the region stands out (D162).
   map.addSource('outside', { type: 'geojson', data: outsideGeo });
   map.addLayer({
