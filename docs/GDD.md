@@ -271,7 +271,7 @@ Real spawn tables live in `packages/data/content/spawns.json` (accepted P8).
 
 ## Arenas, trainers, rest stops and field abilities
 
-**Points of interest are fixed, hand-placed in data, and each has an interaction radius so players can stand somewhere safe.**
+**Points of interest are fixed, hand-placed in data, and each has an interaction radius so players can stand somewhere safe. They are pressed, never pushed on the player: tapping a stamp within reach (its radius plus 15 m for GPS error) acts at once (a rest stop heals, a ready trainer or arena starts its battle, a market opens); if it can't (a trainer already beaten, a closed zone, a fainted team) a small card says why, with a close button. Tapping a stamp out of reach says how far to walk. Nothing pops up by itself when the player walks into a radius (v1.12).**
 
 | Point | Radius | Interaction | Repeatable |
 | --- | --- | --- | --- |
@@ -339,7 +339,7 @@ UX rules:
 - Everything that matters during a battle sits in the bottom 40% of the screen; tap targets at least 48 px.
 - The map never asks for input while the player is moving faster than walking pace.
 - Any battle can be left and resumed later with the exact same state.
-- Encounters are announced by vibration + a toast; the player taps to start, so nothing forces them to stop in the street.
+- Encounters are announced by vibration + a toast; the player taps to start, so nothing forces them to stop in the street. The same goes for points of interest: the player presses a stamp, nothing pops up by itself.
 
 ## Art, audio and tone
 
@@ -565,7 +565,7 @@ M1.7 (done, 148 tests): field abilities are data in `field-abilities.json`; a fr
 
 | Version | Date | Changes |
 | --- | --- | --- |
-| 1.12 | 2026-11-25 | Skilling (coins from trainers) and 9 markets that buy and sell items (replaces "no shop and no currency"); Medium Tonic; the Town Map shows trainers, rest stops, markets and destination stamps (forest, field, lake, town) and gets a filter |
+| 1.12 | 2026-11-25 | Skilling (coins from trainers) and 9 markets that buy and sell items (replaces "no shop and no currency"); Medium Tonic; the Town Map shows trainers, rest stops, markets and destination stamps (forest, field, lake, town) and gets a filter; points of interest are pressed (tap the stamp within reach, with 15 m GPS slack) instead of a card popping up |
 | 1.11 | 2026-11-25 | The GDD moves into the repository and is maintained by Claude Code; folded in everything since v1.10 (orbit camera details, the sky wall at the edge of the world, 3D buildings, HUD on demand, loading screen, back gesture, settings, logo and colours) and accepted P22 (Odense Kommune as the region: 39 zones opened by walking 50 routes, route progress bars, new arena loop Næsbyhoved–Stige Ø–H.C. Andersen Skoven–Hollufgård–Den Fynske Landsby–Zoo–Tusindårsskoven, Water leader moved to arena 3, the Fyn map) and P23 (route progress saved as checkpoint numbers); route trainers on every route (about one per 1.5 km); region border includes the harbour and canal; campaign length 14–30 days; P17 and P18 replaced by P22 |
 | 1.10 | 2026-11-21 | M2d done and live; accepted P16 (walk target stated at 4 km/h, 10–16 creatures), P17 (routes may cross unlocked districts), P18 (Journal: beat the district's trainers), P19 (fainted creatures recover after 8 hours), P20 (always-centred camera that rotates on drag and tilts as you zoom); 90-second GPS grace before the weak-signal note |
 | 1.9 | 2026-11-21 | New Game feel section (comparison with walking and mainline games, tilted follow camera, wild areas and routes, Town Map, Journal, look and feel); density targets raised for wild areas (1 per 100–150 m) and set for streets (1 per 300–400 m); creatures visible to 200 m with a Nearby strip; M2d added before Gate 3 |

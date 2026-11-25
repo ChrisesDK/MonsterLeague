@@ -1579,3 +1579,13 @@ length, position resolution and spawn tables>`.
     next route to walk). A funnel button next to "Fyn" opens six switches (arenas, routes,
     trainers, rest stops, markets, destinations); hiding routes also hides their lines. The
     choice is kept in localStorage (a view setting, not game progress).
+- **D166. Points of interest are pressed, not pushed** (owner playtest: standing by a rest
+  stop and a trainer, pressing the stamps did nothing; the card that popped up inside the
+  radius was easy to miss and felt forced). Stamps on the play map are buttons. A press
+  within reach (radius + 15 m, `POI_SLACK_M`, since a phone fix is often 10–20 m off) acts
+  at once: a rest stop heals (its card then shows the result), a ready trainer or arena
+  starts its next battle (junior first), a market opens. When nothing can happen (beaten,
+  closed zone, fainted team, no team) a card says why, with a close button; walking out of
+  reach closes it. Out of reach, a toast says how many metres to walk. No card appears by
+  itself any more. E2E taps stamps (`tapPoi`); the "first tap" in the range-ring test is
+  a key press, because a tap on the map at Kongens Have now lands on a stamp.

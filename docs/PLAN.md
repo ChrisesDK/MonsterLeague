@@ -153,6 +153,7 @@
 - [x] Clean borders: solid region border incl. the harbour, dotted district and zone edges drawn once (D162)
 - [x] Route trainers on every route, about one per 1.5 km: 110 in all (D163)
 - [x] Skilling, 9 markets (buy and sell), Medium Tonic; Town Map stamps for trainers, rest stops, markets and destinations, with a filter (D165, GDD v1.12)
+- [x] Press-based POIs: tap a stamp within reach (+15 m GPS slack) to rest, battle or shop; no pop-up (D166)
 - [ ] Owner walks the routes with GPS; arenas 3–8 wait until the map has been tested
 
 ## Next: Gate 3 — District walk test (owner, with [GATE3.md](GATE3.md))
