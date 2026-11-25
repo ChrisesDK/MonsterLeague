@@ -56,7 +56,7 @@ export function zoneEdges(
       const other = getDirectedEdgeDestination(edge);
       const oz = zoneOf.get(other);
       if (oz === undefined || oz === z || other < cell) continue;
-      const [p, q] = directedEdgeToBoundary(edge) as [number[], number[]];
+      const [p, q] = directedEdgeToBoundary(edge) as unknown as [number[], number[]];
       const a = key(p!);
       const b = key(q!);
       pos.set(a, [p![1]!, p![0]!]);

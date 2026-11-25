@@ -5,7 +5,10 @@ import type { CreatureArtInput } from './creature';
 export function artInput(speciesId: string, dex: Dex = content): CreatureArtInput {
   const s = dex.species[speciesId];
   if (!s) throw new Error(`Unknown species "${speciesId}"`);
-  const evolved = Object.values(dex.species).some((o) => o.evolution?.into === speciesId);
+  // stage: how many evolutions lead to this species (0 → 1, 1 → 2, 2 → 3)
+  const parent = (id: string) => Object.values(dex.species).find((o) => o.evolution?.into === id);
+  const first = parent(speciesId);
+  const stage: 1 | 2 | 3 = !first ? 1 : parent(first.id) ? 3 : 2;
   return {
     id: s.id,
     types: [...s.types],
@@ -13,6 +16,6 @@ export function artInput(speciesId: string, dex: Dex = content): CreatureArtInpu
     colors: s.colors ? [...s.colors] : s.types.map((t) => dex.typeColors[t]),
     ring: dex.typeColors[s.types[0]!],
     bst: s.baseStats.hp + s.baseStats.atk + s.baseStats.def + s.baseStats.spd,
-    stage: evolved ? 2 : 1,
+    stage,
   };
 }

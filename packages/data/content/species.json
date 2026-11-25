@@ -3,6 +3,7 @@
     {
       "id": "gnistkat",
       "types": ["fire"],
+      "rarity": "common",
       "baseStats": {
         "hp": 70,
         "atk": 75,
@@ -55,6 +56,7 @@
     {
       "id": "baalkat",
       "types": ["fire"],
+      "rarity": "common",
       "baseStats": {
         "hp": 90,
         "atk": 105,
@@ -97,12 +99,66 @@
           "moveId": "nimble_jab"
         }
       ],
+      "evolution": {
+        "into": "brandloeve",
+        "level": 36
+      },
+      "colors": ["#d6452b", "#ffb347"],
+      "placeholder": true
+    },
+    {
+      "id": "brandloeve",
+      "types": ["fire", "folk"],
+      "rarity": "common",
+      "baseStats": {
+        "hp": 104,
+        "atk": 136,
+        "def": 96,
+        "spd": 64
+      },
+      "catchRate": 45,
+      "baseXp": 230,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "hearth_spark"
+        },
+        {
+          "level": 8,
+          "moveId": "stoke_up"
+        },
+        {
+          "level": 14,
+          "moveId": "cobbler_kick"
+        },
+        {
+          "level": 16,
+          "moveId": "ember_hop"
+        },
+        {
+          "level": 22,
+          "moveId": "cinder_brand"
+        },
+        {
+          "level": 30,
+          "moveId": "kiln_blast"
+        },
+        {
+          "level": 36,
+          "moveId": "market_stampede"
+        },
+        {
+          "level": 40,
+          "moveId": "forge_flare"
+        }
+      ],
       "colors": ["#d6452b", "#ffb347"],
       "placeholder": true
     },
     {
       "id": "aaodder",
       "types": ["water"],
+      "rarity": "common",
       "baseStats": {
         "hp": 85,
         "atk": 70,
@@ -155,6 +211,7 @@
     {
       "id": "stroemodder",
       "types": ["water"],
+      "rarity": "common",
       "baseStats": {
         "hp": 100,
         "atk": 95,
@@ -197,12 +254,66 @@
           "moveId": "squall_slap"
         }
       ],
+      "evolution": {
+        "into": "havodder",
+        "level": 36
+      },
+      "colors": ["#6f4a30", "#9fd3f0"],
+      "placeholder": true
+    },
+    {
+      "id": "havodder",
+      "types": ["water", "folk"],
+      "rarity": "common",
+      "baseStats": {
+        "hp": 100,
+        "atk": 104,
+        "def": 96,
+        "spd": 100
+      },
+      "catchRate": 45,
+      "baseXp": 230,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "brook_spout"
+        },
+        {
+          "level": 8,
+          "moveId": "sea_fog"
+        },
+        {
+          "level": 14,
+          "moveId": "cobbler_kick"
+        },
+        {
+          "level": 16,
+          "moveId": "ripple_dash"
+        },
+        {
+          "level": 24,
+          "moveId": "rinse_and_mend"
+        },
+        {
+          "level": 30,
+          "moveId": "harbour_wave"
+        },
+        {
+          "level": 36,
+          "moveId": "market_stampede"
+        },
+        {
+          "level": 40,
+          "moveId": "fjord_surge"
+        }
+      ],
       "colors": ["#6f4a30", "#9fd3f0"],
       "placeholder": true
     },
     {
       "id": "boegling",
       "types": ["grove"],
+      "rarity": "common",
       "baseStats": {
         "hp": 80,
         "atk": 70,
@@ -255,6 +366,7 @@
     {
       "id": "boegevaette",
       "types": ["grove"],
+      "rarity": "common",
       "baseStats": {
         "hp": 100,
         "atk": 95,
@@ -297,12 +409,66 @@
           "moveId": "hearty_meal"
         }
       ],
+      "evolution": {
+        "into": "lundekonge",
+        "level": 36
+      },
+      "colors": ["#3f8f45", "#e0c27a"],
+      "placeholder": true
+    },
+    {
+      "id": "lundekonge",
+      "types": ["grove", "spirit"],
+      "rarity": "common",
+      "baseStats": {
+        "hp": 112,
+        "atk": 88,
+        "def": 132,
+        "spd": 68
+      },
+      "catchRate": 45,
+      "baseXp": 230,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "beech_lash"
+        },
+        {
+          "level": 6,
+          "moveId": "drowsy_pollen"
+        },
+        {
+          "level": 12,
+          "moveId": "nettle_sting"
+        },
+        {
+          "level": 18,
+          "moveId": "grave_chill"
+        },
+        {
+          "level": 20,
+          "moveId": "root_snare"
+        },
+        {
+          "level": 26,
+          "moveId": "thorn_volley"
+        },
+        {
+          "level": 36,
+          "moveId": "hollow_wail"
+        },
+        {
+          "level": 40,
+          "moveId": "beech_crown"
+        }
+      ],
       "colors": ["#3f8f45", "#e0c27a"],
       "placeholder": true
     },
     {
       "id": "torvdue",
       "types": ["folk"],
+      "rarity": "common",
       "baseStats": {
         "hp": 60,
         "atk": 55,
@@ -333,12 +499,103 @@
           "moveId": "cobbler_kick"
         }
       ],
+      "evolution": {
+        "into": "kirkedue",
+        "level": 18
+      },
       "colors": ["#8a9cc2", "#c9a7e0"],
+      "placeholder": true
+    },
+    {
+      "id": "kirkedue",
+      "types": ["folk"],
+      "rarity": "common",
+      "baseStats": {
+        "hp": 73,
+        "atk": 89,
+        "def": 59,
+        "spd": 109
+      },
+      "catchRate": 90,
+      "baseXp": 140,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "shoulder_shove"
+        },
+        {
+          "level": 1,
+          "moveId": "stern_glare"
+        },
+        {
+          "level": 10,
+          "moveId": "cobbler_kick"
+        },
+        {
+          "level": 20,
+          "moveId": "cartwheel"
+        },
+        {
+          "level": 34,
+          "moveId": "market_stampede"
+        }
+      ],
+      "evolution": {
+        "into": "vinddue",
+        "level": 36
+      },
+      "colors": ["#9aa3ad", "#e6d8b8"],
+      "placeholder": true
+    },
+    {
+      "id": "vinddue",
+      "types": ["folk", "storm"],
+      "rarity": "common",
+      "baseStats": {
+        "hp": 87,
+        "atk": 107,
+        "def": 71,
+        "spd": 130
+      },
+      "catchRate": 45,
+      "baseXp": 210,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "shoulder_shove"
+        },
+        {
+          "level": 1,
+          "moveId": "stern_glare"
+        },
+        {
+          "level": 10,
+          "moveId": "cobbler_kick"
+        },
+        {
+          "level": 18,
+          "moveId": "gust_lance"
+        },
+        {
+          "level": 20,
+          "moveId": "cartwheel"
+        },
+        {
+          "level": 34,
+          "moveId": "market_stampede"
+        },
+        {
+          "level": 36,
+          "moveId": "sky_crackle"
+        }
+      ],
+      "colors": ["#9aa3ad", "#e6d8b8"],
       "placeholder": true
     },
     {
       "id": "rendsnude",
       "types": ["folk"],
+      "rarity": "common",
       "baseStats": {
         "hp": 55,
         "atk": 70,
@@ -369,12 +626,54 @@
           "moveId": "cobbler_kick"
         }
       ],
+      "evolution": {
+        "into": "rottekonge",
+        "level": 24
+      },
       "colors": ["#b98b63", "#f2c7b0"],
+      "placeholder": true
+    },
+    {
+      "id": "rottekonge",
+      "types": ["folk"],
+      "rarity": "common",
+      "baseStats": {
+        "hp": 99,
+        "atk": 129,
+        "def": 91,
+        "spd": 61
+      },
+      "catchRate": 90,
+      "baseXp": 140,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "shoulder_shove"
+        },
+        {
+          "level": 1,
+          "moveId": "stern_glare"
+        },
+        {
+          "level": 10,
+          "moveId": "cobbler_kick"
+        },
+        {
+          "level": 20,
+          "moveId": "cartwheel"
+        },
+        {
+          "level": 34,
+          "moveId": "market_stampede"
+        }
+      ],
+      "colors": ["#8a6f5a", "#e3c9a8"],
       "placeholder": true
     },
     {
       "id": "mosbille",
       "types": ["grove"],
+      "rarity": "common",
       "baseStats": {
         "hp": 60,
         "atk": 55,
@@ -405,12 +704,115 @@
           "moveId": "root_snare"
         }
       ],
+      "evolution": {
+        "into": "skovbille",
+        "level": 14
+      },
       "colors": ["#6aa84f", "#c7e08a"],
+      "placeholder": true
+    },
+    {
+      "id": "skovbille",
+      "types": ["grove"],
+      "rarity": "common",
+      "baseStats": {
+        "hp": 92,
+        "atk": 73,
+        "def": 109,
+        "spd": 56
+      },
+      "catchRate": 90,
+      "baseXp": 140,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "beech_lash"
+        },
+        {
+          "level": 6,
+          "moveId": "drowsy_pollen"
+        },
+        {
+          "level": 12,
+          "moveId": "nettle_sting"
+        },
+        {
+          "level": 14,
+          "moveId": "cobbler_kick"
+        },
+        {
+          "level": 20,
+          "moveId": "root_snare"
+        },
+        {
+          "level": 26,
+          "moveId": "thorn_volley"
+        },
+        {
+          "level": 40,
+          "moveId": "beech_crown"
+        }
+      ],
+      "evolution": {
+        "into": "eghjort",
+        "level": 32
+      },
+      "colors": ["#5e8f4a", "#c9d98a"],
+      "placeholder": true
+    },
+    {
+      "id": "eghjort",
+      "types": ["grove", "stone"],
+      "rarity": "common",
+      "baseStats": {
+        "hp": 111,
+        "atk": 88,
+        "def": 131,
+        "spd": 68
+      },
+      "catchRate": 45,
+      "baseXp": 210,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "beech_lash"
+        },
+        {
+          "level": 6,
+          "moveId": "drowsy_pollen"
+        },
+        {
+          "level": 12,
+          "moveId": "nettle_sting"
+        },
+        {
+          "level": 18,
+          "moveId": "boulder_roll"
+        },
+        {
+          "level": 20,
+          "moveId": "root_snare"
+        },
+        {
+          "level": 26,
+          "moveId": "thorn_volley"
+        },
+        {
+          "level": 36,
+          "moveId": "rune_slab"
+        },
+        {
+          "level": 40,
+          "moveId": "beech_crown"
+        }
+      ],
+      "colors": ["#5e8f4a", "#c9d98a"],
       "placeholder": true
     },
     {
       "id": "grimaelling",
       "types": ["water"],
+      "rarity": "common",
       "baseStats": {
         "hp": 65,
         "atk": 55,
@@ -441,12 +843,115 @@
           "moveId": "harbour_wave"
         }
       ],
+      "evolution": {
+        "into": "svaneunge",
+        "level": 18
+      },
       "colors": ["#3d8fd1", "#bfe3f7"],
+      "placeholder": true
+    },
+    {
+      "id": "svaneunge",
+      "types": ["water"],
+      "rarity": "common",
+      "baseStats": {
+        "hp": 83,
+        "atk": 86,
+        "def": 79,
+        "spd": 82
+      },
+      "catchRate": 90,
+      "baseXp": 140,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "brook_spout"
+        },
+        {
+          "level": 8,
+          "moveId": "sea_fog"
+        },
+        {
+          "level": 14,
+          "moveId": "cobbler_kick"
+        },
+        {
+          "level": 16,
+          "moveId": "ripple_dash"
+        },
+        {
+          "level": 24,
+          "moveId": "rinse_and_mend"
+        },
+        {
+          "level": 30,
+          "moveId": "harbour_wave"
+        },
+        {
+          "level": 40,
+          "moveId": "fjord_surge"
+        }
+      ],
+      "evolution": {
+        "into": "kongesvane",
+        "level": 36
+      },
+      "colors": ["#c9b48a", "#f2c14e"],
+      "placeholder": true
+    },
+    {
+      "id": "kongesvane",
+      "types": ["water", "storm"],
+      "rarity": "common",
+      "baseStats": {
+        "hp": 100,
+        "atk": 103,
+        "def": 96,
+        "spd": 99
+      },
+      "catchRate": 45,
+      "baseXp": 210,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "brook_spout"
+        },
+        {
+          "level": 8,
+          "moveId": "sea_fog"
+        },
+        {
+          "level": 16,
+          "moveId": "ripple_dash"
+        },
+        {
+          "level": 18,
+          "moveId": "gust_lance"
+        },
+        {
+          "level": 24,
+          "moveId": "rinse_and_mend"
+        },
+        {
+          "level": 30,
+          "moveId": "harbour_wave"
+        },
+        {
+          "level": 36,
+          "moveId": "sky_crackle"
+        },
+        {
+          "level": 40,
+          "moveId": "fjord_surge"
+        }
+      ],
+      "colors": ["#c9b48a", "#f2c14e"],
       "placeholder": true
     },
     {
       "id": "brokrabbe",
       "types": ["stone"],
+      "rarity": "uncommon",
       "baseStats": {
         "hp": 70,
         "atk": 85,
@@ -481,12 +986,66 @@
           "moveId": "rampart_slam"
         }
       ],
+      "evolution": {
+        "into": "kaempekrabbe",
+        "level": 28
+      },
       "colors": ["#d9744a", "#f0c9a0"],
+      "placeholder": true
+    },
+    {
+      "id": "kaempekrabbe",
+      "types": ["stone", "water"],
+      "rarity": "uncommon",
+      "baseStats": {
+        "hp": 111,
+        "atk": 87,
+        "def": 130,
+        "spd": 67
+      },
+      "catchRate": 60,
+      "baseXp": 140,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "cobble_toss"
+        },
+        {
+          "level": 6,
+          "moveId": "hunker_down"
+        },
+        {
+          "level": 12,
+          "moveId": "grit_spray"
+        },
+        {
+          "level": 18,
+          "moveId": "ripple_dash"
+        },
+        {
+          "level": 22,
+          "moveId": "boulder_roll"
+        },
+        {
+          "level": 32,
+          "moveId": "rampart_slam"
+        },
+        {
+          "level": 36,
+          "moveId": "harbour_wave"
+        },
+        {
+          "level": 40,
+          "moveId": "rune_slab"
+        }
+      ],
+      "colors": ["#c8553d", "#f3d2c8"],
       "placeholder": true
     },
     {
       "id": "kulingmaage",
       "types": ["storm"],
+      "rarity": "uncommon",
       "baseStats": {
         "hp": 65,
         "atk": 75,
@@ -521,12 +1080,58 @@
           "moveId": "brook_spout"
         }
       ],
+      "evolution": {
+        "into": "stormmaage",
+        "level": 30
+      },
+      "colors": ["#dfe7ef", "#f2c14e"],
+      "placeholder": true
+    },
+    {
+      "id": "stormmaage",
+      "types": ["storm"],
+      "rarity": "uncommon",
+      "baseStats": {
+        "hp": 87,
+        "atk": 107,
+        "def": 71,
+        "spd": 130
+      },
+      "catchRate": 60,
+      "baseXp": 140,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "squall_slap"
+        },
+        {
+          "level": 8,
+          "moveId": "gale_step"
+        },
+        {
+          "level": 14,
+          "moveId": "cobbler_kick"
+        },
+        {
+          "level": 18,
+          "moveId": "gust_lance"
+        },
+        {
+          "level": 26,
+          "moveId": "sky_crackle"
+        },
+        {
+          "level": 40,
+          "moveId": "thunder_squall"
+        }
+      ],
       "colors": ["#dfe7ef", "#f2c14e"],
       "placeholder": true
     },
     {
       "id": "lygtling",
       "types": ["spirit"],
+      "rarity": "uncommon",
       "baseStats": {
         "hp": 60,
         "atk": 80,
@@ -561,12 +1166,66 @@
           "moveId": "lullaby_hum"
         }
       ],
+      "evolution": {
+        "into": "lygtemand",
+        "level": 24
+      },
       "colors": ["#7c5cd6", "#ffe27a"],
+      "placeholder": true
+    },
+    {
+      "id": "lygtemand",
+      "types": ["spirit", "fire"],
+      "rarity": "uncommon",
+      "baseStats": {
+        "hp": 87,
+        "atk": 107,
+        "def": 71,
+        "spd": 130
+      },
+      "catchRate": 60,
+      "baseXp": 140,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "wisp_flicker"
+        },
+        {
+          "level": 6,
+          "moveId": "moonless_stare"
+        },
+        {
+          "level": 12,
+          "moveId": "blight_touch"
+        },
+        {
+          "level": 18,
+          "moveId": "grave_chill"
+        },
+        {
+          "level": 18,
+          "moveId": "ember_hop"
+        },
+        {
+          "level": 26,
+          "moveId": "hollow_wail"
+        },
+        {
+          "level": 36,
+          "moveId": "kiln_blast"
+        },
+        {
+          "level": 40,
+          "moveId": "elf_dance"
+        }
+      ],
+      "colors": ["#b9d3e6", "#f2e3a0"],
       "placeholder": true
     },
     {
       "id": "loftnisse",
       "types": ["folk", "spirit"],
+      "rarity": "rare",
       "baseStats": {
         "hp": 90,
         "atk": 95,
@@ -605,12 +1264,62 @@
           "moveId": "moonless_stare"
         }
       ],
+      "evolution": {
+        "into": "gaardnisse",
+        "level": 34
+      },
       "colors": ["#c0392b", "#e9d8c4"],
+      "placeholder": true
+    },
+    {
+      "id": "gaardnisse",
+      "types": ["folk", "spirit"],
+      "rarity": "rare",
+      "baseStats": {
+        "hp": 100,
+        "atk": 104,
+        "def": 96,
+        "spd": 100
+      },
+      "catchRate": 25,
+      "baseXp": 140,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "shoulder_shove"
+        },
+        {
+          "level": 1,
+          "moveId": "stern_glare"
+        },
+        {
+          "level": 10,
+          "moveId": "cobbler_kick"
+        },
+        {
+          "level": 18,
+          "moveId": "grave_chill"
+        },
+        {
+          "level": 20,
+          "moveId": "cartwheel"
+        },
+        {
+          "level": 34,
+          "moveId": "market_stampede"
+        },
+        {
+          "level": 36,
+          "moveId": "hollow_wail"
+        }
+      ],
+      "colors": ["#c8553d", "#f3ead6"],
       "placeholder": true
     },
     {
       "id": "soeormling",
       "types": ["stone", "water"],
+      "rarity": "rare",
       "baseStats": {
         "hp": 95,
         "atk": 100,
@@ -649,12 +1358,66 @@
           "moveId": "sea_fog"
         }
       ],
+      "evolution": {
+        "into": "lindorm",
+        "level": 38
+      },
       "colors": ["#2f7f8f", "#9fd8cf"],
+      "placeholder": true
+    },
+    {
+      "id": "lindorm",
+      "types": ["stone", "water"],
+      "rarity": "rare",
+      "baseStats": {
+        "hp": 104,
+        "atk": 136,
+        "def": 96,
+        "spd": 64
+      },
+      "catchRate": 25,
+      "baseXp": 140,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "cobble_toss"
+        },
+        {
+          "level": 6,
+          "moveId": "hunker_down"
+        },
+        {
+          "level": 12,
+          "moveId": "grit_spray"
+        },
+        {
+          "level": 18,
+          "moveId": "ripple_dash"
+        },
+        {
+          "level": 22,
+          "moveId": "boulder_roll"
+        },
+        {
+          "level": 32,
+          "moveId": "rampart_slam"
+        },
+        {
+          "level": 36,
+          "moveId": "harbour_wave"
+        },
+        {
+          "level": 40,
+          "moveId": "rune_slab"
+        }
+      ],
+      "colors": ["#4f7f8a", "#c9b48a"],
       "placeholder": true
     },
     {
       "id": "kampetrold",
       "types": ["stone"],
+      "rarity": "rare",
       "baseStats": {
         "hp": 85,
         "atk": 90,
@@ -693,12 +1456,62 @@
           "moveId": "rampart_slam"
         }
       ],
+      "evolution": {
+        "into": "bjergtrold",
+        "level": 36
+      },
       "colors": ["#8d8174", "#b9c48a"],
+      "placeholder": true
+    },
+    {
+      "id": "bjergtrold",
+      "types": ["stone"],
+      "rarity": "rare",
+      "baseStats": {
+        "hp": 104,
+        "atk": 136,
+        "def": 96,
+        "spd": 64
+      },
+      "catchRate": 25,
+      "baseXp": 140,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "cobble_toss"
+        },
+        {
+          "level": 6,
+          "moveId": "hunker_down"
+        },
+        {
+          "level": 12,
+          "moveId": "grit_spray"
+        },
+        {
+          "level": 14,
+          "moveId": "cobbler_kick"
+        },
+        {
+          "level": 22,
+          "moveId": "boulder_roll"
+        },
+        {
+          "level": 32,
+          "moveId": "rampart_slam"
+        },
+        {
+          "level": 40,
+          "moveId": "rune_slab"
+        }
+      ],
+      "colors": ["#7b746a", "#c9a27a"],
       "placeholder": true
     },
     {
       "id": "ellepige",
       "types": ["grove", "spirit"],
+      "rarity": "rare",
       "baseStats": {
         "hp": 80,
         "atk": 85,
@@ -737,7 +1550,1073 @@
           "moveId": "moonless_stare"
         }
       ],
+      "evolution": {
+        "into": "ellekonge",
+        "level": 38
+      },
       "colors": ["#8fcf9a", "#d8c2f0"],
+      "placeholder": true
+    },
+    {
+      "id": "ellekonge",
+      "types": ["grove", "spirit"],
+      "rarity": "rare",
+      "baseStats": {
+        "hp": 100,
+        "atk": 104,
+        "def": 96,
+        "spd": 100
+      },
+      "catchRate": 25,
+      "baseXp": 140,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "beech_lash"
+        },
+        {
+          "level": 6,
+          "moveId": "drowsy_pollen"
+        },
+        {
+          "level": 12,
+          "moveId": "nettle_sting"
+        },
+        {
+          "level": 18,
+          "moveId": "grave_chill"
+        },
+        {
+          "level": 20,
+          "moveId": "root_snare"
+        },
+        {
+          "level": 26,
+          "moveId": "thorn_volley"
+        },
+        {
+          "level": 36,
+          "moveId": "hollow_wail"
+        },
+        {
+          "level": 40,
+          "moveId": "beech_crown"
+        }
+      ],
+      "colors": ["#7aa86a", "#e6d8f2"],
+      "placeholder": true
+    },
+    {
+      "id": "gloeding",
+      "types": ["fire"],
+      "rarity": "uncommon",
+      "baseStats": {
+        "hp": 59,
+        "atk": 73,
+        "def": 49,
+        "spd": 89
+      },
+      "catchRate": 140,
+      "baseXp": 55,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "hearth_spark"
+        },
+        {
+          "level": 8,
+          "moveId": "stoke_up"
+        },
+        {
+          "level": 14,
+          "moveId": "cobbler_kick"
+        },
+        {
+          "level": 16,
+          "moveId": "ember_hop"
+        },
+        {
+          "level": 22,
+          "moveId": "cinder_brand"
+        },
+        {
+          "level": 30,
+          "moveId": "kiln_blast"
+        },
+        {
+          "level": 40,
+          "moveId": "forge_flare"
+        }
+      ],
+      "evolution": {
+        "into": "gloedoegle",
+        "level": 18
+      },
+      "colors": ["#e0642e", "#ffd27a"],
+      "placeholder": true
+    },
+    {
+      "id": "gloedoegle",
+      "types": ["fire"],
+      "rarity": "uncommon",
+      "baseStats": {
+        "hp": 76,
+        "atk": 93,
+        "def": 62,
+        "spd": 114
+      },
+      "catchRate": 60,
+      "baseXp": 140,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "hearth_spark"
+        },
+        {
+          "level": 8,
+          "moveId": "stoke_up"
+        },
+        {
+          "level": 14,
+          "moveId": "cobbler_kick"
+        },
+        {
+          "level": 16,
+          "moveId": "ember_hop"
+        },
+        {
+          "level": 22,
+          "moveId": "cinder_brand"
+        },
+        {
+          "level": 30,
+          "moveId": "kiln_blast"
+        },
+        {
+          "level": 40,
+          "moveId": "forge_flare"
+        }
+      ],
+      "evolution": {
+        "into": "essedrage",
+        "level": 38
+      },
+      "colors": ["#e0642e", "#ffd27a"],
+      "placeholder": true
+    },
+    {
+      "id": "essedrage",
+      "types": ["fire", "storm"],
+      "rarity": "uncommon",
+      "baseStats": {
+        "hp": 104,
+        "atk": 136,
+        "def": 96,
+        "spd": 64
+      },
+      "catchRate": 30,
+      "baseXp": 210,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "hearth_spark"
+        },
+        {
+          "level": 8,
+          "moveId": "stoke_up"
+        },
+        {
+          "level": 16,
+          "moveId": "ember_hop"
+        },
+        {
+          "level": 18,
+          "moveId": "gust_lance"
+        },
+        {
+          "level": 22,
+          "moveId": "cinder_brand"
+        },
+        {
+          "level": 30,
+          "moveId": "kiln_blast"
+        },
+        {
+          "level": 36,
+          "moveId": "sky_crackle"
+        },
+        {
+          "level": 40,
+          "moveId": "forge_flare"
+        }
+      ],
+      "colors": ["#e0642e", "#ffd27a"],
+      "placeholder": true
+    },
+    {
+      "id": "rokkeling",
+      "types": ["water"],
+      "rarity": "uncommon",
+      "baseStats": {
+        "hp": 71,
+        "atk": 74,
+        "def": 68,
+        "spd": 72
+      },
+      "catchRate": 140,
+      "baseXp": 55,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "brook_spout"
+        },
+        {
+          "level": 8,
+          "moveId": "sea_fog"
+        },
+        {
+          "level": 14,
+          "moveId": "cobbler_kick"
+        },
+        {
+          "level": 16,
+          "moveId": "ripple_dash"
+        },
+        {
+          "level": 24,
+          "moveId": "rinse_and_mend"
+        },
+        {
+          "level": 30,
+          "moveId": "harbour_wave"
+        },
+        {
+          "level": 40,
+          "moveId": "fjord_surge"
+        }
+      ],
+      "evolution": {
+        "into": "rokkevinge",
+        "level": 30
+      },
+      "colors": ["#3d8fb8", "#d9eef7"],
+      "placeholder": true
+    },
+    {
+      "id": "rokkevinge",
+      "types": ["water", "storm"],
+      "rarity": "uncommon",
+      "baseStats": {
+        "hp": 86,
+        "atk": 105,
+        "def": 70,
+        "spd": 129
+      },
+      "catchRate": 60,
+      "baseXp": 140,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "brook_spout"
+        },
+        {
+          "level": 8,
+          "moveId": "sea_fog"
+        },
+        {
+          "level": 16,
+          "moveId": "ripple_dash"
+        },
+        {
+          "level": 18,
+          "moveId": "gust_lance"
+        },
+        {
+          "level": 24,
+          "moveId": "rinse_and_mend"
+        },
+        {
+          "level": 30,
+          "moveId": "harbour_wave"
+        },
+        {
+          "level": 36,
+          "moveId": "sky_crackle"
+        },
+        {
+          "level": 40,
+          "moveId": "fjord_surge"
+        }
+      ],
+      "colors": ["#3d8fb8", "#d9eef7"],
+      "placeholder": true
+    },
+    {
+      "id": "mosling",
+      "types": ["grove"],
+      "rarity": "common",
+      "baseStats": {
+        "hp": 71,
+        "atk": 56,
+        "def": 84,
+        "spd": 44
+      },
+      "catchRate": 220,
+      "baseXp": 55,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "beech_lash"
+        },
+        {
+          "level": 6,
+          "moveId": "drowsy_pollen"
+        },
+        {
+          "level": 12,
+          "moveId": "nettle_sting"
+        },
+        {
+          "level": 14,
+          "moveId": "cobbler_kick"
+        },
+        {
+          "level": 20,
+          "moveId": "root_snare"
+        },
+        {
+          "level": 26,
+          "moveId": "thorn_volley"
+        },
+        {
+          "level": 40,
+          "moveId": "beech_crown"
+        }
+      ],
+      "evolution": {
+        "into": "mostrold",
+        "level": 20
+      },
+      "colors": ["#6f9a4a", "#d8e8a8"],
+      "placeholder": true
+    },
+    {
+      "id": "mostrold",
+      "types": ["grove"],
+      "rarity": "common",
+      "baseStats": {
+        "hp": 94,
+        "atk": 74,
+        "def": 111,
+        "spd": 56
+      },
+      "catchRate": 90,
+      "baseXp": 140,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "beech_lash"
+        },
+        {
+          "level": 6,
+          "moveId": "drowsy_pollen"
+        },
+        {
+          "level": 12,
+          "moveId": "nettle_sting"
+        },
+        {
+          "level": 14,
+          "moveId": "cobbler_kick"
+        },
+        {
+          "level": 20,
+          "moveId": "root_snare"
+        },
+        {
+          "level": 26,
+          "moveId": "thorn_volley"
+        },
+        {
+          "level": 40,
+          "moveId": "beech_crown"
+        }
+      ],
+      "evolution": {
+        "into": "lyngkonge",
+        "level": 36
+      },
+      "colors": ["#6f9a4a", "#d8e8a8"],
+      "placeholder": true
+    },
+    {
+      "id": "lyngkonge",
+      "types": ["grove", "folk"],
+      "rarity": "common",
+      "baseStats": {
+        "hp": 100,
+        "atk": 103,
+        "def": 96,
+        "spd": 99
+      },
+      "catchRate": 45,
+      "baseXp": 210,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "beech_lash"
+        },
+        {
+          "level": 6,
+          "moveId": "drowsy_pollen"
+        },
+        {
+          "level": 12,
+          "moveId": "nettle_sting"
+        },
+        {
+          "level": 14,
+          "moveId": "cobbler_kick"
+        },
+        {
+          "level": 20,
+          "moveId": "root_snare"
+        },
+        {
+          "level": 26,
+          "moveId": "thorn_volley"
+        },
+        {
+          "level": 36,
+          "moveId": "market_stampede"
+        },
+        {
+          "level": 40,
+          "moveId": "beech_crown"
+        }
+      ],
+      "colors": ["#6f9a4a", "#d8e8a8"],
+      "placeholder": true
+    },
+    {
+      "id": "lynspurv",
+      "types": ["storm"],
+      "rarity": "uncommon",
+      "baseStats": {
+        "hp": 58,
+        "atk": 72,
+        "def": 48,
+        "spd": 87
+      },
+      "catchRate": 140,
+      "baseXp": 55,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "squall_slap"
+        },
+        {
+          "level": 8,
+          "moveId": "gale_step"
+        },
+        {
+          "level": 14,
+          "moveId": "cobbler_kick"
+        },
+        {
+          "level": 18,
+          "moveId": "gust_lance"
+        },
+        {
+          "level": 26,
+          "moveId": "sky_crackle"
+        },
+        {
+          "level": 40,
+          "moveId": "thunder_squall"
+        }
+      ],
+      "evolution": {
+        "into": "tordenkrage",
+        "level": 20
+      },
+      "colors": ["#6a6f8a", "#f2e04e"],
+      "placeholder": true
+    },
+    {
+      "id": "tordenkrage",
+      "types": ["storm"],
+      "rarity": "uncommon",
+      "baseStats": {
+        "hp": 75,
+        "atk": 92,
+        "def": 61,
+        "spd": 112
+      },
+      "catchRate": 60,
+      "baseXp": 140,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "squall_slap"
+        },
+        {
+          "level": 8,
+          "moveId": "gale_step"
+        },
+        {
+          "level": 14,
+          "moveId": "cobbler_kick"
+        },
+        {
+          "level": 18,
+          "moveId": "gust_lance"
+        },
+        {
+          "level": 26,
+          "moveId": "sky_crackle"
+        },
+        {
+          "level": 40,
+          "moveId": "thunder_squall"
+        }
+      ],
+      "evolution": {
+        "into": "tordenravn",
+        "level": 38
+      },
+      "colors": ["#6a6f8a", "#f2e04e"],
+      "placeholder": true
+    },
+    {
+      "id": "tordenravn",
+      "types": ["storm", "spirit"],
+      "rarity": "uncommon",
+      "baseStats": {
+        "hp": 88,
+        "atk": 108,
+        "def": 72,
+        "spd": 132
+      },
+      "catchRate": 30,
+      "baseXp": 210,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "squall_slap"
+        },
+        {
+          "level": 8,
+          "moveId": "gale_step"
+        },
+        {
+          "level": 18,
+          "moveId": "gust_lance"
+        },
+        {
+          "level": 18,
+          "moveId": "grave_chill"
+        },
+        {
+          "level": 26,
+          "moveId": "sky_crackle"
+        },
+        {
+          "level": 36,
+          "moveId": "hollow_wail"
+        },
+        {
+          "level": 40,
+          "moveId": "thunder_squall"
+        }
+      ],
+      "colors": ["#6a6f8a", "#f2e04e"],
+      "placeholder": true
+    },
+    {
+      "id": "dugpust",
+      "types": ["spirit"],
+      "rarity": "uncommon",
+      "baseStats": {
+        "hp": 70,
+        "atk": 73,
+        "def": 67,
+        "spd": 70
+      },
+      "catchRate": 140,
+      "baseXp": 55,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "wisp_flicker"
+        },
+        {
+          "level": 6,
+          "moveId": "moonless_stare"
+        },
+        {
+          "level": 12,
+          "moveId": "blight_touch"
+        },
+        {
+          "level": 14,
+          "moveId": "cobbler_kick"
+        },
+        {
+          "level": 18,
+          "moveId": "grave_chill"
+        },
+        {
+          "level": 26,
+          "moveId": "hollow_wail"
+        },
+        {
+          "level": 40,
+          "moveId": "elf_dance"
+        }
+      ],
+      "evolution": {
+        "into": "mosekone",
+        "level": 30
+      },
+      "colors": ["#cfe3ea", "#9ab08a"],
+      "placeholder": true
+    },
+    {
+      "id": "mosekone",
+      "types": ["spirit", "grove"],
+      "rarity": "uncommon",
+      "baseStats": {
+        "hp": 98,
+        "atk": 101,
+        "def": 94,
+        "spd": 97
+      },
+      "catchRate": 60,
+      "baseXp": 140,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "wisp_flicker"
+        },
+        {
+          "level": 6,
+          "moveId": "moonless_stare"
+        },
+        {
+          "level": 12,
+          "moveId": "blight_touch"
+        },
+        {
+          "level": 18,
+          "moveId": "grave_chill"
+        },
+        {
+          "level": 18,
+          "moveId": "thorn_volley"
+        },
+        {
+          "level": 26,
+          "moveId": "hollow_wail"
+        },
+        {
+          "level": 36,
+          "moveId": "beech_crown"
+        },
+        {
+          "level": 40,
+          "moveId": "elf_dance"
+        }
+      ],
+      "colors": ["#cfe3ea", "#9ab08a"],
+      "placeholder": true
+    },
+    {
+      "id": "flintling",
+      "types": ["stone"],
+      "rarity": "uncommon",
+      "baseStats": {
+        "hp": 80,
+        "atk": 63,
+        "def": 94,
+        "spd": 48
+      },
+      "catchRate": 140,
+      "baseXp": 55,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "cobble_toss"
+        },
+        {
+          "level": 6,
+          "moveId": "hunker_down"
+        },
+        {
+          "level": 12,
+          "moveId": "grit_spray"
+        },
+        {
+          "level": 14,
+          "moveId": "cobbler_kick"
+        },
+        {
+          "level": 22,
+          "moveId": "boulder_roll"
+        },
+        {
+          "level": 32,
+          "moveId": "rampart_slam"
+        },
+        {
+          "level": 40,
+          "moveId": "rune_slab"
+        }
+      ],
+      "evolution": {
+        "into": "flintbjoern",
+        "level": 32
+      },
+      "colors": ["#8a8f98", "#d8d2c4"],
+      "placeholder": true
+    },
+    {
+      "id": "flintbjoern",
+      "types": ["stone", "folk"],
+      "rarity": "uncommon",
+      "baseStats": {
+        "hp": 102,
+        "atk": 133,
+        "def": 94,
+        "spd": 63
+      },
+      "catchRate": 60,
+      "baseXp": 140,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "cobble_toss"
+        },
+        {
+          "level": 6,
+          "moveId": "hunker_down"
+        },
+        {
+          "level": 12,
+          "moveId": "grit_spray"
+        },
+        {
+          "level": 14,
+          "moveId": "cobbler_kick"
+        },
+        {
+          "level": 22,
+          "moveId": "boulder_roll"
+        },
+        {
+          "level": 32,
+          "moveId": "rampart_slam"
+        },
+        {
+          "level": 36,
+          "moveId": "market_stampede"
+        },
+        {
+          "level": 40,
+          "moveId": "rune_slab"
+        }
+      ],
+      "colors": ["#8a8f98", "#d8d2c4"],
+      "placeholder": true
+    },
+    {
+      "id": "raeveling",
+      "types": ["folk"],
+      "rarity": "common",
+      "baseStats": {
+        "hp": 59,
+        "atk": 73,
+        "def": 49,
+        "spd": 89
+      },
+      "catchRate": 220,
+      "baseXp": 55,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "shoulder_shove"
+        },
+        {
+          "level": 1,
+          "moveId": "stern_glare"
+        },
+        {
+          "level": 10,
+          "moveId": "cobbler_kick"
+        },
+        {
+          "level": 20,
+          "moveId": "cartwheel"
+        },
+        {
+          "level": 34,
+          "moveId": "market_stampede"
+        }
+      ],
+      "evolution": {
+        "into": "mikkelraev",
+        "level": 24
+      },
+      "colors": ["#d07a2e", "#fbf4e6"],
+      "placeholder": true
+    },
+    {
+      "id": "mikkelraev",
+      "types": ["folk", "grove"],
+      "rarity": "common",
+      "baseStats": {
+        "hp": 85,
+        "atk": 104,
+        "def": 69,
+        "spd": 127
+      },
+      "catchRate": 90,
+      "baseXp": 140,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "shoulder_shove"
+        },
+        {
+          "level": 1,
+          "moveId": "stern_glare"
+        },
+        {
+          "level": 10,
+          "moveId": "cobbler_kick"
+        },
+        {
+          "level": 18,
+          "moveId": "thorn_volley"
+        },
+        {
+          "level": 20,
+          "moveId": "cartwheel"
+        },
+        {
+          "level": 34,
+          "moveId": "market_stampede"
+        },
+        {
+          "level": 36,
+          "moveId": "beech_crown"
+        }
+      ],
+      "colors": ["#d07a2e", "#fbf4e6"],
+      "placeholder": true
+    },
+    {
+      "id": "noekkeling",
+      "types": ["water", "spirit"],
+      "rarity": "veryRare",
+      "baseStats": {
+        "hp": 80,
+        "atk": 83,
+        "def": 77,
+        "spd": 80
+      },
+      "catchRate": 15,
+      "baseXp": 55,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "brook_spout"
+        },
+        {
+          "level": 8,
+          "moveId": "sea_fog"
+        },
+        {
+          "level": 16,
+          "moveId": "ripple_dash"
+        },
+        {
+          "level": 18,
+          "moveId": "grave_chill"
+        },
+        {
+          "level": 24,
+          "moveId": "rinse_and_mend"
+        },
+        {
+          "level": 30,
+          "moveId": "harbour_wave"
+        },
+        {
+          "level": 36,
+          "moveId": "hollow_wail"
+        },
+        {
+          "level": 40,
+          "moveId": "fjord_surge"
+        }
+      ],
+      "evolution": {
+        "into": "noekken",
+        "level": 35
+      },
+      "colors": ["#2f6f8f", "#bfe0f2"],
+      "placeholder": true
+    },
+    {
+      "id": "noekken",
+      "types": ["water", "spirit"],
+      "rarity": "veryRare",
+      "baseStats": {
+        "hp": 100,
+        "atk": 104,
+        "def": 96,
+        "spd": 100
+      },
+      "catchRate": 8,
+      "baseXp": 140,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "brook_spout"
+        },
+        {
+          "level": 8,
+          "moveId": "sea_fog"
+        },
+        {
+          "level": 16,
+          "moveId": "ripple_dash"
+        },
+        {
+          "level": 18,
+          "moveId": "grave_chill"
+        },
+        {
+          "level": 24,
+          "moveId": "rinse_and_mend"
+        },
+        {
+          "level": 30,
+          "moveId": "harbour_wave"
+        },
+        {
+          "level": 36,
+          "moveId": "hollow_wail"
+        },
+        {
+          "level": 40,
+          "moveId": "fjord_surge"
+        }
+      ],
+      "colors": ["#2f6f8f", "#bfe0f2"],
+      "placeholder": true
+    },
+    {
+      "id": "ildflue",
+      "types": ["fire", "grove"],
+      "rarity": "uncommon",
+      "baseStats": {
+        "hp": 61,
+        "atk": 74,
+        "def": 50,
+        "spd": 90
+      },
+      "catchRate": 140,
+      "baseXp": 55,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "hearth_spark"
+        },
+        {
+          "level": 8,
+          "moveId": "stoke_up"
+        },
+        {
+          "level": 16,
+          "moveId": "ember_hop"
+        },
+        {
+          "level": 18,
+          "moveId": "thorn_volley"
+        },
+        {
+          "level": 22,
+          "moveId": "cinder_brand"
+        },
+        {
+          "level": 30,
+          "moveId": "kiln_blast"
+        },
+        {
+          "level": 36,
+          "moveId": "beech_crown"
+        },
+        {
+          "level": 40,
+          "moveId": "forge_flare"
+        }
+      ],
+      "evolution": {
+        "into": "gloeddronning",
+        "level": 28
+      },
+      "colors": ["#f2c14e", "#e0642e"],
+      "placeholder": true
+    },
+    {
+      "id": "gloeddronning",
+      "types": ["fire", "grove"],
+      "rarity": "uncommon",
+      "baseStats": {
+        "hp": 85,
+        "atk": 105,
+        "def": 70,
+        "spd": 128
+      },
+      "catchRate": 60,
+      "baseXp": 140,
+      "learnset": [
+        {
+          "level": 1,
+          "moveId": "hearth_spark"
+        },
+        {
+          "level": 8,
+          "moveId": "stoke_up"
+        },
+        {
+          "level": 16,
+          "moveId": "ember_hop"
+        },
+        {
+          "level": 18,
+          "moveId": "thorn_volley"
+        },
+        {
+          "level": 22,
+          "moveId": "cinder_brand"
+        },
+        {
+          "level": 30,
+          "moveId": "kiln_blast"
+        },
+        {
+          "level": 36,
+          "moveId": "beech_crown"
+        },
+        {
+          "level": 40,
+          "moveId": "forge_flare"
+        }
+      ],
+      "colors": ["#f2c14e", "#e0642e"],
       "placeholder": true
     }
   ]

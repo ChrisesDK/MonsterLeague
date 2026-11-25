@@ -13,6 +13,8 @@ export interface RegionCell {
   waterEdge: boolean;
   /** Within about 30 m of a named route. */
   route: boolean;
+  /** D167: real nature in a forest, field or lake zone (the Town Map's destinations). */
+  destination: boolean;
   /** Bit mask of res-12 child positions (cellToChildren order) where spawns are blocked. */
   blockedMask: number;
   /** Biome area shares, 0–1. */
@@ -31,7 +33,13 @@ export interface Region {
 }
 
 /** Region row flag bits (column 2, region file v4). */
-export const REGION_FLAG = { noSpawn: 1, wild: 2, waterEdge: 4, route: 8 } as const;
+export const REGION_FLAG = {
+  noSpawn: 1,
+  wild: 2,
+  waterEdge: 4,
+  route: 8,
+  destination: 16,
+} as const;
 
 /**
  * Decodes the compact region file (`[district, zone, flags, ...shares%, blockedMask?]` per
@@ -52,6 +60,7 @@ export function decodeRegion(file: RegionFile): Region {
       wild: (flags & REGION_FLAG.wild) !== 0,
       waterEdge: (flags & REGION_FLAG.waterEdge) !== 0,
       route: (flags & REGION_FLAG.route) !== 0,
+      destination: (flags & REGION_FLAG.destination) !== 0,
       blockedMask: row[3 + BIOMES.length] ?? 0,
       shares,
     });

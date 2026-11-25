@@ -15,8 +15,8 @@ export interface CreatureArtInput {
   types: string[];
   /** Base stat total (bigger creatures for bigger totals). */
   bst: number;
-  /** 1 = first stage, 2 = evolved. */
-  stage: 1 | 2;
+  /** 1 = first stage, 2 = evolved, 3 = second evolution. */
+  stage: 1 | 2 | 3;
 }
 
 const INK = '#3b2a20';
@@ -189,9 +189,7 @@ export function creatureSvg(input: CreatureArtInput): string {
   const belly = secondary ? shade(secondary, 0.35) : shade(primary, 0.5);
 
   const size =
-    0.78 +
-    Math.max(0, Math.min(1, (input.bst - 240) / 160)) * 0.22 +
-    (input.stage === 2 ? 0.04 : 0);
+    0.78 + Math.max(0, Math.min(1, (input.bst - 240) / 160)) * 0.22 + (input.stage - 1) * 0.04;
   const shape = p.pick<Shape>(['round', 'pear', 'bean', 'tall', 'wide', 'drop']);
   const w = r1(34 * size * (shape === 'wide' ? 1.15 : shape === 'tall' ? 0.88 : 1));
   const h = r1(32 * size * (shape === 'tall' ? 1.18 : shape === 'wide' ? 0.88 : 1));
@@ -207,10 +205,14 @@ export function creatureSvg(input: CreatureArtInput): string {
   const back = [...f1.back, ...(f2?.back ?? [])];
   const front = [...f1.front, ...(f2?.front ?? [])];
 
-  // Evolved forms get a small crest.
+  // Evolved forms get a small crest; second evolutions a taller, three-point crown.
   if (input.stage === 2) {
     back.push(
       `<path d="M${cx - 14} ${top + 8} l6 -16 l8 10 l8 -10 l6 16 Z" fill="${shade(dark, 0.1)}" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>`,
+    );
+  } else if (input.stage === 3) {
+    back.push(
+      `<path d="M${cx - 20} ${top + 8} l5 -20 l7 11 l8 -17 l8 17 l7 -11 l5 20 Z" fill="${shade(dark, 0.1)}" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>`,
     );
   }
 

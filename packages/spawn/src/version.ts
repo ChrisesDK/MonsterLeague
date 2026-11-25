@@ -1,8 +1,11 @@
 import type { Spawn as SpawnEntry } from '@oml/data';
 import {
   DENSITY,
+  DESTINATION_FACTOR,
+  DESTINATION_RARE_BOOST,
   MAX_SPAWNS_PER_CELL,
   POSITION_RES,
+  ROUTE_FACTOR,
   STREET_FACTOR,
   WILD_FACTOR,
   WINDOW_SECONDS,
@@ -14,7 +17,7 @@ import {
  * The golden test in test/version.test.ts fails until this is bumped and the golden
  * fingerprint is updated, so code changes can't slip through unversioned.
  */
-export const SPAWN_ALGORITHM = 4;
+export const SPAWN_ALGORITHM = 5;
 
 /**
  * Version of the spawn rules: algorithm number + tunable numbers + spawn tables. The spawn
@@ -27,6 +30,9 @@ export function spawnRulesVersion(spawnTables: readonly SpawnEntry[]): string {
     density: DENSITY,
     wildFactor: WILD_FACTOR,
     streetFactor: STREET_FACTOR,
+    routeFactor: ROUTE_FACTOR,
+    destinationFactor: DESTINATION_FACTOR,
+    destinationRareBoost: DESTINATION_RARE_BOOST,
     maxPerCell: MAX_SPAWNS_PER_CELL,
     window: WINDOW_SECONDS,
     positionRes: POSITION_RES,

@@ -172,7 +172,7 @@ describe('outside-battle helpers', () => {
     expect(hurt.speciesId).toBe('aaodder');
     expect(evolveCreature({ ...c, hp: 0 }, dex).hp).toBe(0);
     expect(canEvolve(createCreature('aaodder', 15, 'b', dex), dex)).toBe(false);
-    expect(canEvolve(createCreature('torvdue', 50, 'c', dex), dex)).toBe(false);
+    expect(canEvolve(createCreature('vinddue', 50, 'c', dex), dex)).toBe(false); // last stage
     expect(() => evolveCreature(createCreature('aaodder', 15, 'd', dex), dex)).toThrow();
   });
 });

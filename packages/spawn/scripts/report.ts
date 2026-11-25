@@ -1,9 +1,13 @@
 /**
  * Spawn density report: simulated walks counting battle-able spawns (no field ability
- * needed) that come within 40 m, per km walked. GDD v1.9 targets (the CI gate):
- *  - wild areas (park, forest, meadow/field, water edge) and route corridors: 1 per 100–150 m;
- *  - streets: 1 per 300–400 m;
- *  - a 30-minute park walk (2 km at 4 km/h, two 15-minute windows) offers 10–14 creatures.
+ * needed) that come within 40 m, per km walked. GDD v1.13 targets (the CI gate, D167):
+ *  - destinations (nature in forest, field and lake zones): 1 per 70–110 m;
+ *  - other wild areas (city parks): 1 per 100–170 m;
+ *  - route corridors outside wild areas: 1 per 200–400 m;
+ *  - streets: 1 per 300–450 m;
+ *  - rare creatures are at least twice as common (share of finds) in destinations as elsewhere;
+ *  - a 30-minute walk in a destination (2 km at 4 km/h, two 15-minute windows) offers
+ *    15–22 creatures.
  * Also: what a player with 0 badges finds outside district 1 (commons only, GDD v1.7), and
  * whether streets favour urban species and wild areas their biome species.
  * Deterministic (fixed seeds), so results are reproducible.
@@ -24,15 +28,22 @@ const tables = content.spawns;
 const districts = [...new Set(tables.map((t) => t.district))].sort((a, b) => a - b);
 const allCells = [...region.cells.values()].filter((c) => districts.includes(c.district));
 
-type Klass = 'wild' | 'streets' | 'other';
+const KLASSES = ['destination', 'wild', 'route', 'streets', 'other'] as const;
+type Klass = (typeof KLASSES)[number];
 const TARGET: Record<Exclude<Klass, 'other'>, [number, number]> = {
-  wild: [100, 150],
-  streets: [300, 400],
+  destination: [70, 110],
+  wild: [100, 170],
+  route: [200, 400],
+  streets: [300, 450],
 };
-const PARK_WALK_TARGET: [number, number] = [10, 14];
+const PARK_WALK_TARGET: [number, number] = [15, 22];
+/** Rare finds: at least this many times the share in destinations as elsewhere. */
+const RARE_RATIO_TARGET = 2;
 const URBAN: Biome[] = ['urban', 'historic', 'industrial'];
 function klass(c: RegionCell): Klass {
-  if (c.wild || c.route) return 'wild';
+  if (c.destination) return 'destination';
+  if (c.wild) return 'wild';
+  if (c.route) return 'route';
   const s = c.shares;
   if (s.urban + s.historic + s.industrial >= 0.5) return 'streets';
   return 'other';
@@ -104,6 +115,7 @@ interface Result {
   found: Record<Klass, number>;
   /** Found spawns whose species prefers an urban biome most. */
   urbanFound: Record<Klass, number>;
+  rareFound: Record<Klass, number>;
   windows: number;
   spawns: number;
   cells: number;
@@ -127,11 +139,12 @@ function topBiome(s: Spawn): Biome | null {
 function measure(cells: RegionCell[], keep: (s: Spawn) => boolean): Result {
   const inArea = new Set(cells.map((c) => c.id));
   const rng = new Rng(seedRng(20261120));
-  const zero = () => ({ wild: 0, streets: 0, other: 0 });
+  const zero = () => ({ destination: 0, wild: 0, route: 0, streets: 0, other: 0 });
   const r: Result = {
     walked: zero(),
     found: zero(),
     urbanFound: zero(),
+    rareFound: zero(),
     windows: 0,
     spawns: 0,
     cells: cells.length,
@@ -153,6 +166,7 @@ function measure(cells: RegionCell[], keep: (s: Spawn) => boolean): Result {
         (cell, s) => {
           const k = klass(cell);
           r.found[k]++;
+          if (s.rarity === 'rare') r.rareFound[k]++;
           const top = topBiome(s);
           if (top && URBAN.includes(top)) r.urbanFound[k]++;
         },
@@ -164,33 +178,48 @@ function measure(cells: RegionCell[], keep: (s: Spawn) => boolean): Result {
 
 function print(r: Result, gate: boolean): boolean {
   let ok = true;
-  for (const k of ['wild', 'streets', 'other'] as const) {
+  for (const k of KLASSES) {
     const perKm = r.found[k] / (r.walked[k] / 1000);
     const mPer = r.found[k] ? r.walked[k] / r.found[k] : Infinity;
     const target = k === 'other' || !gate ? null : TARGET[k];
     const pass = target ? mPer >= target[0] && mPer <= target[1] : null;
     if (pass === false) ok = false;
     const urban = r.found[k] ? Math.round((100 * r.urbanFound[k]) / r.found[k]) : 0;
+    const rare = r.found[k] ? ((100 * r.rareFound[k]) / r.found[k]).toFixed(1) : '0';
     console.log(
-      `  ${k.padEnd(8)} ${(r.walked[k] / 1000).toFixed(0).padStart(5)} km walked  ${perKm.toFixed(2).padStart(5)} spawns/km  ` +
-        `1 per ${mPer.toFixed(0).padStart(4)} m  ${String(urban).padStart(3)}% urban species` +
+      `  ${k.padEnd(11)} ${(r.walked[k] / 1000).toFixed(0).padStart(5)} km walked  ${perKm.toFixed(2).padStart(5)} spawns/km  ` +
+        `1 per ${mPer.toFixed(0).padStart(4)} m  ${String(urban).padStart(3)}% urban species  ${rare.padStart(4)}% rare` +
         (target ? `   target ${target[0]}–${target[1]} m ${pass ? '✅' : '❌'}` : '   (no target)'),
     );
   }
   const total = Object.values(r.walked).reduce((a, b) => a + b, 0) / 1000;
   const n = Object.values(r.found).reduce((a, b) => a + b, 0);
   console.log(
-    `  all      ${total.toFixed(0).padStart(5)} km walked  ${(n / total).toFixed(2).padStart(5)} spawns/km`,
+    `  all         ${total.toFixed(0).padStart(5)} km walked  ${(n / total).toFixed(2).padStart(5)} spawns/km`,
   );
+  if (gate) {
+    const share = (ks: readonly Klass[]) =>
+      ks.reduce((a, k) => a + r.rareFound[k], 0) /
+      Math.max(
+        1,
+        ks.reduce((a, k) => a + r.found[k], 0),
+      );
+    const ratio = share(['destination']) / share(['wild', 'route', 'streets', 'other']);
+    const pass = ratio >= RARE_RATIO_TARGET;
+    if (!pass) ok = false;
+    console.log(
+      `  rare share in destinations vs elsewhere: ${ratio.toFixed(1)}×   target ≥ ${RARE_RATIO_TARGET}× ${pass ? '✅' : '❌'}`,
+    );
+  }
   return ok;
 }
 
 /**
- * 30-minute park walk: 2 km at 4 km/h through connected wild areas of at least 40 cells,
- * across two spawn windows (the list refreshes after 15 minutes).
+ * 30-minute destination walk: 2 km at 4 km/h through connected destination cells (at least
+ * 40), across two spawn windows (the list refreshes after 15 minutes).
  */
 function parkWalk(keep: (s: Spawn) => boolean): { mean: number; p10: number; p90: number } {
-  const wild = new Set(allCells.filter((c) => c.wild || c.route).map((c) => c.id));
+  const wild = new Set(allCells.filter((c) => c.destination).map((c) => c.id));
   // connected components of wild cells
   const comp = new Map<string, number>();
   const sizes: number[] = [];
@@ -261,7 +290,7 @@ const pw = parkWalk((s) => s.requires === null);
 const pwOk = pw.mean >= PARK_WALK_TARGET[0] && pw.mean <= PARK_WALK_TARGET[1];
 ok &&= pwOk;
 console.log(
-  `\n30-minute park walk (2 km at 4 km/h in a wild area of 40+ cells, two windows): ` +
+  `\n30-minute destination walk (2 km at 4 km/h in a destination of 40+ cells, two windows): ` +
     `${pw.mean.toFixed(1)} creatures on average (10th–90th percentile ${pw.p10}–${pw.p90})` +
     `   target ${PARK_WALK_TARGET[0]}–${PARK_WALK_TARGET[1]} ${pwOk ? '✅' : '❌'}`,
 );
@@ -275,7 +304,7 @@ const zero = measure(outside, (s) => s.requires === null && s.rarity === 'common
 console.log('\nA player with 0 badges outside district 1 (common creatures only, GDD v1.7):');
 print(zero, false);
 console.log(
-  '\nWild = wild-area or route-corridor cell (region flags); streets = urban+historic+industrial ≥ 50%.' +
+  '\nDestination, wild and route come from the region flags (in that order); streets = urban+historic+industrial ≥ 50%.' +
     '\n"Urban species" = found creatures whose spawn entry prefers urban, historic or industrial most.',
 );
 process.exit(ok ? 0 : 1);

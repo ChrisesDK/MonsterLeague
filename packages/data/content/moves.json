@@ -493,6 +493,146 @@
       ],
       "typeless": true,
       "placeholder": true
+    },
+    {
+      "id": "cartwheel",
+      "type": "folk",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 20,
+      "priority": 0,
+      "effects": [],
+      "placeholder": true
+    },
+    {
+      "id": "market_stampede",
+      "type": "folk",
+      "power": 90,
+      "accuracy": 90,
+      "pp": 10,
+      "priority": 0,
+      "effects": [],
+      "placeholder": true
+    },
+    {
+      "id": "ember_hop",
+      "type": "fire",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 20,
+      "priority": 0,
+      "effects": [],
+      "placeholder": true
+    },
+    {
+      "id": "forge_flare",
+      "type": "fire",
+      "power": 100,
+      "accuracy": 85,
+      "pp": 8,
+      "priority": 0,
+      "effects": [],
+      "placeholder": true
+    },
+    {
+      "id": "ripple_dash",
+      "type": "water",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 20,
+      "priority": 0,
+      "effects": [],
+      "placeholder": true
+    },
+    {
+      "id": "fjord_surge",
+      "type": "water",
+      "power": 95,
+      "accuracy": 90,
+      "pp": 8,
+      "priority": 0,
+      "effects": [],
+      "placeholder": true
+    },
+    {
+      "id": "thorn_volley",
+      "type": "grove",
+      "power": 65,
+      "accuracy": 95,
+      "pp": 15,
+      "priority": 0,
+      "effects": [],
+      "placeholder": true
+    },
+    {
+      "id": "beech_crown",
+      "type": "grove",
+      "power": 95,
+      "accuracy": 90,
+      "pp": 8,
+      "priority": 0,
+      "effects": [],
+      "placeholder": true
+    },
+    {
+      "id": "boulder_roll",
+      "type": "stone",
+      "power": 70,
+      "accuracy": 90,
+      "pp": 15,
+      "priority": 0,
+      "effects": [],
+      "placeholder": true
+    },
+    {
+      "id": "rune_slab",
+      "type": "stone",
+      "power": 95,
+      "accuracy": 85,
+      "pp": 8,
+      "priority": 0,
+      "effects": [],
+      "placeholder": true
+    },
+    {
+      "id": "gust_lance",
+      "type": "storm",
+      "power": 65,
+      "accuracy": 95,
+      "pp": 15,
+      "priority": 0,
+      "effects": [],
+      "placeholder": true
+    },
+    {
+      "id": "thunder_squall",
+      "type": "storm",
+      "power": 100,
+      "accuracy": 80,
+      "pp": 8,
+      "priority": 0,
+      "effects": [],
+      "placeholder": true
+    },
+    {
+      "id": "grave_chill",
+      "type": "spirit",
+      "power": 65,
+      "accuracy": 100,
+      "pp": 15,
+      "priority": 0,
+      "effects": [],
+      "placeholder": true
+    },
+    {
+      "id": "elf_dance",
+      "type": "spirit",
+      "power": 95,
+      "accuracy": 90,
+      "pp": 8,
+      "priority": 0,
+      "effects": [],
+      "placeholder": true
     }
   ]
 }

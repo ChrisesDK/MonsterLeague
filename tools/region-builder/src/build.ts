@@ -23,6 +23,7 @@ import { FeatureIndex, blockedMask, classifyCell } from './classify';
 import {
   BIOMES,
   FLAG,
+  isDestination,
   REGION,
   ROUTE_CORRIDOR_M,
   ROUTE_CORRIDOR_MIN_POINTS,
@@ -137,6 +138,7 @@ let noSpawnCells = 0;
 let partlyBlocked = 0;
 let wildCells = 0;
 let routeCells = 0;
+let destinationCells = 0;
 /**
  * A POI's own map cell always counts as the POI's zone (M2c): otherwise a cell whose centre
  * lies just across a border would show, e.g., a rest stop's wildlife as "too wild".
@@ -173,6 +175,10 @@ for (const cell of cells.sort()) {
   let flags = c.noSpawn ? FLAG.noSpawn : 0;
   flags |= wildFlags(c.shares);
   if (onRoute(cell)) flags |= FLAG.route;
+  if (!c.noSpawn && isDestination(c.shares, zoneList[zoneIdx]!.kind)) {
+    flags |= FLAG.destination;
+    destinationCells++;
+  }
   if (flags & FLAG.wild) wildCells++;
   if (flags & FLAG.route) routeCells++;
   const row = [district, zoneIdx, flags, ...BIOMES.map((b) => c.shares[b] ?? 0)];
@@ -320,7 +326,9 @@ console.log(
   `noSpawn cells (≥25% in no-spawn areas): ${noSpawnCells} of ${kept} (${((100 * noSpawnCells) / kept).toFixed(1)}%); ` +
     `${partlyBlocked} more cells with some blocked spawn positions`,
 );
-console.log(`Wild-area cells: ${wildCells}; route-corridor cells: ${routeCells}`);
+console.log(
+  `Wild-area cells: ${wildCells}; route-corridor cells: ${routeCells}; destination cells: ${destinationCells}`,
+);
 console.log('Biome totals (km², by area share):');
 for (const b of BIOMES)
   console.log(`  ${b.padEnd(11)} ${(totals[b]! * CELL_KM2).toFixed(2).padStart(7)}`);

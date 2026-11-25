@@ -15,10 +15,11 @@ export const windowEnd = (window: number): number => (window + 1) * WINDOW_SECON
 
 /**
  * Expected spawns per res-10 cell per window, by biome. A cell's density is the share-
- * weighted sum (0 in noSpawn cells), times WILD_FACTOR in wild areas and route corridors or
- * STREET_FACTOR elsewhere. Tuned with `pnpm spawn:report` against the GDD v1.9 targets: one
- * battle-able spawn per 100–150 m walked in wild areas and along routes, per 300–400 m in
- * streets, and 10–14 creatures on a 30-minute park walk.
+ * weighted sum (0 in noSpawn cells), times DESTINATION_FACTOR in destinations (nature in a
+ * forest, field or lake zone, D167), WILD_FACTOR in other wild areas, ROUTE_FACTOR in route
+ * corridors and STREET_FACTOR elsewhere. Tuned with `pnpm spawn:report` against the GDD
+ * v1.13 targets: destinations are the place to catch (about one spawn per 80–120 m walked),
+ * streets and routes are for trainers (one per 300–450 m).
  */
 export const DENSITY: Record<Biome, number> = {
   water: 1.0,
@@ -31,9 +32,13 @@ export const DENSITY: Record<Biome, number> = {
   historic: 0.6,
 };
 
-/** GDD v1.9: wild areas ("tall grass") and route corridors are denser than streets ("towns"). */
-export const WILD_FACTOR = 1.6;
-export const STREET_FACTOR = 0.9;
+/** GDD v1.13 (D167): destinations > other wild areas > route corridors > streets. */
+export const DESTINATION_FACTOR = 2.3;
+export const WILD_FACTOR = 1.4;
+export const ROUTE_FACTOR = 1.0;
+export const STREET_FACTOR = 0.8;
+/** D167: rare entries weigh this much more in destinations. */
+export const DESTINATION_RARE_BOOST = 3;
 
 export interface Spawn {
   /** Stable id: hash of region, window, cell and index. */
@@ -97,15 +102,28 @@ export function cellDensity(cell: RegionCell): number {
   let d = 0;
   for (const [b, share] of Object.entries(cell.shares) as [Biome, number][])
     d += share * DENSITY[b];
-  return d * (cell.wild || cell.route ? WILD_FACTOR : STREET_FACTOR);
+  const factor = cell.destination
+    ? DESTINATION_FACTOR
+    : cell.wild
+      ? WILD_FACTOR
+      : cell.route
+        ? ROUTE_FACTOR
+        : STREET_FACTOR;
+  return d * factor;
 }
 
-/** Species weight of a table entry in a cell: weight × Σ share(biome) × preference(biome). */
+/**
+ * Species weight of a table entry in a cell: weight × Σ share(biome) × preference(biome).
+ * Destination-only entries weigh 0 outside destinations; rare entries weigh
+ * DESTINATION_RARE_BOOST times more inside them (D167).
+ */
 export function entryWeight(entry: SpawnEntry, cell: RegionCell): number {
+  if (entry.destinationOnly && !cell.destination) return 0;
   let fit = 0;
   for (const [b, pref] of Object.entries(entry.biomes) as [Biome, number][])
     fit += cell.shares[b] * pref;
-  return entry.weight * fit;
+  const boost = cell.destination && entry.rarity === 'rare' ? DESTINATION_RARE_BOOST : 1;
+  return entry.weight * fit * boost;
 }
 
 /**

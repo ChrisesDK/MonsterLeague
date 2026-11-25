@@ -62,8 +62,18 @@ export const WATER_EDGE_MIN_SHARE = 0.25;
 export const ROUTE_CORRIDOR_M = 30;
 export const ROUTE_CORRIDOR_MIN_POINTS = 3;
 
-/** Region row flag bits (column 1; region file version 3). */
-export const FLAG = { noSpawn: 1, wild: 2, waterEdge: 4, route: 8 } as const;
+/** Region row flag bits (column 2; region file version 4). */
+export const FLAG = { noSpawn: 1, wild: 2, waterEdge: 4, route: 8, destination: 16 } as const;
+
+/**
+ * Destination (D167): a cell of real nature (water, forest, park, meadow or farmland) in a
+ * forest, field or lake zone (zone kind wild or water). Spawns are denser and rarer there.
+ */
+export function isDestination(shares: Partial<Record<string, number>>, zoneKind: string): boolean {
+  if (zoneKind !== 'wild' && zoneKind !== 'water') return false;
+  const s = (b: string) => (shares[b] ?? 0) / 100;
+  return s('water') + s('forest') + s('park') + s('meadow') + s('farmland') >= WILD_MIN_SHARE;
+}
 
 /** Wild / water-edge flags from biome shares in percent. */
 export function wildFlags(shares: Partial<Record<string, number>>): number {

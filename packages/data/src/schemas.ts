@@ -42,10 +42,15 @@ export const BaseStatsSchema = z
   .strict();
 export type BaseStats = z.infer<typeof BaseStatsSchema>;
 
+/** How rare a creature is in the wild (roster v2, D167); the spawn tables follow it. */
+export const SpeciesRaritySchema = z.enum(['common', 'uncommon', 'rare', 'veryRare']);
+export type SpeciesRarity = z.infer<typeof SpeciesRaritySchema>;
+
 export const SpeciesSchema = z
   .object({
     id,
     types: z.array(TypeIdSchema).min(1).max(2),
+    rarity: SpeciesRaritySchema,
     baseStats: BaseStatsSchema,
     /** GDD: catch rate 3–255. */
     catchRate: z.number().int().min(3).max(255),
@@ -251,6 +256,8 @@ export const SpawnSchema = z
     time: z.enum(['any', 'day', 'night']),
     /** Field-ability id required to see this spawn (see field-abilities.json). */
     requires: id.optional(),
+    /** D167: spawns only in destinations (nature in forest, field and lake zones). */
+    destinationOnly: z.boolean().optional(),
   })
   .strict();
 export type Spawn = z.infer<typeof SpawnSchema>;

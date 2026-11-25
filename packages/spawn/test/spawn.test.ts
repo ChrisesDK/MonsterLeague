@@ -5,6 +5,9 @@ import { describe, expect, it } from 'vitest';
 import {
   WINDOW_SECONDS,
   cellDensity,
+  DESTINATION_FACTOR,
+  DESTINATION_RARE_BOOST,
+  ROUTE_FACTOR,
   STREET_FACTOR,
   WILD_FACTOR,
   computeSpawns,
@@ -235,12 +238,51 @@ describe('species mix follows biome weights', () => {
     expect([u.noSpawn, u.wild, u.waterEdge, u.route]).toEqual([false, false, false, false]);
   });
 
-  it('GDD v1.9: wild areas and route corridors are denser than streets with the same mix', () => {
+  it('D167: destinations > wild areas > route corridors > streets with the same mix', () => {
     const street = r.cells.get(urban)!;
     const base = cellDensity(street) / STREET_FACTOR;
-    expect(cellDensity({ ...street, route: true })).toBeCloseTo(base * WILD_FACTOR);
+    expect(cellDensity({ ...street, route: true })).toBeCloseTo(base * ROUTE_FACTOR);
     expect(cellDensity({ ...street, wild: true })).toBeCloseTo(base * WILD_FACTOR);
-    expect(WILD_FACTOR / STREET_FACTOR).toBeGreaterThan(1.5);
+    expect(cellDensity({ ...street, wild: true, route: true })).toBeCloseTo(base * WILD_FACTOR);
+    expect(cellDensity({ ...street, wild: true, destination: true })).toBeCloseTo(
+      base * DESTINATION_FACTOR,
+    );
+    expect(DESTINATION_FACTOR / STREET_FACTOR).toBeGreaterThan(2.5);
+    expect(DESTINATION_FACTOR).toBeGreaterThan(WILD_FACTOR);
+    expect(WILD_FACTOR).toBeGreaterThan(ROUTE_FACTOR);
+    expect(ROUTE_FACTOR).toBeGreaterThan(STREET_FACTOR);
+  });
+
+  it('D167: destination-only entries need a destination; rare entries weigh more there', () => {
+    const street = r.cells.get(urban)!;
+    const shares = { ...street.shares, water: 0.5, urban: 0.5 };
+    const town = { ...street, shares, destination: false };
+    const lake = { ...street, shares, wild: true, destination: true };
+    const entry = (over: Partial<SpawnEntry>): SpawnEntry => ({
+      species: 'noekkeling',
+      district: 1,
+      weight: 2,
+      rarity: 'common',
+      biomes: { water: 2 },
+      time: 'any',
+      ...over,
+    });
+    expect(entryWeight(entry({ destinationOnly: true }), town)).toBe(0);
+    expect(entryWeight(entry({ destinationOnly: true }), lake)).toBeCloseTo(2);
+    expect(entryWeight(entry({ rarity: 'rare' }), lake)).toBeCloseTo(2 * DESTINATION_RARE_BOOST);
+    expect(entryWeight(entry({ rarity: 'rare' }), town)).toBeCloseTo(2);
+    expect(entryWeight(entry({}), lake)).toBeCloseTo(2);
+  });
+
+  it('D167: the region marks destinations in forest, field and lake zones only', () => {
+    const kinds = new Map(Object.values(content.zones).map((z) => [z.id, z.kind]));
+    let n = 0;
+    for (const c of decodeRegion(file).cells.values())
+      if (c.destination) {
+        n++;
+        expect(['wild', 'water']).toContain(kinds.get(c.zone));
+      }
+    expect(n).toBeGreaterThan(1000);
   });
 });
 
