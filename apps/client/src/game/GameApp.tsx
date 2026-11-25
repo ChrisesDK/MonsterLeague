@@ -21,7 +21,14 @@ import type { ApiSpawn } from '../map/spawnApi';
 import { ChoiceModal } from './ChoiceModal';
 import { BadgeCeremony } from './BadgeCeremony';
 import { Gate3Panel, loadGate3, saveGate3 } from './Gate3';
-import { LocationScreen, SafetyScreen, StarterScreen } from './Onboarding';
+import {
+  LocationScreen,
+  markWelcomeSeen,
+  SafetyScreen,
+  StarterScreen,
+  WelcomeScreen,
+  welcomeSeen,
+} from './Onboarding';
 import { previousScreen, Screens, type ScreenId } from './Screens';
 import { useBackHandler } from '../ui/backStack';
 import { loadGame, startOver, writeGame, type Loaded } from './store';
@@ -31,6 +38,8 @@ interface Props {
   locale: Locale;
   onLocale: (l: Locale) => void;
   devTools: boolean;
+  /** D176: show the tester welcome at first launch (the game route; not the dev map). */
+  welcome?: boolean;
 }
 
 /** Dev hooks (dev tools only) for the end-to-end test and manual testing. */
@@ -72,7 +81,8 @@ function applySettingsToDocument(save: SaveGame | null, night: boolean) {
   root.dataset.theme = night ? 'night' : 'day';
 }
 
-export function GameApp({ t, locale, onLocale, devTools }: Props) {
+export function GameApp({ t, locale, onLocale, devTools, welcome = false }: Props) {
+  const [showWelcome, setShowWelcome] = useState(() => welcome && !welcomeSeen());
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [save, setSave] = useState<SaveGame | null>(null);
   const saveRef = useRef<SaveGame | null>(null);
@@ -271,6 +281,17 @@ export function GameApp({ t, locale, onLocale, devTools }: Props) {
     );
   }
   if (!save) return null;
+
+  if (showWelcome)
+    return (
+      <WelcomeScreen
+        t={t}
+        onContinue={() => {
+          markWelcomeSeen();
+          setShowWelcome(false);
+        }}
+      />
+    );
 
   const devSkip = devTools ? (
     <button

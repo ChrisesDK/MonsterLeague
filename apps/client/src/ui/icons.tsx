@@ -27,6 +27,13 @@ const PATHS = {
       <path d="M15 17l1.2-1.2L17.4 17" />
     </>
   ),
+  /** Feedback: a speech bubble with a pencil line. */
+  feedback: (
+    <>
+      <path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-9l-4.5 3.5V17H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" />
+      <path d="M8 11h8M8 8h5" />
+    </>
+  ),
   /** Filter: the standard funnel. */
   filter: <path d="M3.5 5h17l-6.5 7.8V19l-4 1.8v-8L3.5 5Z" />,
   /** A coin (skilling). */

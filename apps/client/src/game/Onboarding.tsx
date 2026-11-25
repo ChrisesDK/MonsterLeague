@@ -6,6 +6,74 @@ import { Logo } from '../ui/Logo';
 
 const STARTERS = ['gnistkat', 'aaodder', 'boegling'] as const;
 
+/** D176: the welcome is shown once per phone (a view flag, not game progress). */
+const WELCOME_KEY = 'oml.welcome.v1';
+export function welcomeSeen(): boolean {
+  try {
+    return localStorage.getItem(WELCOME_KEY) === '1';
+  } catch {
+    return true;
+  }
+}
+export function markWelcomeSeen(): void {
+  try {
+    localStorage.setItem(WELCOME_KEY, '1');
+  } catch {
+    // storage blocked: it shows again next time
+  }
+}
+/** Running as an installed app (home screen), where the phone keeps the save. */
+function installed(): boolean {
+  try {
+    return (
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (navigator as Navigator & { standalone?: boolean }).standalone === true
+    );
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * D176: the tester guide, at first launch and from Settings: what the game is, what to try,
+ * how to keep the save (home screen, export) and how to send feedback.
+ */
+export function WelcomeScreen({ t, onContinue }: { t: Translate; onContinue: () => void }) {
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  return (
+    <main className="setup onboarding" data-testid="welcome">
+      <header className="setup-header">
+        <Logo name={t('ui.title')} />
+        <h1>{t('welcome.title')}</h1>
+        <p>{t('welcome.body')}</p>
+      </header>
+      <h2>{t('welcome.tryTitle')}</h2>
+      <ul className="welcome-list">
+        <li>{t('welcome.try.walk')}</li>
+        <li>{t('welcome.try.travel')}</li>
+        <li>{t('welcome.try.journal')}</li>
+      </ul>
+      <h2>{t('welcome.keepTitle')}</h2>
+      <ul className="welcome-list">
+        {!installed() && (
+          <li data-testid="welcome-install">
+            {t(ios ? 'welcome.install.ios' : 'welcome.install.android')}
+          </li>
+        )}
+        <li>{t('welcome.export')}</li>
+      </ul>
+      <h2>{t('welcome.feedbackTitle')}</h2>
+      <ul className="welcome-list">
+        <li>{t('welcome.feedback')}</li>
+        <li>{t('welcome.known')}</li>
+      </ul>
+      <button className="btn primary wide" data-testid="welcome-next" onClick={onContinue}>
+        {t('welcome.go')}
+      </button>
+    </main>
+  );
+}
+
 export function SafetyScreen({
   t,
   onContinue,
@@ -68,9 +136,6 @@ export function LocationScreen({
       <button className="btn primary wide" data-testid="onboarding-next" onClick={allow}>
         {t('map.explain.allow')}
       </button>
-      <a className="btn wide link-btn" href="#/playtest">
-        {t('map.toPlaytest')}
-      </a>
       {children}
     </main>
   );

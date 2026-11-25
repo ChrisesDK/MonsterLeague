@@ -159,6 +159,8 @@ function along(path: [number, number][], stepM = 15): { lat: number; lng: number
 
 async function startDone(page: Page) {
   await page.addInitScript(() => localStorage.setItem('oml.locale', 'en'));
+  // the tester welcome (D176) was seen on an earlier launch
+  await page.addInitScript(() => localStorage.setItem('oml.welcome.v1', '1'));
   await page.goto('#/dev/map');
   await page.getByTestId('onboarding-safety').waitFor();
   await page.evaluate(() =>

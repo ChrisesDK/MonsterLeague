@@ -1910,3 +1910,34 @@ body {
   font-weight: 700;
   color: var(--gold);
 }
+
+/* D175: feedback text box */
+.feedback-text {
+  width: 100%;
+  min-height: 8em;
+  padding: var(--sp-3);
+  border: 2px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  resize: vertical;
+}
+/* D174: a file picker that looks like the other buttons */
+.file-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* D176: tester welcome */
+.welcome-list {
+  margin: 0;
+  padding-left: 1.2em;
+  display: grid;
+  gap: var(--sp-2);
+}
+.welcome-list li::marker {
+  color: var(--accent);
+}

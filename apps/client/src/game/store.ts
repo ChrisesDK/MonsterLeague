@@ -104,6 +104,23 @@ export function exportGameFile(save: SaveGame): File {
   });
 }
 
+/**
+ * D174: reads a save file exported earlier (Settings → Import save), checks and migrates it
+ * like a stored save, and returns it, or why it can't be used. The caller writes it.
+ */
+export async function readGameFile(
+  file: File,
+): Promise<{ ok: true; save: SaveGame } | { ok: false; error: string }> {
+  let raw: unknown;
+  try {
+    raw = JSON.parse(await file.text());
+  } catch {
+    return { ok: false, error: 'not a save file' };
+  }
+  const result = loadSave(raw, randomSeed());
+  return result.ok ? { ok: true, save: result.save } : { ok: false, error: result.error };
+}
+
 /** Shares a file (phone share sheet) or downloads it. */
 export async function shareOrDownload(file: File): Promise<void> {
   const nav = navigator as Navigator & { canShare?: (d: ShareData) => boolean };

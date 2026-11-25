@@ -136,25 +136,35 @@ export interface GuideHint {
   biomes: string[];
   time: SpawnEntry['time'];
   requires: string | null;
+  /** D171: the home destination(s) of a destination creature (empty for other entries). */
+  zones: string[];
+  /** D173: this entry's zone is the creature's main home (its highest-weight home). */
+  mainHome: boolean;
 }
 
 /** Biome hints for the field guide ("found near water at night"), from the spawn tables. */
 export function guideHints(speciesId: string, dex: Dex = content): GuideHint[] {
-  return dex.spawns
-    .filter((e) => e.species === speciesId)
-    .map((e) => {
-      const ranked = Object.entries(e.biomes)
-        .filter(([, w]) => (w ?? 0) > 0)
-        .sort((a, b) => (b[1] ?? 0) - (a[1] ?? 0));
-      const top = ranked[0]?.[1] ?? 0;
-      return {
-        district: e.district,
-        biomes: ranked
-          .filter(([, w]) => (w ?? 0) >= top * 0.75)
-          .slice(0, 2)
-          .map(([b]) => b),
-        time: e.time,
-        requires: e.requires ?? null,
-      };
-    });
+  const entries = dex.spawns.filter((e) => e.species === speciesId);
+  const homeWeight = new Map<string, number>();
+  for (const e of entries)
+    if (!e.requires)
+      for (const z of e.zones ?? []) homeWeight.set(z, (homeWeight.get(z) ?? 0) + e.weight);
+  const main = [...homeWeight.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+  return entries.map((e) => {
+    const ranked = Object.entries(e.biomes)
+      .filter(([, w]) => (w ?? 0) > 0)
+      .sort((a, b) => (b[1] ?? 0) - (a[1] ?? 0));
+    const top = ranked[0]?.[1] ?? 0;
+    return {
+      district: e.district,
+      biomes: ranked
+        .filter(([, w]) => (w ?? 0) >= top * 0.75)
+        .slice(0, 2)
+        .map(([b]) => b),
+      time: e.time,
+      requires: e.requires ?? null,
+      zones: e.zones ?? [],
+      mainHome: main !== null && (e.zones ?? []).includes(main),
+    };
+  });
 }

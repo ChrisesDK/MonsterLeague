@@ -32,7 +32,9 @@ import { Button, ListRow, ProgressBar, Pill, Tabs } from '../ui/components';
 import { Icon, type IconName } from '../ui/icons';
 import { goalProgress, goalTitle } from './goalText';
 import type { Translate } from '../i18n';
-import { deleteGame, exportGameFile, shareOrDownload } from './store';
+import { deleteGame, exportGameFile, readGameFile, shareOrDownload, writeGame } from './store';
+import { APP_VERSION } from '../version';
+import { WelcomeScreen } from './Onboarding';
 
 export type ScreenId =
   | 'menu'
@@ -43,6 +45,8 @@ export type ScreenId =
   | 'guide'
   | 'badges'
   | 'settings'
+  /** D175: send feedback (a menu tile; nothing pops up by itself). */
+  | 'feedback'
   | `creature:${string}`
   /** A market (D165): opened from its card on the map; back returns to the game view. */
   | `market:${string}`;
@@ -181,6 +185,7 @@ function ScreensInner({ t, screen, onScreen, save, update, devTools, gate3, onCl
       { id: 'badges', label: t('menu.badges'), icon: 'badge' },
       { id: 'storage', label: t('menu.storage'), icon: 'paw' },
       { id: 'settings', label: t('menu.settings'), icon: 'settings' },
+      { id: 'feedback', label: t('menu.feedback'), icon: 'feedback' },
     ];
     return (
       <Shell t={t} title={t('menu.title')} onBack={onClose} testId="screen-menu">
@@ -253,6 +258,7 @@ function ScreensInner({ t, screen, onScreen, save, update, devTools, gate3, onCl
     return <StorageScreen t={t} save={save} update={update} onBack={back} onScreen={onScreen} />;
   if (screen === 'bag') return <BagScreen t={t} save={save} update={update} onBack={back} />;
   if (screen === 'guide') return <GuideScreen t={t} save={save} onBack={back} />;
+  if (screen === 'feedback') return <FeedbackScreen t={t} save={save} onBack={back} />;
   if (screen === 'badges') return <BadgesScreen t={t} save={save} onBack={back} />;
   return (
     <SettingsScreen
@@ -653,8 +659,102 @@ function hintText(t: Translate, speciesId: string): string[] {
     const where = h.biomes.map((b) => t(`biome.${b}.near`)).join(t('guide.or'));
     const when = h.time === 'night' ? t('guide.atNight') : h.time === 'day' ? t('guide.byDay') : '';
     const needs = h.requires ? ` (${t(`fieldAbility.${h.requires}.name`)})` : '';
+    // D173: a destination creature names its home(s), so players know where to travel
+    if (h.zones.length > 0) {
+      const place = h.zones.map((z) => t(`zone.${z}.name`)).join(t('guide.or'));
+      return t(h.mainHome ? 'guide.homeMain' : 'guide.homeAlso', { place, when }) + needs;
+    }
     return t('guide.hint', { district: h.district, where, when }) + needs;
   });
+}
+
+/**
+ * D175: feedback for testers. The text and a short game summary (version, badges, team
+ * levels, counts; never a position or the current zone) go out through the phone's share
+ * sheet, or are copied when the phone can't share.
+ */
+const FEEDBACK_KINDS = ['bug', 'idea', 'balance', 'other'] as const;
+export function feedbackText(
+  kind: (typeof FEEDBACK_KINDS)[number],
+  message: string,
+  save: SaveGame,
+): string {
+  const team = save.team.map((c) => `${c.speciesId} ${c.level}`).join(', ');
+  return [
+    `[${kind}] ${message.trim()}`,
+    '',
+    `Version ${APP_VERSION} · ${save.settings.language} · ${new Date().toISOString().slice(0, 10)}`,
+    `Badges: ${save.badges.join(', ') || 'none'} · team: ${team || 'none'}`,
+    `Caught ${Object.keys(save.caught).length} species · zones open ${save.zones.length} · trainers beaten ${save.defeatedTrainers.length} · coins ${save.coins}`,
+  ].join('\n');
+}
+
+function FeedbackScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBack: () => void }) {
+  const [kind, setKind] = useState<(typeof FEEDBACK_KINDS)[number]>('bug');
+  const [message, setMessage] = useState('');
+  const [status, setStatus] = useState<'sent' | 'copied' | null>(null);
+  const send = async () => {
+    const text = feedbackText(kind, message, save);
+    const nav = navigator as Navigator & { share?: (d: ShareData) => Promise<void> };
+    if (nav.share) {
+      try {
+        await nav.share({ title: t('feedback.subject'), text });
+        setStatus('sent');
+        return;
+      } catch {
+        // cancelled or failed: copy instead
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      setStatus('copied');
+    } catch {
+      setStatus(null);
+    }
+  };
+  return (
+    <Shell t={t} title={t('menu.feedback')} onBack={onBack} testId="screen-feedback">
+      <p className="muted small">{t('feedback.intro')}</p>
+      <div className="chip-row" role="radiogroup">
+        {FEEDBACK_KINDS.map((k) => (
+          <button
+            key={k}
+            className={`btn choice${k === kind ? ' on' : ''}`}
+            aria-pressed={k === kind}
+            data-testid={`feedback-kind-${k}`}
+            onClick={() => setKind(k)}
+          >
+            {t(`feedback.kind.${k}`)}
+          </button>
+        ))}
+      </div>
+      <textarea
+        className="feedback-text"
+        data-testid="feedback-text"
+        rows={6}
+        value={message}
+        placeholder={t('feedback.placeholder')}
+        onChange={(e) => {
+          setMessage(e.target.value);
+          setStatus(null);
+        }}
+      />
+      <p className="muted small">{t('feedback.included')}</p>
+      <button
+        className="btn primary wide"
+        data-testid="feedback-send"
+        disabled={message.trim().length === 0}
+        onClick={() => void send()}
+      >
+        {t('feedback.send')}
+      </button>
+      {status && (
+        <p className="notice" role="status" data-testid="feedback-status">
+          {t(status === 'sent' ? 'feedback.sent' : 'feedback.copied')}
+        </p>
+      )}
+    </Shell>
+  );
 }
 
 function GuideScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBack: () => void }) {
@@ -778,6 +878,11 @@ function SettingsScreen({
 }) {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [safety, setSafety] = useState(false);
+  /** D174: a save file read for import, waiting for the second tap; or why it failed. */
+  const [incoming, setIncoming] = useState<SaveGame | null>(null);
+  const [importError, setImportError] = useState<string | null>(null);
+  const [guide, setGuide] = useState(false);
+  if (guide) return <WelcomeScreen t={t} onContinue={() => setGuide(false)} />;
   const set = <K extends keyof SaveGame['settings']>(k: K, v: SaveGame['settings'][K]) =>
     update((s) => ({ ...s, settings: { ...s.settings, [k]: v } }));
   const s = save.settings;
@@ -884,6 +989,10 @@ function SettingsScreen({
         )}
       </section>
 
+      <button className="btn wide" data-testid="open-welcome" onClick={() => setGuide(true)}>
+        {t('settings.welcome')}
+      </button>
+
       <TestItems t={t} save={save} update={update} />
 
       <section className="panel-section" data-testid="setting-mode">
@@ -906,6 +1015,40 @@ function SettingsScreen({
         >
           {t('settings.export')}
         </button>
+        <label className="btn wide file-btn" data-testid="import-save">
+          {t('settings.import')}
+          <input
+            type="file"
+            accept="application/json,.json"
+            hidden
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              e.target.value = '';
+              if (!file) return;
+              void readGameFile(file).then((r) => {
+                setIncoming(r.ok ? r.save : null);
+                setImportError(r.ok ? null : r.error);
+              });
+            }}
+          />
+        </label>
+        {importError && (
+          <p className="notice" role="status" data-testid="import-error">
+            {t('settings.importFailed', { error: importError })}
+          </p>
+        )}
+        {incoming && (
+          <button
+            className="btn danger wide"
+            data-testid="import-save-confirm"
+            onClick={() => void writeGame(incoming).then(() => window.location.reload())}
+          >
+            {t('settings.importConfirm', {
+              badges: incoming.badges.length,
+              creatures: incoming.team.length + incoming.storage.length,
+            })}
+          </button>
+        )}
         {!confirmDelete ? (
           <button
             className="btn danger wide"
@@ -926,6 +1069,9 @@ function SettingsScreen({
       </section>
       {devTools && <DevSection t={t} save={save} update={update} />}
 
+      <p className="muted small" data-testid="settings-version">
+        {t('settings.version', { version: APP_VERSION })}
+      </p>
       <p className="credits muted small" data-testid="settings-credits">
         {t('settings.credits')}
       </p>

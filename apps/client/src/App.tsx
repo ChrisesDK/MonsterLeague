@@ -140,6 +140,7 @@ function Routes({
           locale={locale}
           onLocale={changeLocale}
           devTools={route === 'dev-map' || import.meta.env.DEV}
+          welcome={route === 'map'}
         />
       )}
     </Suspense>

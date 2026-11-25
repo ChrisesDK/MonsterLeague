@@ -74,4 +74,14 @@ describe('field guide hints', () => {
     for (const h of hints) expect(h.biomes.length).toBeGreaterThan(0);
     expect(guideHints('gnistkat')).toEqual([]);
   });
+
+  it('D173: a destination creature names its homes, one of them the main home', () => {
+    const hints = guideHints('mosling');
+    expect(hints.every((h) => h.zones.length > 0)).toBe(true);
+    const main = hints.filter((h) => h.mainHome);
+    expect(main).toHaveLength(1);
+    expect(main[0]!.zones).toEqual(['kirkendrup']);
+    // ordinary creatures have no home
+    expect(guideHints('torvdue').every((h) => h.zones.length === 0 && !h.mainHome)).toBe(true);
+  });
 });
