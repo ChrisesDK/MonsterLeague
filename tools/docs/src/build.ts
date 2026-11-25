@@ -38,7 +38,7 @@ const RARITY_LABEL: Record<Species['rarity'], string> = {
 };
 const STARTERS = ['gnistkat', 'aaodder', 'boegling'];
 
-function loadRegion(): Region {
+export function loadRegion(): Region {
   const file = RegionFileSchema.parse(
     JSON.parse(
       readFileSync(
@@ -60,6 +60,8 @@ interface SpawnStats {
   otherTotal: number;
   /** Expected spawns per window by species and zone. */
   byZone: Map<string, Map<string, number>>;
+  /** Expected spawns per window in each zone's destination cells (all species). */
+  zoneDest: Map<string, number>;
   /** Expected spawns per window that need a field ability, by species. */
   ability: Map<string, number>;
 }
@@ -76,6 +78,7 @@ export function spawnStats(region: Region, dex: Dex = content): SpawnStats {
     destTotal: 0,
     otherTotal: 0,
     byZone: new Map(),
+    zoneDest: new Map(),
     ability: new Map(),
   };
   const add = (m: Map<string, number>, k: string, v: number) => m.set(k, (m.get(k) ?? 0) + v);
@@ -98,8 +101,10 @@ export function spawnStats(region: Region, dex: Dex = content): SpawnStats {
           return;
         }
         add(cell.destination ? s.dest : s.other, e.species, x);
-        if (cell.destination) s.destTotal += x;
-        else s.otherTotal += x;
+        if (cell.destination) {
+          s.destTotal += x;
+          add(s.zoneDest, cell.zone, x);
+        } else s.otherTotal += x;
         if (!s.byZone.has(e.species)) s.byZone.set(e.species, new Map());
         add(s.byZone.get(e.species)!, cell.zone, x);
       });
@@ -242,14 +247,14 @@ function creaturesDoc(region: Region, dex: Dex): DocFile[] {
     '',
     `${Object.keys(dex.species).length} creatures in ${all.length} evolution lines: ${starters.length} starter lines and ${wild.length} wild lines (roster v2, D167). Rarity decides how often a creature appears; the spawn tables follow it (\`packages/data/content/spawns.json\`).`,
     '',
-    "**Spawn chance** is the share of all wild creatures (no field ability needed) that are this species, computed exactly from the spawn rules over the whole region, day and night counted half each. **Destinations** are real nature (forest, park, meadow, field or water) in the forest, field and lake zones on the Town Map: spawns there are about 2.3 times as dense as in streets and rare creatures 3 times as likely (D167). Common and uncommon creatures appear at the player's own level; rare and very rare ones at their district's level and only once their zone is open.",
+    "**Chance at its main home** is the share of the creatures in that destination's nature that are this species: what a player standing there sees. Destination creatures (D171) spawn only in their 1–3 home destinations, most at the main home. **Spawn chance** is the share of all wild creatures (no field ability needed) that are this species, computed exactly from the spawn rules over the whole region, day and night counted half each. **Destinations** are real nature (forest, park, meadow, field or water) in the forest, field and lake zones on the Town Map: spawns there are about 2.3 times as dense as in streets and rare creatures 3 times as likely (D167). Common and uncommon creatures appear at the player's own level; rare and very rare ones at their district's level and only once their zone is open.",
     '',
     '![Zones of Odense](creatures/overview.svg)',
     '',
     '## Wild lines',
     '',
-    '| # | Line (evolves at level) | Types | Rarity | Spawn chance in destinations | Spawn chance elsewhere | Where | Map |',
-    '|---|---|---|---|---|---|---|---|',
+    '| # | Line (evolves at level) | Types | Rarity | Spawn chance in destinations | Spawn chance elsewhere | Chance at its main home | Where | Map |',
+    '|---|---|---|---|---|---|---|---|---|',
   );
   const lineRows: string[] = [];
   const speciesRows: string[] = [];
@@ -276,9 +281,18 @@ function creaturesDoc(region: Region, dex: Dex): DocFile[] {
       .map(([z, v]) => `${zoneName(z)} ${Math.round((100 * v) / zoneTotal)} %`)
       .join(', ');
     const ability = [...new Set(entries.filter((e) => e.requires).map((e) => e.requires))];
+    // D171: destination creatures live only in their home destinations, main home first
+    const spawnsIn = (z: string) => stats.byZone.get(first.id)?.get(z) ?? 0;
+    const homes = [...new Set(plain.flatMap((e) => e.zones ?? []))].sort(
+      (a, b) => spawnsIn(b) - spawnsIn(a),
+    );
     const where = [
-      destOnly ? '**destinations only**' : null,
-      `districts ${districts.join(', ')}`,
+      destOnly && homes.length
+        ? `**only at ${homes.map((z, k) => (k === 0 ? `${zoneName(z)} (main home)` : zoneName(z))).join(', ')}**`
+        : destOnly
+          ? '**destinations only**'
+          : null,
+      homes.length ? null : `districts ${districts.join(', ')}`,
       times.includes('night') ? 'night' : times.includes('day') ? 'day' : null,
       `likes ${biomes.join(', ')}`,
       ability.length ? `also with ${ability.join(', ')}` : null,
@@ -288,7 +302,7 @@ function creaturesDoc(region: Region, dex: Dex): DocFile[] {
     const svg = `docs/creatures/${first.id}.svg`;
     files.push({ path: svg, text: speciesMap(p, stats.byZone.get(first.id), dex) });
     lineRows.push(
-      `| ${i + 1} | ${chain} | ${first.types.join('/')} | ${RARITY_LABEL[first.rarity]} | ${pct((stats.dest.get(first.id) ?? 0) / stats.destTotal)} | ${pct((stats.other.get(first.id) ?? 0) / stats.otherTotal)} | ${where}. Most in: ${top || '–'} | [map](creatures/${first.id}.svg) |`,
+      `| ${i + 1} | ${chain} | ${first.types.join('/')} | ${RARITY_LABEL[first.rarity]} | ${pct((stats.dest.get(first.id) ?? 0) / stats.destTotal)} | ${pct((stats.other.get(first.id) ?? 0) / stats.otherTotal)} | ${homes.length ? `${pct((stats.byZone.get(first.id)?.get(homes[0]!) ?? 0) / (stats.zoneDest.get(homes[0]!) ?? 1))} at ${zoneName(homes[0]!)}` : '–'} | ${where}. Most in: ${top || '–'} | [map](creatures/${first.id}.svg) |`,
     );
     speciesRows.push(...line.map((s) => speciesRow(s)));
   });

@@ -274,6 +274,25 @@ describe('species mix follows biome weights', () => {
     expect(entryWeight(entry({}), lake)).toBeCloseTo(2);
   });
 
+  it('D171: an entry with zones spawns only in those zones', () => {
+    const street = r.cells.get(urban)!;
+    const shares = { ...street.shares, water: 0.5, urban: 0.5 };
+    const home = { ...street, shares, wild: true, destination: true, zone: 'tarupdavinde' };
+    const other = { ...home, zone: 'sanderum' };
+    const e: SpawnEntry = {
+      species: 'noekkeling',
+      district: 5,
+      weight: 2,
+      rarity: 'rare',
+      biomes: { water: 2 },
+      time: 'any',
+      destinationOnly: true,
+      zones: ['tarupdavinde'],
+    };
+    expect(entryWeight(e, home)).toBeGreaterThan(0);
+    expect(entryWeight(e, other)).toBe(0);
+  });
+
   it('D167: the region marks destinations in forest, field and lake zones only', () => {
     const kinds = new Map(Object.values(content.zones).map((z) => [z.id, z.kind]));
     let n = 0;

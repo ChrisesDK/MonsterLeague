@@ -114,11 +114,13 @@ export function cellDensity(cell: RegionCell): number {
 
 /**
  * Species weight of a table entry in a cell: weight × Σ share(biome) × preference(biome).
- * Destination-only entries weigh 0 outside destinations; rare entries weigh
+ * Destination-only entries weigh 0 outside destinations, and entries with `zones` weigh 0
+ * outside those zones (D171); rare entries weigh
  * DESTINATION_RARE_BOOST times more inside them (D167).
  */
 export function entryWeight(entry: SpawnEntry, cell: RegionCell): number {
   if (entry.destinationOnly && !cell.destination) return 0;
+  if (entry.zones && !entry.zones.includes(cell.zone)) return 0;
   let fit = 0;
   for (const [b, pref] of Object.entries(entry.biomes) as [Biome, number][])
     fit += cell.shares[b] * pref;

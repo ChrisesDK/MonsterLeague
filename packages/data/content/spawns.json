@@ -65,20 +65,6 @@
       "time": "any"
     },
     {
-      "species": "mosling",
-      "district": 1,
-      "weight": 25,
-      "rarity": "common",
-      "biomes": {
-        "forest": 1.5,
-        "meadow": 1,
-        "farmland": 0.8,
-        "park": 0.5
-      },
-      "time": "any",
-      "destinationOnly": true
-    },
-    {
       "species": "brokrabbe",
       "district": 1,
       "weight": 18,
@@ -151,43 +137,6 @@
         "farmland": 0.3
       },
       "time": "any"
-    },
-    {
-      "species": "rokkeling",
-      "district": 1,
-      "weight": 9,
-      "rarity": "common",
-      "biomes": {
-        "water": 2
-      },
-      "time": "any",
-      "destinationOnly": true
-    },
-    {
-      "species": "dugpust",
-      "district": 1,
-      "weight": 9,
-      "rarity": "common",
-      "biomes": {
-        "meadow": 1.5,
-        "farmland": 1,
-        "water": 0.5
-      },
-      "time": "any",
-      "destinationOnly": true
-    },
-    {
-      "species": "ildflue",
-      "district": 1,
-      "weight": 9,
-      "rarity": "common",
-      "biomes": {
-        "meadow": 1,
-        "forest": 1,
-        "farmland": 0.6
-      },
-      "time": "night",
-      "destinationOnly": true
     },
     {
       "species": "loftnisse",
@@ -225,28 +174,6 @@
       "requires": "forager"
     },
     {
-      "species": "soeormling",
-      "district": 1,
-      "weight": 2.5,
-      "rarity": "rare",
-      "biomes": {
-        "water": 2
-      },
-      "time": "any",
-      "destinationOnly": true
-    },
-    {
-      "species": "noekkeling",
-      "district": 1,
-      "weight": 0.8,
-      "rarity": "rare",
-      "biomes": {
-        "water": 2
-      },
-      "time": "any",
-      "destinationOnly": true
-    },
-    {
       "species": "torvdue",
       "district": 2,
       "weight": 25,
@@ -309,20 +236,6 @@
         "urban": 0.3
       },
       "time": "any"
-    },
-    {
-      "species": "mosling",
-      "district": 2,
-      "weight": 25,
-      "rarity": "common",
-      "biomes": {
-        "forest": 1.5,
-        "meadow": 1,
-        "farmland": 0.8,
-        "park": 0.5
-      },
-      "time": "any",
-      "destinationOnly": true
     },
     {
       "species": "brokrabbe",
@@ -397,43 +310,6 @@
         "farmland": 0.3
       },
       "time": "any"
-    },
-    {
-      "species": "rokkeling",
-      "district": 2,
-      "weight": 9,
-      "rarity": "common",
-      "biomes": {
-        "water": 2
-      },
-      "time": "any",
-      "destinationOnly": true
-    },
-    {
-      "species": "dugpust",
-      "district": 2,
-      "weight": 9,
-      "rarity": "common",
-      "biomes": {
-        "meadow": 1.5,
-        "farmland": 1,
-        "water": 0.5
-      },
-      "time": "any",
-      "destinationOnly": true
-    },
-    {
-      "species": "ildflue",
-      "district": 2,
-      "weight": 9,
-      "rarity": "common",
-      "biomes": {
-        "meadow": 1,
-        "forest": 1,
-        "farmland": 0.6
-      },
-      "time": "night",
-      "destinationOnly": true
     },
     {
       "species": "kampetrold",
@@ -447,38 +323,43 @@
       "time": "any"
     },
     {
-      "species": "ellepige",
+      "species": "mosling",
       "district": 2,
-      "weight": 2.5,
-      "rarity": "rare",
+      "weight": 40,
+      "rarity": "common",
       "biomes": {
-        "forest": 2,
+        "forest": 1.5,
+        "meadow": 1,
+        "farmland": 0.8,
         "park": 0.5
       },
       "time": "any",
-      "destinationOnly": true
+      "destinationOnly": true,
+      "zones": ["kirkendrup"]
+    },
+    {
+      "species": "rokkeling",
+      "district": 2,
+      "weight": 30,
+      "rarity": "common",
+      "biomes": {
+        "water": 2
+      },
+      "time": "any",
+      "destinationOnly": true,
+      "zones": ["lumby"]
     },
     {
       "species": "soeormling",
       "district": 2,
-      "weight": 2.5,
+      "weight": 3,
       "rarity": "rare",
       "biomes": {
         "water": 2
       },
       "time": "any",
-      "destinationOnly": true
-    },
-    {
-      "species": "noekkeling",
-      "district": 2,
-      "weight": 0.8,
-      "rarity": "rare",
-      "biomes": {
-        "water": 2
-      },
-      "time": "any",
-      "destinationOnly": true
+      "destinationOnly": true,
+      "zones": ["lumby"]
     },
     {
       "species": "torvdue",
@@ -543,20 +424,6 @@
         "urban": 0.3
       },
       "time": "any"
-    },
-    {
-      "species": "mosling",
-      "district": 3,
-      "weight": 25,
-      "rarity": "common",
-      "biomes": {
-        "forest": 1.5,
-        "meadow": 1,
-        "farmland": 0.8,
-        "park": 0.5
-      },
-      "time": "any",
-      "destinationOnly": true
     },
     {
       "species": "brokrabbe",
@@ -633,20 +500,9 @@
       "time": "any"
     },
     {
-      "species": "rokkeling",
-      "district": 3,
-      "weight": 18,
-      "rarity": "common",
-      "biomes": {
-        "water": 2
-      },
-      "time": "any",
-      "destinationOnly": true
-    },
-    {
       "species": "dugpust",
       "district": 3,
-      "weight": 9,
+      "weight": 8,
       "rarity": "common",
       "biomes": {
         "meadow": 1.5,
@@ -654,31 +510,20 @@
         "water": 0.5
       },
       "time": "any",
-      "destinationOnly": true
-    },
-    {
-      "species": "ildflue",
-      "district": 3,
-      "weight": 9,
-      "rarity": "common",
-      "biomes": {
-        "meadow": 1,
-        "forest": 1,
-        "farmland": 0.6
-      },
-      "time": "night",
-      "destinationOnly": true
+      "destinationOnly": true,
+      "zones": ["hindemosen"]
     },
     {
       "species": "soeormling",
       "district": 3,
-      "weight": 2.5,
+      "weight": 15,
       "rarity": "rare",
       "biomes": {
         "water": 2
       },
       "time": "any",
-      "destinationOnly": true
+      "destinationOnly": true,
+      "zones": ["seden"]
     },
     {
       "species": "soeormling",
@@ -689,30 +534,9 @@
         "water": 2
       },
       "time": "any",
-      "requires": "angler"
-    },
-    {
-      "species": "ellepige",
-      "district": 3,
-      "weight": 2.5,
-      "rarity": "rare",
-      "biomes": {
-        "forest": 2,
-        "park": 0.5
-      },
-      "time": "any",
-      "destinationOnly": true
-    },
-    {
-      "species": "noekkeling",
-      "district": 3,
-      "weight": 0.8,
-      "rarity": "rare",
-      "biomes": {
-        "water": 2
-      },
-      "time": "any",
-      "destinationOnly": true
+      "requires": "angler",
+      "destinationOnly": true,
+      "zones": ["seden"]
     },
     {
       "species": "torvdue",
@@ -777,20 +601,6 @@
         "urban": 0.3
       },
       "time": "any"
-    },
-    {
-      "species": "mosling",
-      "district": 4,
-      "weight": 25,
-      "rarity": "common",
-      "biomes": {
-        "forest": 1.5,
-        "meadow": 1,
-        "farmland": 0.8,
-        "park": 0.5
-      },
-      "time": "any",
-      "destinationOnly": true
     },
     {
       "species": "brokrabbe",
@@ -865,66 +675,6 @@
         "farmland": 0.3
       },
       "time": "any"
-    },
-    {
-      "species": "rokkeling",
-      "district": 4,
-      "weight": 9,
-      "rarity": "common",
-      "biomes": {
-        "water": 2
-      },
-      "time": "any",
-      "destinationOnly": true
-    },
-    {
-      "species": "dugpust",
-      "district": 4,
-      "weight": 9,
-      "rarity": "common",
-      "biomes": {
-        "meadow": 1.5,
-        "farmland": 1,
-        "water": 0.5
-      },
-      "time": "any",
-      "destinationOnly": true
-    },
-    {
-      "species": "ildflue",
-      "district": 4,
-      "weight": 9,
-      "rarity": "common",
-      "biomes": {
-        "meadow": 1,
-        "forest": 1,
-        "farmland": 0.6
-      },
-      "time": "night",
-      "destinationOnly": true
-    },
-    {
-      "species": "ellepige",
-      "district": 4,
-      "weight": 2.5,
-      "rarity": "rare",
-      "biomes": {
-        "forest": 2,
-        "park": 0.5
-      },
-      "time": "any",
-      "destinationOnly": true
-    },
-    {
-      "species": "ellepige",
-      "district": 4,
-      "weight": 4,
-      "rarity": "rare",
-      "biomes": {
-        "forest": 2
-      },
-      "time": "any",
-      "requires": "forager"
     },
     {
       "species": "kampetrold",
@@ -940,6 +690,49 @@
       "time": "any"
     },
     {
+      "species": "mosling",
+      "district": 4,
+      "weight": 15,
+      "rarity": "common",
+      "biomes": {
+        "forest": 1.5,
+        "meadow": 1,
+        "farmland": 0.8,
+        "park": 0.5
+      },
+      "time": "any",
+      "destinationOnly": true,
+      "zones": ["raeveskov"]
+    },
+    {
+      "species": "ildflue",
+      "district": 4,
+      "weight": 30,
+      "rarity": "common",
+      "biomes": {
+        "meadow": 1,
+        "forest": 1,
+        "farmland": 0.6
+      },
+      "time": "night",
+      "destinationOnly": true,
+      "zones": ["lungsgrave"]
+    },
+    {
+      "species": "ildflue",
+      "district": 4,
+      "weight": 8,
+      "rarity": "common",
+      "biomes": {
+        "meadow": 1,
+        "forest": 1,
+        "farmland": 0.6
+      },
+      "time": "night",
+      "destinationOnly": true,
+      "zones": ["oerbaek"]
+    },
+    {
       "species": "torvdue",
       "district": 5,
       "weight": 25,
@@ -1002,20 +795,6 @@
         "urban": 0.3
       },
       "time": "any"
-    },
-    {
-      "species": "mosling",
-      "district": 5,
-      "weight": 25,
-      "rarity": "common",
-      "biomes": {
-        "forest": 1.5,
-        "meadow": 1,
-        "farmland": 0.8,
-        "park": 0.5
-      },
-      "time": "any",
-      "destinationOnly": true
     },
     {
       "species": "brokrabbe",
@@ -1090,43 +869,6 @@
         "farmland": 0.3
       },
       "time": "any"
-    },
-    {
-      "species": "rokkeling",
-      "district": 5,
-      "weight": 9,
-      "rarity": "common",
-      "biomes": {
-        "water": 2
-      },
-      "time": "any",
-      "destinationOnly": true
-    },
-    {
-      "species": "dugpust",
-      "district": 5,
-      "weight": 18,
-      "rarity": "common",
-      "biomes": {
-        "meadow": 1.5,
-        "farmland": 1,
-        "water": 0.5
-      },
-      "time": "any",
-      "destinationOnly": true
-    },
-    {
-      "species": "ildflue",
-      "district": 5,
-      "weight": 9,
-      "rarity": "common",
-      "biomes": {
-        "meadow": 1,
-        "forest": 1,
-        "farmland": 0.6
-      },
-      "time": "night",
-      "destinationOnly": true
     },
     {
       "species": "loftnisse",
@@ -1143,36 +885,27 @@
     {
       "species": "ellepige",
       "district": 5,
-      "weight": 2.5,
+      "weight": 2,
       "rarity": "rare",
       "biomes": {
         "forest": 2,
         "park": 0.5
       },
       "time": "any",
-      "destinationOnly": true
-    },
-    {
-      "species": "soeormling",
-      "district": 5,
-      "weight": 2.5,
-      "rarity": "rare",
-      "biomes": {
-        "water": 2
-      },
-      "time": "any",
-      "destinationOnly": true
+      "destinationOnly": true,
+      "zones": ["faellesskov"]
     },
     {
       "species": "noekkeling",
       "district": 5,
-      "weight": 0.8,
+      "weight": 2,
       "rarity": "rare",
       "biomes": {
         "water": 2
       },
       "time": "any",
-      "destinationOnly": true
+      "destinationOnly": true,
+      "zones": ["tarupdavinde"]
     },
     {
       "species": "torvdue",
@@ -1237,20 +970,6 @@
         "urban": 0.3
       },
       "time": "any"
-    },
-    {
-      "species": "mosling",
-      "district": 6,
-      "weight": 25,
-      "rarity": "common",
-      "biomes": {
-        "forest": 1.5,
-        "meadow": 1,
-        "farmland": 0.8,
-        "park": 0.5
-      },
-      "time": "any",
-      "destinationOnly": true
     },
     {
       "species": "brokrabbe",
@@ -1325,43 +1044,6 @@
         "farmland": 0.3
       },
       "time": "any"
-    },
-    {
-      "species": "rokkeling",
-      "district": 6,
-      "weight": 9,
-      "rarity": "common",
-      "biomes": {
-        "water": 2
-      },
-      "time": "any",
-      "destinationOnly": true
-    },
-    {
-      "species": "dugpust",
-      "district": 6,
-      "weight": 9,
-      "rarity": "common",
-      "biomes": {
-        "meadow": 1.5,
-        "farmland": 1,
-        "water": 0.5
-      },
-      "time": "any",
-      "destinationOnly": true
-    },
-    {
-      "species": "ildflue",
-      "district": 6,
-      "weight": 9,
-      "rarity": "common",
-      "biomes": {
-        "meadow": 1,
-        "forest": 1,
-        "farmland": 0.6
-      },
-      "time": "night",
-      "destinationOnly": true
     },
     {
       "species": "loftnisse",
@@ -1376,18 +1058,6 @@
       "time": "any"
     },
     {
-      "species": "ellepige",
-      "district": 6,
-      "weight": 2.5,
-      "rarity": "rare",
-      "biomes": {
-        "forest": 2,
-        "park": 0.5
-      },
-      "time": "any",
-      "destinationOnly": true
-    },
-    {
       "species": "kampetrold",
       "district": 6,
       "weight": 2.5,
@@ -1399,6 +1069,21 @@
         "forest": 0.5
       },
       "time": "any"
+    },
+    {
+      "species": "mosling",
+      "district": 6,
+      "weight": 15,
+      "rarity": "common",
+      "biomes": {
+        "forest": 1.5,
+        "meadow": 1,
+        "farmland": 0.8,
+        "park": 0.5
+      },
+      "time": "any",
+      "destinationOnly": true,
+      "zones": ["stenloese"]
     },
     {
       "species": "torvdue",
@@ -1463,20 +1148,6 @@
         "urban": 0.3
       },
       "time": "any"
-    },
-    {
-      "species": "mosling",
-      "district": 7,
-      "weight": 25,
-      "rarity": "common",
-      "biomes": {
-        "forest": 1.5,
-        "meadow": 1,
-        "farmland": 0.8,
-        "park": 0.5
-      },
-      "time": "any",
-      "destinationOnly": true
     },
     {
       "species": "brokrabbe",
@@ -1551,55 +1222,6 @@
         "farmland": 0.3
       },
       "time": "any"
-    },
-    {
-      "species": "rokkeling",
-      "district": 7,
-      "weight": 9,
-      "rarity": "common",
-      "biomes": {
-        "water": 2
-      },
-      "time": "any",
-      "destinationOnly": true
-    },
-    {
-      "species": "dugpust",
-      "district": 7,
-      "weight": 9,
-      "rarity": "common",
-      "biomes": {
-        "meadow": 1.5,
-        "farmland": 1,
-        "water": 0.5
-      },
-      "time": "any",
-      "destinationOnly": true
-    },
-    {
-      "species": "ildflue",
-      "district": 7,
-      "weight": 9,
-      "rarity": "common",
-      "biomes": {
-        "meadow": 1,
-        "forest": 1,
-        "farmland": 0.6
-      },
-      "time": "night",
-      "destinationOnly": true
-    },
-    {
-      "species": "soeormling",
-      "district": 7,
-      "weight": 2.5,
-      "rarity": "rare",
-      "biomes": {
-        "water": 2,
-        "park": 0.3
-      },
-      "time": "any",
-      "destinationOnly": true
     },
     {
       "species": "kampetrold",
@@ -1614,15 +1236,16 @@
       "time": "any"
     },
     {
-      "species": "noekkeling",
+      "species": "rokkeling",
       "district": 7,
-      "weight": 0.8,
-      "rarity": "rare",
+      "weight": 500,
+      "rarity": "common",
       "biomes": {
         "water": 2
       },
       "time": "any",
-      "destinationOnly": true
+      "destinationOnly": true,
+      "zones": ["sanderum"]
     },
     {
       "species": "torvdue",
@@ -1687,20 +1310,6 @@
         "urban": 0.3
       },
       "time": "any"
-    },
-    {
-      "species": "mosling",
-      "district": 8,
-      "weight": 25,
-      "rarity": "common",
-      "biomes": {
-        "forest": 1.5,
-        "meadow": 1,
-        "farmland": 0.8,
-        "park": 0.5
-      },
-      "time": "any",
-      "destinationOnly": true
     },
     {
       "species": "brokrabbe",
@@ -1777,66 +1386,6 @@
       "time": "any"
     },
     {
-      "species": "rokkeling",
-      "district": 8,
-      "weight": 9,
-      "rarity": "common",
-      "biomes": {
-        "water": 2
-      },
-      "time": "any",
-      "destinationOnly": true
-    },
-    {
-      "species": "dugpust",
-      "district": 8,
-      "weight": 9,
-      "rarity": "common",
-      "biomes": {
-        "meadow": 1.5,
-        "farmland": 1,
-        "water": 0.5
-      },
-      "time": "any",
-      "destinationOnly": true
-    },
-    {
-      "species": "ildflue",
-      "district": 8,
-      "weight": 18,
-      "rarity": "common",
-      "biomes": {
-        "meadow": 1,
-        "forest": 1,
-        "farmland": 0.6
-      },
-      "time": "night",
-      "destinationOnly": true
-    },
-    {
-      "species": "soeormling",
-      "district": 8,
-      "weight": 2.5,
-      "rarity": "rare",
-      "biomes": {
-        "water": 2
-      },
-      "time": "any",
-      "destinationOnly": true
-    },
-    {
-      "species": "ellepige",
-      "district": 8,
-      "weight": 2.5,
-      "rarity": "rare",
-      "biomes": {
-        "forest": 2,
-        "park": 0.5
-      },
-      "time": "any",
-      "destinationOnly": true
-    },
-    {
       "species": "kampetrold",
       "district": 8,
       "weight": 2.5,
@@ -1848,6 +1397,33 @@
         "forest": 0.5
       },
       "time": "any"
+    },
+    {
+      "species": "dugpust",
+      "district": 8,
+      "weight": 14,
+      "rarity": "common",
+      "biomes": {
+        "meadow": 1.5,
+        "farmland": 1,
+        "water": 0.5
+      },
+      "time": "any",
+      "destinationOnly": true,
+      "zones": ["braendekilde"]
+    },
+    {
+      "species": "ellepige",
+      "district": 8,
+      "weight": 3,
+      "rarity": "rare",
+      "biomes": {
+        "forest": 2,
+        "park": 0.5
+      },
+      "time": "any",
+      "destinationOnly": true,
+      "zones": ["hesbjerg"]
     }
   ]
 }

@@ -258,6 +258,11 @@ export const SpawnSchema = z
     requires: id.optional(),
     /** D167: spawns only in destinations (nature in forest, field and lake zones). */
     destinationOnly: z.boolean().optional(),
+    /**
+     * D171: the destination zones (1–3) this entry spawns in; nowhere else. Used for the
+     * destination creatures, so each has a home worth travelling to.
+     */
+    zones: z.array(id).min(1).max(3).optional(),
   })
   .strict();
 export type Spawn = z.infer<typeof SpawnSchema>;

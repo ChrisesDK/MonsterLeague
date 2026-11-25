@@ -17,7 +17,7 @@ import {
  * The golden test in test/version.test.ts fails until this is bumped and the golden
  * fingerprint is updated, so code changes can't slip through unversioned.
  */
-export const SPAWN_ALGORITHM = 5;
+export const SPAWN_ALGORITHM = 6;
 
 /**
  * Version of the spawn rules: algorithm number + tunable numbers + spawn tables. The spawn

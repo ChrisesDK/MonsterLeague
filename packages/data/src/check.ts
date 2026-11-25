@@ -156,7 +156,34 @@ export function checkContent(dex: Dex): string[] {
       errors.push(`spawn ${i}: "${sp.species}" is an evolved form; wild spawns use first stages`);
     if (sp.requires && !dex.fieldAbilities[sp.requires])
       errors.push(`spawn ${i}: field ability "${sp.requires}" does not exist`);
+    for (const zid of sp.zones ?? []) {
+      const z = dex.zones[zid];
+      if (!z) errors.push(`spawn ${i}: zone "${zid}" does not exist`);
+      else if (z.kind !== 'wild' && z.kind !== 'water')
+        errors.push(`spawn ${i}: zone "${zid}" is not a destination (forest, field or lake)`);
+      else if (z.district !== sp.district)
+        errors.push(`spawn ${i}: zone "${zid}" is in district ${z.district}, not ${sp.district}`);
+    }
+    if (sp.zones && !sp.destinationOnly)
+      errors.push(`spawn ${i}: entries with zones must be destinationOnly`);
   });
+
+  // D171 (owner request): a destination creature spawns only in its 1–3 home destinations,
+  // every entry of it (field-ability layers too), with one main home where it is commonest.
+  const destSpecies = new Set(dex.spawns.filter((e) => e.destinationOnly).map((e) => e.species));
+  for (const s of destSpecies) {
+    const entries = dex.spawns.filter((e) => e.species === s);
+    if (entries.some((e) => !e.zones))
+      errors.push(`spawns: ${s} is a destination creature, so every entry needs home zones`);
+    const byZone = new Map<string, number>();
+    for (const e of entries.filter((x) => !x.requires))
+      for (const z of e.zones ?? []) byZone.set(z, (byZone.get(z) ?? 0) + e.weight);
+    if (byZone.size < 1 || byZone.size > 3)
+      errors.push(`spawns: ${s} has ${byZone.size} home destinations (1–3)`);
+    const top = Math.max(...byZone.values());
+    if ([...byZone.values()].filter((w) => w === top).length !== 1)
+      errors.push(`spawns: ${s} needs one main home (a single highest weight)`);
+  }
 
   errors.push(...checkWorld(dex));
   return errors;

@@ -70,7 +70,7 @@
       "id": "d4_rare",
       "district": 4,
       "kind": "findRare",
-      "species": "ellepige"
+      "species": "kampetrold"
     },
     {
       "id": "d5_explore",
@@ -142,7 +142,7 @@
       "id": "d8_rare",
       "district": 8,
       "kind": "findRare",
-      "species": "soeormling"
+      "species": "ellepige"
     }
   ]
 }

@@ -4,34 +4,34 @@
 
 55 creatures in 23 evolution lines: 3 starter lines and 20 wild lines (roster v2, D167). Rarity decides how often a creature appears; the spawn tables follow it (`packages/data/content/spawns.json`).
 
-**Spawn chance** is the share of all wild creatures (no field ability needed) that are this species, computed exactly from the spawn rules over the whole region, day and night counted half each. **Destinations** are real nature (forest, park, meadow, field or water) in the forest, field and lake zones on the Town Map: spawns there are about 2.3 times as dense as in streets and rare creatures 3 times as likely (D167). Common and uncommon creatures appear at the player's own level; rare and very rare ones at their district's level and only once their zone is open.
+**Chance at its main home** is the share of the creatures in that destination's nature that are this species: what a player standing there sees. Destination creatures (D171) spawn only in their 1–3 home destinations, most at the main home. **Spawn chance** is the share of all wild creatures (no field ability needed) that are this species, computed exactly from the spawn rules over the whole region, day and night counted half each. **Destinations** are real nature (forest, park, meadow, field or water) in the forest, field and lake zones on the Town Map: spawns there are about 2.3 times as dense as in streets and rare creatures 3 times as likely (D167). Common and uncommon creatures appear at the player's own level; rare and very rare ones at their district's level and only once their zone is open.
 
 ![Zones of Odense](creatures/overview.svg)
 
 ## Wild lines
 
-| # | Line (evolves at level) | Types | Rarity | Spawn chance in destinations | Spawn chance elsewhere | Where | Map |
-|---|---|---|---|---|---|---|---|
-| 1 | Torvdue → Kirkedue (18) → Vinddue (36) | folk | Common | 10.1 % | 20.1 % | districts 1, 2, 3, 4, 5, 6, 7, 8; likes urban, park, historic. Most in: Bellinge 8 %, Kirkendrup Skov 6 %, Lumby Mølle 6 % | [map](creatures/torvdue.svg) |
-| 2 | Rendsnude → Rottekonge (24) | folk | Common | 0.5 % | 13.4 % | districts 1, 2, 3, 4, 5, 6, 7, 8; likes industrial, urban, historic. Most in: Fraugde 6 %, Stenløse Skov 5 %, Bellinge 5 % | [map](creatures/rendsnude.svg) |
-| 3 | Mosbille → Skovbille (14) → Eghjort (32) | grove | Common | 19.0 % | 21.1 % | districts 1, 2, 3, 4, 5, 6, 7, 8; likes forest, park, meadow; also with forager. Most in: Hesbjerg 9 %, Bellinge 8 %, Holeskov 7 % | [map](creatures/mosbille.svg) |
-| 4 | Grimælling → Svaneunge (18) → Kongesvane (36) | water | Common | 3.5 % | 6.3 % | districts 1, 2, 3, 4, 5, 6, 7, 8; likes water, park, meadow. Most in: Tarup-Davinde 12 %, Stige Ø 10 %, Bellinge 7 % | [map](creatures/grimaelling.svg) |
-| 5 | Brokrabbe → Kæmpekrabbe (28) | stone | Uncommon | 0.2 % | 1.5 % | districts 1, 2, 3, 4, 5, 6, 7, 8; likes historic, urban, water. Most in: Bolbro parks 6 %, Munke Mose 6 %, Tarup-Davinde 5 % | [map](creatures/brokrabbe.svg) |
-| 6 | Kulingmåge → Stormmåge (30) | storm | Uncommon | 0.5 % | 2.1 % | districts 1, 2, 3, 4, 5, 6, 7, 8; likes water, industrial, urban. Most in: Tarup-Davinde 9 %, Stige Ø 7 %, Maylandskoven 5 % | [map](creatures/kulingmaage.svg) |
-| 7 | Lygtling → Lygtemand (24) | spirit | Uncommon | 1.1 % | 1.6 % | districts 1, 2, 3, 4, 5, 6, 7, 8; night; likes park, forest, historic. Most in: Hesbjerg 10 %, Holeskov 8 %, Bellinge 6 % | [map](creatures/lygtling.svg) |
-| 8 | Loftnisse → Gårdnisse (34) | folk/spirit | Rare | 0.2 % | 0.5 % | districts 1, 5, 6; likes historic, urban; also with runereader. Most in: Stenløse Skov 43 %, Bellinge 36 %, Højby Skov 3 % | [map](creatures/loftnisse.svg) |
-| 9 | Søormling → Lindorm (38) | stone/water | Rare | 0.6 % | – | **destinations only**; districts 1, 2, 3, 5, 7, 8; likes water; also with angler. Most in: Tarup-Davinde 33 %, Højby Skov 9 %, Holeskov 5 % | [map](creatures/soeormling.svg) |
-| 10 | Kampetrold → Bjergtrold (36) | stone | Rare | 0.5 % | 0.5 % | districts 2, 4, 6, 7, 8; likes historic, urban. Most in: Hesbjerg 23 %, Holeskov 17 %, Elmelund Skov 12 % | [map](creatures/kampetrold.svg) |
-| 11 | Ellepige → Ellekonge (38) | grove/spirit | Rare | 2.8 % | – | **destinations only**; districts 2, 3, 4, 5, 6, 8; likes forest, park; also with forager. Most in: Hesbjerg 21 %, Holeskov 14 %, Elmelund Skov 10 % | [map](creatures/ellepige.svg) |
-| 12 | Gløding → Glødøgle (18) → Essedrage (38) | fire | Uncommon | 0.1 % | 3.9 % | districts 1, 2, 3, 4, 5, 6, 7, 8; likes industrial, urban, historic. Most in: Stenløse Skov 8 %, Bellinge 7 %, Den Fynske Landsby 7 % | [map](creatures/gloeding.svg) |
-| 13 | Rokkeling → Rokkevinge (30) | water | Uncommon | 0.8 % | – | **destinations only**; districts 1, 2, 3, 4, 5, 6, 7, 8; likes water. Most in: Tarup-Davinde 27 %, Seden Strand 8 %, Strandskov 8 % | [map](creatures/rokkeling.svg) |
-| 14 | Mosling → Mostrold (20) → Lyngkonge (36) | grove | Common | 21.1 % | – | **destinations only**; districts 1, 2, 3, 4, 5, 6, 7, 8; likes forest, meadow, farmland. Most in: Hesbjerg 12 %, Holeskov 9 %, Kirkendrup Skov 9 % | [map](creatures/mosling.svg) |
-| 15 | Lynspurv → Tordenkrage (20) → Tordenravn (38) | storm | Uncommon | 8.2 % | 7.7 % | districts 1, 2, 3, 4, 5, 6, 7, 8; likes farmland, meadow, urban. Most in: Bellinge 8 %, Kirkendrup Skov 8 %, Lumby Mølle 8 % | [map](creatures/lynspurv.svg) |
-| 16 | Dugpust → Mosekone (30) | spirit | Uncommon | 8.5 % | – | **destinations only**; districts 1, 2, 3, 4, 5, 6, 7, 8; likes meadow, farmland, water. Most in: Højby Skov 13 %, Tarup-Davinde 11 %, Den Romantiske Have 9 % | [map](creatures/dugpust.svg) |
-| 17 | Flintling → Flintbjørn (32) | stone | Uncommon | 1.5 % | 3.3 % | districts 1, 2, 3, 4, 5, 6, 7, 8; likes historic, industrial, urban. Most in: Ræveskov 8 %, Lumby Mølle 7 %, Kirkendrup Skov 6 % | [map](creatures/flintling.svg) |
-| 18 | Ræveling → Mikkelræv (24) | folk | Common | 17.1 % | 17.9 % | districts 1, 2, 3, 4, 5, 6, 7, 8; likes forest, farmland, park. Most in: Hesbjerg 8 %, Kirkendrup Skov 8 %, Bellinge 7 % | [map](creatures/raeveling.svg) |
-| 19 | Nøkkeling → Nøkken (35) | water/spirit | Very rare | 0.2 % | – | **destinations only**; districts 1, 2, 3, 5, 7; likes water. Most in: Tarup-Davinde 39 %, Højby Skov 10 %, Den Romantiske Have 6 % | [map](creatures/noekkeling.svg) |
-| 20 | Ildflue → Gløddronning (28) | fire/grove | Uncommon | 3.7 % | – | **destinations only**; districts 1, 2, 3, 4, 5, 6, 7, 8; night; likes meadow, forest, farmland. Most in: Hesbjerg 16 %, Holeskov 13 %, Elmelund Skov 11 % | [map](creatures/ildflue.svg) |
+| # | Line (evolves at level) | Types | Rarity | Spawn chance in destinations | Spawn chance elsewhere | Chance at its main home | Where | Map |
+|---|---|---|---|---|---|---|---|---|
+| 1 | Torvdue → Kirkedue (18) → Vinddue (36) | folk | Common | 14.4 % | 19.9 % | – | districts 1, 2, 3, 4, 5, 6, 7, 8; likes urban, park, historic. Most in: Lumby Mølle 7 %, Højby Skov 7 %, Bellinge 6 % | [map](creatures/torvdue.svg) |
+| 2 | Rendsnude → Rottekonge (24) | folk | Common | 0.6 % | 13.6 % | – | districts 1, 2, 3, 4, 5, 6, 7, 8; likes industrial, urban, historic. Most in: Fraugde 6 %, Stenløse Skov 5 %, Bellinge 4 % | [map](creatures/rendsnude.svg) |
+| 3 | Mosbille → Skovbille (14) → Eghjort (32) | grove | Common | 29.2 % | 20.8 % | – | districts 1, 2, 3, 4, 5, 6, 7, 8; likes forest, park, meadow; also with forager. Most in: Hesbjerg 10 %, Holeskov 9 %, Elmelund Skov 7 % | [map](creatures/mosbille.svg) |
+| 4 | Grimælling → Svaneunge (18) → Kongesvane (36) | water | Common | 5.5 % | 6.4 % | – | districts 1, 2, 3, 4, 5, 6, 7, 8; likes water, park, meadow. Most in: Tarup-Davinde 15 %, Stige Ø 8 %, Højby Skov 6 % | [map](creatures/grimaelling.svg) |
+| 5 | Brokrabbe → Kæmpekrabbe (28) | stone | Uncommon | 0.2 % | 1.6 % | – | districts 1, 2, 3, 4, 5, 6, 7, 8; likes historic, urban, water. Most in: Tarup-Davinde 7 %, Munke Mose 5 %, Bolbro parks 5 % | [map](creatures/brokrabbe.svg) |
+| 6 | Kulingmåge → Stormmåge (30) | storm | Uncommon | 0.7 % | 2.1 % | – | districts 1, 2, 3, 4, 5, 6, 7, 8; likes water, industrial, urban. Most in: Tarup-Davinde 12 %, Stige Ø 7 %, Odins Odense 6 % | [map](creatures/kulingmaage.svg) |
+| 7 | Lygtling → Lygtemand (24) | spirit | Uncommon | 1.7 % | 1.5 % | – | districts 1, 2, 3, 4, 5, 6, 7, 8; night; likes park, forest, historic. Most in: Hesbjerg 12 %, Holeskov 10 %, Elmelund Skov 7 % | [map](creatures/lygtling.svg) |
+| 8 | Loftnisse → Gårdnisse (34) | folk/spirit | Rare | 0.2 % | 0.5 % | – | districts 1, 5, 6; likes historic, urban; also with runereader. Most in: Stenløse Skov 46 %, Bellinge 32 %, Højby Skov 3 % | [map](creatures/loftnisse.svg) |
+| 9 | Søormling → Lindorm (38) | stone/water | Rare | 0.2 % | – | 5.6 % at Seden Strand | **only at Seden Strand (main home), Lumby Mølle**; likes water; also with angler. Most in: Seden Strand 94 %, Lumby Mølle 6 % | [map](creatures/soeormling.svg) |
+| 10 | Kampetrold → Bjergtrold (36) | stone | Rare | 0.7 % | 0.5 % | – | districts 2, 4, 6, 7, 8; likes historic, urban. Most in: Hesbjerg 25 %, Holeskov 21 %, Elmelund Skov 15 % | [map](creatures/kampetrold.svg) |
+| 11 | Ellepige → Ellekonge (38) | grove/spirit | Rare | 1.2 % | – | 10.6 % at Hesbjerg | **only at Hesbjerg (main home), Fællesskov**; likes forest, park. Most in: Hesbjerg 94 %, Fællesskov 6 % | [map](creatures/ellepige.svg) |
+| 12 | Gløding → Glødøgle (18) → Essedrage (38) | fire | Uncommon | 0.2 % | 3.9 % | – | districts 1, 2, 3, 4, 5, 6, 7, 8; likes industrial, urban, historic. Most in: Stenløse Skov 8 %, Bellinge 7 %, Den Fynske Landsby 7 % | [map](creatures/gloeding.svg) |
+| 13 | Rokkeling → Rokkevinge (30) | water | Uncommon | 0.3 % | – | 8.7 % at Sanderum Sø | **only at Sanderum Sø (main home), Lumby Mølle**; likes water. Most in: Sanderum Sø 83 %, Lumby Mølle 17 % | [map](creatures/rokkeling.svg) |
+| 14 | Mosling → Mostrold (20) → Lyngkonge (36) | grove | Common | 4.5 % | – | 34.4 % at Kirkendrup Skov | **only at Kirkendrup Skov (main home), Ræveskov, Stenløse Skov**; likes forest, meadow, farmland. Most in: Kirkendrup Skov 67 %, Ræveskov 18 %, Stenløse Skov 15 % | [map](creatures/mosling.svg) |
+| 15 | Lynspurv → Tordenkrage (20) → Tordenravn (38) | storm | Uncommon | 11.9 % | 7.9 % | – | districts 1, 2, 3, 4, 5, 6, 7, 8; likes farmland, meadow, urban. Most in: Lumby Mølle 9 %, Højby Skov 8 %, Bellinge 6 % | [map](creatures/lynspurv.svg) |
+| 16 | Dugpust → Mosekone (30) | spirit | Uncommon | 1.1 % | – | 15.6 % at Brændekilde | **only at Brændekilde (main home), Hindemosen**; likes meadow, farmland, water. Most in: Brændekilde 92 %, Hindemosen 8 % | [map](creatures/dugpust.svg) |
+| 17 | Flintling → Flintbjørn (32) | stone | Uncommon | 2.1 % | 3.4 % | – | districts 1, 2, 3, 4, 5, 6, 7, 8; likes historic, industrial, urban. Most in: Ræveskov 8 %, Lumby Mølle 8 %, Højby Skov 7 % | [map](creatures/flintling.svg) |
+| 18 | Ræveling → Mikkelræv (24) | folk | Common | 24.9 % | 17.8 % | – | districts 1, 2, 3, 4, 5, 6, 7, 8; likes forest, farmland, park. Most in: Hesbjerg 9 %, Holeskov 9 %, Lumby Mølle 7 % | [map](creatures/raeveling.svg) |
+| 19 | Nøkkeling → Nøkken (35) | water/spirit | Very rare | 0.2 % | – | 3.5 % at Tarup-Davinde | **only at Tarup-Davinde (main home)**; likes water. Most in: Tarup-Davinde 100 % | [map](creatures/noekkeling.svg) |
+| 20 | Ildflue → Gløddronning (28) | fire/grove | Uncommon | 0.2 % | – | 11.4 % at Lungs Grave | **only at Lungs Grave (main home), Ørbækparken**; night; likes meadow, forest, farmland. Most in: Lungs Grave 92 %, Ørbækparken 8 % | [map](creatures/ildflue.svg) |
 
 ## Spawn maps
 
@@ -128,21 +128,15 @@ Weight is the table weight before biome fit; "rare" entries use the district's l
 | Mosbille | 25 | player's | any | park 1, forest 1.5, meadow 1, farmland 0.6 |  |  |
 | Grimælling | 25 | player's | any | water 2, park 0.3, meadow 0.3 |  |  |
 | Ræveling | 25 | player's | any | forest 1, farmland 1, park 0.8, urban 0.3 |  |  |
-| Mosling | 25 | player's | any | forest 1.5, meadow 1, farmland 0.8, park 0.5 | yes |  |
 | Brokrabbe | 18 | player's | any | historic 2, urban 0.3, water 0.3 |  |  |
 | Kulingmåge | 9 | player's | any | water 1, industrial 0.5, urban 0.2 |  |  |
 | Lygtling | 9 | player's | night | park 1, forest 1, historic 1, water 1 |  |  |
 | Gløding | 9 | player's | any | industrial 1.5, urban 0.6, historic 0.4 |  |  |
 | Lynspurv | 9 | player's | any | farmland 1.5, meadow 1, urban 0.3 |  |  |
 | Flintling | 9 | player's | any | historic 1, industrial 1, urban 0.4, farmland 0.3 |  |  |
-| Rokkeling | 9 | player's | any | water 2 | yes |  |
-| Dugpust | 9 | player's | any | meadow 1.5, farmland 1, water 0.5 | yes |  |
-| Ildflue | 9 | player's | night | meadow 1, forest 1, farmland 0.6 | yes |  |
 | Loftnisse | 2.5 | district | any | historic 2, urban 0.3 |  |  |
 | Loftnisse | 4 | district | any | historic 2, urban 0.2 |  | runereader |
 | Mosbille | 4 | district | any | forest 2, park 1 |  | forager |
-| Søormling | 2.5 | district | any | water 2 | yes |  |
-| Nøkkeling | 0.8 | district | any | water 2 | yes |  |
 
 ### District 2: Næsbyhoved and Stavis Å (levels 8–14)
 
@@ -153,20 +147,16 @@ Weight is the table weight before biome fit; "rare" entries use the district's l
 | Mosbille | 25 | player's | any | park 1, forest 1.5, meadow 1, farmland 0.6 |  |  |
 | Grimælling | 25 | player's | any | water 2, park 0.3, meadow 0.3 |  |  |
 | Ræveling | 25 | player's | any | forest 1, farmland 1, park 0.8, urban 0.3 |  |  |
-| Mosling | 25 | player's | any | forest 1.5, meadow 1, farmland 0.8, park 0.5 | yes |  |
 | Brokrabbe | 9 | player's | any | historic 2, urban 0.3, water 0.3 |  |  |
 | Kulingmåge | 18 | player's | any | water 1, industrial 0.5, urban 0.2 |  |  |
 | Lygtling | 9 | player's | night | park 1, forest 1, historic 1, water 1 |  |  |
 | Gløding | 9 | player's | any | industrial 1.5, urban 0.6, historic 0.4 |  |  |
 | Lynspurv | 9 | player's | any | farmland 1.5, meadow 1, urban 0.3 |  |  |
 | Flintling | 9 | player's | any | historic 1, industrial 1, urban 0.4, farmland 0.3 |  |  |
-| Rokkeling | 9 | player's | any | water 2 | yes |  |
-| Dugpust | 9 | player's | any | meadow 1.5, farmland 1, water 0.5 | yes |  |
-| Ildflue | 9 | player's | night | meadow 1, forest 1, farmland 0.6 | yes |  |
 | Kampetrold | 2.5 | district | any | historic 2, urban 0.4 |  |  |
-| Ellepige | 2.5 | district | any | forest 2, park 0.5 | yes |  |
-| Søormling | 2.5 | district | any | water 2 | yes |  |
-| Nøkkeling | 0.8 | district | any | water 2 | yes |  |
+| Mosling | 40 | player's | any | forest 1.5, meadow 1, farmland 0.8, park 0.5 | yes |  |
+| Rokkeling | 30 | player's | any | water 2 | yes |  |
+| Søormling | 3 | district | any | water 2 | yes |  |
 
 ### District 3: The fjord (levels 13–20)
 
@@ -177,20 +167,15 @@ Weight is the table weight before biome fit; "rare" entries use the district's l
 | Mosbille | 25 | player's | any | park 1, forest 1.5, meadow 1, farmland 0.6 |  |  |
 | Grimælling | 25 | player's | any | water 2, park 0.3, meadow 0.3 |  |  |
 | Ræveling | 25 | player's | any | forest 1, farmland 1, park 0.8, urban 0.3 |  |  |
-| Mosling | 25 | player's | any | forest 1.5, meadow 1, farmland 0.8, park 0.5 | yes |  |
 | Brokrabbe | 9 | player's | any | historic 2, urban 0.3, water 0.3 |  |  |
 | Kulingmåge | 9 | player's | any | water 1, industrial 0.5, urban 0.2 |  |  |
 | Lygtling | 9 | player's | night | park 1, forest 1, historic 1, water 1 |  |  |
 | Gløding | 9 | player's | any | industrial 1.5, urban 0.6, historic 0.4 |  |  |
 | Lynspurv | 9 | player's | any | farmland 1.5, meadow 1, urban 0.3 |  |  |
 | Flintling | 9 | player's | any | historic 1, industrial 1, urban 0.4, farmland 0.3 |  |  |
-| Rokkeling | 18 | player's | any | water 2 | yes |  |
-| Dugpust | 9 | player's | any | meadow 1.5, farmland 1, water 0.5 | yes |  |
-| Ildflue | 9 | player's | night | meadow 1, forest 1, farmland 0.6 | yes |  |
-| Søormling | 2.5 | district | any | water 2 | yes |  |
-| Søormling | 4 | district | any | water 2 |  | angler |
-| Ellepige | 2.5 | district | any | forest 2, park 0.5 | yes |  |
-| Nøkkeling | 0.8 | district | any | water 2 | yes |  |
+| Dugpust | 8 | player's | any | meadow 1.5, farmland 1, water 0.5 | yes |  |
+| Søormling | 15 | district | any | water 2 | yes |  |
+| Søormling | 4 | district | any | water 2 | yes | angler |
 
 ### District 4: The eastern woods (levels 19–26)
 
@@ -201,19 +186,16 @@ Weight is the table weight before biome fit; "rare" entries use the district's l
 | Mosbille | 25 | player's | any | park 1, forest 1.5, meadow 1, farmland 0.6 |  |  |
 | Grimælling | 25 | player's | any | water 2, park 0.3, meadow 0.3 |  |  |
 | Ræveling | 25 | player's | any | forest 1, farmland 1, park 0.8, urban 0.3 |  |  |
-| Mosling | 25 | player's | any | forest 1.5, meadow 1, farmland 0.8, park 0.5 | yes |  |
 | Brokrabbe | 9 | player's | any | historic 2, urban 0.3, water 0.3 |  |  |
 | Kulingmåge | 9 | player's | any | water 1, industrial 0.5, urban 0.2 |  |  |
 | Lygtling | 9 | player's | night | park 1, forest 1, historic 1, water 1 |  |  |
 | Gløding | 9 | player's | any | industrial 1.5, urban 0.6, historic 0.4 |  |  |
 | Lynspurv | 9 | player's | any | farmland 1.5, meadow 1, urban 0.3 |  |  |
 | Flintling | 18 | player's | any | historic 1, industrial 1, urban 0.4, farmland 0.3 |  |  |
-| Rokkeling | 9 | player's | any | water 2 | yes |  |
-| Dugpust | 9 | player's | any | meadow 1.5, farmland 1, water 0.5 | yes |  |
-| Ildflue | 9 | player's | night | meadow 1, forest 1, farmland 0.6 | yes |  |
-| Ellepige | 2.5 | district | any | forest 2, park 0.5 | yes |  |
-| Ellepige | 4 | district | any | forest 2 |  | forager |
 | Kampetrold | 2.5 | district | any | historic 1, park 0.5, urban 0.5, forest 0.5 |  |  |
+| Mosling | 15 | player's | any | forest 1.5, meadow 1, farmland 0.8, park 0.5 | yes |  |
+| Ildflue | 30 | player's | night | meadow 1, forest 1, farmland 0.6 | yes |  |
+| Ildflue | 8 | player's | night | meadow 1, forest 1, farmland 0.6 | yes |  |
 
 ### District 5: Hollufgård and Fraugde (levels 25–32)
 
@@ -224,20 +206,15 @@ Weight is the table weight before biome fit; "rare" entries use the district's l
 | Mosbille | 25 | player's | any | park 1, forest 1.5, meadow 1, farmland 0.6 |  |  |
 | Grimælling | 25 | player's | any | water 2, park 0.3, meadow 0.3 |  |  |
 | Ræveling | 25 | player's | any | forest 1, farmland 1, park 0.8, urban 0.3 |  |  |
-| Mosling | 25 | player's | any | forest 1.5, meadow 1, farmland 0.8, park 0.5 | yes |  |
 | Brokrabbe | 9 | player's | any | historic 2, urban 0.3, water 0.3 |  |  |
 | Kulingmåge | 9 | player's | any | water 1, industrial 0.5, urban 0.2 |  |  |
 | Lygtling | 9 | player's | night | park 1, forest 1, historic 1, water 1 |  |  |
 | Gløding | 9 | player's | any | industrial 1.5, urban 0.6, historic 0.4 |  |  |
 | Lynspurv | 9 | player's | any | farmland 1.5, meadow 1, urban 0.3 |  |  |
 | Flintling | 9 | player's | any | historic 1, industrial 1, urban 0.4, farmland 0.3 |  |  |
-| Rokkeling | 9 | player's | any | water 2 | yes |  |
-| Dugpust | 18 | player's | any | meadow 1.5, farmland 1, water 0.5 | yes |  |
-| Ildflue | 9 | player's | night | meadow 1, forest 1, farmland 0.6 | yes |  |
 | Loftnisse | 2.5 | district | any | historic 2, urban 0.5, park 0.3 |  |  |
-| Ellepige | 2.5 | district | any | forest 2, park 0.5 | yes |  |
-| Søormling | 2.5 | district | any | water 2 | yes |  |
-| Nøkkeling | 0.8 | district | any | water 2 | yes |  |
+| Ellepige | 2 | district | any | forest 2, park 0.5 | yes |  |
+| Nøkkeling | 2 | district | any | water 2 | yes |  |
 
 ### District 6: Dalum and Hjallese (levels 31–38)
 
@@ -248,19 +225,15 @@ Weight is the table weight before biome fit; "rare" entries use the district's l
 | Mosbille | 25 | player's | any | park 1, forest 1.5, meadow 1, farmland 0.6 |  |  |
 | Grimælling | 25 | player's | any | water 2, park 0.3, meadow 0.3 |  |  |
 | Ræveling | 25 | player's | any | forest 1, farmland 1, park 0.8, urban 0.3 |  |  |
-| Mosling | 25 | player's | any | forest 1.5, meadow 1, farmland 0.8, park 0.5 | yes |  |
 | Brokrabbe | 9 | player's | any | historic 2, urban 0.3, water 0.3 |  |  |
 | Kulingmåge | 9 | player's | any | water 1, industrial 0.5, urban 0.2 |  |  |
 | Lygtling | 9 | player's | night | park 1, forest 1, historic 1, water 1 |  |  |
 | Gløding | 18 | player's | any | industrial 1.5, urban 0.6, historic 0.4 |  |  |
 | Lynspurv | 9 | player's | any | farmland 1.5, meadow 1, urban 0.3 |  |  |
 | Flintling | 9 | player's | any | historic 1, industrial 1, urban 0.4, farmland 0.3 |  |  |
-| Rokkeling | 9 | player's | any | water 2 | yes |  |
-| Dugpust | 9 | player's | any | meadow 1.5, farmland 1, water 0.5 | yes |  |
-| Ildflue | 9 | player's | night | meadow 1, forest 1, farmland 0.6 | yes |  |
 | Loftnisse | 2.5 | district | any | historic 1.5, farmland 1, urban 0.3 |  |  |
-| Ellepige | 2.5 | district | any | forest 2, park 0.5 | yes |  |
 | Kampetrold | 2.5 | district | any | historic 1, park 0.5, urban 0.5, forest 0.5 |  |  |
+| Mosling | 15 | player's | any | forest 1.5, meadow 1, farmland 0.8, park 0.5 | yes |  |
 
 ### District 7: Zoo and Sanderum (levels 37–44)
 
@@ -271,19 +244,14 @@ Weight is the table weight before biome fit; "rare" entries use the district's l
 | Mosbille | 25 | player's | any | park 1, forest 1.5, meadow 1, farmland 0.6 |  |  |
 | Grimælling | 25 | player's | any | water 2, park 0.3, meadow 0.3 |  |  |
 | Ræveling | 25 | player's | any | forest 1, farmland 1, park 0.8, urban 0.3 |  |  |
-| Mosling | 25 | player's | any | forest 1.5, meadow 1, farmland 0.8, park 0.5 | yes |  |
 | Brokrabbe | 9 | player's | any | historic 2, urban 0.3, water 0.3 |  |  |
 | Kulingmåge | 9 | player's | any | water 1, industrial 0.5, urban 0.2 |  |  |
 | Lygtling | 9 | player's | night | park 1, forest 1, historic 1, water 1 |  |  |
 | Gløding | 9 | player's | any | industrial 1.5, urban 0.6, historic 0.4 |  |  |
 | Lynspurv | 18 | player's | any | farmland 1.5, meadow 1, urban 0.3 |  |  |
 | Flintling | 9 | player's | any | historic 1, industrial 1, urban 0.4, farmland 0.3 |  |  |
-| Rokkeling | 9 | player's | any | water 2 | yes |  |
-| Dugpust | 9 | player's | any | meadow 1.5, farmland 1, water 0.5 | yes |  |
-| Ildflue | 9 | player's | night | meadow 1, forest 1, farmland 0.6 | yes |  |
-| Søormling | 2.5 | district | any | water 2, park 0.3 | yes |  |
 | Kampetrold | 2.5 | district | any | park 0.5, urban 0.5, historic 1 |  |  |
-| Nøkkeling | 0.8 | district | any | water 2 | yes |  |
+| Rokkeling | 500 | player's | any | water 2 | yes |  |
 
 ### District 8: The western woods (levels 43–50)
 
@@ -294,16 +262,12 @@ Weight is the table weight before biome fit; "rare" entries use the district's l
 | Mosbille | 25 | player's | any | park 1, forest 1.5, meadow 1, farmland 0.6 |  |  |
 | Grimælling | 25 | player's | any | water 2, park 0.3, meadow 0.3 |  |  |
 | Ræveling | 25 | player's | any | forest 1, farmland 1, park 0.8, urban 0.3 |  |  |
-| Mosling | 25 | player's | any | forest 1.5, meadow 1, farmland 0.8, park 0.5 | yes |  |
 | Brokrabbe | 9 | player's | any | historic 2, urban 0.3, water 0.3 |  |  |
 | Kulingmåge | 9 | player's | any | water 1, industrial 0.5, urban 0.2 |  |  |
 | Lygtling | 9 | player's | night | park 1, forest 1, historic 1, water 1 |  |  |
 | Gløding | 9 | player's | any | industrial 1.5, urban 0.6, historic 0.4 |  |  |
 | Lynspurv | 9 | player's | any | farmland 1.5, meadow 1, urban 0.3 |  |  |
 | Flintling | 9 | player's | any | historic 1, industrial 1, urban 0.4, farmland 0.3 |  |  |
-| Rokkeling | 9 | player's | any | water 2 | yes |  |
-| Dugpust | 9 | player's | any | meadow 1.5, farmland 1, water 0.5 | yes |  |
-| Ildflue | 18 | player's | night | meadow 1, forest 1, farmland 0.6 | yes |  |
-| Søormling | 2.5 | district | any | water 2 | yes |  |
-| Ellepige | 2.5 | district | any | forest 2, park 0.5 | yes |  |
 | Kampetrold | 2.5 | district | any | historic 1, park 0.5, urban 0.5, forest 0.5 |  |  |
+| Dugpust | 14 | player's | any | meadow 1.5, farmland 1, water 0.5 | yes |  |
+| Ellepige | 3 | district | any | forest 2, park 0.5 | yes |  |

@@ -27,6 +27,7 @@ const GOLDEN: Record<number, string> = {
   3: '07bfff2d',
   4: 'eb2dcbec',
   5: 'a896d968',
+  6: 'a896d968', // D171 only adds zone-restricted entries: unchanged for these tables
 };
 
 describe('spawn rules version', () => {
