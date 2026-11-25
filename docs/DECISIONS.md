@@ -1560,3 +1560,22 @@ length, position resolution and spawn tables>`.
   in the repo (v1.11 folds in GDD-UPDATE-NOTES and P22/P23, then the notes file was
   removed); docs/GDD-PROPOSALS.md is the design backlog (P21, P24 leaderboards, P25 tourism
   content). CLAUDE.md's "never edit the GDD" rule is replaced; the GDD stays out of Prettier.
+- **D165. Skilling, markets and a fuller Town Map** (owner request; GDD v1.12).
+  - **Skilling** (the coin; an old Danish coin, original name): beating a trainer pays once,
+    highest team level × 25 (leaders × 60) (`payoutFor`). Save v10 adds `coins`; the
+    migration pays out trainers already beaten. The result card says how much was won.
+  - **Markets:** POI kind `market` (40 m), 9 at real shopping places, placed like the other
+    POIs (valid spot, circles not overlapping others), usable in every zone (like rest
+    stops). Items have a `price` (and `marketBadge`: Good Charm 2, Great Charm 5);
+    selling pays half (`marketStock`, `buyItem`, `sellItem`, `sellPrice`). New item:
+    Medium Tonic (40 HP). The market screen opens from the market's card on the map (Buy and
+    Sell tabs, balance); back returns to the game view. The Bag shows the balance.
+  - **Stamps:** new A1 stamps for market (a stall with a coin) and the destination kinds
+    forest, field, lake, town. Every wild/water/town zone has an `icon` (set by hand from
+    what the place is: Kirkendrup Skov a forest though its zone is mostly farmland).
+  - **Town Map:** arenas stay badges; trainers (ticked when beaten; from zoom 13, there are
+    over a hundred), rest stops and markets (from zoom 11.8) and destinations (from zoom 11)
+    are stamps. Cards for trainers, markets and destinations (what it is, the routes in, the
+    next route to walk). A funnel button next to "Fyn" opens six switches (arenas, routes,
+    trainers, rest stops, markets, destinations); hiding routes also hides their lines. The
+    choice is kept in localStorage (a view setting, not game progress).

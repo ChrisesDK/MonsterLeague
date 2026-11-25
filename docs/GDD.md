@@ -1,6 +1,6 @@
 # Odense Monster League — Game Design Document
 
-Version 1.11 · Nov 25, 2026 · maintained in the repository (see Change log)
+Version 1.12 · Nov 25, 2026 · maintained in the repository (see Change log)
 
 ## Overview
 
@@ -69,7 +69,7 @@ Version 1.11 · Nov 25, 2026 · maintained in the repository (see Change log)
 - **Route trainers** stand on every route, about one per 1.5 km (1–3 per route), and creatures are denser within about 30 m of a route.
 - **Streets** stay sparse, like the towns between routes, and mostly have urban creatures.
 
-**Town Map.** A full-screen overview of the region in the same paper style: the region border (solid yellow, with a pale wash outside the region), district and zone borders (dotted; each edge drawn once, never on top of another line), closed zones lightly dimmed with how to open them, arenas with badge state, every route with its number and walked part, rest stops, the player's position and the Journal's current target. It is held on the region (it can't be dragged out of it) and zooms from the whole municipality, where only the arenas show, down to the streets. Tapping a place shows its straight-line distance, its zone and what it needs; no turn-by-turn directions.
+**Town Map.** A full-screen overview of the region in the same paper style: the region border (solid yellow, with a pale wash outside the region), district and zone borders (dotted; each edge drawn once, never on top of another line), closed zones lightly dimmed with how to open them, arenas with badge state, every route with its number and walked part, rest stops, the player's position and the Journal's current target. It is held on the region (it can't be dragged out of it) and zooms from the whole municipality, where only the arenas show, down to the streets. Arenas are badges; everything else is a stamp: trainers (ticked when beaten; shown when zoomed in), rest stops, markets and the **destinations**, one stamp per zone that says what it is (forest, meadow and field, lake and water, town), so players can see what a route leads to. Tapping a place shows its straight-line distance, its zone and what it needs (a destination: what it is, which routes lead there and which route to walk next); no turn-by-turn directions. A **filter** button (a funnel) in the top bar, next to the Fyn button, opens a short menu of switches to show or hide arenas, routes, trainers, rest stops, markets and destinations; the choice is remembered on the phone.
 
 **Fyn map.** A "Fyn" button on the Town Map opens a map of Fyn's municipalities, each a region: in the same paper style, held on Fyn with a small zoom range, showing each region's 8 arena badges (grey until won). It is for choosing a region: today only Odense can be opened (back to its Town Map, also handy for planning a trip from elsewhere); the others say "coming later". Back closes the Fyn map first, then the Town Map.
 
@@ -222,13 +222,13 @@ A charm is used up even when the catch fails. Catching is only possible in wild 
 
 | Item | Effect | Where from |
 | --- | --- | --- |
-| Small / Large Tonic | Heal 20 / 60 HP | Rest stops, trainer rewards |
+| Small / Medium / Large Tonic | Heal 20 / 40 / 60 HP | Rest stops, trainer rewards, markets |
 | Clear Drops | Cure status | Rest stops |
 | Basic / Good / Great Charm | Catch item, ×1 / ×1.5 / ×2 | Rest stops; Good after badge 2, Great after badge 5 |
 | Revive Leaf | Revive at 50% HP | Hidden items, arena and route-trainer rewards |
 | Revive Blossom | Revive at full HP | To be decided (backlog P21); for testing, Settings → Test items adds one |
 
-There is no shop and no currency in v1: rest stops give a free restock once per hour (for example 5 Basic Charms, 2 Small Tonics). This keeps walking as the only resource loop.
+**Skilling and markets (v1.12).** The game's coin is the *skilling* (an old Danish coin). Beating a trainer pays once: the trainer's highest creature level × 25 (arena leaders × 60), so a Centrum route trainer pays about 200. Markets sell every priced item and buy items back for half their price; Good Charms need badge 2 and Great Charms badge 5. Rest stops still give a free restock once per hour (for example 5 Basic Charms, 2 Small Tonics), so a player who never visits a market can still play. Prices (skilling): Basic Charm 100, Good Charm 300, Great Charm 600, Small Tonic 150, Medium Tonic 350, Large Tonic 600, Clear Drops 200, Revive Leaf 800, Revive Blossom 2,000. Ways to find items while walking (items on the ground, creatures that find things on routes) are still open (backlog P26).
 
 ## Encounters and spawning
 
@@ -278,6 +278,7 @@ Real spawn tables live in `packages/data/content/spawns.json` (accepted P8).
 | Arena | 80 m | Leader battle; 1–2 junior trainers first | Leader rematch after the Championship |
 | Trainer | 50 m | One battle, 2–4 creatures (by district), reward item. Route trainers stand on every route, about one per 1.5 km (1–3 per route), each with an occupation that suits the place (kayakers by the water, forest wardens in the woods, a smith's apprentice at the village) | Once |
 | Rest stop | 40 m | Full heal, item restock once an hour | Yes |
+| Market | 40 m | Buy items for skilling, sell items for half price; 9 in Odense, at real shopping places (Vestergade, Storms Pakhus, Rosengårdcentret, Tarup Center, Hjallese Torv, Dalum, and the villages Bellinge, Korup and Fraugde) | Yes |
 | Hidden item | 30 m | Pick up an item; some need a field ability | Once |
 
 **Arena leaders.** Each has a name, a personality tied to the place, a 2–6 creature team on its type theme (see Arena difficulty), one signature tactic (for example the Water leader sets up rain-like Speed boosts) and a short pre- and post-battle line. Losing keeps all XP gained.
@@ -323,7 +324,8 @@ Locked layers are shown on the map (rustling trees, rings on water, a stone glyp
 | Team | View and order up to 6 creatures | Cards with HP, level, types; tap for details, moves, field ability |
 | Creature detail | Stats and moves | Stats, types, XP bar, moves with type/power/PP, evolution hint |
 | Storage | Creatures beyond 6 | Grid, swap into team |
-| Bag | Items | Grouped list, use from map or battle |
+| Bag | Items | Grouped list with the skilling balance, use from map or battle |
+| Market | Buy and sell (v1.12) | Opened at a market on the map; Buy and Sell tabs, prices, the balance; back returns to the map |
 | Field guide | Collection | Seen / caught per district, biome hints ("found near water at night") |
 | Badges and progress | Campaign | 8 badge slots, next arena and its distance |
 | Settings | Safety and comfort | Sound, Vibration (its own switch), reduce motion, battle speed, text size and language (dropdowns), 3D buildings, "How far you can see" (0.8–1.4 km), Battle playtest, data export/delete, safety reminder; the last line is the credits ("Developed by Christian Bröchner Rasmussen with Claude") |
@@ -405,9 +407,9 @@ Since M2b, the save format and the progression rules (badges, obedience, zones a
 | `fyn.geojson` | The Fyn map | the municipalities of Fyn (OSM borders, simplified) |
 | `odense.pmtiles` | Map tiles | Extract of the Protomaps basemap for Odense Kommune and 1.6 km around it |
 
-**Runtime state:** a battle state holds the turn number, the RNG state, both sides (team, active creature, stat stages, statuses, items) and the result. A creature instance holds its species, level, XP, HP, status, moves with PP, and an optional nickname. The save holds the player seed, team, storage, bag, badges, opened zones, defeated trainers, seen and caught lists, rest-stop restock times, Journal progress (districts reached, route checkpoints reached, metres walked in wild areas, rest stops visited), the fainted creatures' recovery clock, settings and any active battle. See the code for exact types.
+**Runtime state:** a battle state holds the turn number, the RNG state, both sides (team, active creature, stat stages, statuses, items) and the result. A creature instance holds its species, level, XP, HP, status, moves with PP, and an optional nickname. The save holds the player seed, team, storage, bag, skilling, badges, opened zones, defeated trainers, seen and caught lists, rest-stop restock times, Journal progress (districts reached, route checkpoints reached, metres walked in wild areas, rest stops visited), the fainted creatures' recovery clock, settings and any active battle. See the code for exact types.
 
-The save never stores a location history: only progress. Route progress is saved as the numbers of the checkpoints reached on each of the game's routes: no coordinates, no times, never sent anywhere (accepted P23). The save is versioned so migrations are explicit (v9 in v1.11: opened zones and route checkpoints; district numbers followed the new arena order).
+The save never stores a location history: only progress. Route progress is saved as the numbers of the checkpoints reached on each of the game's routes: no coordinates, no times, never sent anywhere (accepted P23). The save is versioned so migrations are explicit (v9 in v1.11: opened zones and route checkpoints; district numbers followed the new arena order; v10 in v1.12: skilling, with trainers already beaten paid out).
 
 ## Safety, privacy and accessibility
 
@@ -563,6 +565,7 @@ M1.7 (done, 148 tests): field abilities are data in `field-abilities.json`; a fr
 
 | Version | Date | Changes |
 | --- | --- | --- |
+| 1.12 | 2026-11-25 | Skilling (coins from trainers) and 9 markets that buy and sell items (replaces "no shop and no currency"); Medium Tonic; the Town Map shows trainers, rest stops, markets and destination stamps (forest, field, lake, town) and gets a filter |
 | 1.11 | 2026-11-25 | The GDD moves into the repository and is maintained by Claude Code; folded in everything since v1.10 (orbit camera details, the sky wall at the edge of the world, 3D buildings, HUD on demand, loading screen, back gesture, settings, logo and colours) and accepted P22 (Odense Kommune as the region: 39 zones opened by walking 50 routes, route progress bars, new arena loop Næsbyhoved–Stige Ø–H.C. Andersen Skoven–Hollufgård–Den Fynske Landsby–Zoo–Tusindårsskoven, Water leader moved to arena 3, the Fyn map) and P23 (route progress saved as checkpoint numbers); route trainers on every route (about one per 1.5 km); region border includes the harbour and canal; campaign length 14–30 days; P17 and P18 replaced by P22 |
 | 1.10 | 2026-11-21 | M2d done and live; accepted P16 (walk target stated at 4 km/h, 10–16 creatures), P17 (routes may cross unlocked districts), P18 (Journal: beat the district's trainers), P19 (fainted creatures recover after 8 hours), P20 (always-centred camera that rotates on drag and tilts as you zoom); 90-second GPS grace before the weak-signal note |
 | 1.9 | 2026-11-21 | New Game feel section (comparison with walking and mainline games, tilted follow camera, wild areas and routes, Town Map, Journal, look and feel); density targets raised for wild areas (1 per 100–150 m) and set for streets (1 per 300–400 m); creatures visible to 200 m with a Nearby strip; M2d added before Gate 3 |

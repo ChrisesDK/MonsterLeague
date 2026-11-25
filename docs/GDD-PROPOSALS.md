@@ -395,3 +395,13 @@ entry here then gets the status `accepted (GDD v1.x)` (or `rejected`, with a rea
   days of play); content for visitors comes later.
 - **To decide:** what a short visit offers (a day route, landmarks, a visitor badge?).
 - **Status:** open
+
+### P26. Finding items while walking
+
+- **GDD section:** Catching, levelling, evolution and items
+- **Idea (owner, 2026-11-25):** players can buy and sell items at markets (v1.12), but apart
+  from trainer rewards and rest stops they can't find items yet. Options: items on the
+  ground (the GDD's hidden items, 30 m radius, some behind a field ability), or creatures
+  in the team that "find" items while walking routes.
+- **To decide:** which, how often, and what they give.
+- **Status:** open
