@@ -15,7 +15,7 @@
  * Side goals (content/goals.json) are finite and never daily: explore the district's wild
  * areas, catch a creature of its typical type, meet its rare creature.
  */
-import { content, type Dex, type Route, type SideGoal, type TypeId } from '@oml/data';
+import { content, type Dex, type Poi, type Route, type SideGoal, type TypeId } from '@oml/data';
 import { isDistrictOpen, isZoneOpen } from './rules';
 import type { JournalProgress, SaveGame } from './save';
 import { distanceM, type LatLng } from './world';
@@ -203,6 +203,14 @@ function nearest(from: LatLng | null, points: LatLng[]): LatLng | null {
   return { lat: p.lat, lng: p.lng };
 }
 
+/**
+ * D163: the Journal's "beat the trainers" step counts the trainers on badge-path routes (and
+ * trainers by an arena, on no route). Trainers on other routes are optional, like the routes.
+ */
+export function isMainTrainer(p: Poi, dex: Dex = content): boolean {
+  return p.kind === 'trainer' && (!p.route || dex.routes[p.route]?.kind === 'main');
+}
+
 /** Main goals of one arena's district (P22). */
 export function mainGoals(
   save: SaveGame,
@@ -233,7 +241,7 @@ export function mainGoals(
     });
   }
 
-  const trainers = pois.filter((p) => p.kind === 'trainer');
+  const trainers = pois.filter((p) => isMainTrainer(p, dex));
   if (trainers.length > 0) {
     const left = trainers.filter(
       (p) => p.kind === 'trainer' && !save.defeatedTrainers.includes(p.trainer),

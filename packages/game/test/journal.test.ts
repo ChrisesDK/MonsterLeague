@@ -19,6 +19,7 @@ import {
   openZones,
   ROUTE_DONE_SHARE,
   routeProgress,
+  isMainTrainer,
   type SaveGame,
 } from '../src/index';
 
@@ -28,15 +29,16 @@ const fresh = (): SaveGame => ({
   onboarding: 'done',
 });
 const KONGENS_HAVE = { lat: 55.3998, lng: 10.3852 };
+/** The trainers the Journal's main step counts in district d (badge-path routes, D163). */
 const trainersIn = (d: number) =>
   Object.values(content.pois).flatMap((p) =>
-    p.kind === 'trainer' && p.district === d ? [p.trainer] : [],
+    p.kind === 'trainer' && p.district === d && isMainTrainer(p) ? [p.trainer] : [],
   );
 
 describe('Journal: the main goal chain (P22)', () => {
   const nearestTrainer = (from: { lat: number; lng: number }) =>
     Object.values(content.pois)
-      .filter((p) => p.kind === 'trainer' && p.district === 1)
+      .filter((p) => p.kind === 'trainer' && p.district === 1 && isMainTrainer(p))
       .sort((x, y) => distanceM(from, x) - distanceM(from, y))[0]!;
 
   it('a new player starts in the open start zone: beat its trainers first', () => {

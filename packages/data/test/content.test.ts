@@ -16,9 +16,13 @@ describe('content', () => {
     expect(Object.keys(content.items)).toHaveLength(8);
     const kinds = Object.values(content.pois).map((p) => p.kind);
     expect(kinds.filter((k) => k === 'arena')).toHaveLength(2);
-    expect(kinds.filter((k) => k === 'trainer')).toHaveLength(6);
+    // D163: route trainers on every route (about one per 1.5 km), plus Lise by Kongens Have
+    expect(kinds.filter((k) => k === 'trainer').length).toBeGreaterThanOrEqual(
+      Object.keys(content.routes).length,
+    );
     expect(kinds.filter((k) => k === 'restStop')).toHaveLength(24);
-    expect(Object.keys(content.trainers)).toHaveLength(13);
+    // 13 hand-made trainers + generated route trainers (D163)
+    expect(Object.keys(content.trainers).length).toBeGreaterThanOrEqual(13 + 50);
     expect(Object.keys(content.playerTeams)).toHaveLength(3);
     for (const s of Object.values(content.species)) expect(s.placeholder).toBe(true);
   });
@@ -159,9 +163,10 @@ describe('POIs (M2b)', () => {
       [1, ['arena1_junior', 'leader_folk']],
       [2, ['arena2_junior', 'leader_stone']],
     ]);
-    const range: Record<number, [number, number]> = { 1: [4, 9], 2: [9, 14] };
+    // route trainers stay inside their district's band (district 1: 4–9, the starter's range)
+    const range: Record<number, [number, number]> = { ...content.districtBands, 1: [4, 9] };
     for (const p of pois) {
-      if (p.kind !== 'restStop') expect([1, 2]).toContain(p.district);
+      if (p.kind === 'arena') expect([1, 2]).toContain(p.district);
       expect(p.verified).toBe(false);
       if (p.kind === 'trainer') {
         const t = content.trainers[p.trainer]!;
@@ -172,12 +177,10 @@ describe('POIs (M2b)', () => {
         expect(t.reward).toBeDefined();
       }
     }
-    expect(
-      pois
-        .filter((p) => p.zone === 'naesbyhoved')
-        .map((p) => p.kind)
-        .sort(),
-    ).toEqual(['arena', 'restStop', 'trainer', 'trainer']);
+    const naesbyhoved = pois.filter((p) => p.zone === 'naesbyhoved').map((p) => p.kind);
+    expect(naesbyhoved.filter((k) => k === 'arena')).toHaveLength(1);
+    expect(naesbyhoved).toContain('restStop');
+    expect(naesbyhoved.filter((k) => k === 'trainer').length).toBeGreaterThanOrEqual(2);
     // P22: a rest stop at every arena site and town (and at the main destinations)
     const rested = new Set(pois.filter((p) => p.kind === 'restStop').map((p) => p.zone));
     for (const z of Object.values(content.zones))
@@ -216,18 +219,19 @@ describe('POIs (M2b)', () => {
 });
 
 describe('arena sites, routes and Journal goals (M2d)', () => {
-  const m = (a: [number, number], b: [number, number]) =>
-    Math.hypot((a[1] - b[1]) * 110_540, (a[0] - b[0]) * 111_320 * Math.cos((a[1] * Math.PI) / 180));
+  /** Exact distance in metres from p to the path (local flat projection). */
   const toRoute = (p: [number, number], path: [number, number][]) => {
+    const kx = 111_320 * Math.cos((p[1] * Math.PI) / 180);
     let best = Infinity;
-    for (const q of path) best = Math.min(best, m(p, q));
     for (let i = 1; i < path.length; i++) {
       const [a, b] = [path[i - 1]!, path[i]!];
-      for (let k = 1; k < 20; k++)
-        best = Math.min(
-          best,
-          m(p, [a[0] + ((b[0] - a[0]) * k) / 20, a[1] + ((b[1] - a[1]) * k) / 20]),
-        );
+      const ax = (a[0] - p[0]) * kx;
+      const ay = (a[1] - p[1]) * 110_540;
+      const dx = (b[0] - a[0]) * kx;
+      const dy = (b[1] - a[1]) * 110_540;
+      const len2 = dx * dx + dy * dy;
+      const t = len2 === 0 ? 0 : Math.max(0, Math.min(1, -(ax * dx + ay * dy) / len2));
+      best = Math.min(best, Math.hypot(ax + t * dx, ay + t * dy));
     }
     return best;
   };
@@ -256,6 +260,15 @@ describe('arena sites, routes and Journal goals (M2d)', () => {
     for (const r of routes) expect(r.lengthM, r.id).toBeLessThan(7000);
     const degree = (z: string) => routes.filter((r) => r.from === z || r.to === z).length;
     expect(content.arenaSites.filter((a) => degree(a.zone) >= 3).length).toBeGreaterThanOrEqual(5);
+  });
+
+  it('every route has a route trainer, standing on it (D163)', () => {
+    const on = new Set(
+      Object.values(content.pois).flatMap((p) =>
+        p.kind === 'trainer' && p.route ? [p.route] : [],
+      ),
+    );
+    for (const r of Object.keys(content.routes)) expect(on.has(r), r).toBe(true);
   });
 
   it('the route trainers stand on a route', () => {

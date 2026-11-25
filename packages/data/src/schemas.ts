@@ -312,7 +312,16 @@ export const PoiSchema = z.discriminatedUnion('kind', [
       trainers: z.array(id).min(2),
     })
     .strict(),
-  z.object({ ...poiBase, kind: z.literal('trainer'), radius: z.literal(50), trainer: id }).strict(),
+  z
+    .object({
+      ...poiBase,
+      kind: z.literal('trainer'),
+      radius: z.literal(50),
+      trainer: id,
+      /** The route the trainer stands on (route trainers, D163). */
+      route: id.optional(),
+    })
+    .strict(),
   z
     .object({
       ...poiBase,

@@ -303,6 +303,2684 @@
         "count": 1
       },
       "placeholder": true
+    },
+    {
+      "id": "route1_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "loftnisse",
+          "level": 4
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 5
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "small_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route2_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "grimaelling",
+          "level": 10
+        },
+        {
+          "speciesId": "torvdue",
+          "level": 13
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route2_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "kampetrold",
+          "level": 12
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 13
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route3_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "torvdue",
+          "level": 10
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 12
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route3_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "rendsnude",
+          "level": 14
+        },
+        {
+          "speciesId": "mosbille",
+          "level": 14
+        },
+        {
+          "speciesId": "torvdue",
+          "level": 18
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route4_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "soeormling",
+          "level": 14
+        },
+        {
+          "speciesId": "torvdue",
+          "level": 15
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 17
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route4_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "rendsnude",
+          "level": 15
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 15
+        },
+        {
+          "speciesId": "soeormling",
+          "level": 19
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route4_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "torvdue",
+          "level": 15
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 15
+        },
+        {
+          "speciesId": "soeormling",
+          "level": 15
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route5_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "mosbille",
+          "level": 14
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 15
+        },
+        {
+          "speciesId": "torvdue",
+          "level": 18
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route6_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "rendsnude",
+          "level": 14
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 17
+        },
+        {
+          "speciesId": "lygtling",
+          "level": 17
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route6_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "torvdue",
+          "level": 15
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 15
+        },
+        {
+          "speciesId": "soeormling",
+          "level": 16
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route6_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "brokrabbe",
+          "level": 21
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 22
+        },
+        {
+          "speciesId": "lygtling",
+          "level": 24
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "good_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route7_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "torvdue",
+          "level": 22
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 22
+        },
+        {
+          "speciesId": "ellepige",
+          "level": 22
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "good_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route7_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "brokrabbe",
+          "level": 21
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 23
+        },
+        {
+          "speciesId": "torvdue",
+          "level": 25
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "good_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route8_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "lygtling",
+          "level": 21
+        },
+        {
+          "speciesId": "ellepige",
+          "level": 22
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 23
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "good_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route8_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "kulingmaage",
+          "level": 20
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 22
+        },
+        {
+          "speciesId": "torvdue",
+          "level": 24
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "good_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route9_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "brokrabbe",
+          "level": 20
+        },
+        {
+          "speciesId": "mosbille",
+          "level": 24
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 24
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "good_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route9_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "rendsnude",
+          "level": 21
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 22
+        },
+        {
+          "speciesId": "torvdue",
+          "level": 25
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "good_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route10_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "mosbille",
+          "level": 20
+        },
+        {
+          "speciesId": "ellepige",
+          "level": 22
+        },
+        {
+          "speciesId": "torvdue",
+          "level": 23
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "good_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route11_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "torvdue",
+          "level": 27
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 29
+        },
+        {
+          "speciesId": "loftnisse",
+          "level": 29
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route11_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "torvdue",
+          "level": 26
+        },
+        {
+          "speciesId": "mosbille",
+          "level": 28
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 31
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route12_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "mosbille",
+          "level": 28
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 30
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 31
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route12_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "rendsnude",
+          "level": 34
+        },
+        {
+          "speciesId": "lygtling",
+          "level": 34
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 35
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route13_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "brokrabbe",
+          "level": 35
+        },
+        {
+          "speciesId": "torvdue",
+          "level": 37
+        },
+        {
+          "speciesId": "loftnisse",
+          "level": 37
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route13_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "grimaelling",
+          "level": 33
+        },
+        {
+          "speciesId": "lygtling",
+          "level": 34
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 36
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route14_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "brokrabbe",
+          "level": 33
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 33
+        },
+        {
+          "speciesId": "lygtling",
+          "level": 35
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route15_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "grimaelling",
+          "level": 39
+        },
+        {
+          "speciesId": "mosbille",
+          "level": 41
+        },
+        {
+          "speciesId": "lygtling",
+          "level": 42
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 43
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "great_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route15_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "mosbille",
+          "level": 44
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 44
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 45
+        },
+        {
+          "speciesId": "lygtling",
+          "level": 45
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route17_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "grimaelling",
+          "level": 12
+        },
+        {
+          "speciesId": "kampetrold",
+          "level": 13
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route17_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "torvdue",
+          "level": 4
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 5
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "small_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route18_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "brokrabbe",
+          "level": 21
+        },
+        {
+          "speciesId": "mosbille",
+          "level": 23
+        },
+        {
+          "speciesId": "lygtling",
+          "level": 25
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "good_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route19_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "lygtling",
+          "level": 4
+        },
+        {
+          "speciesId": "loftnisse",
+          "level": 7
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "small_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route19_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "rendsnude",
+          "level": 4
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 5
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "small_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route21_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "brokrabbe",
+          "level": 4
+        },
+        {
+          "speciesId": "mosbille",
+          "level": 5
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "small_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route21_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "torvdue",
+          "level": 40
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 42
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 42
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 43
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "great_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route22_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "grimaelling",
+          "level": 9
+        },
+        {
+          "speciesId": "mosbille",
+          "level": 9
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route22_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "kulingmaage",
+          "level": 4
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 7
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "small_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route23_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "rendsnude",
+          "level": 6
+        },
+        {
+          "speciesId": "mosbille",
+          "level": 6
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "small_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route23_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "loftnisse",
+          "level": 4
+        },
+        {
+          "speciesId": "lygtling",
+          "level": 7
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "small_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route23_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "lygtling",
+          "level": 44
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 48
+        },
+        {
+          "speciesId": "torvdue",
+          "level": 48
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 49
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route24_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "rendsnude",
+          "level": 14
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 16
+        },
+        {
+          "speciesId": "mosbille",
+          "level": 19
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route24_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "mosbille",
+          "level": 22
+        },
+        {
+          "speciesId": "ellepige",
+          "level": 22
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 23
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "good_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route24_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "kulingmaage",
+          "level": 14
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 17
+        },
+        {
+          "speciesId": "torvdue",
+          "level": 19
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route25_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "soeormling",
+          "level": 15
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 16
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 18
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route25_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "grimaelling",
+          "level": 20
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 21
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 24
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "good_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route27_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "brokrabbe",
+          "level": 12
+        },
+        {
+          "speciesId": "torvdue",
+          "level": 13
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route27_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "lygtling",
+          "level": 12
+        },
+        {
+          "speciesId": "torvdue",
+          "level": 13
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route28_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "mosbille",
+          "level": 6
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 7
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "small_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route28_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "kampetrold",
+          "level": 11
+        },
+        {
+          "speciesId": "torvdue",
+          "level": 13
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route29_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "grimaelling",
+          "level": 10
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 11
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route30_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "grimaelling",
+          "level": 11
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 13
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route30_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "rendsnude",
+          "level": 9
+        },
+        {
+          "speciesId": "kampetrold",
+          "level": 10
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route31_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "brokrabbe",
+          "level": 12
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 13
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route31_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "lygtling",
+          "level": 9
+        },
+        {
+          "speciesId": "torvdue",
+          "level": 11
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route32_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "brokrabbe",
+          "level": 11
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 13
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route32_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "torvdue",
+          "level": 12
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 13
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route32_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "mosbille",
+          "level": 44
+        },
+        {
+          "speciesId": "soeormling",
+          "level": 45
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 47
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 49
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route33_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "kulingmaage",
+          "level": 45
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 45
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 45
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 46
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route33_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "brokrabbe",
+          "level": 45
+        },
+        {
+          "speciesId": "mosbille",
+          "level": 46
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 46
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 47
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route34_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "kulingmaage",
+          "level": 44
+        },
+        {
+          "speciesId": "lygtling",
+          "level": 45
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 46
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 48
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route34_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "lygtling",
+          "level": 38
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 39
+        },
+        {
+          "speciesId": "kampetrold",
+          "level": 39
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 41
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "great_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route35_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "mosbille",
+          "level": 44
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 45
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 45
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 45
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route35_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "torvdue",
+          "level": 46
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 47
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 47
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 48
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route35_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "grimaelling",
+          "level": 44
+        },
+        {
+          "speciesId": "lygtling",
+          "level": 45
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 46
+        },
+        {
+          "speciesId": "mosbille",
+          "level": 47
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route36_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "kulingmaage",
+          "level": 44
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 46
+        },
+        {
+          "speciesId": "lygtling",
+          "level": 47
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 49
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route36_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "kulingmaage",
+          "level": 38
+        },
+        {
+          "speciesId": "mosbille",
+          "level": 39
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 39
+        },
+        {
+          "speciesId": "soeormling",
+          "level": 41
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "great_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route37_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "soeormling",
+          "level": 46
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 48
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 48
+        },
+        {
+          "speciesId": "mosbille",
+          "level": 49
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route37_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "brokrabbe",
+          "level": 48
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 48
+        },
+        {
+          "speciesId": "torvdue",
+          "level": 49
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 49
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route37_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "mosbille",
+          "level": 48
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 49
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 49
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 49
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route38_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "brokrabbe",
+          "level": 45
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 46
+        },
+        {
+          "speciesId": "lygtling",
+          "level": 48
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 49
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route38_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "soeormling",
+          "level": 44
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 45
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 48
+        },
+        {
+          "speciesId": "lygtling",
+          "level": 48
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route38_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "grimaelling",
+          "level": 46
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 46
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 48
+        },
+        {
+          "speciesId": "torvdue",
+          "level": 49
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route39_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "lygtling",
+          "level": 40
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 41
+        },
+        {
+          "speciesId": "soeormling",
+          "level": 41
+        },
+        {
+          "speciesId": "torvdue",
+          "level": 42
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "great_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route39_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "mosbille",
+          "level": 32
+        },
+        {
+          "speciesId": "loftnisse",
+          "level": 33
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 36
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route39_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "rendsnude",
+          "level": 34
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 34
+        },
+        {
+          "speciesId": "torvdue",
+          "level": 36
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route40_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "kulingmaage",
+          "level": 34
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 34
+        },
+        {
+          "speciesId": "lygtling",
+          "level": 34
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route40_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "brokrabbe",
+          "level": 46
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 48
+        },
+        {
+          "speciesId": "soeormling",
+          "level": 48
+        },
+        {
+          "speciesId": "lygtling",
+          "level": 49
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route40_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "mosbille",
+          "level": 44
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 44
+        },
+        {
+          "speciesId": "lygtling",
+          "level": 46
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 46
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route41_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "brokrabbe",
+          "level": 32
+        },
+        {
+          "speciesId": "mosbille",
+          "level": 32
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 34
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route41_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "kulingmaage",
+          "level": 32
+        },
+        {
+          "speciesId": "lygtling",
+          "level": 34
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 37
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route41_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "rendsnude",
+          "level": 33
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 33
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 37
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route42_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "brokrabbe",
+          "level": 34
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 37
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 37
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route42_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "mosbille",
+          "level": 35
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 36
+        },
+        {
+          "speciesId": "loftnisse",
+          "level": 36
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route43_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "grimaelling",
+          "level": 28
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 31
+        },
+        {
+          "speciesId": "lygtling",
+          "level": 31
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route43_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "mosbille",
+          "level": 26
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 28
+        },
+        {
+          "speciesId": "loftnisse",
+          "level": 28
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route43_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "rendsnude",
+          "level": 27
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 27
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 30
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route44_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "mosbille",
+          "level": 26
+        },
+        {
+          "speciesId": "torvdue",
+          "level": 27
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 28
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route44_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "brokrabbe",
+          "level": 27
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 27
+        },
+        {
+          "speciesId": "lygtling",
+          "level": 28
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route44_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "rendsnude",
+          "level": 33
+        },
+        {
+          "speciesId": "torvdue",
+          "level": 35
+        },
+        {
+          "speciesId": "mosbille",
+          "level": 37
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route45_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "kulingmaage",
+          "level": 21
+        },
+        {
+          "speciesId": "ellepige",
+          "level": 21
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 23
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "good_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route45_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "lygtling",
+          "level": 26
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 28
+        },
+        {
+          "speciesId": "mosbille",
+          "level": 28
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route46_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "mosbille",
+          "level": 23
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 23
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 25
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "good_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route46_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "kulingmaage",
+          "level": 22
+        },
+        {
+          "speciesId": "lygtling",
+          "level": 22
+        },
+        {
+          "speciesId": "mosbille",
+          "level": 25
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "good_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route47_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "lygtling",
+          "level": 26
+        },
+        {
+          "speciesId": "mosbille",
+          "level": 28
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 29
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route47_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "lygtling",
+          "level": 28
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 29
+        },
+        {
+          "speciesId": "mosbille",
+          "level": 31
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route47_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "torvdue",
+          "level": 27
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 27
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 31
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route48_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "torvdue",
+          "level": 26
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 28
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 30
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route48_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "mosbille",
+          "level": 27
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 28
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 30
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route48_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "loftnisse",
+          "level": 26
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 28
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 31
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route49_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "loftnisse",
+          "level": 27
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 29
+        },
+        {
+          "speciesId": "lygtling",
+          "level": 30
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route49_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "rendsnude",
+          "level": 27
+        },
+        {
+          "speciesId": "grimaelling",
+          "level": 28
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 30
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route49_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "lygtling",
+          "level": 26
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 30
+        },
+        {
+          "speciesId": "rendsnude",
+          "level": 31
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route50_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "grimaelling",
+          "level": 26
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 26
+        },
+        {
+          "speciesId": "loftnisse",
+          "level": 28
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route50_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "loftnisse",
+          "level": 26
+        },
+        {
+          "speciesId": "kulingmaage",
+          "level": 27
+        },
+        {
+          "speciesId": "mosbille",
+          "level": 29
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "route50_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "lygtling",
+          "level": 26
+        },
+        {
+          "speciesId": "brokrabbe",
+          "level": 27
+        },
+        {
+          "speciesId": "torvdue",
+          "level": 28
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
     }
   ]
 }
