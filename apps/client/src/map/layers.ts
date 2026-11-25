@@ -8,6 +8,7 @@ import { content } from '@oml/data';
 import { routeCheckpoints, type SaveGame } from '@oml/game';
 import districtsRaw from '@oml/data/content/districts.odense.geojson?raw';
 import zonesRaw from '@oml/data/content/zones.odense.geojson?raw';
+import bordersRaw from '@oml/data/content/borders.odense.geojson?raw';
 import type { Region } from '@oml/spawn';
 import { cellsToMultiPolygon } from 'h3-js';
 import type { Palette } from './style';
@@ -35,6 +36,34 @@ export const zonesGeo = JSON.parse(zonesRaw) as GeoJSON.FeatureCollection<
   GeoJSON.Polygon | GeoJSON.MultiPolygon,
   { id: string; district: number; kind: string }
 >;
+
+/** The world with the region cut out (for the wash outside the region). */
+const outsideGeo: GeoJSON.Feature = (() => {
+  const borders = JSON.parse(bordersRaw) as GeoJSON.FeatureCollection<
+    GeoJSON.LineString,
+    { kind: string }
+  >;
+  const holes = borders.features
+    .filter((f) => f.properties.kind === 'region')
+    .map((f) => [...f.geometry.coordinates].reverse());
+  return {
+    type: 'Feature',
+    properties: {},
+    geometry: {
+      type: 'Polygon',
+      coordinates: [
+        [
+          [-180, -85],
+          [180, -85],
+          [180, 85],
+          [-180, 85],
+          [-180, -85],
+        ],
+        ...holes,
+      ],
+    },
+  };
+})();
 
 export const routesGeo: GeoJSON.FeatureCollection<
   GeoJSON.LineString,
@@ -203,16 +232,6 @@ export function addWorldLayers(
       'fill-opacity': opts.mode === 'town' ? 0.45 : 0.55,
     },
   });
-  map.addSource('districts', {
-    type: 'geojson',
-    data: {
-      ...districtsGeo,
-      features: districtsGeo.features.map((f) => ({
-        ...f,
-        properties: { ...f.properties, name: glyphSafe(opts.districtName(f.properties.id)) },
-      })),
-    },
-  });
   map.addSource('zones', {
     type: 'geojson',
     data: {
@@ -228,26 +247,54 @@ export function addWorldLayers(
     type: 'fill',
     source: 'zones',
     filter: ['==', ['get', 'id'], ''],
-    paint: { 'fill-color': p.locked, 'fill-opacity': opts.mode === 'town' ? 0.2 : 0.12 },
+    paint: { 'fill-color': p.locked, 'fill-opacity': opts.mode === 'town' ? 0.1 : 0.08 },
   });
-  if (opts.mode === 'town')
-    map.addLayer({
-      id: 'zone-lines',
-      type: 'line',
-      source: 'zones',
-      minzoom: 11.5,
-      paint: { 'line-color': p.district, 'line-width': 1, 'line-opacity': 0.35 },
-    });
+  // A pale wash outside the region, so the region stands out (D162).
+  map.addSource('outside', { type: 'geojson', data: outsideGeo });
   map.addLayer({
-    id: 'districts',
+    id: 'outside-region',
+    type: 'fill',
+    source: 'outside',
+    paint: { 'fill-color': p.earth, 'fill-opacity': opts.mode === 'town' ? 0.6 : 0.45 },
+  });
+  // Borders (D162): the region's outline solid, district and zone edges dotted. Each edge is
+  // one line in borders.odense.geojson, so no two lines lie on top of each other.
+  map.addSource('borders', { type: 'geojson', data: JSON.parse(bordersRaw) });
+  const dotted = { 'line-cap': 'round', 'line-join': 'round' } as const;
+  map.addLayer({
+    id: 'zone-edges',
     type: 'line',
-    source: 'districts',
+    source: 'borders',
+    filter: ['==', ['get', 'kind'], 'zone'],
+    minzoom: opts.mode === 'town' ? 11.5 : 0,
+    layout: dotted,
     paint: {
       'line-color': p.district,
-      'line-width': opts.mode === 'town' ? 2.5 : 2,
-      'line-dasharray': [3, 2],
-      'line-opacity': 0.75,
+      'line-width': opts.mode === 'town' ? 1.5 : 2,
+      'line-dasharray': [0.1, 3],
+      'line-opacity': 0.55,
     },
+  });
+  map.addLayer({
+    id: 'district-edges',
+    type: 'line',
+    source: 'borders',
+    filter: ['==', ['get', 'kind'], 'district'],
+    layout: dotted,
+    paint: {
+      'line-color': p.district,
+      'line-width': opts.mode === 'town' ? 3 : 3.5,
+      'line-dasharray': [0.1, 2],
+      'line-opacity': 0.85,
+    },
+  });
+  map.addLayer({
+    id: 'region-border',
+    type: 'line',
+    source: 'borders',
+    filter: ['==', ['get', 'kind'], 'region'],
+    layout: { 'line-join': 'round' },
+    paint: { 'line-color': p.regionBorder, 'line-width': opts.mode === 'town' ? 3.5 : 4 },
   });
   map.addSource('routes', {
     type: 'geojson',
@@ -263,15 +310,15 @@ export function addWorldLayers(
     id: 'routes',
     type: 'line',
     source: 'routes',
-    layout: { 'line-cap': 'round', 'line-join': 'round' },
+    layout: { 'line-cap': 'butt', 'line-join': 'round' },
     paint: {
-      'line-color': ['case', ['==', ['get', 'kind'], 'explore'], p.routeDraft, p.route],
+      'line-color': ['case', ['==', ['get', 'kind'], 'explore'], p.routeExplore, p.route],
       'line-width':
         opts.mode === 'town'
           ? ['interpolate', ['linear'], ['zoom'], 10, 2, 14, 4]
           : ['interpolate', ['linear'], ['zoom'], 15, 3, 18.5, 7],
-      // dotted: round caps on near-zero dashes
-      'line-dasharray': [0.1, 2],
+      // dashed (D162): borders are the dotted lines, so routes must not look like them
+      'line-dasharray': [2.2, 1.4],
       'line-opacity': 0.9,
     },
   });
@@ -307,7 +354,7 @@ export function addWorldLayers(
       'symbol-spacing': 400,
     },
     paint: {
-      'text-color': ['case', ['==', ['get', 'kind'], 'explore'], p.routeDraft, p.route],
+      'text-color': ['case', ['==', ['get', 'kind'], 'explore'], p.routeExplore, p.route],
       'text-halo-color': p.halo,
       'text-halo-width': 2,
     },

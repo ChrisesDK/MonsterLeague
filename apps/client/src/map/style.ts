@@ -35,11 +35,14 @@ export interface Palette {
   halo: string;
   district: string;
   route: string;
-  routeDraft: string;
+  /** Routes to a destination (kind 'explore'): orange-red, so they never look like a border. */
+  routeExplore: string;
   wildInk: string;
   rippleInk: string;
   accuracy: string;
   locked: string;
+  /** The region's outer border (solid; zone and district edges are dotted). */
+  regionBorder: string;
 }
 
 export const PAPER: Palette = {
@@ -69,11 +72,12 @@ export const PAPER: Palette = {
   halo: '#f8f1e2',
   district: '#8a5a2b',
   route: '#b8322a',
-  routeDraft: '#9a7b5a',
+  routeExplore: '#c0461f',
   wildInk: '#4d8a3f',
   rippleInk: '#2d78ad',
   accuracy: '#2b6a94',
   locked: '#3b2f25',
+  regionBorder: '#d39a1a',
 };
 
 export const NIGHT: Palette = {
@@ -103,11 +107,12 @@ export const NIGHT: Palette = {
   halo: '#1a2131',
   district: '#e0b36a',
   route: '#ff8a7a',
-  routeDraft: '#8d97b5',
+  routeExplore: '#f08a5d',
   wildInk: '#86c879',
   rippleInk: '#86c2ee',
   accuracy: '#85bde4',
   locked: '#05070c',
+  regionBorder: '#e8b04a',
 };
 
 const kind = (...kinds: string[]) =>
@@ -180,19 +185,21 @@ export function paletteProps(p: Palette): [string, string, unknown][] {
     ['place-labels', 'text-color', p.label],
     ['place-labels', 'text-halo-color', p.halo],
     // game layers (added by map/layers.ts; skipped while missing)
-    ['districts', 'line-color', p.district],
+    ['region-border', 'line-color', p.regionBorder],
+    ['district-edges', 'line-color', p.district],
     ['district-labels', 'text-color', p.district],
     ['district-labels', 'text-halo-color', p.halo],
     ['locked-zones', 'fill-color', p.locked],
-    ['zone-lines', 'line-color', p.district],
+    ['outside-region', 'fill-color', p.earth],
+    ['zone-edges', 'line-color', p.district],
     ['zone-labels', 'text-color', p.district],
     ['zone-labels', 'text-halo-color', p.halo],
-    ['routes', 'line-color', ['case', ['==', ['get', 'kind'], 'explore'], p.routeDraft, p.route]],
+    ['routes', 'line-color', ['case', ['==', ['get', 'kind'], 'explore'], p.routeExplore, p.route]],
     ['routes-walked', 'line-color', p.route],
     [
       'route-labels',
       'text-color',
-      ['case', ['==', ['get', 'kind'], 'explore'], p.routeDraft, p.route],
+      ['case', ['==', ['get', 'kind'], 'explore'], p.routeExplore, p.route],
     ],
     ['route-labels', 'text-halo-color', p.halo],
     ['player-range', 'fill-color', p.accuracy],

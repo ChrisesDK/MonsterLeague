@@ -532,16 +532,18 @@ test('Journal: walking Route 1 with the GPS simulator fills it and opens Næsbyh
 
 test('icons behind the camera are hidden (looking away from the centre)', async ({ page }) => {
   await startDone(page);
-  // west of the old town: every POI within the fog distance lies to the east (P22 placed
-  // trainers and a rest stop north-west of Kongens Have, so the spot moved south)
-  await teleport(page, { lat: 55.394, lng: 10.3773 });
+  // west of the old town; the POIs counted are the ones east of the player (route trainers
+  // stand all around since D163, so "nothing visible" no longer holds anywhere)
+  const here = { lat: 55.394, lng: 10.3773 };
+  await teleport(page, here);
   await page.waitForTimeout(2500);
   const shown = () =>
     page.evaluate(
-      () =>
+      (lng) =>
         [...document.querySelectorAll<HTMLElement>('.poi-marker')].filter(
-          (e) => e.style.visibility !== 'hidden',
+          (e) => e.style.visibility !== 'hidden' && Number(e.dataset.lng) > lng + 0.002,
         ).length,
+      here.lng,
     );
   const face = (bearing: number) =>
     page.evaluate((b) => {
@@ -549,9 +551,9 @@ test('icons behind the camera are hidden (looking away from the centre)', async 
         b,
       );
     }, bearing);
-  await face(270); // west, away from the centre
+  await face(270); // west: the POIs to the east are behind the camera
   await expect.poll(shown, { timeout: 5000 }).toBe(0);
-  await face(90); // east, towards it
+  await face(90); // east, towards them
   await expect.poll(shown, { timeout: 5000 }).toBeGreaterThan(0);
 });
 

@@ -10,6 +10,7 @@
     "./region/odense.json": "./region/region.odense.json",
     "./content/districts.odense.geojson": "./content/districts.odense.geojson",
     "./content/zones.odense.geojson": "./content/zones.odense.geojson",
+    "./content/borders.odense.geojson": "./content/borders.odense.geojson",
     "./content/fyn.geojson": "./content/fyn.geojson",
     "./region/odense.version.json": "./region/region.odense.version.json"
   },
