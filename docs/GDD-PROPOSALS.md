@@ -314,3 +314,58 @@ status here changes to `accepted` (or `rejected`, with a reason).
   there is no way to find it in the game; for testing, Settings → Test items adds one to
   the bag.
 - **Status:** open (built at the owner's request; where it comes from needs a decision)
+
+### P22. Odense Kommune as a region: zones opened by routes, a new arena loop, a Fyn map
+
+- **GDD sections:** World (district table, rules), Game feel → Wild areas and routes, Town Map,
+  Journal, Arena difficulty table, Data model.
+- **Current text:** "Odense is split into 8 districts … The arena order is a loop … badge
+  _n_ opens district _n + 1_." Arenas at Kongens Have, Klosterhaven, H.C. Andersens Hus,
+  Munke Mose, Odense Zoo, Fruens Bøge, Den Fynske Landsby and Havnebadet; one route between
+  consecutive arenas (Route 7 was 13.6 km).
+- **Proposed change:**
+  1. **The region is Odense Kommune** (about 26 × 22 km), not the 10.7 × 8.9 km box around
+     the centre. Fyn's other nine municipalities become later regions.
+  2. **Zones.** The region is split into 39 zones: 8 arena zones, 6 towns (rest stops, no
+     arena) and 25 wild or water destinations (big grass areas, lakes, fjord shores). Each
+     zone belongs to one of the 8 districts, which keep their level bands and spawn tables.
+  3. **Routes open zones.** 50 numbered routes link the zones along real paths, most of them
+     through tall grass: 15 make up the badge path, 10 are other ways between the same places
+     and 25 lead to a destination. Most arenas have 3–4 routes in. Walking a route fills it
+     in like a progress bar (a checkpoint every 25 m, reached within 30 m; finished at 90 %).
+     A finished route opens the zones at both ends as soon as one of them is open. The start
+     zone (Centrum) is open from the beginning.
+  4. **What a closed zone locks:** its rare creatures and field-ability layers ("too wild"),
+     its trainers and its arena. Common creatures stay open everywhere (v1.7 rule).
+  5. **Arenas** still go in badge order: arena _n_ takes a challenge when its zone is open
+     and the player has badge _n − 1_. Level bands still follow badges.
+  6. **New arena sites and theme order** (geography first; arenas 1–2 keep their themes):
+     1 Kongens Have (Folk), 2 Næsbyhoved Slotsbanke (Stone), 3 Stige Ø (Water),
+     4 H.C. Andersen Skoven (Grove), 5 Hollufgård / Sneglehøjen (Spirit), 6 Den Fynske
+     Landsby (Fire), 7 Odense Zoo (Mixed), 8 Tusindårsskoven's hill (Storm). Each theme's
+     spawn table, side goals and field-guide records move with it. The field abilities stay
+     tied to badge numbers (Angler now comes from the Water arena).
+  7. **Arena 3 leader:** the tuned Water team moves from arena 4 to arena 3 and keeps four
+     creatures (levels 19–22) against a five-creature expected team (levels 21–22), instead
+     of the table's three: with three, no level setting met the targets.
+  8. **100 %** counts zones opened and badges, not every route (at least 117 km of walking;
+     about 38 km reaches all 8 badges). If that is too much, the outer ring could open after
+     badge 8 or cycled routes could count: to decide.
+  9. **Fyn map:** a button on the Town Map opens a map of Fyn's municipalities; only
+     Odense can be opened today (back to the Town Map). It shows each region's badges.
+- **Reason / evidence:** owner request after the region sketch (two versions; the owner
+  chose the whole municipality). The old layout was one long corridor in the inner city;
+  this spreads arenas over the city, gives choices of route and rewards walking to the
+  green areas.
+- **Status:** open (built at the owner's request; fold into the GDD)
+
+### P23. Route progress is saved as route checkpoints (privacy)
+
+- **GDD section:** Data model / Privacy
+- **Current text:** "The save holds no positions and no location history."
+- **Proposed change:** add "Route progress is saved as the numbers of the checkpoints
+  reached on each of the game's routes (no coordinates, no times, never sent anywhere). It
+  shows which parts of the game's routes a player has walked."
+- **Reason / evidence:** a route has to keep its progress between walks (P22). The owner
+  chose this over losing half-walked routes when the app closes.
+- **Status:** open (owner decision; fold into the GDD)

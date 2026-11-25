@@ -1434,3 +1434,85 @@ length, position resolution and spawn tables>`.
     projected ground points into an SVG right after the map canvas (above the map, below
     every marker), so the map doesn't redraw every frame; off while loading, in battle and
     with "Reduce motion".
+- **D155. Odense Kommune is the region; zones open with routes** (owner request after the
+  region sketch, GDD P22). The owner chose the sketch's version B (the real municipality
+  border) and asked for trainers, arenas and rest stops along the routes and near the
+  places they lead to.
+  - **Region v4.** `REGION.bbox` covers the municipality (10.17–10.59 E, 55.28–55.49 N);
+    cells outside `content/boundary.odense.geojson` (the OSM border, simplified to 20 m)
+    are dropped. Each cell row is `[district, zone, flags, …shares, mask?]`; the file lists
+    the zone ids. Region file 24,189 cells (was 7,582), 1.09 MB raw, 156 KB gzip; spawn density still on
+    target (wild 1 per 131 m, streets 1 per 318 m, park walk 13.0).
+  - **Zones** (`content/zones.odense.json`): 39 zones with a kind (arena, town, wild,
+    water), a district and a centre. A cell belongs to the nearest zone centre (in metres);
+    a POI's own cell is forced into the POI's zone. The builder writes zone and district
+    outlines (`zones.odense.geojson`, `districts.odense.geojson`, generated, hexagon steps
+    smoothed to about 25 m). District level bands now live in the zones file.
+  - **Overpass in tiles.** The area is fetched as a 4 × 3 grid of tiles, each cached on its
+    own; a tile the servers keep refusing is split into four (twice at most), and the fetch
+    rotates over three public servers (the main one was overloaded for hours).
+  - **Basemap.** `odense.pmtiles` is re-extracted for the municipality plus 1.6 km (the fog
+    wall's reach) by `pnpm --filter @oml/region-builder basemap`, a small PMTiles v3 writer on
+    top of the `pmtiles` reader (no CLI to install): 1,423 tiles, 15 MB (was 8.4 MB).
+- **D156. Routes between zones and their progress bar** (P22).
+  - 50 routes (`route-lib.ts ROUTES`), built over the OSM foot network through waypoints:
+    15 on the badge path (`main`), 10 other ways (`alt`), 25 to destinations (`explore`).
+    Wild cells and the river path only get a mild bonus now (0.85 / 0.8; noSpawn ×1.6):
+    the M2d factors made the sketch's routes 1.5–3 × the straight distance. Paths just outside
+    the region's cells (the causeway to Stige Ø) may be used at a cost (×1.5 partly, ×3 wholly
+    outside); routes snap only to the largest connected part of the network. Lengths: badge
+    path routes 1.2–4.7 km, all routes median 3.2 km, longest 6.9 km (Route 37); 174 km in
+    all (main 43, alt 29, explore 102), 42 % through wild areas. Walking to all 8 badges is
+    about 38 km; opening every zone needs at least 117 km (a season's goal, mostly the
+    outer ring). Stige Ø's real shortest link to Seden Strand is 7.8 km round the water, so
+    Route 24 runs Hindemosen–Seden instead, and Route 44 Højby–Hjallese (Højby–Stenløse was
+    8 km); Stige Ø has one route in.
+  - Validation of routes changed with the routes: a route may run up to 600 m outside the
+    region's cells, and the railway/motorway rule now measures the longest continuous
+    stretch within 12 m (at most 100 m), since crossing the E20 or a railway on a bridge with
+    its ramps counts 30–100 m without running along it.
+  - A route has a checkpoint every 25 m (was 100 m), reached within 30 m, and is finished at
+    90 % (was 80 %), so short GPS gaps don't block it. Progress counts on every route, open
+    or not; a finished route opens both its zones as soon as one end is open (`openZones`,
+    repeated until nothing changes), so a route walked "from the wrong side" pays off later.
+  - Play view and Town Map draw each route dotted and its walked part solid (`walkedGeo`:
+    a piece between two reached neighbouring checkpoints). A toast and a short vibration
+    say when a zone opens.
+- **D157. What zones lock** (P22). `isZoneOpen`, `spawnStatus` (rares and ability layers in a
+  closed zone are "too wild"; the client looks the zone up from its own region file, so the
+  spawn service is unchanged), `trainerStatus` (`zoneLocked`; an arena leader also needs
+  badge n − 1), `arenaReady`. The Journal's main chain per arena is: open its zone (the
+  next route toward it: shortest by metres still to walk, starting from an open zone) →
+  the district's trainers → a rest stop → the arena. The old "reach the district" step is
+  gone. Districts show in the Journal once any of their zones is open, or when they are the
+  next arena's.
+- **D158. New arena sites and theme order** (P22). Arena 2 moves from Klosterhaven to
+  Næsbyhoved Slotsbanke (OSM way 229383133); arenas 3–8: Stige Ø (Water), H.C. Andersen
+  Skoven (Grove), Hollufgård (Spirit), Den Fynske Landsby (Fire), Odense Zoo (Mixed),
+  Tusindårsskoven's hill (Storm). Spawn tables, side goals (ids renamed) and save data move
+  with their theme: old district 3 → 5, 4 → 3, 5 → 7, 6 → 4, 7 → 6.
+  - **Arena 3 leader:** the Water leader moves from arena 4. Three creatures at 19–21 could
+    not meet the targets (one level flipped a starter from 84 % to 4 %: a speed tie between
+    the two Strømodder), so it keeps four (Grimælling 19, Kulingmåge 20, Strømodder 22 and 21) and Grimælling swaps Beech Lash (not in its learnset) for Rinse and Mend. Expected
+    team `arena3`: starter 22 plus Kulingmåge 21, Brokrabbe 21, Mosbille 22, Torvdue 21.
+    Sim (2,000 battles): Fire 26 %, Water 44 %, Grove 88 % (targets 15–30, 40–60, 75–90).
+- **D159. POIs on the new map** (P22). Arena 1 and its rest stops stay. Arena 2 stands on
+  the castle mound. The district-1 route trainers stand on routes leaving Centrum (Ole on
+  Route 16, Freja on Route 20, Niels on Route 22; Lise stays by Kongens Have), the district-2
+  ones in Næsbyhoved (Karen on Route 1, Mads on Route 2). 21 new rest stops at every arena
+  site, town and main destination. Each spot is checked like `pnpm validate` (inside its zone
+  with its whole radius, no no-spawn cell, ≥ 15 m from road/rail). All unverified.
+- **D160. Save v9** (P22). Adds `zones` (opened zones; the start zone is implied). Migration:
+  district numbers in the field guide, an active battle, `journal.reached` and
+  `journal.wildMetres` follow D158; route progress starts again (new routes); the zone of
+  every arena already won opens. Route progress is checkpoint numbers only (owner decision,
+  GDD P23): no coordinates, no times, never sent.
+- **D161. Fyn map** (owner request). The Town Map's header has a "Fyn" button that opens a
+  map of Fyn's ten municipalities (`content/fyn.geojson`, OSM borders simplified to 250 m)
+  in the Town Map's paper colours: sea background, land, dashed borders, names. Only
+  Odense can be tapped (it returns to the Town Map; the others show "Coming later"). Each
+  playable region shows its 8 badges, grey until won. The view is held on Fyn
+  (`maxBounds`), zoom runs from all of Fyn to about one region (+1.6), no rotation or tilt.
+  Back (gesture or Escape) closes the Fyn map first, then the Town Map, through the back
+  stack (D150). The Town Map itself is held on the municipality and zooms out to 10.3; below
+  zoom 11.8 it hides route numbers and rest stops.

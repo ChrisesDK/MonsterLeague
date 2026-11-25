@@ -2,8 +2,8 @@
 
 Everything built or decided since the v1.9 export that the GDD doesn't describe yet,
 grouped by GDD section, with suggested wording. Details and reasons are in
-[DECISIONS.md](DECISIONS.md) (D111–D154); open proposals are in
-[GDD-PROPOSALS.md](GDD-PROPOSALS.md) (P16–P21).
+[DECISIONS.md](DECISIONS.md) (D111–D161); open proposals are in
+[GDD-PROPOSALS.md](GDD-PROPOSALS.md) (P16–P23).
 
 ## Change log line (suggested)
 
@@ -45,8 +45,16 @@ Add:
   from the player to the ring every few seconds, like a scanner. The figure ignores GPS
   drift under 3 m, so it stands still when you do.
 - **Nearby strip:** each creature shows its name; choosing one turns the camera towards it.
-- **Back gesture:** in a menu it goes back one level, on the Town Map it closes the map;
-  only on the game view does it ask "Leave the game?".
+- **Back gesture:** in a menu it goes back one level, on the Fyn map it returns to the Town
+  Map, on the Town Map it closes the map; only on the game view does it ask "Leave the
+  game?".
+- **Town Map (P22):** covers Odense Kommune and can't be dragged out of it; it shows zones
+  (closed ones dimmed, with how to open them), each route with its number and walked part,
+  arenas, rest stops, the player and the Journal target. Zoomed out it shows only the
+  arenas. A **Fyn** button opens the **Fyn map**: the municipalities of Fyn in the same
+  paper style, held on Fyn with a small zoom range. Only Odense can be opened (back to the
+  Town Map; useful for planning from elsewhere); the others say "coming later". Each region
+  shows its arena badges, grey until won.
 - **Icons:** creatures, stamps (arenas, trainers, rest stops) and the Journal star show at
   every zoom while they are within the fog distance; they are hidden when they are behind
   the camera or beyond the fog wall.
@@ -94,29 +102,63 @@ Add:
 - **Design system (as built):** headings in Fraunces, body text in Atkinson Hyperlegible
   (both SIL Open Font License, self-hosted); the main menu button is a red satchel.
 
-## Game feel → Wild areas and routes (P17, P18)
+## World (P22): Odense Kommune, zones and routes
 
-- **Routes as built:** Route 1 Kongens Have–Klosterhaven (769 m), Route 2
-  Klosterhaven–H.C. Andersens Hus (585 m), Route 3 H.C. Andersens Hus–Munke Mose
-  (1,375 m). Routes 4–7 are drafts (Route 7 is 13.6 km round the east side).
-- **P17:** a route stays in the two districts it connects where they touch; otherwise it
-  may pass through districts already unlocked (Route 3 runs through district 2 along
-  Odense Å, since districts 3 and 4 don't touch).
-- **P18:** the Journal step is "Beat the trainers in <district>"; a district's trainers
-  stand on any route through it. District 2's trainers stand on Routes 2 and 3 (Route 1's
-  district-2 stretch has no room for them).
-- **Arena sites 3–8** are placed from OpenStreetMap and approximate until their POIs are
-  placed in M3 (Havnebadet especially).
+Suggested replacement for the district text and table:
+
+**Odense Kommune is the first region; Fyn's other municipalities come later. The region is
+split into 39 zones around arenas, towns and wild or water destinations, in 8 districts.
+Numbered routes along real paths link the zones; walking a whole route opens the zones it
+leads to.**
+
+| #   | Arena site                           | Theme  | District (level band)          | Field ability earned |
+| --- | ------------------------------------ | ------ | ------------------------------ | -------------------- |
+| 1   | Kongens Have (start town)            | Folk   | Centrum (3–8)                  | —                    |
+| 2   | Næsbyhoved Slotsbanke (castle mound) | Stone  | Næsbyhoved and Stavis Å (8–14) | Forager              |
+| 3   | Stige Ø (island in the fjord)        | Water  | The fjord (13–20)              | Angler               |
+| 4   | H.C. Andersen Skoven                 | Grove  | The eastern woods (19–26)      | Runereader           |
+| 5   | Hollufgård / Sneglehøjen             | Spirit | Hollufgård and Fraugde (25–32) | Nightseer            |
+| 6   | Den Fynske Landsby                   | Fire   | Dalum and Hjallese (31–38)     | Sealbreaker          |
+| 7   | Odense Zoo                           | Mixed  | Zoo and Sanderum (37–44)       | Homing (heal only)   |
+| 8   | Tusindårsskoven's hill               | Storm  | The western woods (43–50)      | —                    |
+
+Rules (replacing "badge n opens district n + 1"):
+
+- **Zones open with routes.** The start zone (Centrum) is open. A route is finished when the
+  player has walked it (a checkpoint every 25 m, 90 % of them); a finished route opens the
+  zones at both ends as soon as one of them is open. Routes fill in on the map as they are
+  walked, like a progress bar.
+- **A closed zone locks** its rare creatures and field-ability layers ("too wild"), its
+  trainers and its arena. Common creatures can be battled everywhere (unchanged).
+- **Arenas go in order:** arena _n_ takes a challenge when its zone is open and the player
+  holds badge _n − 1_. Levels follow badges as before.
+- **100 %** = every zone opened and every badge; walking every route is a bonus.
+
+## Game feel → Wild areas and routes (P22)
+
+- **Routes as built:** 50 numbered routes: 15 make up the badge path (Route 1 Centrum–
+  Næsbyhoved … Route 15 Zoo–Tusindårsskoven), 10 are other ways between the same places
+  and 25 lead to a destination (a forest, lake, fjord shore or village). Badge-path routes
+  are 1.2–4.7 km, the longest outer route 6.9 km (the old Route 7 was 13.6 km). About 38 km
+  of walking reaches all 8 badges; opening every zone takes at least 117 km.
+- Most arenas have 3–4 routes in; long stretches between arenas are split at a park or
+  forest in the middle, so a route is a single walk. Routes lead through the grass where the
+  paths allow (42 % of all route metres run through wild areas).
+- Each district's route trainers stand on routes in its zones; there are rest stops at
+  every arena site, town and main destination (24 in all).
+- P17 and P18 no longer apply as written: routes are not tied to districts.
 
 ## Game feel → Journal
 
 As built (suggested addition):
 
-- **Main goals per district:** reach the district → walk its route → beat its trainers →
-  visit one of its rest stops → challenge its arena. Steps can be done in any order; the
-  current goal is the first open step of the next arena's district. Arenas not built yet
-  show "opens in a later update".
-- **Walking a route:** route checkpoints every 100 m; 80% of them completes the step.
+- **Main goals per arena (P22):** open its zone (the Journal picks the next route toward it,
+  starting from an open zone) → beat its district's trainers → visit one of its rest stops
+  → challenge its arena. Steps can be done in any order; the current goal is the first open
+  step of the next arena. Arenas not built yet show "opens in a later update".
+- **Walking a route:** checkpoints every 25 m; 90 % of them finishes the route.
+- The Journal shows routes walked and zones open (e.g. "Routes walked: 3 of 50 · Zones
+  open: 4 of 39").
 - **Side goals per district:** walk 300 m in its wild areas, catch a creature of its typical
   type, meet its rare creature.
 
@@ -168,9 +210,10 @@ Save versions since v1.9:
 | v6      | The fog distance setting (then 1,000–2,000 m, default 2,000)                                                                            |
 | v7      | Fog distance limited: default 1,200 m, range 800–1,400 m (longer settings come down to 1,200)                                           |
 | v8      | Vibration setting (on by default; off if reduce motion was on)                                                                          |
+| v9      | Opened zones; route progress as checkpoint numbers; district numbers follow the new arena order (P22, P23)                              |
 
 Region file v3: each cell carries flags for no-spawn, wild area, water edge and route
-corridor.
+corridor. Region file v4 (P22): Odense Kommune, and each cell also names its zone.
 
 ## Open proposals to decide (GDD-PROPOSALS.md)
 
@@ -182,6 +225,8 @@ corridor.
 | P19      | Fainted creatures recover by themselves after 8 hours                                   | Built at your request; fold in                      |
 | P20      | Orbit camera (exact drag rotation), tilt 30–76°, fog wall and sky                       | Built at your request; fold in                      |
 | P21      | Revive Blossom (revive at full HP): where players get it                                | Built at your request; source needs your decision   |
+| P22      | Odense Kommune as the region: zones opened by routes, new arena loop, Fyn map           | Built at your request; fold in                      |
+| P23      | Route progress saved as route checkpoints (privacy wording)                             | Your decision; fold in                              |
 
 ## Development plan
 

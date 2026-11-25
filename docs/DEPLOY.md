@@ -229,17 +229,18 @@ region:build`.
 
 ## Map tiles
 
-`apps/client/public/tiles/odense.pmtiles` (8.4 MB, zoom 0–15) is an extract of the
-Protomaps basemap build of 2026-11-18 for the bbox 10.30–10.47 E, 55.35–55.43 N, made with
-`pmtiles extract`. It is served from GitHub Pages like any other file. Pages answers HTTP
+`apps/client/public/tiles/odense.pmtiles` (15 MB, zoom 0–15) is an extract of the
+Protomaps basemap build of 2026-11-24 for Odense Kommune plus 1.6 km around it (the fog
+wall's reach; P22). It is served from GitHub Pages like any other file. Pages answers HTTP
 range requests (verified: `206 Partial Content`), which is all PMTiles needs. Label
 fonts (Noto Sans, OFL) are self-hosted in `apps/client/public/fonts/`.
 
-To refresh the extract (e.g. after big OSM changes), download the `pmtiles` CLI from
-github.com/protomaps/go-pmtiles and run:
+To refresh the extract (e.g. after big OSM changes), run the region builder's extractor
+(it reads the tiles it needs from the build over HTTP and writes a PMTiles v3 file; no
+CLI to install):
 
 ```sh
-pmtiles extract https://build.protomaps.com/<YYYYMMDD>.pmtiles apps/client/public/tiles/odense.pmtiles --bbox=10.30,55.35,10.47,55.43
+pnpm --filter @oml/region-builder basemap <YYYYMMDD>   # default: yesterday's build
 pnpm region:build   # the region builder reads basemap water from the same file
 ```
 

@@ -141,12 +141,22 @@
 - [x] A back gesture asks before leaving (site and installed app); stars on the night sky
 - [x] The fog wall painted like the sky (the round world ends in sky, with a haze at the edge); buildings load at the edge
 
+## Region rework: Odense Kommune (P22, owner request) ✅
+
+- [x] Region v4: the whole municipality (OSM border), Overpass in cached tiles, basemap re-extracted (15 MB)
+- [x] 39 zones in 8 districts; 50 routes between zones (15 badge path, 10 other ways, 25 to destinations)
+- [x] Routes fill in as they are walked (25 m checkpoints, finished at 90 %) and open the zones they lead to; zones lock rares, trainers and arenas
+- [x] New arena loop (Næsbyhoved, Stige Ø, H.C. Andersen Skoven, Hollufgård, Den Fynske Landsby, Odense Zoo, Tusindårsskoven); themes, spawn tables and goals moved with them; arena-3 Water leader re-tuned
+- [x] POIs: arena 2 at the castle mound, route trainers on routes, 24 rest stops; save v9
+- [x] Town Map for the municipality (zones, route progress) with a Fyn map (only Odense opens; badges; held on Fyn)
+- [ ] Owner: fold P22 and P23 into the GDD
+
 ## Next: Gate 3 — District walk test (owner, with [GATE3.md](GATE3.md))
 
 - [x] GDD v1.6; P12 and P13 accepted
 - [x] Districts 1–8 redrawn on real borders (railways, Odense Å, Ring 2, centre streets); every arena in its own district; region rebuilt, density on target
 
-- [ ] Verify the POIs in districts 1–2 on site (Freja, Karen and Mads moved in M2d) (public, step-free, away from road edges) and set `verified: true`
+- [ ] Verify the POIs in districts 1–2 on site (arena 2, Ole, Freja, Niels, Karen and Mads moved in P22; rest stop Næsbyhoved is new) (public, step-free, away from road edges) and set `verified: true`
 - [ ] Walk sessions (daylight + one after dark), `pnpm gate3:report`, decision
 
 ## Open questions (before/during M2)
