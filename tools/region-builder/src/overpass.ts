@@ -42,6 +42,30 @@ out skel qt;`;
 }
 
 /**
+ * D170: the extra no-spawn areas (golf courses, care homes, prisons, places of worship,
+ * campsites). A query of its own, cached per tile like the main one, so adding them did not
+ * mean downloading every tile again.
+ */
+export function buildExtraQuery([west, south, east, north]: [
+  number,
+  number,
+  number,
+  number,
+]): string {
+  const b = `(${south},${west},${north},${east})`;
+  return `[out:json][timeout:240][maxsize:536870912];
+(
+  wr["leisure"="golf_course"]${b};
+  nwr["amenity"~"^(nursing_home|prison|place_of_worship)$"]${b};
+  nwr["social_facility"~"^(nursing_home|assisted_living)$"]${b};
+  wr["tourism"~"^(camp_site|caravan_site)$"]${b};
+);
+out body;
+>;
+out skel qt;`;
+}
+
+/**
  * Runs the query, or returns the cached response if the same query ran before. The cache
  * lives in tools/region-builder/cache/ (gitignored), so re-runs work offline and don't
  * load the public Overpass servers again.

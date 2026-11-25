@@ -16,7 +16,10 @@ export interface Rule {
   buffer?: number;
 }
 
-const NO_SPAWN_AMENITY = /^(school|kindergarten|childcare|hospital|grave_yard)$/;
+const NO_SPAWN_AMENITY =
+  /^(school|kindergarten|childcare|hospital|grave_yard|nursing_home|prison|place_of_worship)$/;
+/** D170 (owner request): care homes mapped as social facilities. */
+const NO_SPAWN_SOCIAL = /^(nursing_home|assisted_living)$/;
 
 /** Area (polygon) rules from OSM tags. */
 export function areaRules(tags: Tags): Rule[] {
@@ -32,12 +35,7 @@ export function areaRules(tags: Tags): Rule[] {
     rules.push({ biome: 'water' });
   else if (landuse === 'reservoir' || landuse === 'basin') rules.push({ biome: 'water' });
   else if (landuse === 'forest' || natural === 'wood') rules.push({ biome: 'forest' });
-  else if (
-    leisure === 'park' ||
-    leisure === 'garden' ||
-    landuse === 'recreation_ground' ||
-    landuse === 'allotments'
-  )
+  else if (leisure === 'park' || leisure === 'garden' || landuse === 'recreation_ground')
     rules.push({ biome: 'park' });
   else if (
     landuse === 'meadow' ||
@@ -63,7 +61,13 @@ export function areaRules(tags: Tags): Rule[] {
   if (
     (amenity && NO_SPAWN_AMENITY.test(amenity)) ||
     tags.healthcare === 'hospital' ||
+    (tags.social_facility !== undefined && NO_SPAWN_SOCIAL.test(tags.social_facility)) ||
     landuse === 'cemetery' ||
+    // D170 (owner request): private plots, golf courses, prisons and campsites
+    landuse === 'allotments' ||
+    leisure === 'golf_course' ||
+    tags.tourism === 'camp_site' ||
+    tags.tourism === 'caravan_site' ||
     landuse === 'military' ||
     tags.military ||
     tags.aeroway === 'aerodrome'

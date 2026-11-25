@@ -40,6 +40,22 @@ describe('OSM tag rules', () => {
     expect(areaRules({ natural: 'water', water: 'pond' })).toEqual([{ biome: 'water' }]);
     expect(areaRules({ amenity: 'kindergarten' })).toEqual([{ noSpawn: true }]);
     expect(areaRules({ landuse: 'cemetery' })).toEqual([{ noSpawn: true }]);
+    // D170: golf courses, allotments, care homes, prisons, places of worship, campsites
+    for (const tags of [
+      { leisure: 'golf_course' },
+      { landuse: 'allotments' },
+      { amenity: 'nursing_home' },
+      { amenity: 'social_facility', social_facility: 'assisted_living' },
+      { amenity: 'prison' },
+      { amenity: 'place_of_worship' },
+      { tourism: 'camp_site' },
+      { tourism: 'caravan_site' },
+    ])
+      expect(areaRules(tags), JSON.stringify(tags)).toEqual([{ noSpawn: true }]);
+    // the owner keeps these open: playgrounds, the zoo, the open-air museum
+    expect(areaRules({ leisure: 'playground' })).toEqual([]);
+    expect(areaRules({ tourism: 'zoo' })).toEqual([]);
+    expect(areaRules({ tourism: 'museum' })).toEqual([]);
     expect(areaRules({ highway: 'footway' })).toEqual([]);
     expect(lineRules({ waterway: 'river' })).toEqual([{ biome: 'water', buffer: 15 }]);
     expect(lineRules({ waterway: 'stream' })).toEqual([{ biome: 'water', buffer: 5 }]);

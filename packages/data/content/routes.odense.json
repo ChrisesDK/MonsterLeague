@@ -157,7 +157,7 @@
       "to": "strandskov",
       "kind": "main",
       "lengthM": 2781,
-      "wildShare": 0.21,
+      "wildShare": 0.08,
       "path": [
         [10.389438, 55.408433],
         [10.387842, 55.408885],
@@ -206,7 +206,7 @@
       "to": "stige",
       "kind": "main",
       "lengthM": 4110,
-      "wildShare": 0.74,
+      "wildShare": 0.65,
       "path": [
         [10.405372, 55.422623],
         [10.405241, 55.422804],
@@ -541,7 +541,7 @@
       "to": "botanisk",
       "kind": "main",
       "lengthM": 2250,
-      "wildShare": 0.51,
+      "wildShare": 0.4,
       "path": [
         [10.455008, 55.4051],
         [10.453464, 55.404663],
@@ -594,7 +594,7 @@
       "to": "oerbaek",
       "kind": "main",
       "lengthM": 2690,
-      "wildShare": 0.24,
+      "wildShare": 0.15,
       "path": [
         [10.429671, 55.399412],
         [10.429297, 55.399007],
@@ -998,7 +998,7 @@
       "to": "tusindaar",
       "kind": "main",
       "lengthM": 2985,
-      "wildShare": 0.86,
+      "wildShare": 0.62,
       "path": [
         [10.370674, 55.377886],
         [10.370424, 55.377914],
@@ -1165,7 +1165,7 @@
       "to": "botanisk",
       "kind": "alt",
       "lengthM": 1549,
-      "wildShare": 0.43,
+      "wildShare": 0.29,
       "path": [
         [10.411796, 55.397607],
         [10.411802, 55.397522],
@@ -1412,7 +1412,7 @@
       "to": "bolbro",
       "kind": "alt",
       "lengthM": 4671,
-      "wildShare": 0.32,
+      "wildShare": 0.3,
       "path": [
         [10.385268, 55.399741],
         [10.385405, 55.399896],
@@ -1530,7 +1530,7 @@
       "to": "tusindaar",
       "kind": "alt",
       "lengthM": 3829,
-      "wildShare": 0.49,
+      "wildShare": 0.3,
       "path": [
         [10.347426, 55.402102],
         [10.347261, 55.402145],
@@ -1622,7 +1622,7 @@
       "to": "seden",
       "kind": "alt",
       "lengthM": 5088,
-      "wildShare": 0.39,
+      "wildShare": 0.33,
       "path": [
         [10.41624, 55.416725],
         [10.416008, 55.41629],
@@ -2378,7 +2378,7 @@
       "to": "elmelund",
       "kind": "explore",
       "lengthM": 5880,
-      "wildShare": 0.77,
+      "wildShare": 0.66,
       "path": [
         [10.338841, 55.381612],
         [10.339442, 55.382226],
@@ -3087,7 +3087,7 @@
       "to": "stenloese",
       "kind": "explore",
       "lengthM": 3033,
-      "wildShare": 0.57,
+      "wildShare": 0.43,
       "path": [
         [10.385762, 55.366189],
         [10.385943, 55.36559],

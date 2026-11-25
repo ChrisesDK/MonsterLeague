@@ -135,12 +135,12 @@
       "kind": "trainer",
       "district": 1,
       "zone": "centrum",
-      "lat": 55.3965,
-      "lng": 10.38561,
+      "lat": 55.39654,
+      "lng": 10.38557,
       "radius": 50,
       "trainer": "route1_freja",
       "verified": false,
-      "note": "On Route 20 (Centrum–Munke Mose), on the way to Eventyrhaven (P22; check on site)",
+      "note": "On Route 20 (Centrum–Munke Mose), on the way to Eventyrhaven (P22; check on site) (D170: moved 5 m off a new no-spawn area; check on site)",
       "route": "route20"
     },
     {
@@ -367,15 +367,15 @@
       "kind": "restStop",
       "district": 4,
       "zone": "botanisk",
-      "lat": 55.39904,
-      "lng": 10.42933,
+      "lat": 55.39915,
+      "lng": 10.42967,
       "radius": 40,
       "restock": {
         "basic_charm": 5,
         "small_tonic": 2
       },
       "verified": false,
-      "note": "Kulturbotanisk Have, by the entrance (P22: placed from the map; check on site that it is public and step-free)"
+      "note": "Kulturbotanisk Have, by the entrance (P22: placed from the map; check on site that it is public and step-free) (D170: moved 25 m off a new no-spawn area; check on site)"
     },
     {
       "id": "rest_hollufgaard",
@@ -730,12 +730,12 @@
       "district": 4,
       "zone": "lungsgrave",
       "lat": 55.40372,
-      "lng": 10.44738,
+      "lng": 10.44734,
       "radius": 50,
       "trainer": "route8_a",
       "route": "route8",
       "verified": false,
-      "note": "On Route 8, placed from the map (route trainers on every route, D163); check on site"
+      "note": "On Route 8, placed from the map (route trainers on every route, D163); check on site (D170: moved 3 m off a new no-spawn area; check on site)"
     },
     {
       "id": "trainer_r8b",
@@ -794,13 +794,13 @@
       "kind": "trainer",
       "district": 5,
       "zone": "faellesskov",
-      "lat": 55.36365,
-      "lng": 10.43203,
+      "lat": 55.36386,
+      "lng": 10.43187,
       "radius": 50,
       "trainer": "route11_a",
       "route": "route11",
       "verified": false,
-      "note": "On Route 11, placed from the map (route trainers on every route, D163); check on site"
+      "note": "On Route 11, placed from the map (route trainers on every route, D163); check on site (D170: moved 26 m off a new no-spawn area; check on site)"
     },
     {
       "id": "trainer_r11b",
@@ -1028,13 +1028,13 @@
       "kind": "trainer",
       "district": 1,
       "zone": "bolbro",
-      "lat": 55.40023,
-      "lng": 10.35368,
+      "lat": 55.39955,
+      "lng": 10.35449,
       "radius": 50,
       "trainer": "route23_a",
       "route": "route23",
       "verified": false,
-      "note": "On Route 23, placed from the map (route trainers on every route, D163); check on site"
+      "note": "On Route 23, placed from the map (route trainers on every route, D163); check on site (D170: moved 91 m off a new no-spawn area; check on site)"
     },
     {
       "id": "trainer_r23b",
@@ -1054,13 +1054,13 @@
       "kind": "trainer",
       "district": 8,
       "zone": "tusindaar",
-      "lat": 55.38625,
-      "lng": 10.3441,
+      "lat": 55.38599,
+      "lng": 10.34369,
       "radius": 50,
       "trainer": "route23_c",
       "route": "route23",
       "verified": false,
-      "note": "On Route 23, placed from the map (route trainers on every route, D163); check on site"
+      "note": "On Route 23, placed from the map (route trainers on every route, D163); check on site (D170: moved 39 m off a new no-spawn area; check on site)"
     },
     {
       "id": "trainer_r24a",
@@ -1340,13 +1340,13 @@
       "kind": "trainer",
       "district": 8,
       "zone": "tusindaar",
-      "lat": 55.38702,
-      "lng": 10.34846,
+      "lat": 55.38817,
+      "lng": 10.34988,
       "radius": 50,
       "trainer": "route35_a",
       "route": "route35",
       "verified": false,
-      "note": "On Route 35, placed from the map (route trainers on every route, D163); check on site"
+      "note": "On Route 35, placed from the map (route trainers on every route, D163); check on site (D170: moved 155 m off a new no-spawn area; check on site)"
     },
     {
       "id": "trainer_r35b",
@@ -1956,11 +1956,11 @@
       "kind": "market",
       "district": 6,
       "zone": "hjallese",
-      "lat": 55.3588,
-      "lng": 10.404,
+      "lat": 55.35895,
+      "lng": 10.40326,
       "radius": 40,
       "verified": false,
-      "note": "Hjallese Torv, the square by the station (D165: placed from the map; check on site)"
+      "note": "Hjallese Torv, the square by the station (D165: placed from the map; check on site) (D170: moved about 45 m off a new no-spawn area; check on site)"
     },
     {
       "id": "market_dalum",

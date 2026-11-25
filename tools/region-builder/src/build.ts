@@ -31,7 +31,7 @@ import {
 } from './config';
 import { segmentDistM, type LngLat } from './route-lib';
 import { basemapWater } from './basemap-water';
-import { buildQuery, fetchOverpassTiled } from './overpass';
+import { buildExtraQuery, buildQuery, fetchOverpassTiled } from './overpass';
 import { closeBorder, zoneEdges } from './borders';
 
 const root = (p: string) => fileURLToPath(new URL(`../../../${p}`, import.meta.url));
@@ -56,6 +56,16 @@ const osm = await fetchOverpassTiled(
   cacheDir,
   process.argv.includes('--refresh'),
 );
+const extra = await fetchOverpassTiled(
+  buildExtraQuery,
+  REGION.bbox,
+  REGION.tiles[0],
+  REGION.tiles[1],
+  cacheDir,
+  process.argv.includes('--refresh'),
+);
+const known = new Set(osm.elements.map((e) => `${e.type}/${e.id}`));
+osm.elements.push(...extra.elements.filter((e) => !known.has(`${e.type}/${e.id}`)));
 const geo = osmtogeojson(osm as never) as FeatureCollection<Geometry | null>;
 
 const index = new FeatureIndex();
