@@ -37,7 +37,7 @@ console.log(`Source ${url}: zoom ${header.minZoom}–${header.maxZoom}`);
 
 const boundary = (
   JSON.parse(
-    readFileSync(root('packages/data/content/boundary.odense.geojson'), 'utf8'),
+    readFileSync(root('packages/data/content/odense/boundary.geojson'), 'utf8'),
   ) as FeatureCollection<MultiPolygon>
 ).features[0]!;
 const area = buffer(boundary, MARGIN_KM, { units: 'kilometers' }) as Feature;

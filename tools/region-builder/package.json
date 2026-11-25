@@ -21,7 +21,7 @@
     "region": "tsx src/build.ts",
     "fetch": "tsx src/fetch-cli.ts",
     "basemap": "tsx src/basemap-extract.ts",
-    "routes": "tsx src/routes.ts && prettier --write ../../packages/data/content/routes.odense.json",
+    "routes": "tsx src/routes.ts && prettier --write ../../packages/data/content/odense/routes.json",
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run"
   }

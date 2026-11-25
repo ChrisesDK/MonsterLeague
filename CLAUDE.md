@@ -121,7 +121,7 @@ apps/client       Vite + React PWA: map game (#/; src/game = save store, onboard
 - Destinations (D167): region flag 16 marks nature in forest, field and lake zones; spawns
   there are denser, rare entries weigh ×3, and `destinationOnly` entries spawn nowhere
   else. Species carry a `rarity` (common/uncommon/rare/veryRare); spawn weights follow it.
-- Zones (P22, `content/zones.odense.json`): the start zone (Centrum) is open; a route
+- Zones (P22, `content/odense/zones.json`): the start zone (Centrum) is open; a route
   finished (90 % of its 25 m checkpoints) opens the zones at both ends once one end is open
   (`openZones`). Arena n also needs badge n − 1 (`arenaReady`). Districts 1–8 remain the
   level bands and spawn tables; each zone belongs to one.

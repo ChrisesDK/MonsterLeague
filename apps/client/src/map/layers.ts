@@ -6,9 +6,9 @@
 import type { GeoJSONSource, Map as MlMap } from 'maplibre-gl';
 import { content, MAP_FRAMES } from '@oml/data';
 import { routeCheckpoints, type SaveGame } from '@oml/game';
-import districtsRaw from '@oml/data/content/districts.odense.geojson?raw';
-import zonesRaw from '@oml/data/content/zones.odense.geojson?raw';
-import bordersRaw from '@oml/data/content/borders.odense.geojson?raw';
+import districtsRaw from '@oml/data/content/odense/districts.geojson?raw';
+import zonesRaw from '@oml/data/content/odense/zones.geojson?raw';
+import bordersRaw from '@oml/data/content/odense/borders.geojson?raw';
 import type { Region } from '@oml/spawn';
 import { cellsToMultiPolygon } from 'h3-js';
 import type { Palette } from './style';

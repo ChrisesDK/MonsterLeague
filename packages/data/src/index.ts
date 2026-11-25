@@ -1,18 +1,23 @@
-import typesJson from '../content/types.json';
-import speciesJson from '../content/species.json';
-import movesJson from '../content/moves.json';
-import itemsJson from '../content/items.json';
-import trainersJson from '../content/trainers.json';
-import playerTeamsJson from '../content/player-teams.json';
-import spawnsJson from '../content/spawns.json';
-import fieldAbilitiesJson from '../content/field-abilities.json';
-import poisJson from '../content/pois.odense.json';
-import arenasJson from '../content/arenas.odense.json';
-import routesJson from '../content/routes.odense.json';
-import zonesJson from '../content/zones.odense.json';
-import goalsJson from '../content/goals.json';
-import enJson from '../i18n/en.json';
-import daJson from '../i18n/da.json';
+// Shared by every region (P27): the type chart, moves, items and field abilities.
+import typesJson from '../content/shared/types.json';
+import movesJson from '../content/shared/moves.json';
+import itemsJson from '../content/shared/items.json';
+import fieldAbilitiesJson from '../content/shared/field-abilities.json';
+import sharedEnJson from '../i18n/shared/en.json';
+import sharedDaJson from '../i18n/shared/da.json';
+// One folder per region (content/<region>/, i18n/<region>/, region/<region>/): nothing in
+// one region's folder may refer to another's (checked by test/regions.test.ts).
+import odenseSpeciesJson from '../content/odense/species.json';
+import odenseTrainersJson from '../content/odense/trainers.json';
+import odensePlayerTeamsJson from '../content/odense/player-teams.json';
+import odenseSpawnsJson from '../content/odense/spawns.json';
+import odensePoisJson from '../content/odense/pois.json';
+import odenseArenasJson from '../content/odense/arenas.json';
+import odenseRoutesJson from '../content/odense/routes.json';
+import odenseZonesJson from '../content/odense/zones.json';
+import odenseGoalsJson from '../content/odense/goals.json';
+import odenseEnJson from '../i18n/odense/en.json';
+import odenseDaJson from '../i18n/odense/da.json';
 import {
   I18nSchema,
   ItemsFileSchema,
@@ -50,7 +55,13 @@ export { checkContent, checkI18n, FALLBACK_MOVE_ID } from './check';
 export * from './municipalities';
 
 /** All game content, validated and indexed by id. */
+/** Regions with content in this package (P27). Each is its own campaign. */
+export const REGION_IDS = ['odense'] as const;
+export type RegionId = (typeof REGION_IDS)[number];
+
 export interface Dex {
+  /** The region this content belongs to (P27). */
+  region: RegionId;
   typeIds: TypeId[];
   typeColors: Record<TypeId, string>;
   /** chart[attacker][defender] = multiplier */
@@ -104,11 +115,12 @@ function indexById<T extends { id: string }>(list: T[], what: string): Record<st
 }
 
 /** Parses raw JSON content with the Zod schemas. Throws a ZodError on invalid data. */
-export function parseContent(raw: RawContent): Dex {
+export function parseContent(raw: RawContent, region: RegionId = 'odense'): Dex {
   const types = TypesFileSchema.parse(raw.types);
   const typeColors = {} as Record<TypeId, string>;
   for (const t of types.types) typeColors[t.id] = t.color;
   return {
+    region,
     typeIds: types.types.map((t) => t.id),
     typeColors,
     chart: types.chart as Record<TypeId, Record<TypeId, number>>,
@@ -136,27 +148,57 @@ export function parseContent(raw: RawContent): Dex {
   };
 }
 
-export const rawContent: RawContent = {
+const shared = {
   types: typesJson,
-  species: speciesJson,
   moves: movesJson,
   items: itemsJson,
-  trainers: trainersJson,
-  playerTeams: playerTeamsJson,
-  spawns: spawnsJson,
   fieldAbilities: fieldAbilitiesJson,
-  pois: poisJson,
-  arenas: arenasJson,
-  routes: routesJson,
-  zones: zonesJson,
-  goals: goalsJson,
 };
 
-/** The default, validated game content. */
-export const content: Dex = parseContent(rawContent);
+/** Raw content per region: the shared files plus the region's own folder. */
+export const rawContentByRegion: Record<RegionId, RawContent> = {
+  odense: {
+    ...shared,
+    species: odenseSpeciesJson,
+    trainers: odenseTrainersJson,
+    playerTeams: odensePlayerTeamsJson,
+    spawns: odenseSpawnsJson,
+    pois: odensePoisJson,
+    arenas: odenseArenasJson,
+    routes: odenseRoutesJson,
+    zones: odenseZonesJson,
+    goals: odenseGoalsJson,
+  },
+};
+
+/** Validated content per region. */
+export const regions: Record<RegionId, Dex> = Object.fromEntries(
+  REGION_IDS.map((r) => [r, parseContent(rawContentByRegion[r], r)]),
+) as Record<RegionId, Dex>;
+
+/**
+ * The default content: Odense, the region the app plays until campaigns per region exist
+ * (P27). Code that serves more than one region takes a region's Dex instead.
+ */
+export const content: Dex = regions.odense;
+export const rawContent: RawContent = rawContentByRegion.odense;
 
 export type Locale = 'en' | 'da';
-export const i18n: Record<Locale, I18nTable> = {
-  en: I18nSchema.parse(enJson),
-  da: I18nSchema.parse(daJson),
+/** UI texts shared by every region. */
+export const sharedI18n: Record<Locale, I18nTable> = {
+  en: I18nSchema.parse(sharedEnJson),
+  da: I18nSchema.parse(sharedDaJson),
 };
+/** Each region's own texts (species, trainers, places, zones, routes, badges…). */
+export const regionI18n: Record<RegionId, Record<Locale, I18nTable>> = {
+  odense: { en: I18nSchema.parse(odenseEnJson), da: I18nSchema.parse(odenseDaJson) },
+};
+/** The texts for one region: shared UI plus the region's own. */
+export function i18nFor(region: RegionId): Record<Locale, I18nTable> {
+  return {
+    en: { ...sharedI18n.en, ...regionI18n[region].en },
+    da: { ...sharedI18n.da, ...regionI18n[region].da },
+  };
+}
+/** The default texts (Odense, like `content`). */
+export const i18n: Record<Locale, I18nTable> = i18nFor('odense');

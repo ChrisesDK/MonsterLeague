@@ -1,4 +1,4 @@
-/** Municipalities on Fyn (content/fyn.geojson). Names are i18n keys `municipality.<id>.name`. */
+/** Municipalities on Fyn (content/shared/fyn.geojson). Names are i18n keys `municipality.<id>.name`. */
 export const MUNICIPALITIES = [
   'odense',
   'middelfart',

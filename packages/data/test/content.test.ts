@@ -245,7 +245,7 @@ describe('POIs (M2b)', () => {
 
   it("each POI's own map cell counts as the POI's zone and district (region build)", () => {
     const region = JSON.parse(
-      readFileSync(new URL('../region/region.odense.json', import.meta.url), 'utf8'),
+      readFileSync(new URL('../region/odense/region.json', import.meta.url), 'utf8'),
     ) as { zones: string[]; cells: Record<string, number[]> };
     for (const p of Object.values(content.pois)) {
       const row = region.cells[latLngToCell(p.lat, p.lng, 10)];

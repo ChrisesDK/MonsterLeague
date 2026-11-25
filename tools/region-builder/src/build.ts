@@ -36,15 +36,15 @@ import { closeBorder, zoneEdges } from './borders';
 
 const root = (p: string) => fileURLToPath(new URL(`../../../${p}`, import.meta.url));
 const cacheDir = fileURLToPath(new URL('../cache', import.meta.url));
-const OUT = root('packages/data/region/region.odense.json');
-const HAZARDS_OUT = root('packages/data/region/hazards.odense.json');
-const VERSION_OUT = root('packages/data/region/region.odense.version.json');
-const DISTRICTS = root('packages/data/content/districts.odense.geojson');
-const ZONES_GEO = root('packages/data/content/zones.odense.geojson');
-const BORDERS_GEO = root('packages/data/content/borders.odense.geojson');
-const ZONES = root('packages/data/content/zones.odense.json');
-const BOUNDARY = root('packages/data/content/boundary.odense.geojson');
-const ROUTES = root('packages/data/content/routes.odense.json');
+const OUT = root('packages/data/region/odense/region.json');
+const HAZARDS_OUT = root('packages/data/region/odense/hazards.json');
+const VERSION_OUT = root('packages/data/region/odense/version.json');
+const DISTRICTS = root('packages/data/content/odense/districts.geojson');
+const ZONES_GEO = root('packages/data/content/odense/zones.geojson');
+const BORDERS_GEO = root('packages/data/content/odense/borders.geojson');
+const ZONES = root('packages/data/content/odense/zones.json');
+const BOUNDARY = root('packages/data/content/odense/boundary.geojson');
+const ROUTES = root('packages/data/content/odense/routes.json');
 const BASEMAP = root('apps/client/public/tiles/odense.pmtiles');
 
 const started = performance.now();

@@ -3,7 +3,7 @@ export const REGION = {
   id: 'odense',
   /**
    * [west, south, east, north] in degrees (WGS84): Odense Kommune (region v4, GDD P22); cells
-   * outside the municipality border (content/boundary.odense.geojson) are dropped.
+   * outside the municipality border (content/odense/boundary.geojson) are dropped.
    */
   bbox: [10.17, 55.28, 10.59, 55.49] as [number, number, number, number],
   /** Overpass requests are split into this grid of tiles (columns, rows). */

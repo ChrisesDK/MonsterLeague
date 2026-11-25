@@ -1,5 +1,5 @@
 import { content, type RegionFile } from '@oml/data';
-import regionJson from '@oml/data/region/odense.json';
+import regionJson from '@oml/data/region/odense/region.json';
 import {
   computeSpawns,
   decodeRegion,

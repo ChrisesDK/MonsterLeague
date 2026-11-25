@@ -1,5 +1,5 @@
 import { content } from '@oml/data';
-import regionVersion from '@oml/data/region/odense.version.json';
+import regionVersion from '@oml/data/region/odense/version.json';
 import { spawnRulesVersion, versionMismatch, type ServiceVersions } from '@oml/spawn';
 
 /** What this client build expects the spawn service to run (same code and data, same commit). */

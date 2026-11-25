@@ -1,6 +1,6 @@
 # District borders (one-off generator)
 
-`packages/data/content/districts.odense.geojson` is the source of truth. This folder
+`packages/data/content/odense/districts.geojson` is the source of truth. This folder
 records how it was drawn (GDD v1.6, before Gate 3), so it can be redone with care.
 Then run `pnpm region:build`.
 

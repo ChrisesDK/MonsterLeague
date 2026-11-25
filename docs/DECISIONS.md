@@ -120,7 +120,7 @@ Numbers below come from `pnpm sim:report` (docs/BALANCE.md). Before/after summar
      An AI side that auto-learns mid-battle emits `move_learned` with `replaced`; a human side
      with 4 moves still gets `move_learn_choice`.
 - **D32. Arenas and presets.** Trainers have optional `arena` and `theme`; validate
-  enforces one leader per arena. `content/player-teams.json` holds one preset per arena:
+  enforces one leader per arena. `content/odense/player-teams.json` holds one preset per arena:
   the expected player team = chosen starter at `starterLevel` + one creature fewer than
   the leader's team size, at the same levels (so starter + preset = leader + 1). The sim
   plays presets with the **leader AI** as a stand-in for a competent human. Starter vs
@@ -208,7 +208,7 @@ Numbers below come from `pnpm sim:report` (docs/BALANCE.md). Before/after summar
 - **D45. Spawn schema.**
   - Fields: `{species, district 1–8, weight > 0, biomes {water, forest, park, urban,
 industrial, farmland, historic}, time any|day|night, requires?}`.
-  - `content/spawns.json` is empty until M2.
+  - `content/odense/spawns.json` is empty until M2.
   - `requires` was a free id until M1.7; it must now name a field ability (D55).
 - **D46. GDD v1.1 Storm → Grove = 2** applied. All six arena results were identical before
   and after (no storm attacker meets grove in either leader fight), so no retuning was
@@ -271,7 +271,7 @@ industrial, farmland, historic}, time any|day|night, requires?}`.
 
 ## M1.7: GDD v1.2 sync
 
-- **D55. Field abilities as data.** `content/field-abilities.json` holds
+- **D55. Field abilities as data.** `content/shared/field-abilities.json` holds
   `{id, badge, types[]}` for forager (2; grove, folk), angler (3; water), runereader (4;
   stone, folk), nightseer (5; spirit, storm), sealbreaker (6; stone, folk) and homing (7;
   storm). Names are i18n keys `fieldAbility.<id>.name` (en from the GDD, da Sanker,
@@ -365,14 +365,14 @@ create … --public --source . --remote origin`.
     main streets people walk every day.
   - Samples in no mapped area stay unclassified, so shares can sum to less than 100%.
   - Run: `pnpm region:build` (about 2 s from cache).
-- **D64. Region file** `packages/data/region/region.odense.json`.
+- **D64. Region file** `packages/data/region/odense/region.json`.
   - **Format:** `{region, version, h3Res 10, coarseRes 7, bbox, biomes[], osmTimestamp,
 districts[{id, wildLevels, draft}], cells{h3: [district, noSpawn, …shares %]}}`.
   - One cell per line, shares as integer percent.
   - Cells without a district or any biome are dropped.
   - Validated by `pnpm validate` (schema, districts 1–8, stale-file check).
   - Size: 7,562 cells, 316 KB raw / 47 KB gzip.
-- **D65. Districts** (`packages/data/content/districts.odense.geojson`, hand-editable).
+- **D65. Districts** (`packages/data/content/odense/districts.geojson`, hand-editable).
   - District 1 is drawn along real streets: the railway north of the station, Nørregade,
     Overgade/Vestergade, Kongensgade/Klostervej, Vestre Stationsvej. It includes Kongens
     Have and the station and excludes the H.C. Andersen quarter and the cathedral square.
@@ -408,7 +408,7 @@ districts[{id, wildLevels, draft}], cells{h3: [district, noSpawn, …shares %]}}
   - **Id:** two FNV-1a hashes of `region|window|cell|index` (16 hex digits).
   - **RNG:** the engine's sfc32, seeded by mixing the HMAC seed words, the cell hash and
     the window.
-- **D68. Spawn tables** for districts 1–2 (`content/spawns.json`).
+- **D68. Spawn tables** for districts 1–2 (`content/odense/spawns.json`).
   - Seven commons/specials plus Lygtling (night only) and two rares that need a field
     ability: Loftnisse needs runereader (district 1), Søormling needs angler (district 2).
     These show as "rustling" hint markers.
@@ -712,7 +712,7 @@ length, position resolution and spawn tables>`.
 
 ## GDD v1.6: district redraw
 
-- **D102. Districts 1–8 drawn on real borders** (`content/districts.odense.geojson`,
+- **D102. Districts 1–8 drawn on real borders** (`content/odense/districts.geojson`,
   generator and method in `tools/region-builder/districts/`; it replaces the M2a Voronoi
   draft and its script).
   - **Arenas:** each arena location from the GDD World table lies inside its own
@@ -874,7 +874,7 @@ length, position resolution and spawn tables>`.
   meadow/field and water cover at least 50% of it; a wild cell with at least 25% water is a
   water edge (ripples instead of grass). Region file v3: column 1 of a cell row is a bit
   field (1 noSpawn, 2 wild, 4 water edge, 8 route corridor). 2,024 wild cells.
-- **D113. Routes** (`content/routes.odense.json`, `pnpm routes:build`): Dijkstra over the
+- **D113. Routes** (`content/odense/routes.json`, `pnpm routes:build`): Dijkstra over the
   OSM foot network (Overpass, cached). Cost per metre: footpaths and park paths 1, streets
   1.15–2.8 by size, steps 4; ×0.65 in wild cells, ×0.55 along water, ×2.5 in no-spawn
   cells, ×12 within 12 m of a railway or motorway (crossing stays possible). No routing
@@ -887,7 +887,7 @@ length, position resolution and spawn tables>`.
     `via`, at most 30 m within 12 m of a railway or motorway, length and wild share match
     the data. Draft routes only get a warning for the hazard rule (Route 7 runs 45 m next
     to a railway in the far east; it is fixed when it goes live).
-  - **Arena sites** (`content/arenas.odense.json`): all 8 arena locations for routes, the
+  - **Arena sites** (`content/odense/arenas.json`): all 8 arena locations for routes, the
     Town Map and the Journal; built arenas link their POI. Sites 3–8 come from OSM and are
     approximate until their POIs are placed in M3 (Havnebadet especially).
 - **D114. Route trainers.** Route 1's district-2 stretch (Vestergade to Klosterhaven) has
@@ -913,7 +913,7 @@ length, position resolution and spawn tables>`.
   - **Route walking:** checkpoints every 100 m along the route; one counts within 30 m;
     80% of them completes the step. The arrow points to the next checkpoint after the
     furthest one reached.
-  - **Side goals** (`content/goals.json`): explore (300 m in the district's wild areas),
+  - **Side goals** (`content/odense/goals.json`): explore (300 m in the district's wild areas),
     catch a creature of the district's typical type (one that really spawns there as a
     common: district 7 uses Folk, since Fire starters are never wild), meet (battle) its
     rare creature.
@@ -1439,11 +1439,11 @@ length, position resolution and spawn tables>`.
   border) and asked for trainers, arenas and rest stops along the routes and near the
   places they lead to.
   - **Region v4.** `REGION.bbox` covers the municipality (10.17–10.59 E, 55.28–55.49 N);
-    cells outside `content/boundary.odense.geojson` (the OSM border, simplified to 20 m)
+    cells outside `content/odense/boundary.geojson` (the OSM border, simplified to 20 m)
     are dropped. Each cell row is `[district, zone, flags, …shares, mask?]`; the file lists
     the zone ids. Region file 24,189 cells (was 7,582), 1.09 MB raw, 156 KB gzip; spawn density still on
     target (wild 1 per 131 m, streets 1 per 318 m, park walk 13.0).
-  - **Zones** (`content/zones.odense.json`): 39 zones with a kind (arena, town, wild,
+  - **Zones** (`content/odense/zones.json`): 39 zones with a kind (arena, town, wild,
     water), a district and a centre. A cell belongs to the nearest zone centre (in metres);
     a POI's own cell is forced into the POI's zone. The builder writes zone and district
     outlines (`zones.odense.geojson`, `districts.odense.geojson`, generated, hexagon steps
@@ -1508,7 +1508,7 @@ length, position resolution and spawn tables>`.
   every arena already won opens. Route progress is checkpoint numbers only (owner decision,
   GDD P23): no coordinates, no times, never sent.
 - **D161. Fyn map** (owner request). The Town Map's header has a "Fyn" button that opens a
-  map of Fyn's ten municipalities (`content/fyn.geojson`, OSM borders simplified to 250 m)
+  map of Fyn's ten municipalities (`content/shared/fyn.geojson`, OSM borders simplified to 250 m)
   in the Town Map's paper colours: sea background, land, dashed borders, names. Only
   Odense can be tapped (it returns to the Town Map; the others show "Coming later"). Each
   playable region shows its 8 badges, grey until won. The view is held on Fyn
@@ -1529,7 +1529,7 @@ length, position resolution and spawn tables>`.
     three zones meet, straightens the hexagon steps (35 m) and rounds them (Chaikin, 3
     rounds), keeping the line ends so lines still meet. An edge between zones of different
     districts is a district edge. Edges on the region's outside are never included.
-    Output: `content/borders.odense.geojson` (generated): 1 region line, 49 district edges,
+    Output: `content/odense/borders.geojson` (generated): 1 region line, 49 district edges,
     49 zone edges, 86 KB.
   - **Drawing:** region border solid in a yellow (`regionBorder`, day #d39a1a, night
     #e8b04a); district edges dotted; zone edges finer, fainter dots (Town Map from zoom 11.5).

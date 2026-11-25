@@ -70,7 +70,7 @@ describe('route geometry helpers', () => {
 describe('routes.odense.json (P22)', () => {
   const routes = JSON.parse(
     readFileSync(
-      new URL('../../../packages/data/content/routes.odense.json', import.meta.url),
+      new URL('../../../packages/data/content/odense/routes.json', import.meta.url),
       'utf8',
     ),
   ).routes as { number: number; from: string; to: string; kind: string; lengthM: number }[];

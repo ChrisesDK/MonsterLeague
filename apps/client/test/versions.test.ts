@@ -1,5 +1,5 @@
 import { content } from '@oml/data';
-import regionVersion from '@oml/data/region/odense.version.json';
+import regionVersion from '@oml/data/region/odense/version.json';
 import { spawnRulesVersion } from '@oml/spawn';
 import { describe, expect, it } from 'vitest';
 import { EXPECTED_VERSIONS, checkServiceVersions } from '../src/map/versions';

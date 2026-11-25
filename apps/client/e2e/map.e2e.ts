@@ -133,7 +133,7 @@ interface RouteJson {
 const allRoutes = (
   JSON.parse(
     readFileSync(
-      new URL('../../../packages/data/content/routes.odense.json', import.meta.url),
+      new URL('../../../packages/data/content/odense/routes.json', import.meta.url),
       'utf8',
     ),
   ) as RouteJson
@@ -505,7 +505,7 @@ test('POI stamps are pressable (owner): in reach a rest stop heals and a trainer
   const pois = (
     JSON.parse(
       readFileSync(
-        new URL('../../../packages/data/content/pois.odense.json', import.meta.url),
+        new URL('../../../packages/data/content/odense/pois.json', import.meta.url),
         'utf8',
       ),
     ) as { pois: { id: string; lat: number; lng: number; radius: number }[] }
@@ -537,7 +537,7 @@ test('Market (D165): buy with skilling, sell back for half; back returns to the 
   const market = (
     JSON.parse(
       readFileSync(
-        new URL('../../../packages/data/content/pois.odense.json', import.meta.url),
+        new URL('../../../packages/data/content/odense/pois.json', import.meta.url),
         'utf8',
       ),
     ) as { pois: { id: string; lat: number; lng: number }[] }

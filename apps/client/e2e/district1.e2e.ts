@@ -15,7 +15,7 @@ interface PoiJson {
 const pois = (
   JSON.parse(
     readFileSync(
-      new URL('../../../packages/data/content/pois.odense.json', import.meta.url),
+      new URL('../../../packages/data/content/odense/pois.json', import.meta.url),
       'utf8',
     ),
   ) as PoiJson

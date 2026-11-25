@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import maplibregl, { type Map as MlMap, type StyleSpecification } from 'maplibre-gl';
 import { badgeUrl } from '@oml/art';
 import { PLAYABLE_MUNICIPALITIES, type MunicipalityId } from '@oml/data';
-import fynRaw from '@oml/data/content/fyn.geojson?raw';
+import fynRaw from '@oml/data/content/shared/fyn.geojson?raw';
 import type { SaveGame } from '@oml/game';
 import type { Translate } from '../i18n';
 import { Button } from '../ui/components';

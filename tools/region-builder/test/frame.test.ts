@@ -7,7 +7,7 @@ describe('map frame (D172)', () => {
   it("is the region's bounding box plus an even margin on every side", () => {
     const boundary = JSON.parse(
       readFileSync(
-        new URL('../../../packages/data/content/boundary.odense.geojson', import.meta.url),
+        new URL('../../../packages/data/content/odense/boundary.geojson', import.meta.url),
         'utf8',
       ),
     );

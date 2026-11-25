@@ -3,7 +3,7 @@
  * search over the OSM foot network (no routing service) through each route's waypoints.
  * The cost favours footpaths, park paths, wild areas and the river path, and avoids busy
  * roads, steps and no-spawn areas (railways, schools, …). Arena zones start and end at the
- * arena site, other zones at their centre. Writes packages/data/content/routes.odense.json.
+ * arena site, other zones at their centre. Writes packages/data/content/odense/routes.json.
  *
  *   pnpm routes:build            (uses the Overpass cache in tools/region-builder/cache)
  */
@@ -31,17 +31,17 @@ import {
 
 const root = (p: string) => fileURLToPath(new URL(`../../../${p}`, import.meta.url));
 const cacheDir = fileURLToPath(new URL('../cache', import.meta.url));
-const OUT = root('packages/data/content/routes.odense.json');
+const OUT = root('packages/data/content/odense/routes.json');
 
 const region = RegionFileSchema.parse(
-  JSON.parse(readFileSync(root('packages/data/region/region.odense.json'), 'utf8')),
+  JSON.parse(readFileSync(root('packages/data/region/odense/region.json'), 'utf8')),
 );
 const arenas = ArenasFileSchema.parse(
-  JSON.parse(readFileSync(root('packages/data/content/arenas.odense.json'), 'utf8')),
+  JSON.parse(readFileSync(root('packages/data/content/odense/arenas.json'), 'utf8')),
 ).arenas;
 
 const zones = ZonesFileSchema.parse(
-  JSON.parse(readFileSync(root('packages/data/content/zones.odense.json'), 'utf8')),
+  JSON.parse(readFileSync(root('packages/data/content/odense/zones.json'), 'utf8')),
 ).zones;
 
 /** District and flags of a position's region cell (null outside the region). */
@@ -64,7 +64,7 @@ function anchor(zoneId: string): LngLat {
 const hazardGrid = new Map<string, [LngLat, LngLat][]>();
 const gridKey = (p: LngLat) => `${Math.floor(p[0] / 0.002)},${Math.floor(p[1] / 0.001)}`;
 for (const line of (
-  JSON.parse(readFileSync(root('packages/data/region/hazards.odense.json'), 'utf8')) as {
+  JSON.parse(readFileSync(root('packages/data/region/odense/hazards.json'), 'utf8')) as {
     lines: { coords: LngLat[] }[];
   }
 ).lines)

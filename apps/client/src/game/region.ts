@@ -7,7 +7,7 @@ let loading: Promise<Region> | null = null;
 
 /** The region file is loaded lazily, once: tutorial placement, districts and zones. */
 export function loadRegion(): Promise<Region> {
-  loading ??= import('@oml/data/region/odense.json').then((m) =>
+  loading ??= import('@oml/data/region/odense/region.json').then((m) =>
     decodeRegion(m.default as unknown as RegionFile),
   );
   return loading;
@@ -25,5 +25,5 @@ export function zoneAt(region: Region | null, p: { lat: number; lng: number }): 
   return region.cells.get(latLngToCell(p.lat, p.lng, 10))?.zone || null;
 }
 
-/** Level band per district (GDD World table, content/zones.odense.json). */
+/** Level band per district (GDD World table, content/odense/zones.json). */
 export const LEVEL_BANDS: LevelBands = content.districtBands;

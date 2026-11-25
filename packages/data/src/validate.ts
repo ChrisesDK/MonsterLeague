@@ -39,19 +39,19 @@ function checkRegion(): string[] {
   const errors: string[] = [];
   const read = (rel: string) =>
     JSON.parse(readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8'));
-  const parsed = RegionFileSchema.safeParse(read('../region/region.odense.json'));
+  const parsed = RegionFileSchema.safeParse(read('../region/odense/region.json'));
   if (!parsed.success) {
     for (const i of parsed.error.issues.slice(0, 5))
       errors.push(`region.odense.json: ${i.path.join('.')}: ${i.message}`);
     return errors;
   }
   const region = parsed.data;
-  const version = RegionVersionFileSchema.safeParse(read('../region/region.odense.version.json'));
+  const version = RegionVersionFileSchema.safeParse(read('../region/odense/version.json'));
   if (!version.success || version.data.dataVersion !== region.dataVersion)
     errors.push(
       'region.odense.version.json does not match region.odense.json: run pnpm region:build',
     );
-  const geo = read('../content/districts.odense.geojson') as {
+  const geo = read('../content/odense/districts.geojson') as {
     features: { properties: { id: number; wildLevels: [number, number]; draft: boolean } }[];
   };
   const ids = geo.features.map((f) => f.properties.id).sort((a, b) => a - b);
@@ -92,7 +92,7 @@ function checkRoutes(region: RegionFile): string[] {
   const hazards = (
     JSON.parse(
       readFileSync(
-        fileURLToPath(new URL('../region/hazards.odense.json', import.meta.url)),
+        fileURLToPath(new URL('../region/odense/hazards.json', import.meta.url)),
         'utf8',
       ),
     ) as { lines: { coords: number[][] }[] }
@@ -196,13 +196,13 @@ function checkPois(region: RegionFile): string[] {
   const errors: string[] = [];
   const read = (rel: string) =>
     JSON.parse(readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8'));
-  const zones = read('../content/zones.odense.geojson') as {
+  const zones = read('../content/odense/zones.geojson') as {
     features: {
       properties: { id: string };
       geometry: { type: string; coordinates: number[][][] | number[][][][] };
     }[];
   };
-  const hazards = read('../region/hazards.odense.json') as {
+  const hazards = read('../region/odense/hazards.json') as {
     lines: { kind: string; coords: number[][] }[];
   };
   for (const p of Object.values(content.pois)) {

@@ -3,7 +3,7 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { Protocol } from 'pmtiles';
 import { BIOMES, type Biome } from '@oml/data';
-import districtsRaw from '@oml/data/content/districts.odense.geojson?raw';
+import districtsRaw from '@oml/data/content/odense/districts.geojson?raw';
 
 const districtsGeo = JSON.parse(districtsRaw) as GeoJSON.FeatureCollection;
 import { cellToBoundary } from 'h3-js';
@@ -62,7 +62,7 @@ export function BiomeDebug({ t }: { t: Translate }) {
     let alive = true;
     map.on('load', async () => {
       // Loaded lazily: the region file is only needed by this dev view.
-      const region = (await import('@oml/data/region/odense.json')).default as unknown as {
+      const region = (await import('@oml/data/region/odense/region.json')).default as unknown as {
         cells: Record<string, number[]>;
       };
       if (!alive) return;
