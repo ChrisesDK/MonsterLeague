@@ -1,13 +1,16 @@
 import manifestJson from '../assets.json';
 import { creatureSvg, hintMarkerSvg, markerSvg } from './creature';
 import { artInput } from './inputs';
-import { badgeSvg, stampSvg, type StampKind } from './stamps';
+import { badgeSvg, type BadgeRegion } from './badges';
+export { BADGE_REGIONS, BADGES, type BadgeRegion } from './badges';
+import { stampSvg, type StampKind } from './stamps';
 import { AssetManifestSchema, type AssetEntry } from './manifest';
 
 export { creatureSvg, hintMarkerSvg, markerSvg } from './creature';
 export type { CreatureArtInput } from './creature';
 export { artInput } from './inputs';
-export { badgeSvg, stampSvg, STAMP_KINDS, type StampKind } from './stamps';
+export { stampSvg, STAMP_KINDS, type StampKind } from './stamps';
+export { badgeSvg } from './badges';
 export {
   ALLOWED_LICENCES,
   AssetEntrySchema,
@@ -62,8 +65,8 @@ export function stampUrl(kind: StampKind, done = false): string {
   return cached(`p:${kind}:${done}`, () => toDataUrl(stampSvg(kind, done)));
 }
 
-/** Badge art for arena 1–8; `earned` false = the empty slot. */
-export function badgeUrl(arena: number, earned = true): string {
-  fileEntry(`generated/badges/badge${arena}${earned ? '' : '_empty'}.svg`);
-  return cached(`b:${arena}:${earned}`, () => toDataUrl(badgeSvg(arena, earned)));
+/** Badge art for a region's arena 1–8 (P27: every badge its own design); `earned` false = the empty slot. */
+export function badgeUrl(arena: number, earned = true, region: BadgeRegion = 'odense'): string {
+  fileEntry(`generated/badges/${region}_badge${arena}${earned ? '' : '_empty'}.svg`);
+  return cached(`b:${region}:${arena}:${earned}`, () => toDataUrl(badgeSvg(arena, earned, region)));
 }

@@ -4,7 +4,8 @@ import { fileURLToPath } from 'node:url';
 import { content } from '@oml/data';
 import { creatureSvg, hintMarkerSvg, markerSvg } from '../src/creature';
 import { artInput } from '../src/inputs';
-import { badgeSvg, stampSvg, STAMP_KINDS } from '../src/stamps';
+import { BADGE_REGIONS, badgeSvg } from '../src/badges';
+import { stampSvg, STAMP_KINDS } from '../src/stamps';
 import { FONTS, type AssetEntry } from '../src/manifest';
 
 const root = (p: string) => fileURLToPath(new URL(`../${p}`, import.meta.url));
@@ -58,10 +59,16 @@ for (const kind of STAMP_KINDS) {
   extra(`generated/stamps/${kind}_done.svg`, 'stamp', stampSvg(kind, true));
 }
 for (let arena = 1; arena <= 8; arena++) {
-  extra(`generated/badges/badge${arena}.svg`, 'badge', badgeSvg(arena));
-  extra(`generated/badges/badge${arena}_empty.svg`, 'badge', badgeSvg(arena, false));
+  for (const region of BADGE_REGIONS) {
+    extra(`generated/badges/${region}_badge${arena}.svg`, 'badge', badgeSvg(arena, true, region));
+    extra(
+      `generated/badges/${region}_badge${arena}_empty.svg`,
+      'badge',
+      badgeSvg(arena, false, region),
+    );
+  }
 }
 writeFileSync(root('assets.json'), JSON.stringify({ assets, fonts: FONTS }, null, 2) + '\n');
 console.log(
-  `Wrote ${assets.length} assets (${Object.keys(content.species).length} species × sprite + marker, 1 hint, ${STAMP_KINDS.length * 2} stamps, 16 badges).`,
+  `Wrote ${assets.length} assets (${Object.keys(content.species).length} species × sprite + marker, 1 hint, ${STAMP_KINDS.length * 2} stamps, ${BADGE_REGIONS.length * 16} badges).`,
 );

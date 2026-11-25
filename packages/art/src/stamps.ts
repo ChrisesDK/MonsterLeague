@@ -10,7 +10,7 @@ const PAPER = '#fbf4e6';
  * field, lake, town: what a zone mostly is, D165).
  */
 export type StampKind =
-  'arena' | 'trainer' | 'restStop' | 'market' | 'forest' | 'field' | 'lake' | 'town';
+  'arena' | 'trainer' | 'restStop' | 'market' | 'forest' | 'field' | 'lake' | 'town' | 'island';
 export const STAMP_KINDS: StampKind[] = [
   'arena',
   'trainer',
@@ -20,6 +20,7 @@ export const STAMP_KINDS: StampKind[] = [
   'field',
   'lake',
   'town',
+  'island',
 ];
 
 const STAMP_COLOUR: Record<StampKind, string> = {
@@ -31,6 +32,7 @@ const STAMP_COLOUR: Record<StampKind, string> = {
   field: '#a9a243',
   lake: '#3d8fb8',
   town: '#9a6b8a',
+  island: '#2f86b0',
 };
 
 /** Postage-stamp edge: a rounded square with scalloped perforation dots. */
@@ -100,6 +102,12 @@ const ICON: Record<StampKind, string> = {
     `<path d="M18 38 q4 -3 8 0 t8 0 t8 0 t8 0" fill="none" stroke="${INK}" stroke-width="1.8"/>`,
     `<path d="M27 22 q6 -6 12 0 q-6 6 -12 0 Z M39 22 l5 -4 v8 Z" fill="${PAPER}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>`,
   ].join(''),
+  // An island reached by ferry (P27): a green island on the waves.
+  island: [
+    `<path d="M15 40 Q22 24 32 28 Q42 22 49 40 Z" fill="#9fc98a" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>`,
+    `<path d="M12 44 q4 -3 8 0 t8 0 t8 0 t8 0 t8 0 M18 50 q4 -3 8 0 t8 0 t8 0" fill="none" stroke="${INK}" stroke-width="1.8"/>`,
+    `<path d="M31 28 V18 M31 18 q5 1 7 5 M31 18 q-5 1 -7 5" fill="none" stroke="${INK}" stroke-width="2" stroke-linecap="round"/>`,
+  ].join(''),
   // Two houses: a town or village.
   town: [
     `<path d="M14 46 V30 L22 22 L30 30 V46 Z" fill="${PAPER}" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>`,
@@ -117,45 +125,6 @@ export function stampSvg(kind: StampKind, done = false): string {
     done
       ? `<circle cx="50" cy="50" r="9" fill="${PAPER}" stroke="${INK}" stroke-width="2"/><path d="M45 50 l4 4 l7 -8" fill="none" stroke="#2f7a45" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`
       : '',
-    `</svg>`,
-  ].join('');
-}
-
-const BADGE_COLOUR = [
-  '#c8553d',
-  '#3d8fb8',
-  '#9b6bc2',
-  '#8a8f98',
-  '#2f6f8f',
-  '#b07a3a',
-  '#5a9a4f',
-  '#d39a2f',
-];
-
-/** Badge art for arena 1–8 (64×64): a rosette with the arena number in pips. */
-export function badgeSvg(arena: number, earned = true): string {
-  const colour = earned ? BADGE_COLOUR[(arena - 1) % 8]! : '#d8ccb8';
-  const petals: string[] = [];
-  for (let i = 0; i < 12; i++) {
-    const a = (i / 12) * Math.PI * 2;
-    const x = 32 + Math.cos(a) * 22;
-    const y = 32 + Math.sin(a) * 22;
-    petals.push(`<circle cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="7"/>`);
-  }
-  const pips: string[] = [];
-  for (let i = 0; i < arena; i++) {
-    const a = (i / arena) * Math.PI * 2 - Math.PI / 2;
-    const r = arena === 1 ? 0 : 8;
-    pips.push(
-      `<circle cx="${(32 + Math.cos(a) * r).toFixed(2)}" cy="${(32 + Math.sin(a) * r).toFixed(2)}" r="3.2"/>`,
-    );
-  }
-  return [
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img">`,
-    `<g fill="${colour}" stroke="${INK}" stroke-width="2">${petals.join('')}</g>`,
-    `<circle cx="32" cy="32" r="19" fill="${colour}" stroke="${INK}" stroke-width="2.4"/>`,
-    `<circle cx="32" cy="32" r="14" fill="${PAPER}" stroke="${INK}" stroke-width="2"/>`,
-    `<g fill="${earned ? INK : '#b5a891'}">${pips.join('')}</g>`,
     `</svg>`,
   ].join('');
 }
