@@ -1,0 +1,431 @@
+{
+  "region": "svendborg",
+  "pois": [
+    {
+      "id": "svb_rest_havnen",
+      "kind": "restStop",
+      "district": 1,
+      "zone": "svb_centrum",
+      "lat": 55.0608,
+      "lng": 10.6118,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "By the harbour square (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_rest_christiansminde",
+      "kind": "restStop",
+      "district": 2,
+      "zone": "svb_christiansminde",
+      "lat": 55.0575,
+      "lng": 10.643,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Christiansminde, by the beach (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_rest_thuroe",
+      "kind": "restStop",
+      "district": 3,
+      "zone": "svb_thuroe",
+      "lat": 55.0472,
+      "lng": 10.6645,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Thurø By, by the harbour (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_rest_troense",
+      "kind": "restStop",
+      "district": 4,
+      "zone": "svb_troense",
+      "lat": 55.035,
+      "lng": 10.642,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Troense, by the harbour (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_rest_valdemars",
+      "kind": "restStop",
+      "district": 5,
+      "zone": "svb_valdemars",
+      "lat": 55.0245,
+      "lng": 10.6505,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "By Valdemars Slot (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_rest_egebjerg",
+      "kind": "restStop",
+      "district": 6,
+      "zone": "svb_egebjerg",
+      "lat": 55.0975,
+      "lng": 10.511,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Egebjerg, by the mill and the view (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_rest_hvidkilde",
+      "kind": "restStop",
+      "district": 7,
+      "zone": "svb_hvidkilde",
+      "lat": 55.07,
+      "lng": 10.53,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "By Hvidkilde Sø (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_rest_gudme",
+      "kind": "restStop",
+      "district": 8,
+      "zone": "svb_gudme",
+      "lat": 55.1505,
+      "lng": 10.703,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Gudme, by Gudme Sø (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_rest_tved",
+      "kind": "restStop",
+      "district": 1,
+      "zone": "svb_tved",
+      "lat": 55.084,
+      "lng": 10.6215,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Tved (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_rest_skaarup",
+      "kind": "restStop",
+      "district": 2,
+      "zone": "svb_skaarup",
+      "lat": 55.0935,
+      "lng": 10.6915,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Skårup (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_rest_bregninge",
+      "kind": "restStop",
+      "district": 4,
+      "zone": "svb_bregninge",
+      "lat": 55.0235,
+      "lng": 10.6095,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Bregninge, by the church and the mill (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_rest_kirkeby",
+      "kind": "restStop",
+      "district": 6,
+      "zone": "svb_kirkeby",
+      "lat": 55.113,
+      "lng": 10.5306,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Kirkeby (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_rest_stenstrup",
+      "kind": "restStop",
+      "district": 6,
+      "zone": "svb_stenstrup",
+      "lat": 55.13137,
+      "lng": 10.50558,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Stenstrup (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_rest_vesterskerninge",
+      "kind": "restStop",
+      "district": 7,
+      "zone": "svb_vesterskerninge",
+      "lat": 55.0729,
+      "lng": 10.4514,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Vester Skerninge (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_rest_lundeborg",
+      "kind": "restStop",
+      "district": 8,
+      "zone": "svb_lundeborg",
+      "lat": 55.14006,
+      "lng": 10.78033,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Lundeborg harbour (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_rest_hesselager",
+      "kind": "restStop",
+      "district": 8,
+      "zone": "svb_hesselager",
+      "lat": 55.1722,
+      "lng": 10.7396,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Hesselager (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_rest_vindebyoere",
+      "kind": "restStop",
+      "district": 4,
+      "zone": "svb_vindebyoere",
+      "lat": 55.05455,
+      "lng": 10.62986,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Vindebyøre beach (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_rest_kohaverne",
+      "kind": "restStop",
+      "district": 5,
+      "zone": "svb_kohaverne",
+      "lat": 55.011,
+      "lng": 10.629,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "In the Kohave woods (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_rest_ollerupsoe",
+      "kind": "restStop",
+      "district": 7,
+      "zone": "svb_ollerupsoe",
+      "lat": 55.07,
+      "lng": 10.486,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "By Ollerup Sø (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_rest_tangeskov",
+      "kind": "restStop",
+      "district": 8,
+      "zone": "svb_tangeskov",
+      "lat": 55.144,
+      "lng": 10.748,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Tangeskov, near Broholm (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_rest_skaroe",
+      "kind": "restStop",
+      "district": 7,
+      "zone": "svb_skaroe",
+      "lat": 55.00981,
+      "lng": 10.47367,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Skarø, by the ferry quay (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_rest_hjortoe",
+      "kind": "restStop",
+      "district": 7,
+      "zone": "svb_hjortoe",
+      "lat": 54.965,
+      "lng": 10.49,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Hjortø, by the ferry quay (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_rest_drejoe",
+      "kind": "restStop",
+      "district": 7,
+      "zone": "svb_drejoe",
+      "lat": 54.97,
+      "lng": 10.42,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Drejø village (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_rest_byskovene",
+      "kind": "restStop",
+      "district": 1,
+      "zone": "svb_byskovene",
+      "lat": 55.076,
+      "lng": 10.64,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "In the town woods (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_market_gaagaden",
+      "kind": "market",
+      "district": 1,
+      "zone": "svb_centrum",
+      "lat": 55.0616,
+      "lng": 10.6085,
+      "radius": 40,
+      "verified": false,
+      "note": "The pedestrian street (Gerritsgade) by Torvet (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_market_kvickly",
+      "kind": "market",
+      "district": 1,
+      "zone": "svb_sanktjoergens",
+      "lat": 55.06376,
+      "lng": 10.58829,
+      "radius": 40,
+      "verified": false,
+      "note": "By Kvickly on the west side of town (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_market_tved",
+      "kind": "market",
+      "district": 1,
+      "zone": "svb_tved",
+      "lat": 55.0864,
+      "lng": 10.6213,
+      "radius": 40,
+      "verified": false,
+      "note": "By the shops in Tved (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_market_skaarup",
+      "kind": "market",
+      "district": 2,
+      "zone": "svb_skaarup",
+      "lat": 55.0903,
+      "lng": 10.691,
+      "radius": 40,
+      "verified": false,
+      "note": "By SuperBrugsen in Skårup (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_market_stenstrup",
+      "kind": "market",
+      "district": 6,
+      "zone": "svb_stenstrup",
+      "lat": 55.1309,
+      "lng": 10.5019,
+      "radius": 40,
+      "verified": false,
+      "note": "By Dagli’Brugsen in Stenstrup (P27: placed from the map; check on site)"
+    },
+    {
+      "id": "svb_market_gudme",
+      "kind": "market",
+      "district": 8,
+      "zone": "svb_gudme",
+      "lat": 55.1532,
+      "lng": 10.7045,
+      "radius": 40,
+      "verified": false,
+      "note": "By the village shop in Gudme (P27: placed from the map; check on site)"
+    }
+  ]
+}

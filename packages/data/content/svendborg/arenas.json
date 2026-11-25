@@ -1,0 +1,85 @@
+{
+  "region": "svendborg",
+  "arenas": [
+    {
+      "arena": 1,
+      "district": 1,
+      "zone": "svb_centrum",
+      "type": "spirit",
+      "lat": 55.06,
+      "lng": 10.615,
+      "poi": null,
+      "note": "Frederiksø, the old harbour by the ferry quay (P27; POI with the leader)"
+    },
+    {
+      "arena": 2,
+      "district": 2,
+      "zone": "svb_christiansminde",
+      "type": "fire",
+      "lat": 55.0583,
+      "lng": 10.6415,
+      "poi": null,
+      "note": "Christiansminde, the beach and beech wood east of town (P27; POI with the leader)"
+    },
+    {
+      "arena": 3,
+      "district": 3,
+      "zone": "svb_thuroe",
+      "type": "water",
+      "lat": 55.0468,
+      "lng": 10.666,
+      "poi": null,
+      "note": "Thurø By, the island village and harbour (P27; POI with the leader)"
+    },
+    {
+      "arena": 4,
+      "district": 4,
+      "zone": "svb_troense",
+      "type": "storm",
+      "lat": 55.0347,
+      "lng": 10.643,
+      "poi": null,
+      "note": "Troense, the old skipper village on the sound (P27; POI with the leader)"
+    },
+    {
+      "arena": 5,
+      "district": 5,
+      "zone": "svb_valdemars",
+      "type": "folk",
+      "lat": 55.0231,
+      "lng": 10.6524,
+      "poi": null,
+      "note": "Valdemars Slot, the castle park on Tåsinge (P27; POI with the leader)"
+    },
+    {
+      "arena": 6,
+      "district": 6,
+      "zone": "svb_egebjerg",
+      "type": "stone",
+      "lat": 55.0962,
+      "lng": 10.5087,
+      "poi": null,
+      "note": "Egebjerg Mølle, the mill on the hills north-west of town (P27; POI with the leader)"
+    },
+    {
+      "arena": 7,
+      "district": 7,
+      "zone": "svb_hvidkilde",
+      "type": "grove",
+      "lat": 55.0715,
+      "lng": 10.531,
+      "poi": null,
+      "note": "Hvidkilde, the manor by its lake and woods (public road and paths; check on site) (P27; POI with the leader)"
+    },
+    {
+      "arena": 8,
+      "district": 8,
+      "zone": "svb_gudme",
+      "type": null,
+      "lat": 55.15,
+      "lng": 10.7045,
+      "poi": null,
+      "note": "Gudme, the Iron Age gold village by Gudme Sø (P27; POI with the leader)"
+    }
+  ]
+}

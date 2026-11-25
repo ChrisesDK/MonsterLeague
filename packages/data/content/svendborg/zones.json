@@ -1,0 +1,395 @@
+{
+  "region": "svendborg",
+  "districts": [
+    {
+      "id": 1,
+      "wildLevels": [3, 8]
+    },
+    {
+      "id": 2,
+      "wildLevels": [8, 14]
+    },
+    {
+      "id": 3,
+      "wildLevels": [13, 20]
+    },
+    {
+      "id": 4,
+      "wildLevels": [19, 26]
+    },
+    {
+      "id": 5,
+      "wildLevels": [25, 32]
+    },
+    {
+      "id": 6,
+      "wildLevels": [31, 38]
+    },
+    {
+      "id": 7,
+      "wildLevels": [37, 44]
+    },
+    {
+      "id": 8,
+      "wildLevels": [43, 50]
+    }
+  ],
+  "zones": [
+    {
+      "id": "svb_centrum",
+      "kind": "arena",
+      "district": 1,
+      "lat": 55.06,
+      "lng": 10.615,
+      "arena": 1,
+      "start": true
+    },
+    {
+      "id": "svb_tved",
+      "kind": "town",
+      "district": 1,
+      "lat": 55.083,
+      "lng": 10.6215,
+      "icon": "town"
+    },
+    {
+      "id": "svb_byskovene",
+      "kind": "wild",
+      "district": 1,
+      "lat": 55.076,
+      "lng": 10.639,
+      "icon": "forest"
+    },
+    {
+      "id": "svb_sanktjoergens",
+      "kind": "wild",
+      "district": 1,
+      "lat": 55.0495,
+      "lng": 10.596,
+      "icon": "field"
+    },
+    {
+      "id": "svb_christiansminde",
+      "kind": "arena",
+      "district": 2,
+      "lat": 55.0583,
+      "lng": 10.6415,
+      "arena": 2
+    },
+    {
+      "id": "svb_vindebyoere",
+      "kind": "water",
+      "district": 4,
+      "lat": 55.0535,
+      "lng": 10.629,
+      "icon": "lake"
+    },
+    {
+      "id": "svb_hestehaven",
+      "kind": "wild",
+      "district": 2,
+      "lat": 55.0625,
+      "lng": 10.656,
+      "icon": "forest"
+    },
+    {
+      "id": "svb_skaarup",
+      "kind": "town",
+      "district": 2,
+      "lat": 55.093,
+      "lng": 10.6915,
+      "icon": "town"
+    },
+    {
+      "id": "svb_hovgaard",
+      "kind": "wild",
+      "district": 2,
+      "lat": 55.0985,
+      "lng": 10.6735,
+      "icon": "forest"
+    },
+    {
+      "id": "svb_thuroe",
+      "kind": "arena",
+      "district": 3,
+      "lat": 55.0468,
+      "lng": 10.666,
+      "arena": 3
+    },
+    {
+      "id": "svb_smoermose",
+      "kind": "wild",
+      "district": 3,
+      "lat": 55.045,
+      "lng": 10.705,
+      "icon": "forest"
+    },
+    {
+      "id": "svb_aabyskov",
+      "kind": "wild",
+      "district": 3,
+      "lat": 55.068,
+      "lng": 10.723,
+      "icon": "forest"
+    },
+    {
+      "id": "svb_troense",
+      "kind": "arena",
+      "district": 4,
+      "lat": 55.0347,
+      "lng": 10.643,
+      "arena": 4
+    },
+    {
+      "id": "svb_bregninge",
+      "kind": "town",
+      "district": 4,
+      "lat": 55.023,
+      "lng": 10.609,
+      "icon": "town"
+    },
+    {
+      "id": "svb_vindeby",
+      "kind": "wild",
+      "district": 4,
+      "lat": 55.0445,
+      "lng": 10.623,
+      "icon": "forest"
+    },
+    {
+      "id": "svb_valdemars",
+      "kind": "arena",
+      "district": 5,
+      "lat": 55.0231,
+      "lng": 10.6524,
+      "arena": 5
+    },
+    {
+      "id": "svb_kohaverne",
+      "kind": "wild",
+      "district": 5,
+      "lat": 55.011,
+      "lng": 10.629,
+      "icon": "forest"
+    },
+    {
+      "id": "svb_lundby",
+      "kind": "wild",
+      "district": 5,
+      "lat": 54.995,
+      "lng": 10.606,
+      "icon": "field"
+    },
+    {
+      "id": "svb_bjerreby",
+      "kind": "wild",
+      "district": 5,
+      "lat": 54.976,
+      "lng": 10.64,
+      "icon": "forest"
+    },
+    {
+      "id": "svb_vaaroe",
+      "kind": "wild",
+      "district": 5,
+      "lat": 54.965,
+      "lng": 10.57,
+      "icon": "forest"
+    },
+    {
+      "id": "svb_vejlen",
+      "kind": "water",
+      "district": 5,
+      "lat": 54.996,
+      "lng": 10.542,
+      "icon": "lake"
+    },
+    {
+      "id": "svb_egebjerg",
+      "kind": "arena",
+      "district": 6,
+      "lat": 55.0962,
+      "lng": 10.5087,
+      "arena": 6
+    },
+    {
+      "id": "svb_kirkeby",
+      "kind": "town",
+      "district": 6,
+      "lat": 55.113,
+      "lng": 10.5306,
+      "icon": "town"
+    },
+    {
+      "id": "svb_stenstrup",
+      "kind": "town",
+      "district": 6,
+      "lat": 55.1312,
+      "lng": 10.5055,
+      "icon": "town"
+    },
+    {
+      "id": "svb_kirkebyskov",
+      "kind": "wild",
+      "district": 6,
+      "lat": 55.096,
+      "lng": 10.53,
+      "icon": "forest"
+    },
+    {
+      "id": "svb_svinehaverne",
+      "kind": "wild",
+      "district": 6,
+      "lat": 55.104,
+      "lng": 10.487,
+      "icon": "forest"
+    },
+    {
+      "id": "svb_alminden",
+      "kind": "wild",
+      "district": 6,
+      "lat": 55.13,
+      "lng": 10.565,
+      "icon": "forest"
+    },
+    {
+      "id": "svb_hvidkilde",
+      "kind": "arena",
+      "district": 7,
+      "lat": 55.0715,
+      "lng": 10.531,
+      "arena": 7
+    },
+    {
+      "id": "svb_ollerupsoe",
+      "kind": "water",
+      "district": 7,
+      "lat": 55.069,
+      "lng": 10.486,
+      "icon": "lake"
+    },
+    {
+      "id": "svb_vesterskerninge",
+      "kind": "town",
+      "district": 7,
+      "lat": 55.0729,
+      "lng": 10.4514,
+      "icon": "town"
+    },
+    {
+      "id": "svb_skovsbo",
+      "kind": "wild",
+      "district": 7,
+      "lat": 55.04,
+      "lng": 10.562,
+      "icon": "forest"
+    },
+    {
+      "id": "svb_lehnskov",
+      "kind": "wild",
+      "district": 7,
+      "lat": 55.03,
+      "lng": 10.51,
+      "icon": "forest"
+    },
+    {
+      "id": "svb_ulboelle",
+      "kind": "wild",
+      "district": 7,
+      "lat": 55.076,
+      "lng": 10.42,
+      "icon": "field"
+    },
+    {
+      "id": "svb_skaroe",
+      "kind": "wild",
+      "district": 7,
+      "lat": 55.0094,
+      "lng": 10.4722,
+      "icon": "island",
+      "opensOnArrival": true
+    },
+    {
+      "id": "svb_hjortoe",
+      "kind": "wild",
+      "district": 7,
+      "lat": 54.9636,
+      "lng": 10.4819,
+      "icon": "island",
+      "opensOnArrival": true
+    },
+    {
+      "id": "svb_drejoe",
+      "kind": "wild",
+      "district": 7,
+      "lat": 54.9735,
+      "lng": 10.4005,
+      "icon": "island",
+      "opensOnArrival": true
+    },
+    {
+      "id": "svb_gudme",
+      "kind": "arena",
+      "district": 8,
+      "lat": 55.15,
+      "lng": 10.7045,
+      "arena": 8
+    },
+    {
+      "id": "svb_lundeborg",
+      "kind": "town",
+      "district": 8,
+      "lat": 55.1398,
+      "lng": 10.78,
+      "icon": "town"
+    },
+    {
+      "id": "svb_hesselager",
+      "kind": "town",
+      "district": 8,
+      "lat": 55.1722,
+      "lng": 10.7396,
+      "icon": "town"
+    },
+    {
+      "id": "svb_tangeskov",
+      "kind": "wild",
+      "district": 8,
+      "lat": 55.146,
+      "lng": 10.75,
+      "icon": "forest"
+    },
+    {
+      "id": "svb_oure",
+      "kind": "wild",
+      "district": 8,
+      "lat": 55.12,
+      "lng": 10.725,
+      "icon": "field"
+    },
+    {
+      "id": "svb_gudbjerg",
+      "kind": "wild",
+      "district": 8,
+      "lat": 55.147,
+      "lng": 10.645,
+      "icon": "forest"
+    },
+    {
+      "id": "svb_elsehoved",
+      "kind": "water",
+      "district": 8,
+      "lat": 55.106,
+      "lng": 10.77,
+      "icon": "lake"
+    },
+    {
+      "id": "svb_klintholm",
+      "kind": "water",
+      "district": 8,
+      "lat": 55.18,
+      "lng": 10.802,
+      "icon": "lake"
+    }
+  ]
+}
