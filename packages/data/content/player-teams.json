@@ -44,25 +44,25 @@
       "placeholder": true
     },
     {
-      "id": "arena4",
-      "arena": 4,
-      "starterLevel": 27,
+      "id": "arena3",
+      "arena": 3,
+      "starterLevel": 22,
       "team": [
         {
           "speciesId": "kulingmaage",
-          "level": 25
+          "level": 21
         },
         {
           "speciesId": "brokrabbe",
-          "level": 26
+          "level": 21
         },
         {
           "speciesId": "mosbille",
-          "level": 26
+          "level": 22
         },
         {
           "speciesId": "torvdue",
-          "level": 25
+          "level": 21
         }
       ],
       "items": {

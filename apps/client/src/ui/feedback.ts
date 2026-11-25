@@ -9,6 +9,8 @@ export const HAPTICS = {
   levelUp: [40, 40, 40],
   evolve: [60, 60, 60, 60, 160],
   badge: [80, 60, 80, 60, 220],
+  /** A finished route opened a zone (P22). */
+  zone: [60, 40, 60],
   tap: [12],
 } as const;
 

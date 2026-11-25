@@ -1,5 +1,5 @@
 import type { BattleState, CreatureInstance } from '@oml/engine';
-import { StatusSchema } from '@oml/data';
+import { content, StatusSchema } from '@oml/data';
 import { z } from 'zod';
 
 /**
@@ -7,9 +7,11 @@ import { z } from 'zod';
  *
  * Privacy (GDD): the save holds progress only, never a position or a location history.
  * The tutorial creature's position is kept in memory and re-rolled after a reload; used
- * spawns are kept only until they expire (≤ 15 min) and are pruned on every save.
+ * spawns are kept only until they expire (≤ 15 min) and are pruned on every save. Route
+ * progress (P22, owner decision) is kept as numbered checkpoints of the game's own routes:
+ * no coordinates, no times, never sent anywhere.
  */
-export const SAVE_VERSION = 8;
+export const SAVE_VERSION = 9;
 
 export type OnboardingStep = 'safety' | 'location' | 'starter' | 'tutorial' | 'done';
 
@@ -37,9 +39,10 @@ export interface Settings {
 }
 
 /**
- * Journal progress (M2d). Game progress only, never positions or times: which districts the
- * player has entered, which numbered checkpoints of each route were reached, metres walked in
- * each district's wild areas (capped at the explore goal) and which rest stops were visited.
+ * Journal progress (M2d, P22). Game progress only, never positions or times: which districts
+ * the player has entered, which numbered checkpoints (every 25 m) of each route were reached
+ * (the route's progress bar), metres walked in each district's wild areas (capped at the
+ * explore goal) and which rest stops were visited.
  */
 export interface JournalProgress {
   reached: number[];
@@ -59,6 +62,8 @@ export interface SaveGame {
   bag: Record<string, number>;
   /** Arena numbers won. */
   badges: number[];
+  /** Zones opened by finished routes (P22); the start zone is always open and not listed. */
+  zones: string[];
   defeatedTrainers: string[];
   /** species id → districts it was seen / caught in (field guide). */
   seen: Record<string, number[]>;
@@ -102,6 +107,7 @@ export function newSave(seed: string, language: Settings['language'] = 'da'): Sa
     storage: [],
     bag: {},
     badges: [],
+    zones: [],
     defeatedTrainers: [],
     seen: {},
     caught: {},
@@ -168,6 +174,7 @@ export const SaveSchema = z
     storage: z.array(Creature),
     bag: Counts,
     badges: z.array(z.number().int().min(1).max(8)),
+    zones: z.array(z.string()),
     defeatedTrainers: z.array(z.string()),
     seen: Districts,
     caught: Districts,
@@ -304,6 +311,67 @@ export const migrations: Record<number, (old: Record<string, unknown>, seed: str
       settings: { ...settings, vibration: settings.reduceMotion !== true },
     };
   },
+  /**
+   * v8 → v9 (P22, region v4): the region becomes Odense Kommune, split into zones that open
+   * with finished routes, and the arena themes get a new order. District numbers in the field
+   * guide, an active wild battle and the Journal follow their theme to its new arena number.
+   * The old routes are gone, so route progress starts again; the zone of every arena already
+   * won counts as open (arena 2 moved, but its badge stays).
+   */
+  8: (old) => {
+    const remap = (n: unknown) => (typeof n === 'number' ? (DISTRICT_V2_TO_V3[n] ?? n) : n);
+    const byDistrict = (m: unknown) =>
+      m && typeof m === 'object'
+        ? Object.fromEntries(
+            Object.entries(m as Record<string, unknown>).map(([k, v]) => [
+              k,
+              Array.isArray(v) ? [...new Set(v.map(remap))].sort() : v,
+            ]),
+          )
+        : m;
+    const battle = old.battle as Record<string, unknown> | null | undefined;
+    const journal = (old.journal ?? {}) as Record<string, unknown>;
+    const reached = Array.isArray(journal.reached) ? journal.reached : [];
+    const wild = (journal.wildMetres ?? {}) as Record<string, number>;
+    const badges = Array.isArray(old.badges) ? (old.badges as number[]) : [];
+    const zones = Object.values(content.zones)
+      .filter((z) => !z.start && z.arena !== undefined && badges.includes(z.arena))
+      .map((z) => z.id)
+      .sort();
+    return {
+      ...old,
+      version: 9,
+      zones,
+      seen: byDistrict(old.seen),
+      caught: byDistrict(old.caught),
+      battle:
+        battle && battle.kind === 'wild' ? { ...battle, district: remap(battle.district) } : battle,
+      journal: {
+        ...journal,
+        reached: [...new Set(reached.map(remap))].sort(),
+        routes: {},
+        wildMetres: Object.fromEntries(
+          Object.entries(wild).map(([k, v]) => [String(remap(Number(k))), v]),
+        ),
+      },
+    };
+  },
+};
+
+/**
+ * P22 new arena order, old district → new district: each theme keeps its spawn table and
+ * goals and moves with its arena (Spirit 3 → 5, Water 4 → 3, Mixed 5 → 7, Grove 6 → 4,
+ * Fire 7 → 6; Folk, Stone and Storm stay).
+ */
+export const DISTRICT_V2_TO_V3: Record<number, number> = {
+  1: 1,
+  2: 2,
+  3: 5,
+  4: 3,
+  5: 7,
+  6: 4,
+  7: 6,
+  8: 8,
 };
 
 /** GDD v1.7 renumbering, old district → new district (1 and 3 stay). */

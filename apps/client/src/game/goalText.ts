@@ -1,15 +1,15 @@
 import { content } from '@oml/data';
-import type { Goal } from '@oml/game';
+import { ROUTE_DONE_SHARE, type Goal } from '@oml/game';
 import type { Translate } from '../i18n';
 
 /** One line of text for a Journal goal. */
 export function goalTitle(g: Goal, t: Translate): string {
   const district = t(`district.${g.district}.name`);
   switch (g.kind) {
-    case 'reach':
-      return t('goal.reach', { district });
     case 'route':
-      return t('goal.route', { route: t(`route.${g.routeId}.name`) });
+      return g.routeId && !g.done
+        ? t('goal.route', { route: t(`route.${g.routeId}.name`), zone: t(`zone.${g.zone}.name`) })
+        : t('goal.openZone', { zone: t(`zone.${g.zone}.name`) });
     case 'trainers':
       return t('goal.trainers', { district, n: g.progress!.n, of: g.progress!.of });
     case 'rest':
@@ -33,12 +33,17 @@ export function goalProgress(g: Goal, t: Translate): { text: string; share: numb
   const { n, of } = g.progress;
   if (g.kind === 'route') {
     const route = content.routes[g.routeId!]!;
-    // the goal completes at 80 % of the checkpoints; show progress towards that
-    const pct = Math.min(100, Math.round((100 * n) / Math.max(1, Math.ceil(of * 0.8))));
+    // a route is finished at 90 % of its checkpoints; show progress towards that
+    const pct = routePercent(n, of);
     return { text: t('goal.routeProgress', { pct, m: route.lengthM }), share: pct / 100 };
   }
   if (g.kind === 'exploreWild') return { text: t('goal.metres', { n, of }), share: n / of };
   return { text: `${n}/${of}`, share: n / of };
+}
+
+/** A route's progress bar in percent (100 = finished, at 90 % of its checkpoints). */
+export function routePercent(n: number, of: number): number {
+  return Math.min(100, Math.round((100 * n) / Math.max(1, Math.ceil(of * ROUTE_DONE_SHARE))));
 }
 
 export function formatM(m: number): string {

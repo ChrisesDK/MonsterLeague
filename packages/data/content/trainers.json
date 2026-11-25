@@ -72,22 +72,22 @@
       "team": [
         {
           "speciesId": "grimaelling",
-          "level": 25,
-          "moves": ["brook_spout", "beech_lash", "sea_fog", "shoulder_shove"]
+          "level": 19,
+          "moves": ["brook_spout", "rinse_and_mend", "sea_fog", "shoulder_shove"]
         },
         {
           "speciesId": "kulingmaage",
-          "level": 26,
+          "level": 20,
           "moves": ["squall_slap", "sky_crackle", "gale_step", "nimble_jab"]
         },
         {
           "speciesId": "stroemodder",
-          "level": 26,
+          "level": 22,
           "moves": ["harbour_wave", "kiln_blast", "rinse_and_mend", "cobble_toss"]
         },
         {
           "speciesId": "stroemodder",
-          "level": 27,
+          "level": 21,
           "moves": ["harbour_wave", "squall_slap", "rinse_and_mend", "cobble_toss"]
         }
       ],
@@ -95,7 +95,7 @@
         "large_tonic": 2
       },
       "placeholder": true,
-      "arena": 4,
+      "arena": 3,
       "theme": "water",
       "reward": {
         "itemId": "revive_leaf",

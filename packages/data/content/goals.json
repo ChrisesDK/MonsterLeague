@@ -43,16 +43,16 @@
       "metres": 300
     },
     {
-      "id": "d3_catch_spirit",
+      "id": "d3_catch_water",
       "district": 3,
       "kind": "catchType",
-      "type": "spirit"
+      "type": "water"
     },
     {
       "id": "d3_rare",
       "district": 3,
       "kind": "findRare",
-      "species": "loftnisse"
+      "species": "soeormling"
     },
     {
       "id": "d4_explore",
@@ -61,16 +61,16 @@
       "metres": 300
     },
     {
-      "id": "d4_catch_water",
+      "id": "d4_catch_grove",
       "district": 4,
       "kind": "catchType",
-      "type": "water"
+      "type": "grove"
     },
     {
       "id": "d4_rare",
       "district": 4,
       "kind": "findRare",
-      "species": "soeormling"
+      "species": "ellepige"
     },
     {
       "id": "d5_explore",
@@ -79,16 +79,16 @@
       "metres": 300
     },
     {
-      "id": "d5_catch_grove",
+      "id": "d5_catch_spirit",
       "district": 5,
       "kind": "catchType",
-      "type": "grove"
+      "type": "spirit"
     },
     {
       "id": "d5_rare",
       "district": 5,
       "kind": "findRare",
-      "species": "kampetrold"
+      "species": "loftnisse"
     },
     {
       "id": "d6_explore",
@@ -97,16 +97,16 @@
       "metres": 300
     },
     {
-      "id": "d6_catch_grove",
+      "id": "d6_catch_folk",
       "district": 6,
       "kind": "catchType",
-      "type": "grove"
+      "type": "folk"
     },
     {
       "id": "d6_rare",
       "district": 6,
       "kind": "findRare",
-      "species": "ellepige"
+      "species": "loftnisse"
     },
     {
       "id": "d7_explore",
@@ -115,16 +115,16 @@
       "metres": 300
     },
     {
-      "id": "d7_catch_folk",
+      "id": "d7_catch_grove",
       "district": 7,
       "kind": "catchType",
-      "type": "folk"
+      "type": "grove"
     },
     {
       "id": "d7_rare",
       "district": 7,
       "kind": "findRare",
-      "species": "loftnisse"
+      "species": "kampetrold"
     },
     {
       "id": "d8_explore",

@@ -5,6 +5,7 @@
       "id": "arena1",
       "kind": "arena",
       "district": 1,
+      "zone": "centrum",
       "lat": 55.39978,
       "lng": 10.38522,
       "radius": 80,
@@ -14,9 +15,95 @@
       "note": "Kongens Have, centre of the park (OSM leisure=park centroid); open lawn and paths, away from Østre Stationsvej"
     },
     {
+      "id": "arena2",
+      "kind": "arena",
+      "district": 2,
+      "zone": "naesbyhoved",
+      "lat": 55.41346,
+      "lng": 10.37515,
+      "radius": 80,
+      "arena": 2,
+      "trainers": ["arena2_junior", "leader_stone"],
+      "verified": false,
+      "note": "Næsbyhoved Slotsbanke, the medieval castle mound in Næsbyhoved Skov by Odense Å (P22, moved from Klosterhaven); check paths and step-free access on site"
+    },
+    {
+      "id": "trainer_lise",
+      "kind": "trainer",
+      "district": 1,
+      "zone": "centrum",
+      "lat": 55.39963,
+      "lng": 10.38333,
+      "radius": 50,
+      "trainer": "route1_lise",
+      "verified": false,
+      "note": "Path by Landsarkivet for Fyn on the west side of Kongens Have, about 120 m from the arena centre (moved from Elisabeth Klixbülls Plads, which lies in a no-spawn cell by the railway)"
+    },
+    {
+      "id": "trainer_ole",
+      "kind": "trainer",
+      "district": 1,
+      "zone": "centrum",
+      "lat": 55.40095,
+      "lng": 10.39118,
+      "radius": 50,
+      "trainer": "route1_ole",
+      "verified": false,
+      "note": "On Route 16 (Centrum–Havnen), by the station and the railway museum (P22; check on site)"
+    },
+    {
+      "id": "trainer_freja",
+      "kind": "trainer",
+      "district": 1,
+      "zone": "centrum",
+      "lat": 55.3965,
+      "lng": 10.38561,
+      "radius": 50,
+      "trainer": "route1_freja",
+      "verified": false,
+      "note": "On Route 20 (Centrum–Munke Mose), on the way to Eventyrhaven (P22; check on site)"
+    },
+    {
+      "id": "trainer_niels",
+      "kind": "trainer",
+      "district": 1,
+      "zone": "centrum",
+      "lat": 55.40458,
+      "lng": 10.38289,
+      "radius": 50,
+      "trainer": "route1_niels",
+      "verified": false,
+      "note": "On Route 22 (Centrum–Bolbro), along Kongensgade (P22; check on site)"
+    },
+    {
+      "id": "trainer_karen",
+      "kind": "trainer",
+      "district": 2,
+      "zone": "naesbyhoved",
+      "lat": 55.40988,
+      "lng": 10.37511,
+      "radius": 50,
+      "trainer": "route2_karen",
+      "verified": false,
+      "note": "On Route 1 (Centrum–Næsbyhoved), in Åløkke Skov by Odense Å (P22; check on site)"
+    },
+    {
+      "id": "trainer_mads",
+      "kind": "trainer",
+      "district": 2,
+      "zone": "naesbyhoved",
+      "lat": 55.41534,
+      "lng": 10.37043,
+      "radius": 50,
+      "trainer": "route2_mads",
+      "verified": false,
+      "note": "On Route 26 (Næsbyhoved–Maylandskoven), in Næsbyhoved Skov (P22; check on site)"
+    },
+    {
       "id": "rest_library",
       "kind": "restStop",
       "district": 1,
+      "zone": "centrum",
       "lat": 55.40125,
       "lng": 10.38846,
       "radius": 40,
@@ -31,6 +118,7 @@
       "id": "rest_jernbanegade",
       "kind": "restStop",
       "district": 1,
+      "zone": "centrum",
       "lat": 55.39781,
       "lng": 10.38504,
       "radius": 40,
@@ -42,67 +130,12 @@
       "note": "Jernbanegade pedestrian street just south of Kongens Have; car-free and step-free"
     },
     {
-      "id": "trainer_lise",
-      "kind": "trainer",
-      "district": 1,
-      "lat": 55.39963,
-      "lng": 10.38333,
-      "radius": 50,
-      "trainer": "route1_lise",
-      "verified": false,
-      "note": "Path by Landsarkivet for Fyn on the west side of Kongens Have, about 120 m from the arena centre (moved from Elisabeth Klixbülls Plads, which lies in a no-spawn cell by the railway)"
-    },
-    {
-      "id": "trainer_ole",
-      "kind": "trainer",
-      "district": 1,
-      "lat": 55.40059,
-      "lng": 10.3871,
-      "radius": 50,
-      "trainer": "route1_ole",
-      "verified": false,
-      "note": "Banegårdspladsen, the square in front of the station (bike parking nearby)"
-    },
-    {
-      "id": "trainer_freja",
-      "kind": "trainer",
-      "district": 1,
-      "lat": 55.39689,
-      "lng": 10.38526,
-      "radius": 50,
-      "trainer": "route1_freja",
-      "verified": false,
-      "note": "On Route 1: pedestrian Jernbanegade just north of Vestergade (M2d; moved 139 m from Slotsgade onto the route), 133 m inside district 1"
-    },
-    {
-      "id": "trainer_niels",
-      "kind": "trainer",
-      "district": 1,
-      "lat": 55.39791,
-      "lng": 10.38035,
-      "radius": 50,
-      "trainer": "route1_niels",
-      "verified": false,
-      "note": "Kongensgade pedestrian street by the artwork The Guardians Light"
-    },
-    {
-      "id": "arena2",
-      "kind": "arena",
-      "district": 2,
-      "lat": 55.39472,
-      "lng": 10.38887,
-      "radius": 80,
-      "arena": 2,
-      "trainers": ["arena2_junior", "leader_stone"],
-      "verified": false,
-      "note": "Klosterhaven, the public garden just south of Sankt Knuds Kirke. Skt. Knuds Plads itself (north side of the cathedral) is only ~50 m from the district 1 border, too close for the 80 m arena radius"
-    },
-    {
       "id": "rest_barndomshjem",
       "kind": "restStop",
-      "district": 2,
+      "district": 1,
+      "zone": "centrum",
       "lat": 55.3945,
-      "lng": 10.3866,
+      "lng": 10.38597,
       "radius": 40,
       "restock": {
         "basic_charm": 5,
@@ -112,26 +145,319 @@
       "note": "Munkemøllestræde by H.C. Andersens Barndomshjem; cobbled old-town street, public, check step-free access on site"
     },
     {
-      "id": "trainer_karen",
-      "kind": "trainer",
+      "id": "rest_naesbyhoved",
+      "kind": "restStop",
       "district": 2,
-      "lat": 55.39612,
-      "lng": 10.39035,
-      "radius": 50,
-      "trainer": "route2_karen",
+      "zone": "naesbyhoved",
+      "lat": 55.4108,
+      "lng": 10.3715,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
       "verified": false,
-      "note": "On Route 2: footway by Albani Torv, north-east of Sankt Knuds Kirke (M2d; moved from Albaniengen, 740 m off any route)"
+      "note": "Næsbyhoved Skov, by the paths below the castle mound (P22: placed from the map; check on site that it is public and step-free)"
     },
     {
-      "id": "trainer_mads",
-      "kind": "trainer",
+      "id": "rest_havnen",
+      "kind": "restStop",
       "district": 2,
-      "lat": 55.39286,
-      "lng": 10.38889,
-      "radius": 50,
-      "trainer": "route2_mads",
+      "zone": "havnen",
+      "lat": 55.40837,
+      "lng": 10.38967,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
       "verified": false,
-      "note": "On Route 3: the path along Odense Å south of Eventyrhaven (M2d; moved from Sankt Jørgens Park, 1.2 km off any route)"
+      "note": "The inner harbour by Havnebadet (P22: placed from the map; check on site that it is public and step-free)"
+    },
+    {
+      "id": "rest_odins",
+      "kind": "restStop",
+      "district": 2,
+      "zone": "odins",
+      "lat": 55.42653,
+      "lng": 10.33006,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "By the entrance to Odins Odense (P22: placed from the map; check on site that it is public and step-free)"
+    },
+    {
+      "id": "rest_kirkendrup",
+      "kind": "restStop",
+      "district": 2,
+      "zone": "kirkendrup",
+      "lat": 55.44,
+      "lng": 10.3324,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Kirkendrup Skov (P22: placed from the map; check on site that it is public and step-free)"
+    },
+    {
+      "id": "rest_lumby",
+      "kind": "restStop",
+      "district": 2,
+      "zone": "lumby",
+      "lat": 55.44809,
+      "lng": 10.37473,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Lumby, by the mill (P22: placed from the map; check on site that it is public and step-free)"
+    },
+    {
+      "id": "rest_stige",
+      "kind": "restStop",
+      "district": 3,
+      "zone": "stige",
+      "lat": 55.4485,
+      "lng": 10.4262,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Stige Ø, by the slipway on the island (P22: placed from the map; check on site that it is public and step-free)"
+    },
+    {
+      "id": "rest_seden",
+      "kind": "restStop",
+      "district": 3,
+      "zone": "seden",
+      "lat": 55.439,
+      "lng": 10.456,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Seden Strand, by the fjord (P22: placed from the map; check on site that it is public and step-free)"
+    },
+    {
+      "id": "rest_hcaskoven",
+      "kind": "restStop",
+      "district": 4,
+      "zone": "hcaskoven",
+      "lat": 55.413,
+      "lng": 10.46,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "H.C. Andersen Skoven (P22: placed from the map; check on site that it is public and step-free)"
+    },
+    {
+      "id": "rest_raeveskov",
+      "kind": "restStop",
+      "district": 4,
+      "zone": "raeveskov",
+      "lat": 55.4131,
+      "lng": 10.4824,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Ræveskov by Agedrup (P22: placed from the map; check on site that it is public and step-free)"
+    },
+    {
+      "id": "rest_botanisk",
+      "kind": "restStop",
+      "district": 4,
+      "zone": "botanisk",
+      "lat": 55.39904,
+      "lng": 10.42933,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Kulturbotanisk Have, by the entrance (P22: placed from the map; check on site that it is public and step-free)"
+    },
+    {
+      "id": "rest_hollufgaard",
+      "kind": "restStop",
+      "district": 5,
+      "zone": "hollufgaard",
+      "lat": 55.35486,
+      "lng": 10.4396,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Hollufgård, by the manor and the sculpture park (P22: placed from the map; check on site that it is public and step-free)"
+    },
+    {
+      "id": "rest_fraugde",
+      "kind": "restStop",
+      "district": 5,
+      "zone": "fraugde",
+      "lat": 55.35516,
+      "lng": 10.48767,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Fraugde village (P22: placed from the map; check on site that it is public and step-free)"
+    },
+    {
+      "id": "rest_tarup",
+      "kind": "restStop",
+      "district": 5,
+      "zone": "tarupdavinde",
+      "lat": 55.332,
+      "lng": 10.53,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Tarup-Davinde, by the lakes (P22: placed from the map; check on site that it is public and step-free)"
+    },
+    {
+      "id": "rest_hjallese",
+      "kind": "restStop",
+      "district": 6,
+      "zone": "hjallese",
+      "lat": 55.36,
+      "lng": 10.415,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Hjallese, by the forest paths (P22: placed from the map; check on site that it is public and step-free)"
+    },
+    {
+      "id": "rest_fynskelandsby",
+      "kind": "restStop",
+      "district": 6,
+      "zone": "fynskelandsby",
+      "lat": 55.36669,
+      "lng": 10.38565,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "By the entrance to Den Fynske Landsby (P22: placed from the map; check on site that it is public and step-free)"
+    },
+    {
+      "id": "rest_zoo",
+      "kind": "restStop",
+      "district": 7,
+      "zone": "zoo",
+      "lat": 55.37916,
+      "lng": 10.37264,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "By Odense Zoo, on the river path (P22: placed from the map; check on site that it is public and step-free)"
+    },
+    {
+      "id": "rest_bellinge",
+      "kind": "restStop",
+      "district": 6,
+      "zone": "bellinge",
+      "lat": 55.3381,
+      "lng": 10.3126,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Bellinge village (P22: placed from the map; check on site that it is public and step-free)"
+    },
+    {
+      "id": "rest_tusindaar",
+      "kind": "restStop",
+      "district": 8,
+      "zone": "tusindaar",
+      "lat": 55.38329,
+      "lng": 10.34033,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Tusindårsskoven, below the hill (P22: placed from the map; check on site that it is public and step-free)"
+    },
+    {
+      "id": "rest_elmelund",
+      "kind": "restStop",
+      "district": 8,
+      "zone": "elmelund",
+      "lat": 55.38527,
+      "lng": 10.30507,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Elmelund Skov, by the forest paths (P22: placed from the map; check on site that it is public and step-free)"
+    },
+    {
+      "id": "rest_hesbjerg",
+      "kind": "restStop",
+      "district": 8,
+      "zone": "hesbjerg",
+      "lat": 55.3715,
+      "lng": 10.215,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Hesbjerg, by the viewpoint (P22: placed from the map; check on site that it is public and step-free)"
+    },
+    {
+      "id": "rest_korup",
+      "kind": "restStop",
+      "district": 8,
+      "zone": "korup",
+      "lat": 55.41998,
+      "lng": 10.27117,
+      "radius": 40,
+      "restock": {
+        "basic_charm": 5,
+        "small_tonic": 2
+      },
+      "verified": false,
+      "note": "Korup village (P22: placed from the map; check on site that it is public and step-free)"
     }
   ]
 }

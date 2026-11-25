@@ -1,8 +1,13 @@
 /** Region-builder configuration for Odense (one place to change the area). */
 export const REGION = {
   id: 'odense',
-  /** [west, south, east, north] in degrees (WGS84). */
-  bbox: [10.3, 55.35, 10.47, 55.43] as [number, number, number, number],
+  /**
+   * [west, south, east, north] in degrees (WGS84): Odense Kommune (region v4, GDD P22); cells
+   * outside the municipality border (content/boundary.odense.geojson) are dropped.
+   */
+  bbox: [10.17, 55.28, 10.59, 55.49] as [number, number, number, number],
+  /** Overpass requests are split into this grid of tiles (columns, rows). */
+  tiles: [4, 3] as [number, number],
   /** Gameplay cell resolution (GDD: H3 res 10, ~65 m edge, ~15,000 m²). */
   h3Res: 10,
   /** Sample-point resolution for area shares: the 49 res-12 children of each res-10 cell. */

@@ -17,7 +17,9 @@ import {
   canTeach,
   chooseStarter,
   finishBattle,
-  isDistrictUnlocked,
+  arenaReady,
+  isDistrictOpen,
+  isZoneOpen,
   moveToStorage,
   moveToTeam,
   newSave,
@@ -75,29 +77,51 @@ function weaken(save: SaveGame): SaveGame {
   return { ...save, team: save.team.map((c) => ({ ...c, hp: 1 })) };
 }
 
-describe('badges, obedience and districts', () => {
-  it('obedience is 15 + 5 per badge; badge n unlocks district n + 1', () => {
+describe('badges, obedience, zones and districts (P22)', () => {
+  it('obedience is 15 + 5 per badge; the start zone is open, others open with routes', () => {
     expect(obedienceLevel([])).toBe(15);
     expect(obedienceLevel([1])).toBe(20);
     expect(obedienceLevel([1, 2, 3])).toBe(30);
-    expect(isDistrictUnlocked([], 1)).toBe(true);
-    expect(isDistrictUnlocked([], 2)).toBe(false);
-    expect(isDistrictUnlocked([1], 2)).toBe(true);
+    const save = newSave(SEED);
+    expect(isZoneOpen(save, 'centrum')).toBe(true);
+    expect(isZoneOpen(save, 'naesbyhoved')).toBe(false);
+    expect(isZoneOpen({ ...save, zones: ['naesbyhoved'] }, 'naesbyhoved')).toBe(true);
+    // outside the region (no zone) nothing is locked
+    expect(isZoneOpen(save, '')).toBe(true);
+    expect(isDistrictOpen(save, 1)).toBe(true);
+    expect(isDistrictOpen(save, 2)).toBe(false);
+    expect(isDistrictOpen({ ...save, zones: ['havnen'] }, 2)).toBe(true);
   });
 
-  it('battles carry the obedience level; trainers in locked districts refuse', () => {
+  it('an arena needs its zone open and badge n − 1', () => {
+    const save = newSave(SEED);
+    expect(arenaReady(save, 1)).toBe(true);
+    expect(arenaReady(save, 2)).toBe(false);
+    expect(arenaReady({ ...save, zones: ['naesbyhoved'] }, 2)).toBe(false);
+    expect(arenaReady({ ...save, badges: [1] }, 2)).toBe(false);
+    expect(arenaReady({ ...save, zones: ['naesbyhoved'], badges: [1] }, 2)).toBe(true);
+  });
+
+  it('battles carry the obedience level; trainers in unopened zones refuse', () => {
     const save = chooseStarter(newSave(SEED), 'gnistkat');
     const battle = startTrainerBattle(save, 'trainer_lise', 'route1_lise', 1).battle!;
     expect(battle.state.sides[0].obedienceLevel).toBe(15);
     expect(battle.state.sides[1].obedienceLevel).toBeNull();
-    const locked = { ...poi('trainer_lise'), district: 2 };
-    expect(trainerStatus(save, locked)).toEqual({ kind: 'locked', badge: 1 });
+    const locked = { ...poi('trainer_lise'), zone: 'stavis', district: 2 };
+    expect(trainerStatus(save, locked)).toEqual({ kind: 'zoneLocked', zone: 'stavis' });
+    expect(trainerStatus({ ...save, zones: ['stavis'] }, locked)?.kind).toBe('ready');
+    const arena2 = poi('arena2');
+    expect(trainerStatus(save, arena2)).toEqual({ kind: 'zoneLocked', zone: 'naesbyhoved' });
+    expect(trainerStatus({ ...save, zones: ['naesbyhoved'] }, arena2)).toEqual({
+      kind: 'locked',
+      badge: 1,
+    });
   });
 });
 
 describe('spawn status', () => {
   const save = chooseStarter(newSave(SEED), 'boegling');
-  const spawn = { id: 's1', district: 1, requires: null, rarity: 'common' as const };
+  const spawn = { id: 's1', zone: 'centrum', requires: null, rarity: 'common' as const };
   it('ok, used, too wild, needs an ability, fainted team', () => {
     expect(spawnStatus(newSave(SEED), spawn)).toBe('noTeam');
     expect(spawnStatus(save, spawn)).toBe('ok');
@@ -122,16 +146,22 @@ describe('GDD v1.7: open wildlife, locked rares, per-player levels', () => {
     7: [37, 44],
     8: [43, 50],
   } as const;
-  it('commons battle anywhere; rares and ability layers lock with their district', () => {
-    const far = { id: 'f', district: 8, requires: null, rarity: 'common' as const };
+  it('commons battle anywhere; rares and ability layers lock with their zone (P22)', () => {
+    const far = { id: 'f', zone: 'hesbjerg', requires: null, rarity: 'common' as const };
     expect(spawnStatus(save, far)).toBe('ok');
     expect(spawnStatus(save, { ...far, rarity: 'rare' })).toBe('tooWild');
     expect(spawnStatus(save, { ...far, requires: 'forager' })).toBe('tooWild');
-    // unlocked district: the ability still applies
-    expect(spawnStatus(save, { ...far, district: 1, requires: 'forager' })).toBe('needsAbility');
-    const badge1 = { ...save, badges: [1] };
-    expect(spawnStatus(badge1, { ...far, district: 2, rarity: 'rare' })).toBe('ok');
-    expect(spawnStatus(badge1, { ...far, district: 3, rarity: 'rare' })).toBe('tooWild');
+    // open zone: the ability still applies
+    expect(spawnStatus(save, { ...far, zone: 'centrum', requires: 'forager' })).toBe(
+      'needsAbility',
+    );
+    const opened = { ...save, zones: ['stavis'] };
+    expect(spawnStatus(opened, { ...far, zone: 'stavis', rarity: 'rare' })).toBe('ok');
+    expect(spawnStatus(opened, { ...far, zone: 'odins', rarity: 'rare' })).toBe('tooWild');
+    // badges don't open zones
+    expect(
+      spawnStatus({ ...save, badges: [1] }, { ...far, zone: 'naesbyhoved', rarity: 'rare' }),
+    ).toBe('tooWild');
   });
 
   it('common levels follow the player, rare levels the district', () => {
@@ -269,7 +299,7 @@ describe('district 1 run: trainers, losing, rest stops, arena 1, badge', () => {
     save = out.save;
     expect(save.badges).toEqual([1]);
     expect(obedienceLevel(save.badges)).toBe(20);
-    expect(isDistrictUnlocked(save.badges, 2)).toBe(true);
+    expect(arenaReady({ ...save, zones: ['naesbyhoved'] }, 2)).toBe(true);
     expect(trainerStatus(save, poi('arena1'))!.kind).toBe('beaten');
   });
 });
@@ -343,7 +373,7 @@ describe('catching with a full team, storage and post-battle choices', () => {
     save = boost(save, 20);
     const spawn = { id: 'sp', speciesId: 'rendsnude', level: 3, expiresAt: 9e9, district: 1 };
     save = startWildBattle(save, spawn, 4);
-    expect(spawnStatus(save, { id: 'sp', district: 1, requires: null, rarity: 'common' })).toBe(
+    expect(spawnStatus(save, { id: 'sp', zone: 'centrum', requires: null, rarity: 'common' })).toBe(
       'used',
     );
     // A worn-down wild creature (1 HP, asleep) is a sure catch with a charm.
@@ -395,9 +425,9 @@ describe('field abilities', () => {
     save = teachFieldAbility(save, c.uid, 'forager', c.moves.length >= 4 ? 0 : null);
     expect(save.team[0]!.fieldAbility).toBe('forager');
     expect(save.team[0]!.moves.length).toBeLessThanOrEqual(3);
-    expect(spawnStatus(save, { id: 'f', district: 1, requires: 'forager', rarity: 'rare' })).toBe(
-      'ok',
-    );
+    expect(
+      spawnStatus(save, { id: 'f', zone: 'centrum', requires: 'forager', rarity: 'rare' }),
+    ).toBe('ok');
 
     // with 4 moves the player must forget one
     const full = {

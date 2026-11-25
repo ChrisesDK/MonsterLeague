@@ -4,6 +4,8 @@ import { createCreature } from '@oml/engine';
 import { latLngToCell } from 'h3-js';
 import {
   chooseStarter,
+  openZones,
+  routeCheckpoints,
   naturalRecovery,
   noteFainted,
   teachFieldAbility,
@@ -52,6 +54,10 @@ export interface OmlDev {
   }) => string;
   setFast: () => void;
   setBadges: (badges: number[]) => void;
+  /** P22: open these zones (as if routes to them were finished). */
+  openZones: (zones: string[]) => void;
+  /** P22: mark every checkpoint of a route as reached (then its zones open as usual). */
+  walkRoute: (routeId: string) => void;
   sim: () => SimLocation | null;
 }
 
@@ -208,6 +214,18 @@ export function GameApp({ t, locale, onLocale, devTools }: Props) {
       },
       setFast: () => update((s) => ({ ...s, settings: { ...s.settings, speed: 'fast' } })),
       setBadges: (badges) => update((s) => ({ ...s, badges })),
+      openZones: (zones) =>
+        update((s) => ({ ...s, zones: [...new Set([...s.zones, ...zones])].sort() })),
+      walkRoute: (routeId) =>
+        update((s) => {
+          const r = content.routes[routeId];
+          if (!r) return s;
+          const all = routeCheckpoints(r).map((_, i) => i);
+          return openZones({
+            ...s,
+            journal: { ...s.journal, routes: { ...s.journal.routes, [routeId]: all } },
+          });
+        }),
       sim: () => sim,
     };
     (window as unknown as { __omlDev?: OmlDev }).__omlDev = dev;

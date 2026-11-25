@@ -1,4 +1,5 @@
 import type { Dex } from './index';
+import { MUNICIPALITIES } from './municipalities';
 import type { I18nTable } from './schemas';
 import { TYPE_IDS } from './schemas';
 
@@ -179,12 +180,57 @@ function checkWorld(dex: Dex): string[] {
   for (const p of Object.values(dex.pois))
     if (p.kind === 'arena' && dex.arenaSites[p.arena - 1]?.poi !== p.id)
       errors.push(`arenas: arena ${p.arena} site must link its POI "${p.id}"`);
+  // Zones (P22): one start zone, one arena zone per arena in its own district.
+  const zones = Object.values(dex.zones);
+  if (zones.filter((z) => z.start).length !== 1) errors.push('zones: exactly one start zone');
+  for (let n = 1; n <= 8; n++) {
+    const az = zones.filter((z) => z.arena === n);
+    if (az.length !== 1) errors.push(`zones: arena ${n} needs exactly one zone`);
+    else if (az[0]!.district !== n || az[0]!.kind !== 'arena')
+      errors.push(`zones: ${az[0]!.id} must be an arena zone in district ${n}`);
+  }
+  for (const z of zones)
+    if ((z.kind === 'arena') !== (z.arena !== undefined))
+      errors.push(`zones: ${z.id}: only arena zones have an arena`);
+  dex.arenaSites.forEach((a) => {
+    const z = dex.zones[a.zone];
+    if (!z || z.arena !== a.arena)
+      errors.push(`arenas: arena ${a.arena} must be in its arena zone`);
+  });
+  for (const p of Object.values(dex.pois)) {
+    const z = dex.zones[p.zone];
+    if (!z) errors.push(`pois: ${p.id}: unknown zone "${p.zone}"`);
+    else if (z.district !== p.district)
+      errors.push(`pois: ${p.id}: district ${p.district} is not its zone's (${z.district})`);
+    if (p.kind === 'arena' && z && z.arena !== p.arena)
+      errors.push(`pois: ${p.id}: arena ${p.arena} must stand in its arena zone`);
+  }
+  // Routes (P22): numbered 1…n, between two different zones; every zone is reachable.
   const numbers = new Set<number>();
+  const links = new Map<string, string[]>();
   for (const r of Object.values(dex.routes)) {
     if (r.id !== `route${r.number}`) errors.push(`routes: id ${r.id} must be route${r.number}`);
     if (numbers.has(r.number)) errors.push(`routes: duplicate route number ${r.number}`);
     numbers.add(r.number);
-    if (r.to !== r.from + 1) errors.push(`routes: ${r.id} must link consecutive arenas`);
+    for (const end of [r.from, r.to])
+      if (!dex.zones[end]) errors.push(`routes: ${r.id}: unknown zone "${end}"`);
+    if (r.from === r.to) errors.push(`routes: ${r.id} must link two zones`);
+    links.set(r.from, [...(links.get(r.from) ?? []), r.to]);
+    links.set(r.to, [...(links.get(r.to) ?? []), r.from]);
+  }
+  const start = zones.find((z) => z.start);
+  if (start && Object.keys(dex.routes).length > 0) {
+    const seen = new Set([start.id]);
+    const queue = [start.id];
+    while (queue.length > 0) {
+      for (const n of links.get(queue.shift()!) ?? []) {
+        if (seen.has(n)) continue;
+        seen.add(n);
+        queue.push(n);
+      }
+    }
+    for (const z of zones)
+      if (!seen.has(z.id)) errors.push(`routes: no route reaches zone ${z.id}`);
   }
   const typesIn = (d: number) =>
     new Set(
@@ -224,6 +270,9 @@ export function checkI18n(dex: Dex, tables: Record<string, I18nTable>): string[]
     ...Object.keys(dex.pois).map((p) => `poi.${p}.name`),
     ...dex.arenaSites.map((a) => `arenaSite.${a.arena}.name`),
     ...Object.keys(dex.routes).map((r) => `route.${r}.name`),
+    ...Object.keys(dex.zones).map((z) => `zone.${z}.name`),
+    ...[1, 2, 3, 4, 5, 6, 7, 8].flatMap((n) => [`district.${n}.name`, `badge.${n}.name`]),
+    ...MUNICIPALITIES.map((m) => `municipality.${m}.name`),
     // Trainers placed on the map need their pre- and post-battle lines.
     ...Object.values(dex.pois).flatMap((p) =>
       (p.kind === 'trainer' ? [p.trainer] : p.kind === 'arena' ? p.trainers : []).flatMap((id) => [

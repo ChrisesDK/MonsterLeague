@@ -1,5 +1,6 @@
 import { useEffect, type CSSProperties } from 'react';
 import { badgeUrl } from '@oml/art';
+import { content } from '@oml/data';
 import { obedienceLevel } from '@oml/game';
 import type { Translate } from '../i18n';
 import { buzz } from '../ui/feedback';
@@ -50,7 +51,14 @@ export function BadgeCeremony({
       <img className="ceremony-badge" src={badgeUrl(arena)} alt={t(`badge.${arena}.name`)} />
       <ul className="ceremony-list">
         <li>{t('ceremony.obedience', { level: obedienceLevel(badges) })}</li>
-        {arena < 8 && <li>{t('ceremony.district', { n: arena + 1 })}</li>}
+        {arena < 8 && (
+          <li>
+            {t('ceremony.nextArena', {
+              place: t(`arenaSite.${arena + 1}.name`),
+              zone: t(`zone.${content.arenaSites[arena]!.zone}.name`),
+            })}
+          </li>
+        )}
       </ul>
       <button className="btn primary wide" data-testid="ceremony-done" onClick={onDone}>
         {t('ui.continue')}

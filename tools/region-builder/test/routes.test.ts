@@ -9,6 +9,7 @@ import {
   segmentDistM,
   simplify,
   type LngLat,
+  ROUTES,
 } from '../src/route-lib';
 
 describe('wild areas (M2d)', () => {
@@ -66,22 +67,25 @@ describe('route geometry helpers', () => {
   });
 });
 
-describe('routes.odense.json', () => {
+describe('routes.odense.json (P22)', () => {
   const routes = JSON.parse(
     readFileSync(
       new URL('../../../packages/data/content/routes.odense.json', import.meta.url),
       'utf8',
     ),
-  ).routes as { number: number; draft: boolean; lengthM: number }[];
-  it('has routes 1–3 live and 4–7 as drafts', () => {
-    expect(routes.map((r) => [r.number, r.draft])).toEqual([
-      [1, false],
-      [2, false],
-      [3, false],
-      [4, true],
-      [5, true],
-      [6, true],
-      [7, true],
-    ]);
+  ).routes as { number: number; from: string; to: string; kind: string; lengthM: number }[];
+  it('has every route of the route list, numbered in order, badge path first', () => {
+    expect(routes.map((r) => [r.number, r.from, r.to, r.kind])).toEqual(
+      ROUTES.map((d) => [d.number, d.from, d.to, d.kind]),
+    );
+    const kinds = routes.map((r) => r.kind);
+    expect(kinds.lastIndexOf('main')).toBeLessThan(kinds.indexOf('alt'));
+  });
+
+  it('keeps every route a walk of reasonable length (none like the old 13.6 km Route 7)', () => {
+    for (const r of routes) {
+      expect(r.lengthM, `route ${r.number}`).toBeGreaterThan(300);
+      expect(r.lengthM, `route ${r.number}`).toBeLessThan(8000);
+    }
   });
 });

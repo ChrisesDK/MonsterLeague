@@ -233,9 +233,10 @@ export type I18nTable = z.infer<typeof I18nSchema>;
 
 /**
  * Region file built by tools/region-builder (e.g. region.odense.json). Compact on purpose:
- * each cell is `[district, noSpawn 0|1, ...biome shares in percent, in BIOMES order,
- * blockedMask?]`. The optional last column is a bit mask over the cell's 49 res-12 child
- * positions (in `cellToChildren` order) where no spawn may be placed (GDD P10, P11).
+ * each cell is `[district, zone, flags, ...biome shares in percent, in BIOMES order,
+ * blockedMask?]`; `zone` indexes the file's `zones` list (v4, GDD P22). The optional last
+ * column is a bit mask over the cell's 49 res-12 child positions (in `cellToChildren` order)
+ * where no spawn may be placed (GDD P10, P11).
  */
 export const RegionDistrictSchema = z
   .object({
@@ -249,25 +250,30 @@ export const RegionFileSchema = z
     region: id,
     /** Content hash of cells + districts (12 hex), written by the region builder. */
     dataVersion: z.string().regex(/^[0-9a-f]{12}$/),
-    /** 3 (M2d): column 1 of a cell row is a bit field: 1 noSpawn, 2 wild, 4 water edge, 8 route. */
-    version: z.literal(3),
+    /**
+     * 4 (P22): column 1 is the zone index, column 2 a bit field: 1 noSpawn, 2 wild, 4 water
+     * edge, 8 route (3 had no zone column).
+     */
+    version: z.literal(4),
     h3Res: z.literal(10),
     coarseRes: z.literal(7),
     bbox: z.tuple([z.number(), z.number(), z.number(), z.number()]),
     biomes: z.array(BiomeSchema).length(BIOMES.length),
     osmTimestamp: z.string(),
     districts: z.array(RegionDistrictSchema).min(1),
+    /** Zone ids; a cell's zone column is an index into this list. */
+    zones: z.array(id).min(1),
     cells: z.record(
       z.string().regex(/^8a[0-9a-f]{13}$/, 'H3 res-10 cell id'),
       z
         .array(z.number().int().min(0))
-        .min(2 + BIOMES.length)
-        .max(3 + BIOMES.length)
+        .min(3 + BIOMES.length)
+        .max(4 + BIOMES.length)
         .refine(
           (row) =>
-            row.slice(0, 2 + BIOMES.length).every((v) => v <= 100) &&
-            (row.length === 2 + BIOMES.length || row[2 + BIOMES.length]! < 2 ** 49),
-          'district, flags and shares ≤ 100; blocked mask < 2^49',
+            row.slice(0, 3 + BIOMES.length).every((v) => v <= 100) &&
+            (row.length === 3 + BIOMES.length || row[3 + BIOMES.length]! < 2 ** 49),
+          'district, zone, flags and shares ≤ 100; blocked mask < 2^49',
         ),
     ),
   })
@@ -287,6 +293,8 @@ export type RegionDistrict = z.infer<typeof RegionDistrictSchema>;
 const poiBase = {
   id,
   district: z.number().int().min(1).max(8),
+  /** The zone the POI stands in (P22): trainers and arenas lock with it. */
+  zone: id,
   lat: z.number().min(-90).max(90),
   lng: z.number().min(-180).max(180),
   verified: z.boolean(),
@@ -328,7 +336,9 @@ export const ArenaSiteSchema = z
   .object({
     arena: z.number().int().min(1).max(8),
     district: z.number().int().min(1).max(8),
-    /** Arena theme type; null = mixed (arena 5). */
+    /** The arena's zone (P22). */
+    zone: id,
+    /** Arena theme type; null = mixed. */
     type: TypeIdSchema.nullable(),
     lat: z.number().min(-90).max(90),
     lng: z.number().min(-180).max(180),
@@ -343,24 +353,60 @@ export const ArenasFileSchema = z
   .strict();
 
 /**
- * Routes (M2d, GDD "Wild areas and routes"): named walking routes between consecutive arenas
- * along real footpaths, built by `pnpm routes:build` from the OSM foot network. Names are
- * i18n keys `route.<id>.name`. `path` is [lng, lat] (6 decimals).
+ * Zones (GDD P22): the region is split into zones around arenas, towns and wild or water
+ * destinations. A zone opens when the player finishes a route that ends in it; the start
+ * zone is open from the beginning. Each zone belongs to one district (its level band and
+ * spawn table). Names are i18n keys `zone.<id>.name`.
+ */
+export const ZoneSchema = z
+  .object({
+    id,
+    kind: z.enum(['arena', 'town', 'wild', 'water']),
+    district: z.number().int().min(1).max(8),
+    /** Centre: cells belong to the nearest zone centre. */
+    lat: z.number().min(-90).max(90),
+    lng: z.number().min(-180).max(180),
+    /** The arena in this zone (kind 'arena'). */
+    arena: z.number().int().min(1).max(8).optional(),
+    /** Open from the start (exactly one zone). */
+    start: z.boolean().optional(),
+  })
+  .strict();
+export type Zone = z.infer<typeof ZoneSchema>;
+export const ZonesFileSchema = z
+  .object({
+    region: id,
+    /** Level bands per district (GDD World table). */
+    districts: z
+      .array(
+        z
+          .object({
+            id: z.number().int().min(1).max(8),
+            wildLevels: z.tuple([z.number().int().min(1), z.number().int().max(100)]),
+          })
+          .strict(),
+      )
+      .length(8),
+    zones: z.array(ZoneSchema).min(1),
+  })
+  .strict();
+export type ZonesFile = z.infer<typeof ZonesFileSchema>;
+
+/**
+ * Routes (GDD P22): numbered walking routes between two zones along real footpaths, built by
+ * `pnpm routes:build` from the OSM foot network. Walking a whole route (it fills in like a
+ * progress bar) opens the zones at both ends. `main` routes make up the shortest way from
+ * arena to arena, `alt` routes are other ways between the same places and `explore`
+ * routes lead to a destination. Names are i18n keys `route.<id>.name`. `path` is
+ * [lng, lat] (6 decimals).
  */
 export const RouteSchema = z
   .object({
     id,
-    number: z.number().int().min(1).max(7),
-    /** Arena numbers at each end (to = from + 1). */
-    from: z.number().int().min(1).max(8),
-    to: z.number().int().min(1).max(8),
-    /** Draft routes are drawn dashed and not used by the Journal yet. */
-    draft: z.boolean(),
-    /**
-     * Districts the route passes through besides its two (only when those don't touch).
-     * For non-draft routes each must already be unlocked when the route is walked (< to).
-     */
-    via: z.array(z.number().int().min(1).max(8)),
+    number: z.number().int().min(1).max(99),
+    from: id,
+    to: id,
+    kind: z.enum(['main', 'alt', 'explore']),
     lengthM: z.number().int().positive(),
     /** Share of the length that runs through wild-area cells, 0–1. */
     wildShare: z.number().min(0).max(1),

@@ -4,6 +4,8 @@ import { cellToParent } from 'h3-js';
 export interface RegionCell {
   id: string;
   district: number;
+  /** Zone id (region file v4, P22). */
+  zone: string;
   noSpawn: boolean;
   /** M2d wild area: mostly park, forest, meadow/field or water ("tall grass"). */
   wild: boolean;
@@ -28,24 +30,29 @@ export interface Region {
   center: { lat: number; lng: number };
 }
 
-/** Region row flag bits (column 1, region file v3). */
+/** Region row flag bits (column 2, region file v4). */
 export const REGION_FLAG = { noSpawn: 1, wild: 2, waterEdge: 4, route: 8 } as const;
 
-/** Decodes the compact region file (`[district, flags, ...shares%, blockedMask?]` per cell). */
+/**
+ * Decodes the compact region file (`[district, zone, flags, ...shares%, blockedMask?]` per
+ * cell; `zone` indexes the file's zone list).
+ */
 export function decodeRegion(file: RegionFile): Region {
   const cells = new Map<string, RegionCell>();
   const byCoarse = new Map<string, string[]>();
   for (const [id, row] of Object.entries(file.cells)) {
     const shares = {} as Record<Biome, number>;
-    BIOMES.forEach((b, i) => (shares[b] = (row[2 + i] ?? 0) / 100));
+    BIOMES.forEach((b, i) => (shares[b] = (row[3 + i] ?? 0) / 100));
+    const flags = row[2]!;
     cells.set(id, {
       id,
       district: row[0]!,
-      noSpawn: (row[1]! & REGION_FLAG.noSpawn) !== 0,
-      wild: (row[1]! & REGION_FLAG.wild) !== 0,
-      waterEdge: (row[1]! & REGION_FLAG.waterEdge) !== 0,
-      route: (row[1]! & REGION_FLAG.route) !== 0,
-      blockedMask: row[2 + BIOMES.length] ?? 0,
+      zone: file.zones[row[1]!] ?? '',
+      noSpawn: (flags & REGION_FLAG.noSpawn) !== 0,
+      wild: (flags & REGION_FLAG.wild) !== 0,
+      waterEdge: (flags & REGION_FLAG.waterEdge) !== 0,
+      route: (flags & REGION_FLAG.route) !== 0,
+      blockedMask: row[3 + BIOMES.length] ?? 0,
       shares,
     });
     const parent = cellToParent(id, file.coarseRes);

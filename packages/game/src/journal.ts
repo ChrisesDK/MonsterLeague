@@ -1,26 +1,30 @@
 /**
- * Journal (M2d, GDD "Journal"): data-driven goals. Pure: progress lives in the save, goals
- * are derived from content (POIs, routes, arena sites, side goals) and the save.
+ * Journal (M2d, GDD "Journal", P22): data-driven goals. Pure: progress lives in the save,
+ * goals are derived from content (zones, routes, POIs, arena sites, side goals) and the save.
  *
- * Main goal chain per district: reach the district → walk its route (the live route that
- * ends at its arena) → beat its trainers → visit one of its rest stops → challenge its arena.
- * Steps that have no content yet (no trainers, no arena POI) are left out or marked
- * "coming soon". Steps can be completed in any order; the current goal is the first open
- * step of the next arena's district.
+ * Routes fill in like a progress bar: each has a checkpoint every 25 m, reached within 30 m,
+ * and a route is finished at 90 %. A finished route opens the zones at both its ends as soon
+ * as one of them is open (so a route walked "from the wrong side" pays off later).
+ *
+ * Main goal chain per arena: open the arena's zone (walk the next route toward it) → beat
+ * the district's trainers → visit one of its rest stops → challenge the arena. Steps that
+ * have no content yet (no trainers, no arena POI) are left out or marked "coming soon".
+ * Steps can be completed in any order; the current goal is the first open step of the next
+ * arena.
  *
  * Side goals (content/goals.json) are finite and never daily: explore the district's wild
  * areas, catch a creature of its typical type, meet its rare creature.
  */
 import { content, type Dex, type Route, type SideGoal, type TypeId } from '@oml/data';
-import { isDistrictUnlocked } from './rules';
+import { isDistrictOpen, isZoneOpen } from './rules';
 import type { JournalProgress, SaveGame } from './save';
 import { distanceM, type LatLng } from './world';
 
-/** Route checkpoints every 100 m; one counts as reached within 30 m. */
-export const CHECKPOINT_SPACING_M = 100;
+/** Route checkpoints every 25 m (the progress bar's steps); one counts as reached within 30 m. */
+export const CHECKPOINT_SPACING_M = 25;
 export const CHECKPOINT_RADIUS_M = 30;
-/** A route counts as walked when this share of its checkpoints was reached. */
-export const ROUTE_DONE_SHARE = 0.8;
+/** A route counts as finished when this share of its checkpoints was reached (GPS gaps). */
+export const ROUTE_DONE_SHARE = 0.9;
 
 export const emptyJournal = (): JournalProgress => ({
   reached: [],
@@ -55,13 +59,96 @@ export function routeCheckpoints(route: Route): LatLng[] {
   return out;
 }
 
-/** The live route that leads to district `d`'s arena (null for district 1). */
-export function routeInto(d: number, dex: Dex = content): Route | null {
-  return Object.values(dex.routes).find((r) => !r.draft && r.to === d) ?? null;
+/** Route progress: checkpoints reached of all, and whether the route is finished. */
+export function routeProgress(
+  save: Pick<SaveGame, 'journal'>,
+  route: Route,
+): { n: number; of: number; done: boolean } {
+  const of = routeCheckpoints(route).length;
+  const n = Math.min(of, save.journal.routes[route.id]?.length ?? 0);
+  return { n, of, done: n >= Math.ceil(of * ROUTE_DONE_SHARE) };
+}
+
+/**
+ * Opens the zones that finished routes lead to: a finished route with one open end opens the
+ * other end, repeated until nothing changes. Same object when nothing opened.
+ */
+export function openZones(save: SaveGame, dex: Dex = content): SaveGame {
+  const open = new Set(save.zones);
+  const isOpen = (z: string) => open.has(z) || dex.zones[z]?.start === true;
+  const done = Object.values(dex.routes).filter((r) => routeProgress(save, r).done);
+  for (let changed = true; changed;) {
+    changed = false;
+    for (const r of done) {
+      if (isOpen(r.from) === isOpen(r.to)) continue;
+      open.add(isOpen(r.from) ? r.to : r.from);
+      changed = true;
+    }
+  }
+  if (open.size === save.zones.length) return save;
+  return { ...save, zones: [...open].sort() };
+}
+
+/** Routes with exactly one end open: the ones that open a new zone when finished. */
+export function frontierRoutes(save: SaveGame, dex: Dex = content): Route[] {
+  return Object.values(dex.routes).filter(
+    (r) => isZoneOpen(save, r.from, dex) !== isZoneOpen(save, r.to, dex),
+  );
+}
+
+/**
+ * The next route to walk toward `zone`: the first unfinished route on the shortest way from
+ * the open zones, measured in metres still to walk (null when the zone is open already).
+ */
+export function nextRouteToward(save: SaveGame, zone: string, dex: Dex = content): Route | null {
+  if (isZoneOpen(save, zone, dex)) return null;
+  const left = (r: Route) => {
+    const p = routeProgress(save, r);
+    return p.done ? 0 : r.lengthM * (1 - p.n / p.of);
+  };
+  const dist = new Map<string, number>();
+  const via = new Map<string, Route>();
+  for (const z of Object.values(dex.zones)) if (isZoneOpen(save, z.id, dex)) dist.set(z.id, 0);
+  const done = new Set<string>();
+  for (;;) {
+    let u: string | null = null;
+    for (const [k, d] of dist) if (!done.has(k) && (u === null || d < dist.get(u)!)) u = k;
+    if (u === null || u === zone) break;
+    done.add(u);
+    for (const r of Object.values(dex.routes)) {
+      if (r.from !== u && r.to !== u) continue;
+      const v = r.from === u ? r.to : r.from;
+      const d = dist.get(u)! + left(r);
+      if (d < (dist.get(v) ?? Infinity)) {
+        dist.set(v, d);
+        via.set(v, r);
+      }
+    }
+  }
+  // Walk back to the open side: the route leaving an open zone is the one to walk now.
+  let route: Route | null = null;
+  for (let z = zone; via.has(z);) {
+    const r = via.get(z)!;
+    route = r;
+    const prev = r.from === z ? r.to : r.from;
+    if (isZoneOpen(save, prev, dex)) break;
+    z = prev;
+  }
+  return route;
+}
+
+/** The next checkpoint to walk to on `route`, starting from its open end. */
+export function nextCheckpoint(save: SaveGame, route: Route, dex: Dex = content): LatLng | null {
+  const cps = routeCheckpoints(route);
+  const got = new Set(save.journal.routes[route.id] ?? []);
+  const order = cps.map((_, i) => i);
+  if (!isZoneOpen(save, route.from, dex) && isZoneOpen(save, route.to, dex)) order.reverse();
+  const i = order.find((k) => !got.has(k));
+  return i === undefined ? null : cps[i]!;
 }
 
 export type GoalKind =
-  'reach' | 'route' | 'trainers' | 'rest' | 'arena' | 'exploreWild' | 'catchType' | 'findRare';
+  'route' | 'trainers' | 'rest' | 'arena' | 'exploreWild' | 'catchType' | 'findRare';
 
 export interface Goal {
   id: string;
@@ -74,6 +161,8 @@ export interface Goal {
   /** Where the direction arrow points (null = no single place). */
   target: LatLng | null;
   routeId?: string;
+  /** The zone a route goal opens. */
+  zone?: string;
   arena?: number;
   type?: TypeId;
   species?: string;
@@ -92,6 +181,11 @@ export interface Journal {
   current: Goal | null;
   districts: DistrictGoals[];
   completed: Goal[];
+  /** Region progress (P22): finished routes and open zones (start zone included). */
+  routesDone: number;
+  routesTotal: number;
+  zonesOpen: number;
+  zonesTotal: number;
 }
 
 /** The district of the next arena to win (null when all 8 are won). */
@@ -109,7 +203,7 @@ function nearest(from: LatLng | null, points: LatLng[]): LatLng | null {
   return { lat: p.lat, lng: p.lng };
 }
 
-/** Main goals of one district. */
+/** Main goals of one arena's district (P22). */
 export function mainGoals(
   save: SaveGame,
   d: number,
@@ -123,30 +217,19 @@ export function mainGoals(
   const goals: Goal[] = [];
   const base = { district: d, main: true };
 
-  goals.push({
-    ...base,
-    id: `d${d}.reach`,
-    kind: 'reach',
-    done: j.reached.includes(d),
-    progress: null,
-    target: sitePos,
-  });
-
-  const route = routeInto(d, dex);
-  if (route) {
-    const cps = routeCheckpoints(route);
-    const got = new Set(j.routes[route.id] ?? []);
-    const furthest = Math.max(-1, ...got);
-    const next = cps.findIndex((_, i) => i > furthest && !got.has(i));
-    const open = cps.filter((_, i) => !got.has(i));
+  if (!dex.zones[site.zone]?.start) {
+    const route = nextRouteToward(save, site.zone, dex);
+    const open = isZoneOpen(save, site.zone, dex);
+    const p = route ? routeProgress(save, route) : null;
     goals.push({
       ...base,
       id: `d${d}.route`,
       kind: 'route',
-      routeId: route.id,
-      done: got.size >= Math.ceil(cps.length * ROUTE_DONE_SHARE),
-      progress: { n: got.size, of: cps.length },
-      target: next >= 0 ? cps[next]! : nearest(from, open),
+      zone: site.zone,
+      ...(route ? { routeId: route.id } : {}),
+      done: open,
+      progress: p ? { n: p.n, of: p.of } : null,
+      target: route ? (nextCheckpoint(save, route, dex) ?? sitePos) : sitePos,
     });
   }
 
@@ -220,21 +303,32 @@ export function sideGoal(save: SaveGame, g: SideGoal, dex: Dex = content): Goal 
 /** The whole Journal for the save, with arrows measured from `from`. */
 export function journal(save: SaveGame, from: LatLng | null, dex: Dex = content): Journal {
   const districts: DistrictGoals[] = [];
+  const next = nextArenaDistrict(save);
   for (let d = 1; d <= 8; d++) {
-    if (!isDistrictUnlocked(save.badges, d) && !save.journal.reached.includes(d)) continue;
+    const open = isDistrictOpen(save, d, dex);
+    if (!open && d !== next && !save.journal.reached.includes(d)) continue;
     districts.push({
       district: d,
-      main: isDistrictUnlocked(save.badges, d) ? mainGoals(save, d, from, dex) : [],
+      main: open || d === next ? mainGoals(save, d, from, dex) : [],
       side: dex.sideGoals.filter((g) => g.district === d).map((g) => sideGoal(save, g, dex)),
     });
   }
-  const next = nextArenaDistrict(save);
   const current =
     next === null
       ? null
       : (districts.find((x) => x.district === next)?.main.find((g) => !g.done) ?? null);
   const completed = districts.flatMap((x) => [...x.main, ...x.side]).filter((g) => g.done);
-  return { current, districts, completed };
+  const routes = Object.values(dex.routes);
+  const zones = Object.values(dex.zones);
+  return {
+    current,
+    districts,
+    completed,
+    routesDone: routes.filter((r) => routeProgress(save, r).done).length,
+    routesTotal: routes.length,
+    zonesOpen: zones.filter((z) => isZoneOpen(save, z.id, dex)).length,
+    zonesTotal: zones.length,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -252,18 +346,39 @@ export function noteDistrict(save: SaveGame, district: number | null): SaveGame 
   };
 }
 
-/** Route checkpoints within reach of `pos` (live routes only). */
+const boxCache = new WeakMap<Route, [number, number, number, number]>();
+/** A route's bounding box [minLat, minLng, maxLat, maxLng] (cheap "near this route?" test). */
+function routeBox(r: Route): [number, number, number, number] {
+  let b = boxCache.get(r);
+  if (!b) {
+    const lats = r.path.map((p) => p[1]);
+    const lngs = r.path.map((p) => p[0]);
+    b = [Math.min(...lats), Math.min(...lngs), Math.max(...lats), Math.max(...lngs)];
+    boxCache.set(r, b);
+  }
+  return b;
+}
+
+/**
+ * Route checkpoints within reach of `pos` (every route, P22), then the zones finished routes
+ * open. Same object when nothing changed.
+ */
 export function noteRoutes(save: SaveGame, pos: LatLng, dex: Dex = content): SaveGame {
   let routes = save.journal.routes;
+  const dLat = CHECKPOINT_RADIUS_M / 110_540;
+  const dLng = CHECKPOINT_RADIUS_M / (111_320 * Math.cos((pos.lat * Math.PI) / 180));
   for (const r of Object.values(dex.routes)) {
-    if (r.draft) continue;
+    const [s, w, n, e] = routeBox(r);
+    if (pos.lat < s - dLat || pos.lat > n + dLat || pos.lng < w - dLng || pos.lng > e + dLng)
+      continue;
     const have = routes[r.id] ?? [];
     const add = routeCheckpoints(r)
       .map((cp, i) => (distanceM(pos, cp) <= CHECKPOINT_RADIUS_M && !have.includes(i) ? i : -1))
       .filter((i) => i >= 0);
     if (add.length > 0) routes = { ...routes, [r.id]: [...have, ...add].sort((a, b) => a - b) };
   }
-  return routes === save.journal.routes ? save : { ...save, journal: { ...save.journal, routes } };
+  if (routes === save.journal.routes) return save;
+  return openZones({ ...save, journal: { ...save.journal, routes } }, dex);
 }
 
 /** Metres walked inside a wild area of `district` (capped at the district's explore goal). */

@@ -239,106 +239,6 @@
     {
       "species": "rendsnude",
       "district": 3,
-      "weight": 25,
-      "rarity": "common",
-      "biomes": {
-        "urban": 1,
-        "industrial": 1.5,
-        "historic": 0.6
-      },
-      "time": "any"
-    },
-    {
-      "species": "mosbille",
-      "district": 3,
-      "weight": 15,
-      "rarity": "common",
-      "biomes": {
-        "park": 1,
-        "forest": 1.5,
-        "meadow": 1,
-        "farmland": 0.6
-      },
-      "time": "any"
-    },
-    {
-      "species": "grimaelling",
-      "district": 3,
-      "weight": 10,
-      "rarity": "common",
-      "biomes": {
-        "water": 2,
-        "park": 0.3,
-        "meadow": 0.3
-      },
-      "time": "any"
-    },
-    {
-      "species": "brokrabbe",
-      "district": 3,
-      "weight": 10,
-      "rarity": "common",
-      "biomes": {
-        "historic": 2,
-        "urban": 0.3,
-        "water": 0.3
-      },
-      "time": "any"
-    },
-    {
-      "species": "kulingmaage",
-      "district": 3,
-      "weight": 6,
-      "rarity": "common",
-      "biomes": {
-        "water": 1,
-        "industrial": 0.5,
-        "urban": 0.2
-      },
-      "time": "any"
-    },
-    {
-      "species": "lygtling",
-      "district": 3,
-      "weight": 18,
-      "rarity": "common",
-      "biomes": {
-        "park": 1,
-        "forest": 1,
-        "historic": 1,
-        "water": 1
-      },
-      "time": "night"
-    },
-    {
-      "species": "loftnisse",
-      "district": 3,
-      "weight": 3,
-      "rarity": "rare",
-      "biomes": {
-        "historic": 2,
-        "urban": 0.5,
-        "park": 0.3
-      },
-      "time": "any"
-    },
-    {
-      "species": "torvdue",
-      "district": 4,
-      "weight": 30,
-      "rarity": "common",
-      "biomes": {
-        "urban": 1,
-        "park": 1,
-        "historic": 0.6,
-        "meadow": 0.5,
-        "farmland": 0.6
-      },
-      "time": "any"
-    },
-    {
-      "species": "rendsnude",
-      "district": 4,
       "weight": 12,
       "rarity": "common",
       "biomes": {
@@ -350,7 +250,7 @@
     },
     {
       "species": "mosbille",
-      "district": 4,
+      "district": 3,
       "weight": 20,
       "rarity": "common",
       "biomes": {
@@ -363,7 +263,7 @@
     },
     {
       "species": "grimaelling",
-      "district": 4,
+      "district": 3,
       "weight": 25,
       "rarity": "common",
       "biomes": {
@@ -375,7 +275,7 @@
     },
     {
       "species": "brokrabbe",
-      "district": 4,
+      "district": 3,
       "weight": 8,
       "rarity": "common",
       "biomes": {
@@ -387,7 +287,7 @@
     },
     {
       "species": "kulingmaage",
-      "district": 4,
+      "district": 3,
       "weight": 9,
       "rarity": "common",
       "biomes": {
@@ -399,7 +299,7 @@
     },
     {
       "species": "lygtling",
-      "district": 4,
+      "district": 3,
       "weight": 10,
       "rarity": "common",
       "biomes": {
@@ -412,7 +312,7 @@
     },
     {
       "species": "soeormling",
-      "district": 4,
+      "district": 3,
       "weight": 2,
       "rarity": "rare",
       "biomes": {
@@ -422,7 +322,7 @@
     },
     {
       "species": "soeormling",
-      "district": 4,
+      "district": 3,
       "weight": 2,
       "rarity": "rare",
       "biomes": {
@@ -433,7 +333,7 @@
     },
     {
       "species": "torvdue",
-      "district": 5,
+      "district": 4,
       "weight": 30,
       "rarity": "common",
       "biomes": {
@@ -447,118 +347,7 @@
     },
     {
       "species": "rendsnude",
-      "district": 5,
-      "weight": 25,
-      "rarity": "common",
-      "biomes": {
-        "urban": 1,
-        "industrial": 1.5,
-        "historic": 0.6
-      },
-      "time": "any"
-    },
-    {
-      "species": "mosbille",
-      "district": 5,
-      "weight": 22,
-      "rarity": "common",
-      "biomes": {
-        "park": 1,
-        "forest": 1.5,
-        "meadow": 1,
-        "farmland": 0.6
-      },
-      "time": "any"
-    },
-    {
-      "species": "grimaelling",
-      "district": 5,
-      "weight": 20,
-      "rarity": "common",
-      "biomes": {
-        "water": 2,
-        "park": 0.3,
-        "meadow": 0.3
-      },
-      "time": "any"
-    },
-    {
-      "species": "brokrabbe",
-      "district": 5,
-      "weight": 8,
-      "rarity": "common",
-      "biomes": {
-        "historic": 2,
-        "urban": 0.3,
-        "water": 0.3
-      },
-      "time": "any"
-    },
-    {
-      "species": "kulingmaage",
-      "district": 5,
-      "weight": 7,
-      "rarity": "common",
-      "biomes": {
-        "water": 1,
-        "industrial": 0.5,
-        "urban": 0.2
-      },
-      "time": "any"
-    },
-    {
-      "species": "lygtling",
-      "district": 5,
-      "weight": 10,
-      "rarity": "common",
-      "biomes": {
-        "park": 1,
-        "forest": 1,
-        "historic": 1,
-        "water": 1
-      },
-      "time": "night"
-    },
-    {
-      "species": "soeormling",
-      "district": 5,
-      "weight": 2,
-      "rarity": "rare",
-      "biomes": {
-        "water": 2,
-        "park": 0.3
-      },
-      "time": "any"
-    },
-    {
-      "species": "kampetrold",
-      "district": 5,
-      "weight": 1,
-      "rarity": "rare",
-      "biomes": {
-        "park": 0.5,
-        "urban": 0.5,
-        "historic": 1
-      },
-      "time": "any"
-    },
-    {
-      "species": "torvdue",
-      "district": 6,
-      "weight": 30,
-      "rarity": "common",
-      "biomes": {
-        "urban": 1,
-        "park": 1,
-        "historic": 0.6,
-        "meadow": 0.5,
-        "farmland": 0.6
-      },
-      "time": "any"
-    },
-    {
-      "species": "rendsnude",
-      "district": 6,
+      "district": 4,
       "weight": 15,
       "rarity": "common",
       "biomes": {
@@ -570,7 +359,7 @@
     },
     {
       "species": "mosbille",
-      "district": 6,
+      "district": 4,
       "weight": 38,
       "rarity": "common",
       "biomes": {
@@ -583,7 +372,7 @@
     },
     {
       "species": "grimaelling",
-      "district": 6,
+      "district": 4,
       "weight": 10,
       "rarity": "common",
       "biomes": {
@@ -595,7 +384,7 @@
     },
     {
       "species": "brokrabbe",
-      "district": 6,
+      "district": 4,
       "weight": 8,
       "rarity": "common",
       "biomes": {
@@ -607,7 +396,7 @@
     },
     {
       "species": "kulingmaage",
-      "district": 6,
+      "district": 4,
       "weight": 6,
       "rarity": "common",
       "biomes": {
@@ -619,7 +408,7 @@
     },
     {
       "species": "lygtling",
-      "district": 6,
+      "district": 4,
       "weight": 15,
       "rarity": "common",
       "biomes": {
@@ -632,7 +421,7 @@
     },
     {
       "species": "ellepige",
-      "district": 6,
+      "district": 4,
       "weight": 2,
       "rarity": "rare",
       "biomes": {
@@ -643,7 +432,7 @@
     },
     {
       "species": "ellepige",
-      "district": 6,
+      "district": 4,
       "weight": 2,
       "rarity": "rare",
       "biomes": {
@@ -654,7 +443,107 @@
     },
     {
       "species": "torvdue",
-      "district": 7,
+      "district": 5,
+      "weight": 30,
+      "rarity": "common",
+      "biomes": {
+        "urban": 1,
+        "park": 1,
+        "historic": 0.6,
+        "meadow": 0.5,
+        "farmland": 0.6
+      },
+      "time": "any"
+    },
+    {
+      "species": "rendsnude",
+      "district": 5,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "urban": 1,
+        "industrial": 1.5,
+        "historic": 0.6
+      },
+      "time": "any"
+    },
+    {
+      "species": "mosbille",
+      "district": 5,
+      "weight": 15,
+      "rarity": "common",
+      "biomes": {
+        "park": 1,
+        "forest": 1.5,
+        "meadow": 1,
+        "farmland": 0.6
+      },
+      "time": "any"
+    },
+    {
+      "species": "grimaelling",
+      "district": 5,
+      "weight": 10,
+      "rarity": "common",
+      "biomes": {
+        "water": 2,
+        "park": 0.3,
+        "meadow": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "brokrabbe",
+      "district": 5,
+      "weight": 10,
+      "rarity": "common",
+      "biomes": {
+        "historic": 2,
+        "urban": 0.3,
+        "water": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "kulingmaage",
+      "district": 5,
+      "weight": 6,
+      "rarity": "common",
+      "biomes": {
+        "water": 1,
+        "industrial": 0.5,
+        "urban": 0.2
+      },
+      "time": "any"
+    },
+    {
+      "species": "lygtling",
+      "district": 5,
+      "weight": 18,
+      "rarity": "common",
+      "biomes": {
+        "park": 1,
+        "forest": 1,
+        "historic": 1,
+        "water": 1
+      },
+      "time": "night"
+    },
+    {
+      "species": "loftnisse",
+      "district": 5,
+      "weight": 3,
+      "rarity": "rare",
+      "biomes": {
+        "historic": 2,
+        "urban": 0.5,
+        "park": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "torvdue",
+      "district": 6,
       "weight": 39,
       "rarity": "common",
       "biomes": {
@@ -668,6 +557,106 @@
     },
     {
       "species": "rendsnude",
+      "district": 6,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "urban": 1,
+        "industrial": 1.5,
+        "historic": 0.6
+      },
+      "time": "any"
+    },
+    {
+      "species": "mosbille",
+      "district": 6,
+      "weight": 20,
+      "rarity": "common",
+      "biomes": {
+        "park": 1,
+        "forest": 1.5,
+        "meadow": 1,
+        "farmland": 0.6
+      },
+      "time": "any"
+    },
+    {
+      "species": "grimaelling",
+      "district": 6,
+      "weight": 10,
+      "rarity": "common",
+      "biomes": {
+        "water": 2,
+        "park": 0.3,
+        "meadow": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "brokrabbe",
+      "district": 6,
+      "weight": 8,
+      "rarity": "common",
+      "biomes": {
+        "historic": 2,
+        "urban": 0.3,
+        "water": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "kulingmaage",
+      "district": 6,
+      "weight": 3,
+      "rarity": "common",
+      "biomes": {
+        "water": 1,
+        "industrial": 0.5,
+        "urban": 0.2
+      },
+      "time": "any"
+    },
+    {
+      "species": "lygtling",
+      "district": 6,
+      "weight": 10,
+      "rarity": "common",
+      "biomes": {
+        "park": 1,
+        "forest": 1,
+        "historic": 1,
+        "water": 1
+      },
+      "time": "night"
+    },
+    {
+      "species": "loftnisse",
+      "district": 6,
+      "weight": 2,
+      "rarity": "rare",
+      "biomes": {
+        "historic": 1.5,
+        "farmland": 1,
+        "urban": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "torvdue",
+      "district": 7,
+      "weight": 30,
+      "rarity": "common",
+      "biomes": {
+        "urban": 1,
+        "park": 1,
+        "historic": 0.6,
+        "meadow": 0.5,
+        "farmland": 0.6
+      },
+      "time": "any"
+    },
+    {
+      "species": "rendsnude",
       "district": 7,
       "weight": 25,
       "rarity": "common",
@@ -681,7 +670,7 @@
     {
       "species": "mosbille",
       "district": 7,
-      "weight": 20,
+      "weight": 22,
       "rarity": "common",
       "biomes": {
         "park": 1,
@@ -694,7 +683,7 @@
     {
       "species": "grimaelling",
       "district": 7,
-      "weight": 10,
+      "weight": 20,
       "rarity": "common",
       "biomes": {
         "water": 2,
@@ -718,7 +707,7 @@
     {
       "species": "kulingmaage",
       "district": 7,
-      "weight": 3,
+      "weight": 7,
       "rarity": "common",
       "biomes": {
         "water": 1,
@@ -741,14 +730,25 @@
       "time": "night"
     },
     {
-      "species": "loftnisse",
+      "species": "soeormling",
       "district": 7,
       "weight": 2,
       "rarity": "rare",
       "biomes": {
-        "historic": 1.5,
-        "farmland": 1,
-        "urban": 0.3
+        "water": 2,
+        "park": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "kampetrold",
+      "district": 7,
+      "weight": 1,
+      "rarity": "rare",
+      "biomes": {
+        "park": 0.5,
+        "urban": 0.5,
+        "historic": 1
       },
       "time": "any"
     },

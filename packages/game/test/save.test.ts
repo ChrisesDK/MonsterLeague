@@ -8,7 +8,7 @@ import {
   SAVE_VERSION,
   SaveSchema,
   startWildBattle,
-  isDistrictUnlocked,
+  isZoneOpen,
 } from '../src/index';
 
 const SEED = '0123456789abcdef0123456789abcdef';
@@ -65,14 +65,47 @@ describe('save versions and migrations', () => {
     if (!r.ok) return;
     expect(r.migrated).toBe(true);
     expect(r.save.version).toBe(SAVE_VERSION);
-    // old 2 (Munkemose) → 4, old 4 (cathedral) → 2, old 5 (harbour) → 8
-    expect(r.save.seen).toEqual({ torvdue: [1, 4], brokrabbe: [2], kulingmaage: [8] });
-    expect(r.save.caught).toEqual({ grimaelling: [4] });
-    expect(r.save.battle?.kind === 'wild' && r.save.battle.district).toBe(4);
-    // badge 1 is unchanged and now opens the cathedral district (2)
+    // v1 → v2: old 2 (Munkemose) → 4, old 4 (cathedral) → 2, old 5 (harbour) → 8;
+    // then v8 → v9 (P22): Water 4 → 3 (Stone 2 and Storm 8 stay)
+    expect(r.save.seen).toEqual({ torvdue: [1, 3], brokrabbe: [2], kulingmaage: [8] });
+    expect(r.save.caught).toEqual({ grimaelling: [3] });
+    expect(r.save.battle?.kind === 'wild' && r.save.battle.district).toBe(3);
+    // badge 1 is unchanged; arena 1 stands in the start zone, so no extra zone opens
     expect(r.save.badges).toEqual([1]);
-    expect(isDistrictUnlocked(r.save.badges, 2)).toBe(true);
-    expect(isDistrictUnlocked(r.save.badges, 3)).toBe(false);
+    expect(r.save.zones).toEqual([]);
+  });
+
+  it('v8 → v9 (P22): themes follow their arena, won arenas open their zone, routes restart', () => {
+    const v9 = chooseStarter(newSave(SEED), 'gnistkat');
+    const { zones: _zones, ...rest } = v9;
+    const v8 = {
+      ...rest,
+      version: 8,
+      badges: [1, 2],
+      seen: { torvdue: [1, 3, 4, 6, 7] },
+      caught: { ellepige: [6] },
+      journal: {
+        reached: [1, 2, 4],
+        routes: { route1: [0, 1, 2], route3: [5] },
+        wildMetres: { '1': 120, '4': 300 },
+        restStops: ['rest_library'],
+      },
+    };
+    const r = loadSave(JSON.parse(JSON.stringify(v8)), 'other');
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.save.version).toBe(9);
+    // Spirit 3 → 5, Water 4 → 3, Grove 6 → 4, Fire 7 → 6
+    expect(r.save.seen).toEqual({ torvdue: [1, 3, 4, 5, 6] });
+    expect(r.save.caught).toEqual({ ellepige: [4] });
+    expect(r.save.journal.reached).toEqual([1, 2, 3]);
+    expect(r.save.journal.wildMetres).toEqual({ '1': 120, '3': 300 });
+    expect(r.save.journal.routes).toEqual({});
+    expect(r.save.journal.restStops).toEqual(['rest_library']);
+    // badge 2 was won at the old arena 2: its new zone opens
+    expect(r.save.zones).toEqual(['naesbyhoved']);
+    expect(isZoneOpen(r.save, 'naesbyhoved')).toBe(true);
+    expect(isZoneOpen(r.save, 'havnen')).toBe(false);
   });
 
   it('a v0 save migrates through every version', () => {

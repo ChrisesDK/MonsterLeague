@@ -55,7 +55,10 @@ describe('spawn rules version', () => {
   const b = latLngToCell(55.3962, 10.3805, 10);
   const region = decodeRegion({
     ...file,
-    cells: { [a]: [1, 0, 0, 0, 80, 0, 0, 20, 0, 0], [b]: [1, 0, 0, 0, 0, 0, 0, 100, 0, 0, 7] },
+    cells: {
+      [a]: [1, 0, 0, 0, 0, 80, 0, 0, 20, 0, 0],
+      [b]: [1, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 7],
+    },
   });
 
   it('golden spawn output matches the current SPAWN_ALGORITHM', () => {

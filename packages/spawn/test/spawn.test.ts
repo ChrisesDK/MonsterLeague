@@ -143,7 +143,10 @@ describe('blocked positions (GDD P10, P11)', () => {
   it('skips a cell whose every position is blocked', () => {
     const water = latLngToCell(55.3908, 10.3833, 10);
     const all = 2 ** 49 - 1;
-    const r = decodeRegion({ ...file, cells: { [water]: [2, 0, 100, 0, 0, 0, 0, 0, 0, 0, all] } });
+    const r = decodeRegion({
+      ...file,
+      cells: { [water]: [2, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, all] },
+    });
     expect(positionsInside(water, all)).toEqual([]);
     for (let w = 0; w < 50; w++) {
       expect(
@@ -174,8 +177,8 @@ describe('species mix follows biome weights', () => {
   const synthetic: RegionFile = {
     ...file,
     cells: {
-      [water]: [2, 2 | 4, 100, 0, 0, 0, 0, 0, 0, 0], // wild water edge
-      [urban]: [2, 0, 0, 0, 0, 0, 0, 100, 0, 0],
+      [water]: [2, 0, 2 | 4, 100, 0, 0, 0, 0, 0, 0, 0], // wild water edge
+      [urban]: [2, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0],
     },
   };
   const r = decodeRegion(synthetic);

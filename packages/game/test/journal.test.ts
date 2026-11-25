@@ -11,8 +11,14 @@ import {
   noteRoutes,
   noteWildWalk,
   routeCheckpoints,
-  routeInto,
   visitRestStop,
+  frontierRoutes,
+  isZoneOpen,
+  nextCheckpoint,
+  nextRouteToward,
+  openZones,
+  ROUTE_DONE_SHARE,
+  routeProgress,
   type SaveGame,
 } from '../src/index';
 
@@ -22,34 +28,30 @@ const fresh = (): SaveGame => ({
   onboarding: 'done',
 });
 const KONGENS_HAVE = { lat: 55.3998, lng: 10.3852 };
-const HARBOUR = { lat: 55.412, lng: 10.388 };
 const trainersIn = (d: number) =>
   Object.values(content.pois).flatMap((p) =>
     p.kind === 'trainer' && p.district === d ? [p.trainer] : [],
   );
 
-describe('Journal: the main goal chain (M2d)', () => {
-  it('a new player outside district 1 gets one goal: reach district 1', () => {
-    const j = journal(fresh(), HARBOUR);
-    expect(j.current?.kind).toBe('reach');
-    expect(j.current?.district).toBe(1);
-    expect(j.current?.target).toEqual({ lat: 55.39978, lng: 10.38522 });
-  });
+describe('Journal: the main goal chain (P22)', () => {
+  const nearestTrainer = (from: { lat: number; lng: number }) =>
+    Object.values(content.pois)
+      .filter((p) => p.kind === 'trainer' && p.district === 1)
+      .sort((x, y) => distanceM(from, x) - distanceM(from, y))[0]!;
 
-  it('in district 1 the next goal is its trainers, pointing at the nearest unbeaten one', () => {
-    const save = noteDistrict(fresh(), 1);
-    const j = journal(save, KONGENS_HAVE);
+  it('a new player starts in the open start zone: beat its trainers first', () => {
+    const j = journal(fresh(), KONGENS_HAVE);
     expect(j.current?.id).toBe('d1.trainers');
     expect(j.current?.progress).toEqual({ n: 0, of: trainersIn(1).length });
-    const lise = content.pois.trainer_lise!;
-    expect(j.current?.target).toEqual({ lat: lise.lat, lng: lise.lng });
+    const t = nearestTrainer(KONGENS_HAVE);
+    expect(j.current?.target).toEqual({ lat: t.lat, lng: t.lng });
+    expect(j.zonesOpen).toBe(1);
+    expect(j.routesDone).toBe(0);
+    expect(j.routesTotal).toBe(Object.keys(content.routes).length);
   });
 
-  it('then a rest stop, then the arena; badge 1 moves on to district 2', () => {
-    let save: SaveGame = {
-      ...noteDistrict(fresh(), 1),
-      defeatedTrainers: trainersIn(1),
-    };
+  it('then a rest stop, then the arena; badge 1 points at the route to arena 2', () => {
+    let save: SaveGame = { ...noteDistrict(fresh(), 1), defeatedTrainers: trainersIn(1) };
     expect(journal(save, KONGENS_HAVE).current?.kind).toBe('rest');
     save = visitRestStop(save, content.pois.rest_jernbanegade!, 1_800_000_000).save;
     expect(save.journal.restStops).toEqual(['rest_jernbanegade']);
@@ -58,22 +60,26 @@ describe('Journal: the main goal chain (M2d)', () => {
     expect(arena.comingSoon).toBeUndefined();
     save = { ...save, badges: [1] };
     const j = journal(save, KONGENS_HAVE);
-    expect(j.current?.id).toBe('d2.reach');
+    expect(j.current?.id).toBe('d2.route');
+    expect(j.current?.zone).toBe('naesbyhoved');
+    const route = content.routes[j.current!.routeId!]!;
+    expect([route.from, route.to]).toContain('centrum');
     expect(j.districts.map((d) => d.district)).toEqual([1, 2]);
   });
 
-  it('district 2: reach it, walk Route 1, beat its 2 trainers, rest, arena', () => {
+  it('district 2: open its zone, beat its trainers, rest, arena', () => {
     const save: SaveGame = { ...fresh(), badges: [1] };
     const main = journal(save, KONGENS_HAVE).districts[1]!.main;
-    expect(main.map((g) => g.kind)).toEqual(['reach', 'route', 'trainers', 'rest', 'arena']);
-    expect(main[1]!.routeId).toBe('route1');
-    expect(main[2]!.progress).toEqual({ n: 0, of: 2 });
+    expect(main.map((g) => g.kind)).toEqual(['route', 'trainers', 'rest', 'arena']);
+    expect(main[0]!.done).toBe(false);
+    const open = journal({ ...save, zones: ['naesbyhoved'] }, KONGENS_HAVE).districts[1]!.main;
+    expect(open[0]!.done).toBe(true);
   });
 
   it('an arena that is not built yet is "coming soon"', () => {
-    const save: SaveGame = { ...noteDistrict(fresh(), 3), badges: [1, 2] };
+    const save: SaveGame = { ...fresh(), badges: [1, 2], zones: ['stige'] };
     const d3 = journal(save, KONGENS_HAVE).districts.find((d) => d.district === 3)!;
-    expect(d3.main.map((g) => g.kind)).toEqual(['reach', 'route', 'arena']);
+    expect(d3.main.at(-1)!.kind).toBe('arena');
     expect(d3.main.at(-1)!.comingSoon).toBe(true);
   });
 
@@ -82,28 +88,74 @@ describe('Journal: the main goal chain (M2d)', () => {
   });
 });
 
-describe('Journal: route walking', () => {
-  const route = routeInto(2)!;
+describe('Journal: routes fill in and open zones (P22)', () => {
+  const route = content.routes.route1!;
   const cps = routeCheckpoints(route);
 
-  it('checkpoints are spaced 100 m along the route, ends included', () => {
+  it('route 1 runs from the start zone to arena 2; checkpoints every 25 m, ends included', () => {
+    expect([route.from, route.to]).toEqual(['centrum', 'naesbyhoved']);
+    expect(CHECKPOINT_SPACING_M).toBe(25);
     expect(cps.length).toBeGreaterThanOrEqual(Math.floor(route.lengthM / CHECKPOINT_SPACING_M));
     expect(distanceM(cps[0]!, { lat: route.path[0]![1], lng: route.path[0]![0] })).toBe(0);
     for (let i = 1; i < cps.length - 1; i++)
       expect(distanceM(cps[i - 1]!, cps[i]!)).toBeLessThanOrEqual(CHECKPOINT_SPACING_M + 1);
   });
 
-  it('walking the route ticks checkpoints off; 80 % completes the goal', () => {
+  it('walking fills the route; at 90 % it is finished and opens the zone it leads to', () => {
     let save: SaveGame = { ...fresh(), badges: [1] };
-    const goal = () => journal(save, null).districts[1]!.main.find((g) => g.kind === 'route')!;
-    expect(goal().target).toEqual(cps[0]);
+    expect(nextCheckpoint(save, route)).toEqual(cps[0]);
     save = noteRoutes(save, cps[0]!);
-    expect(save.journal.routes.route1).toEqual([0]);
-    expect(goal().target).toEqual(cps[1]);
+    // checkpoints are 25 m apart and reached within 30 m: the first step ticks off two
+    const got = save.journal.routes.route1!;
+    expect(got).toContain(0);
+    expect(got.every((i) => distanceM(cps[i]!, cps[0]!) <= 30)).toBe(true);
+    expect(nextCheckpoint(save, route)).toEqual(cps[got.length]);
     // unchanged position → same object (nothing to save)
     expect(noteRoutes(save, cps[0]!)).toBe(save);
-    for (const cp of cps.slice(0, Math.ceil(cps.length * 0.8))) save = noteRoutes(save, cp);
-    expect(goal().done).toBe(true);
+    const need = Math.ceil(cps.length * ROUTE_DONE_SHARE);
+    // each step also reaches the next checkpoint (25 m apart, 30 m reach)
+    for (const cp of cps.slice(0, need - 2)) save = noteRoutes(save, cp);
+    expect(save.journal.routes.route1).toHaveLength(need - 1);
+    expect(routeProgress(save, route).done).toBe(false);
+    expect(isZoneOpen(save, 'naesbyhoved')).toBe(false);
+    save = noteRoutes(save, cps[need - 1]!);
+    expect(routeProgress(save, route).done).toBe(true);
+    expect(save.zones).toContain('naesbyhoved');
+    expect(journal(save, null).routesDone).toBe(1);
+  });
+
+  it('a route walked between two closed zones opens them once one end opens', () => {
+    const r = Object.values(content.routes).find(
+      (x) => !content.zones[x.from]!.start && !content.zones[x.to]!.start,
+    )!;
+    const all = routeCheckpoints(r).map((_, i) => i);
+    let save: SaveGame = {
+      ...fresh(),
+      journal: { ...fresh().journal, routes: { [r.id]: all } },
+    };
+    save = openZones(save);
+    expect(save.zones).toEqual([]);
+    save = openZones({ ...save, zones: [r.from] });
+    expect(save.zones).toEqual([r.from, r.to].sort());
+    // the next checkpoint of a route walked from its open end counts from that end
+    const half: SaveGame = { ...fresh(), zones: [r.to] };
+    expect(nextCheckpoint(half, r)).toEqual(routeCheckpoints(r).at(-1));
+  });
+
+  it('the next route toward a closed zone starts in an open zone', () => {
+    const save = fresh();
+    for (const zone of Object.keys(content.zones)) {
+      if (isZoneOpen(save, zone)) {
+        expect(nextRouteToward(save, zone)).toBeNull();
+        continue;
+      }
+      const r = nextRouteToward(save, zone)!;
+      expect(r, zone).toBeTruthy();
+      expect(isZoneOpen(save, r.from) || isZoneOpen(save, r.to), zone).toBe(true);
+    }
+    expect(frontierRoutes(save).every((r) => r.from === 'centrum' || r.to === 'centrum')).toBe(
+      true,
+    );
   });
 });
 

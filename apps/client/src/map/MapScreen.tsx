@@ -12,7 +12,7 @@ import {
   finishBattle,
   healTeam,
   insidePoi,
-  isDistrictUnlocked,
+  isZoneOpen,
   journal as buildJournal,
   nearestPoi,
   noteDistrict,
@@ -48,7 +48,7 @@ import type { Region } from '@oml/spawn';
 import { latLngToCell } from 'h3-js';
 import { BattleScreen } from '../BattleScreen';
 import type { Translate } from '../i18n';
-import { districtAt, LEVEL_BANDS, loadRegion } from '../game/region';
+import { districtAt, LEVEL_BANDS, loadRegion, zoneAt } from '../game/region';
 import { formatM, goalTitle } from '../game/goalText';
 import { Button, Toast } from '../ui/components';
 import { buzz } from '../ui/feedback';
@@ -76,7 +76,8 @@ import {
   setBuildings3d,
   addWorldLayers,
   applyPatternPalette,
-  setLockedDistricts,
+  setLockedZones,
+  setRouteProgress,
   setWild,
 } from './layers';
 import { GpsLocation, type LocationSource, type SimLocation } from './location';
@@ -331,12 +332,12 @@ export function MapScreen({
       .map((s) => ({
         s,
         d: distanceM(position, s),
-        st: spawnStatus(save, s),
+        st: spawnStatus(save, { ...s, zone: zoneAt(region, s) ?? '' }),
         level: spawnLevel(s, save.badges, LEVEL_BANDS),
       }))
       .filter(({ d, st }) => d <= SHOW_RADIUS_M && st !== 'used')
       .sort((a, b) => a.d - b.d);
-  }, [spawns, position, fast, save]);
+  }, [spawns, position, fast, save, region]);
 
   // ---- tutorial creature (personal, not a shared spawn; position kept in memory only) ----
   const tutorialActive = save.onboarding === 'tutorial' && !save.battle;
@@ -413,6 +414,7 @@ export function MapScreen({
       addWorldLayers(map, paletteRef.current, {
         mode: 'play',
         districtName: (id) => t(`district.${id}.name`),
+        zoneName: (id) => t(`zone.${id}.name`),
         routeName: (id) => t(`route.${id}.name`),
       });
       map.addSource('poi-radius', {
@@ -568,16 +570,34 @@ export function MapScreen({
     if (!map || !mapReady) return;
     setWild(map, region);
   }, [region, mapReady]);
-  const badgesKey = save.badges.join(',');
+  // Locked zones (P22) and the walked parts of the routes (the progress bars).
+  const zonesKey = save.zones.join(',');
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady) return;
-    const badges = badgesKey ? badgesKey.split(',').map(Number) : [];
-    setLockedDistricts(
+    const open = { zones: zonesKey ? zonesKey.split(',') : [] };
+    setLockedZones(
       map,
-      [1, 2, 3, 4, 5, 6, 7, 8].filter((d) => !isDistrictUnlocked(badges, d)),
+      Object.keys(content.zones).filter((z) => !isZoneOpen(open, z)),
     );
-  }, [badgesKey, mapReady]);
+  }, [zonesKey, mapReady]);
+  const walked = save.journal.routes;
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapReady) return;
+    setRouteProgress(map, { journal: { ...saveRef.current.journal, routes: walked } });
+  }, [walked, mapReady]);
+  // A finished route opened a zone: say so (not for zones the save already had on load).
+  const knownZones = useRef<string[] | null>(null);
+  useEffect(() => {
+    const known = knownZones.current;
+    knownZones.current = save.zones;
+    if (!known) return;
+    const fresh = save.zones.filter((z) => !known.includes(z));
+    if (fresh.length === 0) return;
+    setToast(t('map.zoneOpened', { zone: fresh.map((z) => t(`zone.${z}.name`)).join(', ') }));
+    buzz('zone');
+  }, [save.zones, t]);
 
   // Stamp images follow beaten trainers / won arenas.
   useEffect(() => {
@@ -746,15 +766,15 @@ export function MapScreen({
       if (!position) return;
       const s = saveRef.current;
       const name = t(`species.${spawn.speciesId}.name`);
-      const district = spawn.district;
-      const st = spawnStatus(s, spawn);
+      const zone = zoneAt(region, spawn) ?? '';
+      const st = spawnStatus(s, { ...spawn, zone });
       setSelected(spawn.id);
       if (st === 'needsAbility') {
         setToast(t('map.hint', { ability: t(`fieldAbility.${spawn.requires}.name`) }));
         return;
       }
       if (st === 'tooWild') {
-        setToast(t('map.tooWild', { name, badge: t(`badge.${Math.max(1, district - 1)}.name`) }));
+        setToast(t('map.tooWild', { name, zone: t(`zone.${zone}.name`) }));
         return;
       }
       if (st === 'teamFainted') return setToast(t('map.teamFainted'));
@@ -773,7 +793,7 @@ export function MapScreen({
       onGate3?.({ type: 'spawnBattled' });
       openBattle();
     },
-    [position, t, update, onGate3, openBattle],
+    [position, region, t, update, onGate3, openBattle],
   );
   const tapRef = useRef(tapSpawn);
   tapRef.current = tapSpawn;
@@ -1034,7 +1054,9 @@ export function MapScreen({
     const st = trainerStatus(save, here)!;
     let body: string;
     let action: React.ReactNode = null;
-    if (st.kind === 'locked') {
+    if (st.kind === 'zoneLocked') {
+      body = t('trainer.refuseZone', { zone: t(`zone.${st.zone}.name`) });
+    } else if (st.kind === 'locked') {
       body = t('trainer.refuse', { badge: t(`badge.${st.badge}.name`) });
     } else if (st.kind === 'beaten') {
       body =

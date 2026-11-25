@@ -130,14 +130,16 @@ test('animated markers stay on their position while the map pans and zooms', asy
 interface RouteJson {
   routes: { id: string; path: [number, number][] }[];
 }
-const route1 = (
+const allRoutes = (
   JSON.parse(
     readFileSync(
       new URL('../../../packages/data/content/routes.odense.json', import.meta.url),
       'utf8',
     ),
   ) as RouteJson
-).routes.find((r) => r.id === 'route1')!;
+).routes;
+const route1 = allRoutes.find((r) => r.id === 'route1')!;
+const ROUTE_COUNT = allRoutes.length;
 
 /** Points every ~15 m along a [lng, lat] path. */
 function along(path: [number, number][], stepM = 15): { lat: number; lng: number }[] {
@@ -389,7 +391,7 @@ test('fog wall: the ground reaches just past it at every zoom, the sky is behind
   await expect.poll(async () => (await look(18.5)).sky).toMatch(/^rgb\(/);
 });
 
-test('Town Map: districts, arenas and routes; a card tells what a place needs', async ({
+test('Town Map: zones, arenas and routes; a card tells what a place needs (P22)', async ({
   page,
 }) => {
   await startDone(page);
@@ -402,24 +404,106 @@ test('Town Map: districts, arenas and routes; a card tells what a place needs', 
   );
   expect(pitch).toBe(0);
   for (let a = 1; a <= 8; a++) await expect(page.getByTestId(`tm-arena-${a}`)).toHaveCount(1);
-  await expect(page.getByTestId('tm-route-route1')).toHaveCount(1);
+  await expect(page.locator('[data-testid^=tm-route-]')).toHaveCount(ROUTE_COUNT);
   await expect(page.getByTestId('tm-player')).toHaveCount(1);
   await expect(page.getByTestId('tm-target')).toHaveCount(1);
+  // arena 2's zone is not open yet: the card says to walk a route there
   await page.getByTestId('tm-arena-2').evaluate((e) => (e as HTMLElement).click());
-  await expect(page.getByTestId('townmap-needs')).toContainText('Kongens Have badge');
+  await expect(page.getByTestId('townmap-needs')).toContainText('Walk a route to');
   await expect(page.getByTestId('townmap-distance')).toContainText('straight line');
   await page.getByTestId('tm-route-route1').evaluate((e) => (e as HTMLElement).click());
   await expect(page.getByTestId('townmap-card')).toContainText('Route 1');
+  await expect(page.getByTestId('townmap-card')).toContainText('Leads to');
+  await expect(page.getByTestId('townmap-needs')).toContainText(/\d+% walked of/);
+  // the Town Map can't be dragged out of Odense Kommune
+  const bounds = await page.evaluate(() =>
+    (
+      window as unknown as { __omlTownMap: { getMaxBounds: () => { toArray: () => number[][] } } }
+    ).__omlTownMap
+      .getMaxBounds()
+      .toArray(),
+  );
+  expect(bounds[0]![0]).toBeGreaterThan(10.1);
+  expect(bounds[1]![0]).toBeLessThan(10.7);
   await page.getByTestId('townmap-close').click();
   await expect(page.getByTestId('town-map')).toHaveCount(0);
 });
 
-test('Journal: walking Route 1 with the GPS simulator completes its goal', async ({ page }) => {
+test('Fyn map: the regions of Fyn, only Odense opens; badges grey until won; held on Fyn', async ({
+  page,
+}) => {
+  await startDone(page);
+  await dev(page, 'setBadges', [1]);
+  await page.getByTestId('townmap-button').click();
+  await page.getByTestId('townmap-fyn').click();
+  await expect(page.getByTestId('fyn-map')).toBeVisible();
+  await page.waitForFunction(() => '__omlFynMap' in window);
+  await expect(page.getByTestId('fyn-hint')).toContainText('Odense');
+  const badges = page.locator('[data-testid=fyn-badges-odense] img');
+  await expect(badges).toHaveCount(8);
+  await expect(page.locator('[data-testid=fyn-badges-odense] img.locked')).toHaveCount(7);
+  const view = await page.evaluate(() => {
+    const m = (
+      window as unknown as {
+        __omlFynMap: {
+          getMaxBounds: () => { toArray: () => number[][] };
+          getMinZoom: () => number;
+          getMaxZoom: () => number;
+          loaded: () => boolean;
+        };
+      }
+    ).__omlFynMap;
+    return { bounds: m.getMaxBounds().toArray(), min: m.getMinZoom(), max: m.getMaxZoom() };
+  });
+  // held on Fyn (not the rest of Denmark), with a narrow zoom range
+  expect(view.bounds[0]![0]).toBeGreaterThan(9.3);
+  expect(view.bounds[1]![0]).toBeLessThan(11.3);
+  expect(view.bounds[0]![1]).toBeGreaterThan(53.8);
+  expect(view.bounds[1]![1]).toBeLessThan(56.6);
+  // the whole of Fyn is in view on opening (Middelfart in the west to Nyborg in the east)
+  const seen = await page.evaluate(() =>
+    (
+      window as unknown as { __omlFynMap: { getBounds: () => { toArray: () => number[][] } } }
+    ).__omlFynMap
+      .getBounds()
+      .toArray(),
+  );
+  expect(seen[0]![0]).toBeLessThanOrEqual(9.66);
+  expect(seen[1]![0]).toBeGreaterThanOrEqual(10.95);
+  await expect
+    .poll(
+      async () =>
+        await page.evaluate(() => {
+          const m = (
+            window as unknown as {
+              __omlFynMap: { getMinZoom: () => number; getMaxZoom: () => number };
+            }
+          ).__omlFynMap;
+          return m.getMaxZoom() - m.getMinZoom();
+        }),
+    )
+    .toBeLessThanOrEqual(1.7);
+  expect(view.max).toBeGreaterThanOrEqual(view.min);
+  // the Odense badges open the region: back to the Town Map
+  await page.getByTestId('fyn-badges-odense').click();
+  await expect(page.getByTestId('fyn-map')).toHaveCount(0);
+  await expect(page.getByTestId('town-map')).toBeVisible();
+  // the close button also returns to the Town Map, which closes to the game view
+  await page.getByTestId('townmap-fyn').click();
+  await page.getByTestId('fynmap-close').click();
+  await expect(page.getByTestId('fyn-map')).toHaveCount(0);
+  await page.getByTestId('townmap-close').click();
+  await expect(page.getByTestId('play-map')).toBeVisible();
+});
+
+test('Journal: walking Route 1 with the GPS simulator fills it and opens Næsbyhoved', async ({
+  page,
+}) => {
   await startDone(page);
   await dev(page, 'setBadges', [1]);
   await teleport(page, KONGENS_HAVE);
   const card = page.getByTestId('journal-card');
-  await expect(card).toHaveAttribute('data-guide', 'd2.reach');
+  await expect(card).toHaveAttribute('data-guide', 'd2.route');
   // walk the route, a step every 15 m
   for (const p of along(route1.path)) {
     await teleport(page, p);
@@ -427,13 +511,11 @@ test('Journal: walking Route 1 with the GPS simulator completes its goal', async
   }
   await expect
     .poll(async () => {
-      const s = (await dev(page, 'save')) as {
-        journal: { routes: Record<string, number[]>; reached: number[] };
-      };
-      return [s.journal.reached.includes(2), (s.journal.routes.route1 ?? []).length];
+      const s = (await dev(page, 'save')) as { zones: string[] };
+      return s.zones;
     })
-    .toEqual([true, expect.any(Number)]);
-  // reach and route are done: the card moves on to the district's trainers
+    .toContain('naesbyhoved');
+  // the route is done: the card moves on to the district's trainers
   await expect(card).toHaveAttribute('data-guide', 'd2.trainers');
   // the goal card starts folded: the first tap opens it, the next opens the Journal
   await expect(card).toHaveAttribute('data-open', 'false');
@@ -443,15 +525,16 @@ test('Journal: walking Route 1 with the GPS simulator completes its goal', async
   await card.click();
   await expect(page.getByTestId('screen-journal')).toBeVisible();
   await expect(page.getByTestId('goal-d2.route')).toHaveClass(/done/);
-  await expect(page.getByTestId('goal-d2.reach')).toHaveClass(/done/);
+  await expect(page.getByTestId('journal-region')).toContainText('Routes walked: 1 of');
   await page.getByTestId('screen-back').click();
   await expect(page.getByTestId('play-map')).toBeVisible();
 });
 
 test('icons behind the camera are hidden (looking away from the centre)', async ({ page }) => {
   await startDone(page);
-  // ~500 m west of Kongens Have (icons further than 700 m are hidden in the fog)
-  await teleport(page, { lat: 55.3998, lng: 10.3773 });
+  // west of the old town: every POI within the fog distance lies to the east (P22 placed
+  // trainers and a rest stop north-west of Kongens Have, so the spot moved south)
+  await teleport(page, { lat: 55.394, lng: 10.3773 });
   await page.waitForTimeout(2500);
   const shown = () =>
     page.evaluate(
@@ -984,9 +1067,15 @@ for (const mode of ['browser', 'installed app'] as const)
     await back();
     await expect(page.getByTestId('screen-menu')).toHaveCount(0);
     await expect(leave).toHaveCount(0);
-    // the Town Map: back closes it
+    // the Town Map and the Fyn map on top of it (P22): back closes Fyn, then the Town Map
     await page.getByTestId('townmap-button').click();
     await expect(page.getByTestId('town-map')).toBeVisible();
+    await page.getByTestId('townmap-fyn').click();
+    await expect(page.getByTestId('fyn-map')).toBeVisible();
+    await back();
+    await expect(page.getByTestId('fyn-map')).toHaveCount(0);
+    await expect(page.getByTestId('town-map')).toBeVisible();
+    await expect(leave).toHaveCount(0);
     await back();
     await expect(page.getByTestId('town-map')).toHaveCount(0);
     await expect(leave).toHaveCount(0);

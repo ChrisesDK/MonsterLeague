@@ -26,11 +26,11 @@ const at = (id: string) => {
   return { lat: p.lat, lng: p.lng };
 };
 const STATION = { lat: 55.4017, lng: 10.3866 };
-/** Munke Mose: district 4 (Water), locked until badge 3. */
-const MUNKEMOSE = { lat: 55.3895, lng: 10.383 };
-/** A district-2 spot (old town / Hunderup), opened by badge 1. */
-const DISTRICT2 = { lat: 55.392, lng: 10.4 };
-/** Far out by the harbour: district 8. */
+/** Munke Mose: its own zone (P22), opened by walking Route 20; closed in this run. */
+const MUNKEMOSE = { lat: 55.3905, lng: 10.383 };
+/** In Næsbyhoved Skov (zone naesbyhoved, district 2), opened by walking Route 1. */
+const DISTRICT2 = { lat: 55.4122, lng: 10.3725 };
+/** The harbour (zone havnen): not opened in this run. */
 const HARBOUR = { lat: 55.412, lng: 10.388 };
 
 interface DevSave {
@@ -341,7 +341,10 @@ test('onboarding to badge 2 (districts 1 and 2, open wildlife), with reloads', a
   );
   expect(save.bag.revive_leaf).toBe(1);
 
-  // Badge 1 opens district 2 (cathedral): its rares are catchable; Munke Mose (4) stays wild.
+  // P22: walking Route 1 opens Næsbyhoved (district 2): its rares are catchable; Munke Mose
+  // (not walked to) stays wild.
+  await dev(page, 'walkRoute', 'route1');
+  await expect(page.locator('.map-toast')).toContainText('is open');
   await teleport(page, DISTRICT2);
   await dev(page, 'injectSpawn', {
     speciesId: 'kampetrold',
@@ -368,8 +371,10 @@ test('onboarding to badge 2 (districts 1 and 2, open wildlife), with reloads', a
   await fight(page, { move: 'Beech Lash' });
   await expect(page.getByTestId('result-card')).toContainText('You beat');
   await page.locator('[data-testid=result-card] .btn').click();
-  card = await poiAction(page, 'rest_barndomshjem');
+  card = await poiAction(page, 'rest_naesbyhoved');
   await card.getByTestId('poi-action').click();
+  // a little stronger for the junior, so an unlucky battle doesn't fail the run
+  await dev(page, 'setTeamLevel', 17);
   card = await poiAction(page, 'arena2');
   await expect(card).toContainText('junior');
   await card.getByTestId('poi-action').click();
@@ -379,7 +384,7 @@ test('onboarding to badge 2 (districts 1 and 2, open wildlife), with reloads', a
   // badge 1 raised obedience to 20, so a level-19 team still obeys
   await dev(page, 'setTeamLevel', 19);
   for (let attempt = 0; attempt < 4; attempt++) {
-    card = await poiAction(page, 'rest_barndomshjem');
+    card = await poiAction(page, 'rest_naesbyhoved');
     await card.getByTestId('poi-action').click();
     card = await poiAction(page, 'arena2');
     await expect(card).toContainText('leader');

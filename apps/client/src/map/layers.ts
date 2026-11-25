@@ -1,10 +1,13 @@
 /**
- * Game layers shared by the play view and the Town Map (M2d): district borders, wild areas
- * drawn as grass or ripples ("tall grass"), dotted routes and the player's accuracy ring.
+ * Game layers shared by the play view and the Town Map (M2d, P22): district and zone borders,
+ * locked zones dimmed, wild areas drawn as grass or ripples ("tall grass"), dotted routes
+ * whose walked part is drawn solid (the progress bar) and the player's accuracy ring.
  */
 import type { GeoJSONSource, Map as MlMap } from 'maplibre-gl';
 import { content } from '@oml/data';
+import { routeCheckpoints, type SaveGame } from '@oml/game';
 import districtsRaw from '@oml/data/content/districts.odense.geojson?raw';
+import zonesRaw from '@oml/data/content/zones.odense.geojson?raw';
 import type { Region } from '@oml/spawn';
 import { cellsToMultiPolygon } from 'h3-js';
 import type { Palette } from './style';
@@ -28,17 +31,78 @@ export const districtsGeo = JSON.parse(districtsRaw) as GeoJSON.FeatureCollectio
   { id: number }
 >;
 
+export const zonesGeo = JSON.parse(zonesRaw) as GeoJSON.FeatureCollection<
+  GeoJSON.Polygon | GeoJSON.MultiPolygon,
+  { id: string; district: number; kind: string }
+>;
+
 export const routesGeo: GeoJSON.FeatureCollection<
   GeoJSON.LineString,
-  { id: string; number: number; draft: boolean }
+  { id: string; number: number; kind: string }
 > = {
   type: 'FeatureCollection',
   features: Object.values(content.routes).map((r) => ({
     type: 'Feature',
-    properties: { id: r.id, number: r.number, draft: r.draft },
+    properties: { id: r.id, number: r.number, kind: r.kind },
     geometry: { type: 'LineString', coordinates: r.path },
   })),
 };
+
+/**
+ * One label point per zone (its centre) and per district (its arena site): the outlines are
+ * multi-part, and a label per part repeated names (P22).
+ */
+export function zonePoints(label: (id: string) => string): GeoJSON.FeatureCollection {
+  return {
+    type: 'FeatureCollection',
+    features: Object.values(content.zones).map((z) => ({
+      type: 'Feature',
+      properties: { id: z.id, name: glyphSafe(label(z.id)) },
+      geometry: { type: 'Point', coordinates: [z.lng, z.lat] },
+    })),
+  };
+}
+export function districtPoints(label: (id: number) => string): GeoJSON.FeatureCollection {
+  return {
+    type: 'FeatureCollection',
+    features: content.arenaSites.map((a) => ({
+      type: 'Feature',
+      properties: { id: a.district, name: glyphSafe(label(a.district)) },
+      geometry: { type: 'Point', coordinates: [a.lng, a.lat] },
+    })),
+  };
+}
+
+/**
+ * The walked parts of every route (P22 progress bar): a piece between two neighbouring
+ * checkpoints is drawn once both were reached.
+ */
+export function walkedGeo(save: Pick<SaveGame, 'journal'>): GeoJSON.FeatureCollection {
+  const features: GeoJSON.Feature[] = [];
+  for (const r of Object.values(content.routes)) {
+    const got = new Set(save.journal.routes[r.id] ?? []);
+    if (got.size < 2) continue;
+    const cps = routeCheckpoints(r);
+    const lines: [number, number][][] = [];
+    let cur: [number, number][] | null = null;
+    for (let i = 1; i < cps.length; i++) {
+      if (got.has(i - 1) && got.has(i)) {
+        if (!cur) {
+          cur = [[cps[i - 1]!.lng, cps[i - 1]!.lat]];
+          lines.push(cur);
+        }
+        cur.push([cps[i]!.lng, cps[i]!.lat]);
+      } else cur = null;
+    }
+    if (lines.length)
+      features.push({
+        type: 'Feature',
+        properties: { id: r.id },
+        geometry: { type: 'MultiLineString', coordinates: lines },
+      });
+  }
+  return { type: 'FeatureCollection', features };
+}
 
 const wildCache = new WeakMap<Region, GeoJSON.FeatureCollection>();
 /** Wild-area outlines from the region flags, merged into multipolygons (computed once). */
@@ -124,6 +188,7 @@ export function addWorldLayers(
   opts: {
     mode: 'play' | 'town';
     districtName: (id: number) => string;
+    zoneName: (id: string) => string;
     routeName: (id: string) => string;
   },
 ): void {
@@ -148,13 +213,31 @@ export function addWorldLayers(
       })),
     },
   });
-  map.addLayer({
-    id: 'locked-districts',
-    type: 'fill',
-    source: 'districts',
-    filter: ['==', ['get', 'id'], -1],
-    paint: { 'fill-color': p.locked, 'fill-opacity': opts.mode === 'town' ? 0.16 : 0.12 },
+  map.addSource('zones', {
+    type: 'geojson',
+    data: {
+      ...zonesGeo,
+      features: zonesGeo.features.map((f) => ({
+        ...f,
+        properties: { ...f.properties, name: glyphSafe(opts.zoneName(f.properties.id)) },
+      })),
+    },
   });
+  map.addLayer({
+    id: 'locked-zones',
+    type: 'fill',
+    source: 'zones',
+    filter: ['==', ['get', 'id'], ''],
+    paint: { 'fill-color': p.locked, 'fill-opacity': opts.mode === 'town' ? 0.2 : 0.12 },
+  });
+  if (opts.mode === 'town')
+    map.addLayer({
+      id: 'zone-lines',
+      type: 'line',
+      source: 'zones',
+      minzoom: 11.5,
+      paint: { 'line-color': p.district, 'line-width': 1, 'line-opacity': 0.35 },
+    });
   map.addLayer({
     id: 'districts',
     type: 'line',
@@ -182,12 +265,33 @@ export function addWorldLayers(
     source: 'routes',
     layout: { 'line-cap': 'round', 'line-join': 'round' },
     paint: {
-      'line-color': ['case', ['get', 'draft'], p.routeDraft, p.route],
+      'line-color': ['case', ['==', ['get', 'kind'], 'explore'], p.routeDraft, p.route],
       'line-width':
-        opts.mode === 'town' ? 4 : ['interpolate', ['linear'], ['zoom'], 15, 3, 18.5, 7],
+        opts.mode === 'town'
+          ? ['interpolate', ['linear'], ['zoom'], 10, 2, 14, 4]
+          : ['interpolate', ['linear'], ['zoom'], 15, 3, 18.5, 7],
       // dotted: round caps on near-zero dashes
       'line-dasharray': [0.1, 2],
-      'line-opacity': ['case', ['get', 'draft'], 0.6, 0.95],
+      'line-opacity': 0.9,
+    },
+  });
+  // The walked part of each route, solid (P22: the route fills in as it is walked).
+  map.addSource('routes-walked', {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features: [] },
+  });
+  map.addLayer({
+    id: 'routes-walked',
+    type: 'line',
+    source: 'routes-walked',
+    layout: { 'line-cap': 'round', 'line-join': 'round' },
+    paint: {
+      'line-color': p.route,
+      'line-width':
+        opts.mode === 'town'
+          ? ['interpolate', ['linear'], ['zoom'], 10, 3, 14, 5]
+          : ['interpolate', ['linear'], ['zoom'], 15, 4, 18.5, 9],
+      'line-opacity': 0.95,
     },
   });
   map.addLayer({
@@ -203,21 +307,43 @@ export function addWorldLayers(
       'symbol-spacing': 400,
     },
     paint: {
-      'text-color': ['case', ['get', 'draft'], p.routeDraft, p.route],
+      'text-color': ['case', ['==', ['get', 'kind'], 'explore'], p.routeDraft, p.route],
       'text-halo-color': p.halo,
       'text-halo-width': 2,
     },
   });
   if (opts.mode === 'town') {
+    map.addSource('zone-points', { type: 'geojson', data: zonePoints(opts.zoneName) });
+    map.addSource('district-points', { type: 'geojson', data: districtPoints(opts.districtName) });
+    map.addLayer({
+      id: 'zone-labels',
+      type: 'symbol',
+      source: 'zone-points',
+      minzoom: 12,
+      layout: {
+        'text-field': ['get', 'name'],
+        'text-font': ['Noto Sans Medium'],
+        'text-size': 12,
+        'text-max-width': 8,
+        // below the zone's centre (arena zones: below the arena badge)
+        'text-offset': [0, 1.8],
+        'text-anchor': 'top',
+      },
+      paint: { 'text-color': p.district, 'text-halo-color': p.halo, 'text-halo-width': 2 },
+    });
     map.addLayer({
       id: 'district-labels',
       type: 'symbol',
-      source: 'districts',
+      source: 'district-points',
+      maxzoom: 12,
       layout: {
         'text-field': ['get', 'name'],
         'text-font': ['Noto Sans Medium'],
         'text-size': 14,
         'text-max-width': 8,
+        // below the arena badge it is placed at
+        'text-offset': [0, 2],
+        'text-anchor': 'top',
       },
       paint: { 'text-color': p.district, 'text-halo-color': p.halo, 'text-halo-width': 2 },
     });
@@ -232,23 +358,23 @@ export function setWild(map: MlMap, region: Region | null): void {
 
 /** District labels (Town Map: locked ones also name the badge they need). */
 export function setDistrictLabels(map: MlMap, label: (id: number) => string): void {
-  (map.getSource('districts') as GeoJSONSource | undefined)?.setData({
-    ...districtsGeo,
-    features: districtsGeo.features.map((f) => ({
-      ...f,
-      properties: { ...f.properties, name: glyphSafe(label(f.properties.id)) },
-    })),
-  });
+  (map.getSource('district-points') as GeoJSONSource | undefined)?.setData(districtPoints(label));
 }
 
-/** Dims the districts the player hasn't unlocked yet. */
-export function setLockedDistricts(map: MlMap, locked: number[]): void {
-  if (!map.getLayer('locked-districts')) return;
-  map.setFilter('locked-districts', [
-    'in',
-    ['get', 'id'],
-    ['literal', locked.length ? locked : [-1]],
-  ]);
+/** Dims the zones the player hasn't opened yet (P22). */
+export function setLockedZones(map: MlMap, locked: string[]): void {
+  if (!map.getLayer('locked-zones')) return;
+  map.setFilter('locked-zones', ['in', ['get', 'id'], ['literal', locked.length ? locked : ['']]]);
+}
+
+/** Zone labels (Town Map: locked ones say how to open them). */
+export function setZoneLabels(map: MlMap, label: (id: string) => string): void {
+  (map.getSource('zone-points') as GeoJSONSource | undefined)?.setData(zonePoints(label));
+}
+
+/** Draws the walked parts of the routes (call when the save's route progress changes). */
+export function setRouteProgress(map: MlMap, save: Pick<SaveGame, 'journal'>): void {
+  (map.getSource('routes-walked') as GeoJSONSource | undefined)?.setData(walkedGeo(save));
 }
 
 /** Palette switch for the generated pattern images (layers use applyPalette). */

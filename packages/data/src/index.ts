@@ -9,6 +9,7 @@ import fieldAbilitiesJson from '../content/field-abilities.json';
 import poisJson from '../content/pois.odense.json';
 import arenasJson from '../content/arenas.odense.json';
 import routesJson from '../content/routes.odense.json';
+import zonesJson from '../content/zones.odense.json';
 import goalsJson from '../content/goals.json';
 import enJson from '../i18n/en.json';
 import daJson from '../i18n/da.json';
@@ -21,6 +22,7 @@ import {
   PoisFileSchema,
   ArenasFileSchema,
   RoutesFileSchema,
+  ZonesFileSchema,
   GoalsFileSchema,
   MovesFileSchema,
   SpeciesFileSchema,
@@ -35,6 +37,7 @@ import {
   type Poi,
   type ArenaSite,
   type Route,
+  type Zone,
   type SideGoal,
   type Species,
   type Trainer,
@@ -43,6 +46,8 @@ import {
 
 export * from './schemas';
 export { checkContent, checkI18n, FALLBACK_MOVE_ID } from './check';
+
+export * from './municipalities';
 
 /** All game content, validated and indexed by id. */
 export interface Dex {
@@ -63,8 +68,12 @@ export interface Dex {
   pois: Record<string, Poi>;
   /** Arena sites 1–8 in arena order (M2d: routes, Town Map, Journal). */
   arenaSites: ArenaSite[];
-  /** Named routes between consecutive arenas. */
+  /** Numbered routes between zones (P22). */
   routes: Record<string, Route>;
+  /** Zones of the region, by id (P22). */
+  zones: Record<string, Zone>;
+  /** Level band [min, max] per district 1–8. */
+  districtBands: Record<number, [number, number]>;
   /** Journal side goals per district. */
   sideGoals: SideGoal[];
 }
@@ -81,6 +90,7 @@ export interface RawContent {
   pois: unknown;
   arenas: unknown;
   routes: unknown;
+  zones: unknown;
   goals: unknown;
 }
 
@@ -115,6 +125,13 @@ export function parseContent(raw: RawContent): Dex {
     pois: indexById(PoisFileSchema.parse(raw.pois).pois, 'poi'),
     arenaSites: [...ArenasFileSchema.parse(raw.arenas).arenas].sort((a, b) => a.arena - b.arena),
     routes: indexById(RoutesFileSchema.parse(raw.routes).routes, 'route'),
+    ...(() => {
+      const z = ZonesFileSchema.parse(raw.zones);
+      return {
+        zones: indexById(z.zones, 'zone'),
+        districtBands: Object.fromEntries(z.districts.map((d) => [d.id, d.wildLevels])),
+      };
+    })(),
     sideGoals: GoalsFileSchema.parse(raw.goals).sideGoals,
   };
 }
@@ -131,6 +148,7 @@ export const rawContent: RawContent = {
   pois: poisJson,
   arenas: arenasJson,
   routes: routesJson,
+  zones: zonesJson,
   goals: goalsJson,
 };
 

@@ -16,7 +16,7 @@ import type { ActiveBattle, PostBattleChoice, SaveGame } from './save';
 import { noteRestStop } from './journal';
 
 // ---------------------------------------------------------------------------
-// Badges, obedience and districts
+// Badges, obedience, zones and districts
 
 export const BASE_OBEDIENCE = 15;
 export const OBEDIENCE_PER_BADGE = 5;
@@ -29,14 +29,46 @@ export function obedienceLevel(badges: readonly number[]): number {
   return BASE_OBEDIENCE + OBEDIENCE_PER_BADGE * badges.length;
 }
 
-/** District 1 is always open; badge n opens district n + 1. */
-export function isDistrictUnlocked(badges: readonly number[], district: number): boolean {
-  return district <= 1 || badges.includes(district - 1);
+/**
+ * GDD P22: a zone is open when the player has finished a route that ends in it (the start
+ * zone is open from the beginning). An unknown or empty zone id (outside the region) counts
+ * as open, so nothing outside the map is ever locked by mistake.
+ */
+export function isZoneOpen(
+  save: Pick<SaveGame, 'zones'>,
+  zone: string,
+  dex: Dex = content,
+): boolean {
+  if (!zone || !dex.zones[zone]) return true;
+  return dex.zones[zone]!.start === true || save.zones.includes(zone);
 }
 
-/** The badge a locked district needs (for "come back with the … badge"). */
-export function badgeNeededFor(district: number): number {
-  return Math.max(1, district - 1);
+/** A district counts as open (Journal, Town Map) once any of its zones is open. */
+export function isDistrictOpen(
+  save: Pick<SaveGame, 'zones'>,
+  district: number,
+  dex: Dex = content,
+): boolean {
+  return Object.values(dex.zones).some(
+    (z) => z.district === district && isZoneOpen(save, z.id, dex),
+  );
+}
+
+/** The badge arena `n` needs before its leader takes a challenge (GDD: badge n − 1). */
+export function badgeNeededFor(arena: number): number {
+  return Math.max(1, arena - 1);
+}
+
+/** Whether arena `n` takes a challenge: its zone is open and the player has badge n − 1. */
+export function arenaReady(
+  save: Pick<SaveGame, 'zones' | 'badges'>,
+  arena: number,
+  dex: Dex = content,
+): boolean {
+  const zone = Object.values(dex.zones).find((z) => z.arena === arena);
+  return (
+    (!zone || isZoneOpen(save, zone.id, dex)) && (arena <= 1 || save.badges.includes(arena - 1))
+  );
 }
 
 export function fieldAbilitiesUnlocked(save: SaveGame, dex: Dex = content): string[] {
@@ -178,17 +210,25 @@ function playerSideConfig(save: SaveGame): SideConfig {
 export type SpawnStatus = 'ok' | 'used' | 'tooWild' | 'needsAbility' | 'teamFainted' | 'noTeam';
 
 /**
- * GDD v1.7: common creatures can be battled in every district; rare creatures and
- * field-ability layers in a district the player has not unlocked are "too wild"; a
- * field-ability requirement applies everywhere.
+ * GDD v1.7 + P22: common creatures can be battled everywhere; rare creatures and
+ * field-ability layers in a zone the player has not opened yet are "too wild"; a
+ * field-ability requirement applies everywhere. `zone` is the spawn's zone (from the
+ * region file); without one the spawn counts as open.
  */
 export function spawnStatus(
   save: SaveGame,
-  spawn: { id: string; district: number; requires: string | null; rarity: 'common' | 'rare' },
+  spawn: {
+    id: string;
+    zone?: string;
+    district?: number;
+    requires: string | null;
+    rarity: 'common' | 'rare';
+  },
+  dex: Dex = content,
 ): SpawnStatus {
   if (save.team.length === 0) return 'noTeam';
   if (save.usedSpawns[spawn.id] !== undefined) return 'used';
-  const locked = !isDistrictUnlocked(save.badges, spawn.district);
+  const locked = !isZoneOpen(save, spawn.zone ?? '', dex);
   if (locked && (spawn.rarity === 'rare' || spawn.requires)) return 'tooWild';
   if (spawn.requires && !save.team.some((c) => c.fieldAbility === spawn.requires))
     return 'needsAbility';
@@ -280,16 +320,21 @@ export function startTutorialBattle(save: SaveGame, seed: number, dex: Dex = con
 export type TrainerStatus =
   | { kind: 'ready'; trainerId: string }
   | { kind: 'locked'; badge: number }
+  | { kind: 'zoneLocked'; zone: string }
   | { kind: 'beaten'; trainerId: string }
   | { kind: 'needsJunior'; trainerId: string }
   | { kind: 'teamFainted' }
   | { kind: 'noTeam' };
 
-/** What happens when the player is inside a trainer or arena POI's radius. */
-export function trainerStatus(save: SaveGame, poi: Poi): TrainerStatus | null {
+/**
+ * What happens when the player is inside a trainer or arena POI's radius (P22): trainers and
+ * arenas wait until their zone is open; an arena's leader also needs badge n − 1.
+ */
+export function trainerStatus(save: SaveGame, poi: Poi, dex: Dex = content): TrainerStatus | null {
   if (poi.kind === 'restStop') return null;
-  if (!isDistrictUnlocked(save.badges, poi.district))
-    return { kind: 'locked', badge: badgeNeededFor(poi.district) };
+  if (!isZoneOpen(save, poi.zone, dex)) return { kind: 'zoneLocked', zone: poi.zone };
+  if (poi.kind === 'arena' && poi.arena > 1 && !save.badges.includes(poi.arena - 1))
+    return { kind: 'locked', badge: badgeNeededFor(poi.arena) };
   const order = poi.kind === 'arena' ? poi.trainers : [poi.trainer];
   const next = order.find((id) => !save.defeatedTrainers.includes(id));
   if (!next) return { kind: 'beaten', trainerId: order[order.length - 1]! };

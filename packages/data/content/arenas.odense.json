@@ -4,74 +4,82 @@
     {
       "arena": 1,
       "district": 1,
+      "zone": "centrum",
       "type": "folk",
       "lat": 55.39978,
       "lng": 10.38522,
       "poi": "arena1",
-      "note": "Kongens Have (arena POI)"
+      "note": "Kongens Have, the start town by the station (unchanged)"
     },
     {
       "arena": 2,
       "district": 2,
+      "zone": "naesbyhoved",
       "type": "stone",
-      "lat": 55.39472,
-      "lng": 10.38887,
+      "lat": 55.41346,
+      "lng": 10.37515,
       "poi": "arena2",
-      "note": "Klosterhaven by Sankt Knuds Kirke (arena POI)"
+      "note": "Næsbyhoved Slotsbanke, the medieval castle mound in Næsbyhoved Skov by Odense Å (OSM way 229383133; P22, moved from Klosterhaven)"
     },
     {
       "arena": 3,
       "district": 3,
-      "type": "spirit",
-      "lat": 55.39872,
-      "lng": 10.39078,
+      "zone": "stige",
+      "type": "water",
+      "lat": 55.4478,
+      "lng": 10.4285,
       "poi": null,
-      "note": "H.C. Andersens Hus (OSM museum way 912702695, centroid); POI placed in M3"
+      "note": "Stige Ø, the island in Odense Fjord (recreation area, OSM way 353799265), its southern part by the slipway (P22); POI placed with the arena-3 leader in M3"
     },
     {
       "arena": 4,
       "district": 4,
-      "type": "water",
-      "lat": 55.39077,
-      "lng": 10.38331,
+      "zone": "hcaskoven",
+      "type": "grove",
+      "lat": 55.4143,
+      "lng": 10.4621,
       "poi": null,
-      "note": "Munke Mose park (OSM way 86127610, centroid); POI placed in M3"
+      "note": "H.C. Andersen Skoven, the young fairy-tale forest by Lungs Grave (P22); POI placed in M3"
     },
     {
       "arena": 5,
       "district": 5,
-      "type": null,
-      "lat": 55.37792,
-      "lng": 10.3708,
+      "zone": "hollufgaard",
+      "type": "spirit",
+      "lat": 55.3541,
+      "lng": 10.4421,
       "poi": null,
-      "note": "Outside Odense Zoo's entrance (OSM node 4519017876); mixed arena; POI placed in M3"
+      "note": "Sneglehøjen at Hollufgård: the sculpture park, mill and manor (P22); POI placed in M3"
     },
     {
       "arena": 6,
       "district": 6,
-      "type": "grove",
-      "lat": 55.36571,
-      "lng": 10.37908,
-      "poi": null,
-      "note": "Fruens Bøge, the forest inside district 6 (the forest's centroid lies in district 5); POI placed in M3"
-    },
-    {
-      "arena": 7,
-      "district": 7,
+      "zone": "fynskelandsby",
       "type": "fire",
       "lat": 55.36624,
       "lng": 10.38592,
       "poi": null,
-      "note": "Den Fynske Landsby entrance (OSM node 5314590418); POI placed in M3"
+      "note": "Den Fynske Landsby entrance (OSM node 5314590418): the village smithy (P22: now arena 6); POI placed in M3"
+    },
+    {
+      "arena": 7,
+      "district": 7,
+      "zone": "zoo",
+      "type": null,
+      "lat": 55.37792,
+      "lng": 10.3708,
+      "poi": null,
+      "note": "Outside Odense Zoo's entrance (OSM node 4519017876); mixed arena (P22: now arena 7); POI placed in M3"
     },
     {
       "arena": 8,
       "district": 8,
+      "zone": "tusindaar",
       "type": "storm",
-      "lat": 55.4085,
-      "lng": 10.3895,
+      "lat": 55.3816,
+      "lng": 10.3387,
       "poi": null,
-      "note": "Havnebadet in the inner harbour (approximate); POI placed in M3"
+      "note": "Viewpoint hill of Tusindårsskoven, the Millennium Forest (P22); POI placed in M3"
     }
   ]
 }

@@ -16,7 +16,8 @@ import {
   teachFieldAbility,
   addToBag,
   applyItem,
-  isDistrictUnlocked,
+  isDistrictOpen,
+  isZoneOpen,
   journal,
   RECOVERY_SECONDS,
   type Goal,
@@ -632,7 +633,10 @@ function BadgesScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBac
       </p>
       <p className="muted small">
         {t('team.obedience', { level: obedienceLevel(save.badges) })} ·{' '}
-        {t('badges.districts', { n: Math.min(8, 1 + save.badges.length) })}
+        {t('badges.zones', {
+          n: Object.keys(content.zones).filter((z) => isZoneOpen(save, z)).length,
+          of: Object.keys(content.zones).length,
+        })}
       </p>
       <p className="muted small" data-testid="badges-trainers">
         {t('badges.trainers', { n: save.defeatedTrainers.length })}
@@ -895,7 +899,6 @@ function DevSection({
 // Journal (M2d, GDD "Journal")
 
 const GOAL_ICON: Record<Goal['kind'], IconName> = {
-  reach: 'pin',
   route: 'route',
   trainers: 'trainer',
   rest: 'rest',
@@ -943,6 +946,14 @@ function JournalScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBa
           </strong>
         </div>
       </section>
+      <p className="muted small" data-testid="journal-region">
+        {t('journal.region', {
+          routes: j.routesDone,
+          routesTotal: j.routesTotal,
+          zones: j.zonesOpen,
+          zonesTotal: j.zonesTotal,
+        })}
+      </p>
       <Tabs
         tabs={[
           { id: 'goals', label: t('journal.goals') },
@@ -960,10 +971,8 @@ function JournalScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBa
           >
             <h2>
               {t(`district.${d.district}.name`)}
-              {!isDistrictUnlocked(save.badges, d.district) && (
-                <Pill tone="warn">
-                  {t('journal.locked', { badge: t(`badge.${d.district - 1}.name`) })}
-                </Pill>
+              {!isDistrictOpen(save, d.district) && (
+                <Pill tone="warn">{t('journal.lockedZone')}</Pill>
               )}
             </h2>
             {d.main.length > 0 && <p className="panel-title small">{t('journal.main')}</p>}

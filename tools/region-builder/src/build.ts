@@ -2,11 +2,23 @@ import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
-import { booleanPointInPolygon, bboxPolygon } from '@turf/turf';
-import type { Feature, FeatureCollection, Geometry, MultiPolygon, Polygon } from 'geojson';
-import { cellToChildren, cellToLatLng, latLngToCell, polygonToCells } from 'h3-js';
+import { bboxPolygon, booleanPointInPolygon, simplify as simplifyGeo } from '@turf/turf';
+import type { FeatureCollection, Geometry, MultiPolygon } from 'geojson';
+import {
+  cellToChildren,
+  cellToLatLng,
+  cellsToMultiPolygon,
+  latLngToCell,
+  polygonToCells,
+} from 'h3-js';
 import osmtogeojson from 'osmtogeojson';
-import { content, RegionFileSchema, RoutesFileSchema, type RegionFile } from '@oml/data';
+import {
+  content,
+  RegionFileSchema,
+  RoutesFileSchema,
+  ZonesFileSchema,
+  type RegionFile,
+} from '@oml/data';
 import { FeatureIndex, blockedMask, classifyCell } from './classify';
 import {
   BIOMES,
@@ -18,7 +30,7 @@ import {
 } from './config';
 import { segmentDistM, type LngLat } from './route-lib';
 import { basemapWater } from './basemap-water';
-import { buildQuery, fetchOverpass } from './overpass';
+import { buildQuery, fetchOverpassTiled } from './overpass';
 
 const root = (p: string) => fileURLToPath(new URL(`../../../${p}`, import.meta.url));
 const cacheDir = fileURLToPath(new URL('../cache', import.meta.url));
@@ -26,17 +38,21 @@ const OUT = root('packages/data/region/region.odense.json');
 const HAZARDS_OUT = root('packages/data/region/hazards.odense.json');
 const VERSION_OUT = root('packages/data/region/region.odense.version.json');
 const DISTRICTS = root('packages/data/content/districts.odense.geojson');
+const ZONES_GEO = root('packages/data/content/zones.odense.geojson');
+const ZONES = root('packages/data/content/zones.odense.json');
+const BOUNDARY = root('packages/data/content/boundary.odense.geojson');
 const ROUTES = root('packages/data/content/routes.odense.json');
 const BASEMAP = root('apps/client/public/tiles/odense.pmtiles');
 
 const started = performance.now();
-const osm = (await fetchOverpass(
-  buildQuery(REGION.bbox),
+const osm = await fetchOverpassTiled(
+  buildQuery,
+  REGION.bbox,
+  REGION.tiles[0],
+  REGION.tiles[1],
   cacheDir,
   process.argv.includes('--refresh'),
-)) as {
-  osm3s?: { timestamp_osm_base?: string };
-};
+);
 const geo = osmtogeojson(osm as never) as FeatureCollection<Geometry | null>;
 
 const index = new FeatureIndex();
@@ -64,12 +80,28 @@ const water = await basemapWater(BASEMAP, REGION.bbox);
 for (const f of water) index.addFeature(f);
 console.log(`Basemap water polygons: ${water.length}`);
 
-type DistrictFeature = Feature<
-  Polygon | MultiPolygon,
-  { id: number; wildLevels: [number, number]; draft: boolean }
->;
-const districts = (JSON.parse(readFileSync(DISTRICTS, 'utf8')) as FeatureCollection)
-  .features as DistrictFeature[];
+/**
+ * Zones (P22): every cell inside the municipality belongs to the nearest zone centre (in
+ * metres), and to that zone's district. Districts and zones are written back as outlines
+ * for the maps (districts.odense.geojson, zones.odense.geojson; generated).
+ */
+const zonesFile = ZonesFileSchema.parse(JSON.parse(readFileSync(ZONES, 'utf8')));
+const zoneList = zonesFile.zones;
+const boundary = (JSON.parse(readFileSync(BOUNDARY, 'utf8')) as FeatureCollection<MultiPolygon>)
+  .features[0]!;
+const kLng = 111_320 * Math.cos((55.39 * Math.PI) / 180);
+function nearestZone(lat: number, lng: number): number {
+  let best = 0;
+  let bestD = Infinity;
+  zoneList.forEach((z, i) => {
+    const d = Math.hypot((z.lat - lat) * 110_540, (z.lng - lng) * kLng);
+    if (d < bestD) {
+      bestD = d;
+      best = i;
+    }
+  });
+  return best;
+}
 
 /**
  * Route corridors (M2d): a cell counts as on a route when at least a few of its 49 sample
@@ -102,25 +134,30 @@ let partlyBlocked = 0;
 let wildCells = 0;
 let routeCells = 0;
 /**
- * A POI's own map cell always counts as the POI's district (M2c): otherwise a cell whose
- * centre lies just across a border would show, e.g., the library rest stop's wildlife as
- * "too wild".
+ * A POI's own map cell always counts as the POI's zone (M2c): otherwise a cell whose centre
+ * lies just across a border would show, e.g., a rest stop's wildlife as "too wild".
  */
-const poiCellDistrict = new Map(
-  Object.values(content.pois).map((p) => [latLngToCell(p.lat, p.lng, REGION.h3Res), p.district]),
+const poiCellZone = new Map(
+  Object.values(content.pois).map((p) => [
+    latLngToCell(p.lat, p.lng, REGION.h3Res),
+    zoneList.findIndex((z) => z.id === p.zone),
+  ]),
 );
+const cellsByZone: string[][] = zoneList.map(() => []);
 for (const cell of cells.sort()) {
   const [lat, lng] = cellToLatLng(cell);
-  const forced = poiCellDistrict.get(cell);
-  const district =
-    forced !== undefined
-      ? districts.find((d) => d.properties.id === forced)
-      : districts.find((d) => booleanPointInPolygon([lng, lat], d));
-  const c = classifyCell(index, cell, REGION.sampleRes);
-  if (!district || Object.keys(c.shares).length === 0) {
+  if (!booleanPointInPolygon([lng, lat], boundary)) {
     dropped++;
     continue;
   }
+  const zoneIdx = poiCellZone.get(cell) ?? nearestZone(lat, lng);
+  const district = zoneList[zoneIdx]!.district;
+  const c = classifyCell(index, cell, REGION.sampleRes);
+  if (Object.keys(c.shares).length === 0) {
+    dropped++;
+    continue;
+  }
+  cellsByZone[zoneIdx]!.push(cell);
   if (c.noSpawn) noSpawnCells++;
   // Column 1 is a bit field (region file v3): noSpawn, wild, water edge, route corridor.
   let flags = c.noSpawn ? FLAG.noSpawn : 0;
@@ -128,7 +165,7 @@ for (const cell of cells.sort()) {
   if (onRoute(cell)) flags |= FLAG.route;
   if (flags & FLAG.wild) wildCells++;
   if (flags & FLAG.route) routeCells++;
-  const row = [district.properties.id, flags, ...BIOMES.map((b) => c.shares[b] ?? 0)];
+  const row = [district, zoneIdx, flags, ...BIOMES.map((b) => c.shares[b] ?? 0)];
   // Blocked spawn positions (P10/P11) as an optional 11th column; omitted when none.
   if (!c.noSpawn && c.blocked.length > 0) {
     row.push(blockedMask(c.blocked));
@@ -138,32 +175,84 @@ for (const cell of cells.sort()) {
   out[cell] = row;
 }
 
-const districtMeta = districts
-  .map((d) => ({
-    id: d.properties.id,
-    wildLevels: d.properties.wildLevels,
-    draft: d.properties.draft,
-  }))
+const districtMeta = zonesFile.districts
+  .map((d) => ({ id: d.id, wildLevels: d.wildLevels, draft: false }))
   .sort((a, b) => a.id - b.id);
+
+/** Outline of a set of cells, simplified to about 25 m (hexagon steps smoothed away). */
+function outline(cellIds: string[]): MultiPolygon {
+  const geom: MultiPolygon = {
+    type: 'MultiPolygon',
+    coordinates: cellsToMultiPolygon(cellIds, true),
+  };
+  const s = simplifyGeo(geom, { tolerance: 0.00025, highQuality: true }) as MultiPolygon;
+  return {
+    type: 'MultiPolygon',
+    coordinates: s.coordinates
+      .map((poly) =>
+        poly
+          .map((ring) =>
+            ring.map(([x, y]) => [Math.round(x! * 1e5) / 1e5, Math.round(y! * 1e5) / 1e5]),
+          )
+          .filter((ring) => ring.length >= 4),
+      )
+      .filter((poly) => poly.length > 0),
+  };
+}
+const generated = 'Generated by pnpm region:build from zones.odense.json (P22); do not edit.';
+writeFileSync(
+  ZONES_GEO,
+  `${JSON.stringify({
+    type: 'FeatureCollection',
+    note: generated,
+    features: zoneList.map((z, i) => ({
+      type: 'Feature',
+      properties: { id: z.id, district: z.district, kind: z.kind },
+      geometry: outline(cellsByZone[i]!),
+    })),
+  })}
+`,
+);
+writeFileSync(
+  DISTRICTS,
+  `${JSON.stringify({
+    type: 'FeatureCollection',
+    note: generated,
+    features: districtMeta.map((d) => ({
+      type: 'Feature',
+      properties: { id: d.id, wildLevels: d.wildLevels, draft: false },
+      geometry: outline(cellsByZone.flatMap((cs, i) => (zoneList[i]!.district === d.id ? cs : []))),
+    })),
+  })}
+`,
+);
 /**
  * Content hash of what decides spawns (cells and district bands). The spawn service returns
  * it with every response, and the client compares it with region.odense.version.json.
  */
 const dataVersion = createHash('sha256')
-  .update(JSON.stringify({ region: REGION.id, districts: districtMeta, cells: out }))
+  .update(
+    JSON.stringify({
+      region: REGION.id,
+      districts: districtMeta,
+      zones: zoneList.map((z) => z.id),
+      cells: out,
+    }),
+  )
   .digest('hex')
   .slice(0, 12);
 
 const region: RegionFile = RegionFileSchema.parse({
   region: REGION.id,
   dataVersion,
-  version: 3,
+  version: 4,
   h3Res: REGION.h3Res,
   coarseRes: REGION.coarseRes,
   bbox: REGION.bbox,
   biomes: [...BIOMES],
   osmTimestamp: osm.osm3s?.timestamp_osm_base ?? 'unknown',
   districts: districtMeta,
+  zones: zoneList.map((z) => z.id),
   cells: out,
 });
 // One cell per line keeps diffs readable and the file small.
@@ -198,7 +287,7 @@ for (const b of BIOMES)
   console.log(`  ${b.padEnd(11)} ${(totals[b]! * CELL_KM2).toFixed(2).padStart(7)}`);
 for (const d of region.districts) {
   const n = Object.values(out).filter((r) => r[0] === d.id).length;
-  console.log(`  district ${d.id}${d.draft ? ' (draft)' : ''}: ${n} cells`);
+  console.log(`  district ${d.id}: ${n} cells`);
 }
 console.log(
   `File: ${OUT}\n  ${(json.length / 1024).toFixed(0)} KB raw, ${(gzipSync(json).length / 1024).toFixed(0)} KB gzip`,

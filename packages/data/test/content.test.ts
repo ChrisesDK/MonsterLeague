@@ -14,23 +14,10 @@ describe('content', () => {
     expect(Object.keys(content.species)).toHaveLength(17);
     expect(Object.keys(content.moves).length).toBeGreaterThanOrEqual(30);
     expect(Object.keys(content.items)).toHaveLength(8);
-    expect(
-      Object.values(content.pois)
-        .map((p) => p.kind)
-        .sort(),
-    ).toEqual([
-      'arena',
-      'arena',
-      'restStop',
-      'restStop',
-      'restStop',
-      'trainer',
-      'trainer',
-      'trainer',
-      'trainer',
-      'trainer',
-      'trainer',
-    ]);
+    const kinds = Object.values(content.pois).map((p) => p.kind);
+    expect(kinds.filter((k) => k === 'arena')).toHaveLength(2);
+    expect(kinds.filter((k) => k === 'trainer')).toHaveLength(6);
+    expect(kinds.filter((k) => k === 'restStop')).toHaveLength(24);
     expect(Object.keys(content.trainers)).toHaveLength(13);
     expect(Object.keys(content.playerTeams)).toHaveLength(3);
     for (const s of Object.values(content.species)) expect(s.placeholder).toBe(true);
@@ -165,7 +152,7 @@ describe('field abilities (M1.7, GDD v1.2 / P1)', () => {
 });
 
 describe('POIs (M2b)', () => {
-  it('districts 1 and 2: arena (junior then leader), route trainers in their level range, rest stops, all unverified', () => {
+  it('arenas 1 and 2 (junior then leader), route trainers in their level range, rest stops everywhere, all unverified', () => {
     const pois = Object.values(content.pois);
     const arenas = pois.filter((p) => p.kind === 'arena');
     expect(arenas.map((a) => a.kind === 'arena' && [a.district, a.trainers])).toEqual([
@@ -174,7 +161,7 @@ describe('POIs (M2b)', () => {
     ]);
     const range: Record<number, [number, number]> = { 1: [4, 9], 2: [9, 14] };
     for (const p of pois) {
-      expect([1, 2]).toContain(p.district);
+      if (p.kind !== 'restStop') expect([1, 2]).toContain(p.district);
       expect(p.verified).toBe(false);
       if (p.kind === 'trainer') {
         const t = content.trainers[p.trainer]!;
@@ -187,22 +174,27 @@ describe('POIs (M2b)', () => {
     }
     expect(
       pois
-        .filter((p) => p.district === 2)
+        .filter((p) => p.zone === 'naesbyhoved')
         .map((p) => p.kind)
         .sort(),
     ).toEqual(['arena', 'restStop', 'trainer', 'trainer']);
-    // Arena 4 (Water, Munkemose) exists as data only until M3.
-    expect(content.trainers.leader_water!.arena).toBe(4);
+    // P22: a rest stop at every arena site and town (and at the main destinations)
+    const rested = new Set(pois.filter((p) => p.kind === 'restStop').map((p) => p.zone));
+    for (const z of Object.values(content.zones))
+      if (z.kind === 'arena' || z.kind === 'town') expect(rested.has(z.id), z.id).toBe(true);
+    // Arena 3 (Water, Stige Ø) exists as data only until M3 (P22: was arena 4).
+    expect(content.trainers.leader_water!.arena).toBe(3);
     expect(content.trainers.leader_water!.team).toHaveLength(4);
   });
 
-  it("each POI's own map cell counts as the POI's district (region build)", () => {
+  it("each POI's own map cell counts as the POI's zone and district (region build)", () => {
     const region = JSON.parse(
       readFileSync(new URL('../region/region.odense.json', import.meta.url), 'utf8'),
-    ) as { cells: Record<string, number[]> };
+    ) as { zones: string[]; cells: Record<string, number[]> };
     for (const p of Object.values(content.pois)) {
       const row = region.cells[latLngToCell(p.lat, p.lng, 10)];
       expect(row?.[0], p.id).toBe(p.district);
+      expect(region.zones[row![1]!], p.id).toBe(p.zone);
     }
   });
 
@@ -245,24 +237,34 @@ describe('arena sites, routes and Journal goals (M2d)', () => {
     expect(content.arenaSites.filter((a) => a.poi).map((a) => a.poi)).toEqual(['arena1', 'arena2']);
   });
 
-  it('routes 1–3 are live, connect consecutive arenas and start and end at them', () => {
-    const live = Object.values(content.routes).filter((r) => !r.draft);
-    expect(live.map((r) => r.id)).toEqual(['route1', 'route2', 'route3']);
-    for (const r of Object.values(content.routes)) {
-      const from = content.arenaSites[r.from - 1]!;
-      const to = content.arenaSites[r.to - 1]!;
-      expect(m(r.path[0]!, [from.lng, from.lat])).toBeLessThan(150);
-      expect(m(r.path[r.path.length - 1]!, [to.lng, to.lat])).toBeLessThan(150);
+  it('P22: 50 routes between zones; the badge path links every arena in order', () => {
+    const routes = Object.values(content.routes);
+    expect(routes).toHaveLength(50);
+    const main = routes.filter((r) => r.kind === 'main');
+    // walking only main routes from the start reaches every arena zone
+    const open = new Set(['centrum']);
+    for (let grew = true; grew;) {
+      grew = false;
+      for (const r of main)
+        if (open.has(r.from) !== open.has(r.to)) {
+          open.add(open.has(r.from) ? r.to : r.from);
+          grew = true;
+        }
     }
+    for (const a of content.arenaSites) expect(open.has(a.zone), a.zone).toBe(true);
+    // no route like the old 13.6 km Route 7; most arenas have 3 or more routes in
+    for (const r of routes) expect(r.lengthM, r.id).toBeLessThan(7000);
+    const degree = (z: string) => routes.filter((r) => r.from === z || r.to === z).length;
+    expect(content.arenaSites.filter((a) => degree(a.zone) >= 3).length).toBeGreaterThanOrEqual(5);
   });
 
-  it('the moved district 1–2 trainers stand on a route', () => {
-    for (const id of ['trainer_freja', 'trainer_karen', 'trainer_mads']) {
-      const p = content.pois[id]!;
+  it('the route trainers stand on a route', () => {
+    for (const p of Object.values(content.pois)) {
+      if (p.kind !== 'trainer' || p.id === 'trainer_lise') continue;
       const d = Math.min(
         ...Object.values(content.routes).map((r) => toRoute([p.lng, p.lat], r.path)),
       );
-      expect(d, id).toBeLessThan(10);
+      expect(d, p.id).toBeLessThan(10);
     }
   });
 

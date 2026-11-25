@@ -1,0 +1,321 @@
+{
+  "region": "odense",
+  "districts": [
+    {
+      "id": 1,
+      "wildLevels": [3, 8]
+    },
+    {
+      "id": 2,
+      "wildLevels": [8, 14]
+    },
+    {
+      "id": 3,
+      "wildLevels": [13, 20]
+    },
+    {
+      "id": 4,
+      "wildLevels": [19, 26]
+    },
+    {
+      "id": 5,
+      "wildLevels": [25, 32]
+    },
+    {
+      "id": 6,
+      "wildLevels": [31, 38]
+    },
+    {
+      "id": 7,
+      "wildLevels": [37, 44]
+    },
+    {
+      "id": 8,
+      "wildLevels": [43, 50]
+    }
+  ],
+  "zones": [
+    {
+      "id": "centrum",
+      "kind": "arena",
+      "district": 1,
+      "lat": 55.39978,
+      "lng": 10.38522,
+      "arena": 1,
+      "start": true
+    },
+    {
+      "id": "munkemose",
+      "kind": "water",
+      "district": 1,
+      "lat": 55.3913,
+      "lng": 10.3826
+    },
+    {
+      "id": "bolbro",
+      "kind": "wild",
+      "district": 1,
+      "lat": 55.4022,
+      "lng": 10.3475
+    },
+    {
+      "id": "sktjoergen",
+      "kind": "wild",
+      "district": 1,
+      "lat": 55.3976,
+      "lng": 10.4114
+    },
+    {
+      "id": "naesbyhoved",
+      "kind": "arena",
+      "district": 2,
+      "lat": 55.41346,
+      "lng": 10.37515,
+      "arena": 2
+    },
+    {
+      "id": "havnen",
+      "kind": "town",
+      "district": 2,
+      "lat": 55.4085,
+      "lng": 10.3895
+    },
+    {
+      "id": "maylandskoven",
+      "kind": "wild",
+      "district": 2,
+      "lat": 55.4197,
+      "lng": 10.3668
+    },
+    {
+      "id": "stavis",
+      "kind": "wild",
+      "district": 2,
+      "lat": 55.4173,
+      "lng": 10.3421
+    },
+    {
+      "id": "odins",
+      "kind": "wild",
+      "district": 2,
+      "lat": 55.4276,
+      "lng": 10.3288
+    },
+    {
+      "id": "kirkendrup",
+      "kind": "wild",
+      "district": 2,
+      "lat": 55.4413,
+      "lng": 10.3324
+    },
+    {
+      "id": "lumby",
+      "kind": "water",
+      "district": 2,
+      "lat": 55.4493,
+      "lng": 10.375
+    },
+    {
+      "id": "stige",
+      "kind": "arena",
+      "district": 3,
+      "lat": 55.4478,
+      "lng": 10.4285,
+      "arena": 3
+    },
+    {
+      "id": "strandskov",
+      "kind": "wild",
+      "district": 3,
+      "lat": 55.4222,
+      "lng": 10.404
+    },
+    {
+      "id": "hindemosen",
+      "kind": "wild",
+      "district": 3,
+      "lat": 55.4166,
+      "lng": 10.417
+    },
+    {
+      "id": "seden",
+      "kind": "water",
+      "district": 3,
+      "lat": 55.439,
+      "lng": 10.456
+    },
+    {
+      "id": "hcaskoven",
+      "kind": "arena",
+      "district": 4,
+      "lat": 55.4143,
+      "lng": 10.4621,
+      "arena": 4
+    },
+    {
+      "id": "lungsgrave",
+      "kind": "wild",
+      "district": 4,
+      "lat": 55.4054,
+      "lng": 10.4563
+    },
+    {
+      "id": "raeveskov",
+      "kind": "wild",
+      "district": 4,
+      "lat": 55.4131,
+      "lng": 10.4824
+    },
+    {
+      "id": "botanisk",
+      "kind": "town",
+      "district": 4,
+      "lat": 55.3994,
+      "lng": 10.4295
+    },
+    {
+      "id": "oerbaek",
+      "kind": "wild",
+      "district": 4,
+      "lat": 55.3851,
+      "lng": 10.4339
+    },
+    {
+      "id": "hollufgaard",
+      "kind": "arena",
+      "district": 5,
+      "lat": 55.3541,
+      "lng": 10.4421,
+      "arena": 5
+    },
+    {
+      "id": "faellesskov",
+      "kind": "wild",
+      "district": 5,
+      "lat": 55.369,
+      "lng": 10.43
+    },
+    {
+      "id": "kohave",
+      "kind": "wild",
+      "district": 5,
+      "lat": 55.3786,
+      "lng": 10.466
+    },
+    {
+      "id": "fraugde",
+      "kind": "town",
+      "district": 5,
+      "lat": 55.3552,
+      "lng": 10.4875
+    },
+    {
+      "id": "romantiskehave",
+      "kind": "wild",
+      "district": 5,
+      "lat": 55.3512,
+      "lng": 10.5328
+    },
+    {
+      "id": "tarupdavinde",
+      "kind": "water",
+      "district": 5,
+      "lat": 55.329,
+      "lng": 10.53
+    },
+    {
+      "id": "hoejby",
+      "kind": "wild",
+      "district": 5,
+      "lat": 55.3345,
+      "lng": 10.42
+    },
+    {
+      "id": "fynskelandsby",
+      "kind": "arena",
+      "district": 6,
+      "lat": 55.36624,
+      "lng": 10.38592,
+      "arena": 6
+    },
+    {
+      "id": "hjallese",
+      "kind": "wild",
+      "district": 6,
+      "lat": 55.3579,
+      "lng": 10.421
+    },
+    {
+      "id": "stenloese",
+      "kind": "wild",
+      "district": 6,
+      "lat": 55.35,
+      "lng": 10.3637
+    },
+    {
+      "id": "bellinge",
+      "kind": "town",
+      "district": 6,
+      "lat": 55.3381,
+      "lng": 10.3126
+    },
+    {
+      "id": "zoo",
+      "kind": "arena",
+      "district": 7,
+      "lat": 55.37792,
+      "lng": 10.3708,
+      "arena": 7
+    },
+    {
+      "id": "sanderum",
+      "kind": "water",
+      "district": 7,
+      "lat": 55.3675,
+      "lng": 10.3213
+    },
+    {
+      "id": "tusindaar",
+      "kind": "arena",
+      "district": 8,
+      "lat": 55.3816,
+      "lng": 10.3387,
+      "arena": 8
+    },
+    {
+      "id": "elmelund",
+      "kind": "wild",
+      "district": 8,
+      "lat": 55.3835,
+      "lng": 10.2985
+    },
+    {
+      "id": "hesbjerg",
+      "kind": "wild",
+      "district": 8,
+      "lat": 55.3695,
+      "lng": 10.223
+    },
+    {
+      "id": "braendekilde",
+      "kind": "wild",
+      "district": 8,
+      "lat": 55.356,
+      "lng": 10.265
+    },
+    {
+      "id": "holeskov",
+      "kind": "wild",
+      "district": 8,
+      "lat": 55.412,
+      "lng": 10.248
+    },
+    {
+      "id": "korup",
+      "kind": "town",
+      "district": 8,
+      "lat": 55.4196,
+      "lng": 10.2711
+    }
+  ]
+}

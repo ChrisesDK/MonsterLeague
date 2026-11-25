@@ -17,12 +17,12 @@ export function SimPanel({ t, sim, useSim, onUseSim, onTeleportMode }: Props) {
   const [state, setState] = useState<SimState>(sim.state);
   const [teleport, setTeleport] = useState(false);
   const [open, setOpen] = useState(false);
-  /** Sample GPX walk, or one of the live routes (M2d: walk a route with the simulator). */
+  /** Sample GPX walk, or one of the routes (M2d: walk a route with the simulator). */
   const walks = useMemo(
     () => [
       { id: 'sample', label: t('sim.sample'), points: parseGpx(sampleGpx) },
       ...Object.values(content.routes)
-        .filter((r) => !r.draft)
+        .sort((a, b) => a.number - b.number)
         .map((r) => ({
           id: r.id,
           label: t(`route.${r.id}.name`),
