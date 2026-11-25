@@ -1131,5 +1131,6 @@
   "townMap.walkRoute": "walk Route {n}",
   "townMap.trainerBeaten": "Nothing: you beat this trainer",
   "townMap.trainerReady": "Ready to battle ({place})",
-  "townMap.marketOpen": "Nothing: buy and sell items"
+  "townMap.marketOpen": "Nothing: buy and sell items",
+  "map.walkCloserPoi": "{name} is {m} m away. Walk closer."
 }

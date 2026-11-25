@@ -1356,6 +1356,10 @@ html[data-theme='night'] .arena-field {
 .poi-marker {
   width: 44px;
   height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
 }
 .poi-marker.poi-arena {
   width: 56px;

@@ -496,6 +496,37 @@ test('Fyn map: the regions of Fyn, only Odense opens; badges grey until won; hel
   await expect(page.getByTestId('play-map')).toBeVisible();
 });
 
+test('POI stamps are pressable (owner): in reach a rest stop heals and a trainer battles; out of reach it says how far', async ({
+  page,
+}) => {
+  await startDone(page);
+  const pois = (
+    JSON.parse(
+      readFileSync(
+        new URL('../../../packages/data/content/pois.odense.json', import.meta.url),
+        'utf8',
+      ),
+    ) as { pois: { id: string; lat: number; lng: number; radius: number }[] }
+  ).pois;
+  const rest = pois.find((p) => p.id === 'rest_library')!;
+  const lise = pois.find((p) => p.id === 'trainer_lise')!;
+  // far away: a tap says how far to walk
+  await teleport(page, { lat: rest.lat + 0.004, lng: rest.lng });
+  await page.getByTestId('poi-stamp-rest_library').evaluate((e) => (e as HTMLElement).click());
+  await expect(page.locator('.map-toast')).toContainText('m away');
+  // 10 m outside the 40 m radius still counts (GPS slack), and the tap heals at once
+  await dev(page, 'setTeamHp', 1);
+  await teleport(page, { lat: rest.lat + 50 / 110_540, lng: rest.lng });
+  await page.getByTestId('poi-stamp-rest_library').evaluate((e) => (e as HTMLElement).click());
+  await expect
+    .poll(async () => ((await dev(page, 'save')) as { team: { hp: number }[] }).team[0]!.hp)
+    .toBeGreaterThan(1);
+  // a trainer in reach: the tap starts the battle
+  await teleport(page, lise);
+  await page.getByTestId('poi-stamp-trainer_lise').evaluate((e) => (e as HTMLElement).click());
+  await expect(page.locator('main.battle')).toBeVisible();
+});
+
 test('Market (D165): buy with skilling, sell back for half; back returns to the map', async ({
   page,
 }) => {
@@ -510,9 +541,9 @@ test('Market (D165): buy with skilling, sell back for half; back returns to the 
     ) as { pois: { id: string; lat: number; lng: number }[] }
   ).pois.find((p) => p.id === 'market_vestergade')!;
   await teleport(page, market);
-  const card = page.locator('[data-testid=poi-card][data-poi=market_vestergade]');
-  await expect(card).toBeVisible();
-  await card.getByTestId('poi-action').click();
+  // no card pops up by itself; pressing the market's stamp opens the market
+  await expect(page.locator('[data-testid=poi-card]')).toHaveCount(0);
+  await page.getByTestId('poi-stamp-market_vestergade').evaluate((e) => (e as HTMLElement).click());
   await expect(page.getByTestId('screen-market')).toBeVisible();
   await expect(page.getByTestId('market-coins')).toContainText('300');
   // Good Charms wait for badge 2
@@ -1025,7 +1056,9 @@ test('40 m range ring, see-through icons beyond it, names in Nearby, the camera 
   await startDone(page);
   await teleport(page, KONGENS_HAVE);
   await page.waitForTimeout(1500);
-  await page.mouse.click(195, 300); // a first tap: phones only vibrate after one
+  // a first interaction (phones only vibrate after one); a key, since a tap on the map
+  // could land on a POI stamp, which now acts (press-based POIs)
+  await page.keyboard.press('KeyA');
   // no heading cone on the player
   await expect(page.locator('.heading-marker')).toHaveCount(0);
   // the ring around the player is the 40 m battle range (not the GPS accuracy)

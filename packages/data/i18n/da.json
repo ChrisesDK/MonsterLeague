@@ -1131,5 +1131,6 @@
   "townMap.walkRoute": "gå rute {n}",
   "townMap.trainerBeaten": "Intet: du har slået træneren",
   "townMap.trainerReady": "Klar til kamp ({place})",
-  "townMap.marketOpen": "Intet: køb og sælg ting"
+  "townMap.marketOpen": "Intet: køb og sælg ting",
+  "map.walkCloserPoi": "{name} er {m} m væk. Gå tættere på."
 }

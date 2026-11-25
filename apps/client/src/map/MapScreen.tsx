@@ -11,7 +11,6 @@ import {
   collectChoices,
   finishBattle,
   healTeam,
-  insidePoi,
   isZoneOpen,
   journal as buildJournal,
   nearestPoi,
@@ -103,6 +102,8 @@ import {
 const POIS: Poi[] = Object.values(content.pois);
 /** POI radius circles appear when the player is this much outside the radius, or closer. */
 const RADIUS_SHOW_M = 60;
+/** GPS slack for POIs: a stamp works up to this far outside its radius (phone fixes wander). */
+const POI_SLACK_M = 15;
 /** Creatures further than this are drawn faint (GDD v1.9: visible to 200 m, faint beyond 100 m). */
 const FAINT_M = 100;
 /** Distance steps shorter than this are noise (GPS jitter); they are added up later. */
@@ -212,6 +213,8 @@ export function MapScreen({
   const [mapReady, setMapReady] = useState(false);
   const [bearing, setBearing] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
+  /** The POI whose card shows when several are in reach (the last stamp tapped). */
+  const [pickedPoi, setPickedPoi] = useState<string | null>(null);
   const [townMap, setTownMap] = useState(false);
   // the back gesture closes the Town Map (owner: back to the game view, no question)
   useBackHandler(townMap, () => setTownMap(false));
@@ -498,12 +501,17 @@ export function MapScreen({
       const img = document.createElement('img');
       img.alt = '';
       img.src = stampUrl(poi.kind, poiDone(poi, saveRef.current));
-      const el = markerElement('div', `poi-marker poi-${poi.kind}`, img);
+      // A button (owner: stamps must be pressable when you are near them).
+      const el = markerElement('button', `poi-marker poi-${poi.kind}`, img);
       el.dataset.poiId = poi.id;
       el.dataset.lat = String(poi.lat);
       el.dataset.lng = String(poi.lng);
-      el.setAttribute('role', 'img');
+      el.dataset.testid = `poi-stamp-${poi.id}`;
       el.setAttribute('aria-label', t(`poi.${poi.id}.name`));
+      el.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        tapPoiRef.current(poi);
+      });
       const marker = new maplibregl.Marker({ element: el, anchor: 'center' })
         .setLngLat([poi.lng, poi.lat])
         .addTo(map);
@@ -1016,11 +1024,19 @@ export function MapScreen({
   };
 
   // ---- POIs ----------------------------------------------------------------------------------
-  const here = position
-    ? (POIS.filter((p) => insidePoi(position, p)).sort(
+  // POIs in reach: the radius plus a little GPS slack (a phone fix is often 10–20 m off).
+  const inReach = position
+    ? POIS.filter((p) => distanceM(position, p) <= p.radius + POI_SLACK_M).sort(
         (a, b) => distanceM(position, a) - distanceM(position, b),
-      )[0] ?? null)
-    : null;
+      )
+    : [];
+  // Press-based (owner): no card pops up by itself; a card shows only for the stamp the
+  // player tapped, while it stays in reach.
+  const here = inReach.find((p) => p.id === pickedPoi) ?? null;
+  const pickedInReach = here !== null;
+  useEffect(() => {
+    if (pickedPoi && !pickedInReach) setPickedPoi(null);
+  }, [pickedPoi, pickedInReach]);
 
   const fightPoi = (poi: Poi) => {
     const st = trainerStatus(saveRef.current, poi);
@@ -1030,6 +1046,37 @@ export function MapScreen({
     );
     openBattle();
   };
+
+  /**
+   * Tapping a stamp (owner request): in reach it acts at once (a rest stop heals, a trainer
+   * or arena starts its next battle, a market opens) and shows its card; out of reach it says
+   * how far to walk.
+   */
+  const tapPoi = (poi: Poi) => {
+    if (!position) return;
+    const d = distanceM(position, poi);
+    if (d > poi.radius + POI_SLACK_M) {
+      setToast(
+        t('map.walkCloserPoi', {
+          name: t(`poi.${poi.id}.name`),
+          m: Math.max(1, Math.round(d - poi.radius)),
+        }),
+      );
+      return;
+    }
+    if (poi.kind === 'restStop') {
+      setPickedPoi(poi.id); // the card shows what the rest stop did
+      rest(poi);
+    } else if (poi.kind === 'market') {
+      setPickedPoi(null);
+      onMarket?.(poi.id);
+    } else if (trainerStatus(saveRef.current, poi)?.kind === 'ready') {
+      setPickedPoi(null);
+      fightPoi(poi);
+    } else setPickedPoi(poi.id); // the card says why there is no battle
+  };
+  const tapPoiRef = useRef(tapPoi);
+  tapPoiRef.current = tapPoi;
 
   const rest = (poi: Poi) => {
     const r = visitRestStop(saveRef.current, poi, nowSeconds());
@@ -1055,19 +1102,27 @@ export function MapScreen({
     // GDD: no encounters or prompts above 25 km/h.
     if (!here || fast || save.onboarding !== 'done') return null;
     const title = t(`poi.${here.id}.name`);
+    const closePoi = (
+      <Button
+        round
+        variant="ghost"
+        icon="close"
+        data-testid="poi-close"
+        aria-label={t('townMap.close')}
+        onClick={() => setPickedPoi(null)}
+      />
+    );
     if (here.kind === 'restStop') {
       return (
         <div className="poi-card" data-testid="poi-card" data-poi={here.id}>
           <img src={stampUrl('restStop')} alt="" className="poi-card-stamp" />
           <div>
             <strong>{title}</strong>
-            <p className="muted small">
+            <p className="muted small" data-testid="poi-text">
               {restMsg?.poiId === here.id ? restMsg.text : t('rest.prompt')}
             </p>
           </div>
-          <Button variant="primary" data-testid="poi-action" onClick={() => rest(here)}>
-            {t('rest.button')}
-          </Button>
+          {closePoi}
         </div>
       );
     }
@@ -1082,6 +1137,7 @@ export function MapScreen({
           <Button variant="primary" data-testid="poi-action" onClick={() => onMarket?.(here.id)}>
             {t('market.open')}
           </Button>
+          {closePoi}
         </div>
       );
     }
@@ -1116,9 +1172,12 @@ export function MapScreen({
         <img src={stampUrl(here.kind, poiDone(here, save))} alt="" className="poi-card-stamp" />
         <div>
           <strong>{title}</strong>
-          <p className="small">{body}</p>
+          <p className="small" data-testid="poi-text">
+            {body}
+          </p>
         </div>
         {action}
+        {closePoi}
       </div>
     );
   })();

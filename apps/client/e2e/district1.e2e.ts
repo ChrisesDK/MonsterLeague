@@ -111,10 +111,26 @@ async function fight(page: Page, opts: { charm?: boolean; move?: string } = {}):
   throw new Error('Battle did not end');
 }
 
-async function poiAction(page: Page, poiId: string) {
+/**
+ * Walks to a POI and presses its stamp (POIs are press-based, owner request): a ready trainer
+ * or arena starts its battle, a rest stop heals; otherwise a card says why. Returns the card.
+ */
+async function tapPoi(page: Page, poiId: string) {
   await teleport(page, at(poiId));
   const card = page.locator(`[data-testid=poi-card][data-poi=${poiId}]`);
-  await expect(card).toBeVisible();
+  const acted = page.locator(
+    `[data-testid=poi-card][data-poi=${poiId}], main.battle, [data-testid=screen-market]`,
+  );
+  // the simulated GPS position lands a moment after the teleport: press until it acts
+  for (let i = 0; i < 20; i++) {
+    await page.getByTestId(`poi-stamp-${poiId}`).evaluate((e) => (e as HTMLElement).click());
+    const ok = await acted
+      .first()
+      .waitFor({ state: 'visible', timeout: 400 })
+      .then(() => true)
+      .catch(() => false);
+    if (ok) break;
+  }
   return card;
 }
 
@@ -214,9 +230,7 @@ test('onboarding to badge 2 (districts 1 and 2, open wildlife), with reloads', a
 
   // ---- route trainer: win, reward, marked beaten -------------------------------------------
   await dev(page, 'setTeamLevel', 12);
-  let card = await poiAction(page, 'trainer_ole');
-  await expect(card).toHaveAttribute('data-state', 'ready');
-  await card.getByTestId('poi-action').click();
+  let card = await tapPoi(page, 'trainer_ole');
   await fight(page, { move: 'Beech Lash' });
   await expect(page.getByTestId('result-card')).toContainText('You beat');
   await expect(page.getByTestId('reward')).toBeVisible();
@@ -226,15 +240,15 @@ test('onboarding to badge 2 (districts 1 and 2, open wildlife), with reloads', a
   expect(save.defeatedTrainers).toContain('route1_ole');
   expect((save as unknown as { coins: number }).coins).toBeGreaterThan(0);
   expect(save.bag.clear_drops).toBe(1);
-  await expect(page.locator('[data-testid=poi-card][data-poi=trainer_ole]')).toHaveAttribute(
-    'data-state',
-    'beaten',
-  );
+  // pressing the stamp again: the card says the trainer is beaten (no new battle)
+  card = await tapPoi(page, 'trainer_ole');
+  await expect(card).toHaveAttribute('data-state', 'beaten');
+  await card.getByTestId('poi-close').click();
+  await expect(card).toHaveCount(0);
 
   // ---- lose a battle (reloading mid-battle), stay fainted ----------------------------------
   await dev(page, 'setTeamHp', 1);
-  card = await poiAction(page, 'trainer_niels');
-  await card.getByTestId('poi-action').click();
+  card = await tapPoi(page, 'trainer_niels');
   await page.locator('.move-btn:not(:disabled)').first().click();
   await expect(page.locator('main.battle')).toHaveAttribute('data-busy', 'false', {
     timeout: 60_000,
@@ -255,14 +269,11 @@ test('onboarding to badge 2 (districts 1 and 2, open wildlife), with reloads', a
   expect(save.team.every((c) => c.hp === 0)).toBe(true);
   expect(save.defeatedTrainers).not.toContain('route1_niels');
   await expect(page.locator('[data-testid=journal-card][data-guide=fainted]')).toBeVisible();
-  await expect(page.locator('[data-testid=poi-card][data-poi=trainer_niels]')).toHaveAttribute(
-    'data-state',
-    'teamFainted',
-  );
+  card = await tapPoi(page, 'trainer_niels');
+  await expect(card).toHaveAttribute('data-state', 'teamFainted');
 
   // ---- heal at a rest stop ------------------------------------------------------------------
-  card = await poiAction(page, 'rest_library');
-  await card.getByTestId('poi-action').click();
+  card = await tapPoi(page, 'rest_library');
   await expect(card).toContainText('fully healed');
   save = await devSave(page);
   expect(save.team.every((c) => c.hp > 0)).toBe(true);
@@ -309,24 +320,18 @@ test('onboarding to badge 2 (districts 1 and 2, open wildlife), with reloads', a
     .catch(() => undefined);
 
   // ---- arena 1: junior first, then the leader ------------------------------------------------
-  card = await poiAction(page, 'rest_library');
-  await card.getByTestId('poi-action').click();
+  card = await tapPoi(page, 'rest_library');
   await dev(page, 'setTeamLevel', 15);
   await dev(page, 'addCreature', 'gnistkat', 15);
   await dev(page, 'addCreature', 'aaodder', 15);
-  card = await poiAction(page, 'arena1');
-  await expect(card).toContainText('junior');
-  await card.getByTestId('poi-action').click();
+  card = await tapPoi(page, 'arena1'); // the junior first
   await fight(page);
   await expect(page.getByTestId('result-card')).toContainText('You beat');
   await page.locator('[data-testid=result-card] .btn').click();
 
   for (let attempt = 0; attempt < 4; attempt++) {
-    card = await poiAction(page, 'rest_library');
-    await card.getByTestId('poi-action').click();
-    card = await poiAction(page, 'arena1');
-    await expect(card).toContainText('leader');
-    await card.getByTestId('poi-action').click();
+    card = await tapPoi(page, 'rest_library');
+    card = await tapPoi(page, 'arena1'); // then the leader
     await fight(page);
     if ((await devSave(page)).badges.includes(1)) break;
     await page.locator('[data-testid=result-card] .btn').click();
@@ -367,30 +372,22 @@ test('onboarding to badge 2 (districts 1 and 2, open wildlife), with reloads', a
 
   // ---- district 2: a route trainer, the junior, the Stone leader, badge 2 ---------------------
   await dev(page, 'setTeamLevel', 15);
-  card = await poiAction(page, 'trainer_karen');
-  await expect(card).toHaveAttribute('data-state', 'ready');
-  await card.getByTestId('poi-action').click();
+  card = await tapPoi(page, 'trainer_karen');
   await fight(page, { move: 'Beech Lash' });
   await expect(page.getByTestId('result-card')).toContainText('You beat');
   await page.locator('[data-testid=result-card] .btn').click();
-  card = await poiAction(page, 'rest_naesbyhoved');
-  await card.getByTestId('poi-action').click();
+  card = await tapPoi(page, 'rest_naesbyhoved');
   // a little stronger for the junior, so an unlucky battle doesn't fail the run
   await dev(page, 'setTeamLevel', 17);
-  card = await poiAction(page, 'arena2');
-  await expect(card).toContainText('junior');
-  await card.getByTestId('poi-action').click();
+  card = await tapPoi(page, 'arena2'); // the junior first
   await fight(page, { move: 'Beech Lash' });
   await expect(page.getByTestId('result-card')).toContainText('You beat');
   await page.locator('[data-testid=result-card] .btn').click();
   // badge 1 raised obedience to 20, so a level-19 team still obeys
   await dev(page, 'setTeamLevel', 19);
   for (let attempt = 0; attempt < 4; attempt++) {
-    card = await poiAction(page, 'rest_naesbyhoved');
-    await card.getByTestId('poi-action').click();
-    card = await poiAction(page, 'arena2');
-    await expect(card).toContainText('leader');
-    await card.getByTestId('poi-action').click();
+    card = await tapPoi(page, 'rest_naesbyhoved');
+    card = await tapPoi(page, 'arena2'); // then the leader
     await fight(page, { move: 'Beech Lash' });
     if ((await devSave(page)).badges.includes(2)) break;
     await page.locator('[data-testid=result-card] .btn').click();
