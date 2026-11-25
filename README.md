@@ -89,7 +89,7 @@ tools/gate3        Gate 3 walk-test report
 tools/region-builder OpenStreetMap → region file (biomes, no-spawn areas, districts)
 apps/spawn-service Cloudflare Worker: spawns per coarse cell
 apps/client        Vite + React PWA: the map game, playtest, developer pages, e2e tests
-docs/              GDD (read-only export), GDD-PROPOSALS, PLAN, DECISIONS, BALANCE, GATE2, GATE3, DEPLOY
+docs/              GDD (design, maintained in the repo), GDD-PROPOSALS (design backlog), PLAN, DECISIONS, BALANCE, GATE2, GATE3, DEPLOY
 ```
 
 See [CLAUDE.md](CLAUDE.md) for the hard rules and architecture, and

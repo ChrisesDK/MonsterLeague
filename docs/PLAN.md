@@ -149,7 +149,10 @@
 - [x] New arena loop (Næsbyhoved, Stige Ø, H.C. Andersen Skoven, Hollufgård, Den Fynske Landsby, Odense Zoo, Tusindårsskoven); themes, spawn tables and goals moved with them; arena-3 Water leader re-tuned
 - [x] POIs: arena 2 at the castle mound, route trainers on routes, 24 rest stops; save v9
 - [x] Town Map for the municipality (zones, route progress) with a Fyn map (only Odense opens; badges; held on Fyn)
-- [ ] Owner: fold P22 and P23 into the GDD
+- [x] GDD v1.11: P22 and P23 folded in; Claude manages the GDD, GDD-PROPOSALS is the backlog (D164)
+- [x] Clean borders: solid region border incl. the harbour, dotted district and zone edges drawn once (D162)
+- [x] Route trainers on every route, about one per 1.5 km: 110 in all (D163)
+- [ ] Owner walks the routes with GPS; arenas 3–8 wait until the map has been tested
 
 ## Next: Gate 3 — District walk test (owner, with [GATE3.md](GATE3.md))
 

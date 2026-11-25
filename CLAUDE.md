@@ -25,15 +25,20 @@ is M5; don't build any of it before then. See [docs/PLAN.md](docs/PLAN.md) and
 ## Design source of truth
 
 - **[docs/GDD.md](docs/GDD.md) decides game design**: rules, formulas, type chart, content
-  structure, targets and scope. It is an exported copy of the master GDD that the owner
-  maintains outside the repo. **Never edit docs/GDD.md.** The owner replaces the file
-  when the master changes and says so.
+  structure, targets and scope. Since v1.11 (2026-11-25) the owner has made Claude the
+  manager of the GDD: it lives in the repo and you keep it current. When a design decision
+  is made (by the owner, or by you within what the owner asked for), write it into the GDD,
+  add a line to its change log with the next version, and keep the rest of the doc
+  consistent with it. Edit it by hand: it stays out of Prettier (`.prettierignore`), so
+  never run `prettier --write` on it or on `docs/` as a whole.
+- **[docs/GDD-PROPOSALS.md](docs/GDD-PROPOSALS.md) is the design backlog**: questions and
+  ideas that need the owner's decision. Don't put undecided design into the GDD; add a
+  backlog item and ask. Mark items `accepted (GDD v1.x)` once they are in the GDD.
 - **[docs/DECISIONS.md](docs/DECISIONS.md)** records implementation detail and
   interpretations (how a GDD rule was implemented, edge cases the GDD doesn't cover).
-- If code or content disagrees with the GDD, either fix the code to match, or, if the GDD
-  looks wrong or unclear, add an entry to
-  [docs/GDD-PROPOSALS.md](docs/GDD-PROPOSALS.md). Don't change the design yourself.
-  Accepted proposals come back in a new GDD export.
+- If code or content disagrees with the GDD, fix the code to match, or, if the GDD is
+  wrong, fix the GDD (with a version line) when the right answer is clear, and add a
+  backlog item when it needs the owner.
 
 ## Hard rules
 

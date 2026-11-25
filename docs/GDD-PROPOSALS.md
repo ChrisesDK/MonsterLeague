@@ -1,8 +1,17 @@
-# GDD proposals
+# GDD backlog (proposals)
 
-Changes Claude Code proposes to the master GDD (docs/GDD.md is a read-only export). The
-owner reviews each one; accepted proposals come back in a new GDD export, and then the
-status here changes to `accepted` (or `rejected`, with a reason).
+Since GDD v1.11 the GDD lives in the repository and Claude Code maintains it (docs/GDD.md).
+This file is the design backlog: questions and ideas that need the owner's decision before
+they go into the GDD. Decided changes go straight into the GDD with a version line; the
+entry here then gets the status `accepted (GDD v1.x)` (or `rejected`, with a reason).
+
+## Open items
+
+| Item | What to decide                                                                                                                                                                  |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P21  | Where the Revive Blossom (revive at full HP) comes from                                                                                                                         |
+| P24  | Leaderboards (for example longest distance walked) and a competitive scene for players with all 8 badges: what to show, and how it fits the privacy rules (no location history) |
+| P25  | Tourism content for visitors (later; the campaigns are made mainly for residents)                                                                                               |
 
 ## Template
 
@@ -242,7 +251,7 @@ status here changes to `accepted` (or `rejected`, with a reason).
   that is 13–25 creatures, so the two targets only overlap at 143–150 m. M2d tuned wild areas
   to 1 per 136 m. A park walk that turns back at the park's edge (as people do) finds 11.7
   on average, because it passes some spots twice. The report's walk uses 2 km at 4 km/h.
-- **Status:** open
+- **Status:** accepted (GDD v1.10)
 
 ### P17. Route 3 passes through the cathedral district
 
@@ -257,7 +266,7 @@ status here changes to `accepted` (or `rejected`, with a reason).
   checks it. Draft Route 7 (Den Fynske Landsby → harbour) has the same problem at city
   scale: 13.6 km round the east side. It may need a different district shape or arena
   order.
-- **Status:** open
+- **Status:** accepted (GDD v1.10); replaced by P22 in v1.11 (routes are no longer tied to districts)
 
 ### P18. District 2's trainers stand on Routes 2 and 3, not Route 1
 
@@ -269,7 +278,7 @@ status here changes to `accepted` (or `rejected`, with a reason).
   radius), the rest stop and the district border leave no room for a 50 m trainer radius.
   Karen stands by Albani Torv on Route 2 and Mads on the river path on Route 3, both in
   district 2 (D114).
-- **Status:** open
+- **Status:** accepted (GDD v1.10); replaced in v1.11: the step counts the trainers on badge-path routes
 
 ### P19. Fainted creatures recover by themselves after 8 hours
 
@@ -279,7 +288,7 @@ status here changes to `accepted` (or `rejected`, with a reason).
   fully by themselves".
 - **Reason / evidence:** owner request after M2d, so a player far from a rest stop isn't
   stuck. Implemented (D122).
-- **Status:** open (implemented at the owner's request; fold into the GDD)
+- **Status:** accepted (GDD v1.10)
 
 ### P20. The play camera orbits the player and never pans
 
@@ -299,7 +308,7 @@ status here changes to `accepted` (or `rejected`, with a reason).
   into the haze. Buildings load and unload at the edge; icons beyond it are not drawn."
 - **Reason / evidence:** owner requests after M2d (D120, D124–D126, D131–D142, D152). The
   recentre button and the snap-back from panning are gone.
-- **Status:** open (implemented at the owner's request; fold into the GDD)
+- **Status:** accepted (GDD v1.10; details folded in v1.11)
 
 ### P21. A full revive item: Revive Blossom
 
@@ -313,7 +322,7 @@ status here changes to `accepted` (or `rejected`, with a reason).
 - **Reason / evidence:** owner request (D148). Until the GDD names where it comes from,
   there is no way to find it in the game; for testing, Settings → Test items adds one to
   the bag.
-- **Status:** open (built at the owner's request; where it comes from needs a decision)
+- **Status:** open: the item is in the GDD item table (v1.11), its source is undecided
 
 ### P22. Odense Kommune as a region: zones opened by routes, a new arena loop, a Fyn map
 
@@ -357,7 +366,7 @@ status here changes to `accepted` (or `rejected`, with a reason).
   chose the whole municipality). The old layout was one long corridor in the inner city;
   this spreads arenas over the city, gives choices of route and rewards walking to the
   green areas.
-- **Status:** open (built at the owner's request; fold into the GDD)
+- **Status:** accepted (GDD v1.11)
 
 ### P23. Route progress is saved as route checkpoints (privacy)
 
@@ -368,4 +377,21 @@ status here changes to `accepted` (or `rejected`, with a reason).
   shows which parts of the game's routes a player has walked."
 - **Reason / evidence:** a route has to keep its progress between walks (P22). The owner
   chose this over losing half-walked routes when the app closes.
-- **Status:** open (owner decision; fold into the GDD)
+- **Status:** accepted (GDD v1.11)
+
+### P24. Leaderboards and a competitive scene
+
+- **GDD section:** Overview (later tiers), Multiplayer and social
+- **Idea (owner, 2026-11-25):** leaderboards, for example for the longest distance walked,
+  and maybe a competitive scene for players who hold all 8 badges.
+- **To decide:** what is ranked and shown, whether it needs accounts (M5), and how distance
+  is counted without storing a location history (for example a running total only).
+- **Status:** open
+
+### P25. Tourism content
+
+- **GDD section:** Overview (audience)
+- **Idea (owner, 2026-11-25):** the region campaigns are made mainly for residents (14–30
+  days of play); content for visitors comes later.
+- **To decide:** what a short visit offers (a day route, landmarks, a visitor badge?).
+- **Status:** open

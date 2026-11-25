@@ -1516,3 +1516,47 @@ length, position resolution and spawn tables>`.
   Back (gesture or Escape) closes the Fyn map first, then the Town Map, through the back
   stack (D150). The Town Map itself is held on the municipality and zooms out to 10.3; below
   zoom 11.8 it hides route numbers and rest stops.
+- **D162. Clean borders** (owner feedback: area borders looked like the region border, lines
+  overlapped, the harbour seemed to lie outside Odense, small rings inside the region).
+  - **Region border:** the OSM municipality border follows the coast and cuts the harbour,
+    the canal and small inlets out of Odense. The game border is that border closed by
+    400 m (buffer out, then in; `borders.ts closeBorder`), outer rings only. Region cells
+    are clipped to it, so the harbour and canal water are now part of the region (24,516
+    cells, was 24,189).
+  - **Edges, each once:** every cell inside the border gets a zone (also cells without map
+    data, which left holes before: the "small rings"). The builder finds each edge between
+    two cells of different zones once, joins the edges into lines between the points where
+    three zones meet, straightens the hexagon steps (35 m) and rounds them (Chaikin, 3
+    rounds), keeping the line ends so lines still meet. An edge between zones of different
+    districts is a district edge. Edges on the region's outside are never included.
+    Output: `content/borders.odense.geojson` (generated): 1 region line, 49 district edges,
+    49 zone edges, 86 KB.
+  - **Drawing:** region border solid in a yellow (`regionBorder`, day #d39a1a, night
+    #e8b04a); district edges dotted; zone edges finer, fainter dots (Town Map from zoom 11.5).
+    The old district outline layer (which drew shared edges twice) and the zone outline
+    layer are gone; zone polygons remain only for dimming closed zones, without holes.
+    District and zone names sit at one point each (arena site, zone centre), below the
+    arena badge.
+  - **Routes are dashed now** (red; routes to a destination in a new orange-red,
+    `routeExplore`, which replaces the brownish draft colour), so dotted always means a
+    border. Closed zones are dimmed more lightly (Town Map 0.1, play view 0.08), and a pale
+    wash covers everything outside the region, so the region stands out when zoomed out.
+- **D163. Route trainers on every route** (owner request). Target density: one trainer per
+  about 1.5 km of route, at least 1 and at most 3 per route (a trainer battle takes a few
+  minutes; wild creatures already appear every 100–150 m in grass): 110 route trainers on
+  174 km of routes, one per 1.6 km. 105 are new (generated once by a script, then plain
+  data): spaced evenly along the route, at least 150 m from other POIs and placed like
+  `pnpm validate` checks; their district is the zone they stand in. Teams: 2 creatures in
+  districts 1–2, 3 in 3–6, 4 in 7–8, from the district's spawn species (a district rare 1 in
+  4 times), levels inside the district band below the leader (district 1: 4–9). Rewards by
+  district (Small Tonics → Revive Leaves). Each has an occupation that fits its zone
+  (kayakers, lifeguards, forest wardens, scouts, beekeepers, a smith's apprentice at the
+  village, a sculptor at Hollufgård …), a Danish first name and da/en lines. Trainer POIs
+  now name their `route`. The Journal's "beat the trainers" step counts the trainers on
+  badge-path routes (and trainers on no route, like Lise by Kongens Have); the others are
+  optional, like their routes (`isMainTrainer`). Niels was re-snapped onto Route 22 after
+  the route rebuild.
+- **D164. Claude manages the GDD** (owner decision, 2026-11-25). docs/GDD.md is now edited
+  in the repo (v1.11 folds in GDD-UPDATE-NOTES and P22/P23, then the notes file was
+  removed); docs/GDD-PROPOSALS.md is the design backlog (P21, P24 leaderboards, P25 tourism
+  content). CLAUDE.md's "never edit the GDD" rule is replaced; the GDD stays out of Prettier.
