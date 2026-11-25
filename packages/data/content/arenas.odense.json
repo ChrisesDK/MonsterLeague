@@ -28,8 +28,8 @@
       "type": "water",
       "lat": 55.4478,
       "lng": 10.4285,
-      "poi": null,
-      "note": "Stige Ø, the island in Odense Fjord (recreation area, OSM way 353799265), its southern part by the slipway (P22); POI placed with the arena-3 leader in M3"
+      "poi": "arena3",
+      "note": "Stige Ø, the island in Odense Fjord (recreation area, OSM way 353799265), its southern part by the slipway (P22)"
     },
     {
       "arena": 4,
@@ -38,8 +38,8 @@
       "type": "grove",
       "lat": 55.4143,
       "lng": 10.4621,
-      "poi": null,
-      "note": "H.C. Andersen Skoven, the young fairy-tale forest by Lungs Grave (P22); POI placed in M3"
+      "poi": "arena4",
+      "note": "H.C. Andersen Skoven, the young fairy-tale forest by Lungs Grave (P22)"
     },
     {
       "arena": 5,
@@ -48,8 +48,8 @@
       "type": "spirit",
       "lat": 55.3541,
       "lng": 10.4421,
-      "poi": null,
-      "note": "Sneglehøjen at Hollufgård: the sculpture park, mill and manor (P22); POI placed in M3"
+      "poi": "arena5",
+      "note": "Sneglehøjen at Hollufgård: the sculpture park, mill and manor (P22)"
     },
     {
       "arena": 6,
@@ -58,8 +58,8 @@
       "type": "fire",
       "lat": 55.36624,
       "lng": 10.38592,
-      "poi": null,
-      "note": "Den Fynske Landsby entrance (OSM node 5314590418): the village smithy (P22: now arena 6); POI placed in M3"
+      "poi": "arena6",
+      "note": "Den Fynske Landsby entrance (OSM node 5314590418): the village smithy (P22: now arena 6)"
     },
     {
       "arena": 7,
@@ -68,8 +68,8 @@
       "type": null,
       "lat": 55.37792,
       "lng": 10.3708,
-      "poi": null,
-      "note": "Outside Odense Zoo's entrance (OSM node 4519017876); mixed arena (P22: now arena 7); POI placed in M3"
+      "poi": "arena7",
+      "note": "Outside Odense Zoo's entrance (OSM node 4519017876); mixed arena (P22: now arena 7)"
     },
     {
       "arena": 8,
@@ -78,8 +78,8 @@
       "type": "storm",
       "lat": 55.3816,
       "lng": 10.3387,
-      "poi": null,
-      "note": "Viewpoint hill of Tusindårsskoven, the Millennium Forest (P22); POI placed in M3"
+      "poi": "arena8",
+      "note": "Viewpoint hill of Tusindårsskoven, the Millennium Forest (P22)"
     }
   ]
 }

@@ -309,11 +309,11 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "loftnisse",
+          "speciesId": "mosbille",
           "level": 4
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "lynspurv",
           "level": 5
         }
       ],
@@ -329,11 +329,11 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "grimaelling",
+          "speciesId": "gloeding",
           "level": 10
         },
         {
-          "speciesId": "torvdue",
+          "speciesId": "grimaelling",
           "level": 13
         }
       ],
@@ -349,11 +349,11 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "kampetrold",
+          "speciesId": "rokkeling",
           "level": 12
         },
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "mosling",
           "level": 13
         }
       ],
@@ -369,11 +369,11 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "torvdue",
+          "speciesId": "mosling",
           "level": 10
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "mosbille",
           "level": 12
         }
       ],
@@ -389,15 +389,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "rendsnude",
+          "speciesId": "gloeding",
           "level": 14
         },
         {
-          "speciesId": "mosbille",
+          "speciesId": "kulingmaage",
           "level": 14
         },
         {
-          "speciesId": "torvdue",
+          "speciesId": "ildflue",
           "level": 18
         }
       ],
@@ -415,15 +415,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "soeormling",
+          "speciesId": "gloeding",
           "level": 14
         },
         {
-          "speciesId": "torvdue",
+          "speciesId": "lynspurv",
           "level": 15
         },
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "ildflue",
           "level": 17
         }
       ],
@@ -441,15 +441,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "rendsnude",
+          "speciesId": "ildflue",
           "level": 15
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "torvdue",
           "level": 15
         },
         {
-          "speciesId": "soeormling",
+          "speciesId": "skovbille",
           "level": 19
         }
       ],
@@ -467,15 +467,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "torvdue",
+          "speciesId": "kulingmaage",
           "level": 15
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "grimaelling",
           "level": 15
         },
         {
-          "speciesId": "soeormling",
+          "speciesId": "lynspurv",
           "level": 15
         }
       ],
@@ -493,15 +493,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "mosbille",
+          "speciesId": "ildflue",
           "level": 14
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "torvdue",
           "level": 15
         },
         {
-          "speciesId": "torvdue",
+          "speciesId": "gloedoegle",
           "level": 18
         }
       ],
@@ -519,7 +519,7 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "rendsnude",
+          "speciesId": "kulingmaage",
           "level": 14
         },
         {
@@ -527,7 +527,7 @@
           "level": 17
         },
         {
-          "speciesId": "lygtling",
+          "speciesId": "lynspurv",
           "level": 17
         }
       ],
@@ -545,15 +545,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "torvdue",
+          "speciesId": "dugpust",
           "level": 15
         },
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "skovbille",
           "level": 15
         },
         {
-          "speciesId": "soeormling",
+          "speciesId": "ellepige",
           "level": 16
         }
       ],
@@ -571,7 +571,7 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "gloedoegle",
           "level": 21
         },
         {
@@ -579,7 +579,7 @@
           "level": 22
         },
         {
-          "speciesId": "lygtling",
+          "speciesId": "ildflue",
           "level": 24
         }
       ],
@@ -597,15 +597,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "torvdue",
+          "speciesId": "mostrold",
           "level": 22
         },
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "raeveling",
           "level": 22
         },
         {
-          "speciesId": "ellepige",
+          "speciesId": "ildflue",
           "level": 22
         }
       ],
@@ -623,15 +623,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "gloedoegle",
           "level": 21
         },
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "rokkeling",
           "level": 23
         },
         {
-          "speciesId": "torvdue",
+          "speciesId": "ildflue",
           "level": 25
         }
       ],
@@ -649,15 +649,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "lygtling",
+          "speciesId": "brokrabbe",
           "level": 21
         },
         {
-          "speciesId": "ellepige",
+          "speciesId": "tordenkrage",
           "level": 22
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "kampetrold",
           "level": 23
         }
       ],
@@ -675,15 +675,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "dugpust",
           "level": 20
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "tordenkrage",
           "level": 22
         },
         {
-          "speciesId": "torvdue",
+          "speciesId": "ellepige",
           "level": 24
         }
       ],
@@ -701,15 +701,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "raeveling",
           "level": 20
         },
         {
-          "speciesId": "mosbille",
+          "speciesId": "skovbille",
           "level": 24
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "rottekonge",
           "level": 24
         }
       ],
@@ -727,15 +727,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "rendsnude",
+          "speciesId": "lygtling",
           "level": 21
         },
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "rokkeling",
           "level": 22
         },
         {
-          "speciesId": "torvdue",
+          "speciesId": "ellepige",
           "level": 25
         }
       ],
@@ -753,15 +753,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "mosbille",
+          "speciesId": "tordenkrage",
           "level": 20
         },
         {
-          "speciesId": "ellepige",
+          "speciesId": "raeveling",
           "level": 22
         },
         {
-          "speciesId": "torvdue",
+          "speciesId": "kulingmaage",
           "level": 23
         }
       ],
@@ -779,7 +779,7 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "torvdue",
+          "speciesId": "mikkelraev",
           "level": 27
         },
         {
@@ -787,7 +787,7 @@
           "level": 29
         },
         {
-          "speciesId": "loftnisse",
+          "speciesId": "kirkedue",
           "level": 29
         }
       ],
@@ -805,15 +805,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "torvdue",
+          "speciesId": "ildflue",
           "level": 26
         },
         {
-          "speciesId": "mosbille",
+          "speciesId": "skovbille",
           "level": 28
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "gloedoegle",
           "level": 31
         }
       ],
@@ -831,15 +831,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "mosbille",
+          "speciesId": "dugpust",
           "level": 28
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "skovbille",
           "level": 30
         },
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "ellepige",
           "level": 31
         }
       ],
@@ -857,15 +857,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "rendsnude",
+          "speciesId": "stormmaage",
           "level": 34
         },
         {
-          "speciesId": "lygtling",
+          "speciesId": "flintbjoern",
           "level": 34
         },
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "tordenkrage",
           "level": 35
         }
       ],
@@ -883,15 +883,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "svaneunge",
           "level": 35
         },
         {
-          "speciesId": "torvdue",
+          "speciesId": "rottekonge",
           "level": 37
         },
         {
-          "speciesId": "loftnisse",
+          "speciesId": "soeormling",
           "level": 37
         }
       ],
@@ -909,15 +909,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "grimaelling",
+          "speciesId": "flintbjoern",
           "level": 33
         },
         {
-          "speciesId": "lygtling",
+          "speciesId": "tordenkrage",
           "level": 34
         },
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "kaempekrabbe",
           "level": 36
         }
       ],
@@ -935,15 +935,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "gloeddronning",
           "level": 33
         },
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "rokkevinge",
           "level": 33
         },
         {
-          "speciesId": "lygtling",
+          "speciesId": "gloedoegle",
           "level": 35
         }
       ],
@@ -961,19 +961,19 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "grimaelling",
+          "speciesId": "kongesvane",
           "level": 39
         },
         {
-          "speciesId": "mosbille",
+          "speciesId": "rokkevinge",
           "level": 41
         },
         {
-          "speciesId": "lygtling",
+          "speciesId": "lindorm",
           "level": 42
         },
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "essedrage",
           "level": 43
         }
       ],
@@ -991,19 +991,19 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "mosbille",
+          "speciesId": "eghjort",
           "level": 44
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "mikkelraev",
           "level": 44
         },
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "gloeddronning",
           "level": 45
         },
         {
-          "speciesId": "lygtling",
+          "speciesId": "bjergtrold",
           "level": 45
         }
       ],
@@ -1021,11 +1021,11 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "grimaelling",
+          "speciesId": "lygtling",
           "level": 12
         },
         {
-          "speciesId": "kampetrold",
+          "speciesId": "rokkeling",
           "level": 13
         }
       ],
@@ -1041,11 +1041,11 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "torvdue",
+          "speciesId": "ildflue",
           "level": 4
         },
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "mosbille",
           "level": 5
         }
       ],
@@ -1061,15 +1061,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "dugpust",
           "level": 21
         },
         {
-          "speciesId": "mosbille",
+          "speciesId": "skovbille",
           "level": 23
         },
         {
-          "speciesId": "lygtling",
+          "speciesId": "lygtemand",
           "level": 25
         }
       ],
@@ -1087,11 +1087,11 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "lygtling",
+          "speciesId": "grimaelling",
           "level": 4
         },
         {
-          "speciesId": "loftnisse",
+          "speciesId": "lynspurv",
           "level": 7
         }
       ],
@@ -1107,11 +1107,11 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "rendsnude",
+          "speciesId": "mosling",
           "level": 4
         },
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "raeveling",
           "level": 5
         }
       ],
@@ -1127,11 +1127,11 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "rokkeling",
           "level": 4
         },
         {
-          "speciesId": "mosbille",
+          "speciesId": "lygtling",
           "level": 5
         }
       ],
@@ -1147,19 +1147,19 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "torvdue",
+          "speciesId": "vinddue",
           "level": 40
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "eghjort",
           "level": 42
         },
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "mikkelraev",
           "level": 42
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "bjergtrold",
           "level": 43
         }
       ],
@@ -1177,11 +1177,11 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "grimaelling",
+          "speciesId": "ildflue",
           "level": 9
         },
         {
-          "speciesId": "mosbille",
+          "speciesId": "brokrabbe",
           "level": 9
         }
       ],
@@ -1197,11 +1197,11 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "mosbille",
           "level": 4
         },
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "rokkeling",
           "level": 7
         }
       ],
@@ -1217,11 +1217,11 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "rendsnude",
+          "speciesId": "flintling",
           "level": 6
         },
         {
-          "speciesId": "mosbille",
+          "speciesId": "rokkeling",
           "level": 6
         }
       ],
@@ -1237,7 +1237,7 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "loftnisse",
+          "speciesId": "mosbille",
           "level": 4
         },
         {
@@ -1257,19 +1257,19 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "lygtling",
+          "speciesId": "gloeddronning",
           "level": 44
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "lygtemand",
           "level": 48
         },
         {
-          "speciesId": "torvdue",
+          "speciesId": "essedrage",
           "level": 48
         },
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "gaardnisse",
           "level": 49
         }
       ],
@@ -1287,15 +1287,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "rendsnude",
+          "speciesId": "torvdue",
           "level": 14
         },
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "skovbille",
           "level": 16
         },
         {
-          "speciesId": "mosbille",
+          "speciesId": "loftnisse",
           "level": 19
         }
       ],
@@ -1313,15 +1313,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "mosbille",
+          "speciesId": "ildflue",
           "level": 22
         },
         {
-          "speciesId": "ellepige",
+          "speciesId": "tordenkrage",
           "level": 22
         },
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "gloedoegle",
           "level": 23
         }
       ],
@@ -1339,15 +1339,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "mosling",
           "level": 14
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "flintling",
           "level": 17
         },
         {
-          "speciesId": "torvdue",
+          "speciesId": "skovbille",
           "level": 19
         }
       ],
@@ -1365,15 +1365,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "soeormling",
+          "speciesId": "lynspurv",
           "level": 15
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "skovbille",
           "level": 16
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "kulingmaage",
           "level": 18
         }
       ],
@@ -1391,15 +1391,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "grimaelling",
+          "speciesId": "ildflue",
           "level": 20
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "dugpust",
           "level": 21
         },
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "ellepige",
           "level": 24
         }
       ],
@@ -1417,11 +1417,11 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "mosbille",
           "level": 12
         },
         {
-          "speciesId": "torvdue",
+          "speciesId": "dugpust",
           "level": 13
         }
       ],
@@ -1437,11 +1437,11 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "lygtling",
+          "speciesId": "grimaelling",
           "level": 12
         },
         {
-          "speciesId": "torvdue",
+          "speciesId": "lynspurv",
           "level": 13
         }
       ],
@@ -1457,11 +1457,11 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "mosbille",
+          "speciesId": "rendsnude",
           "level": 6
         },
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "lynspurv",
           "level": 7
         }
       ],
@@ -1477,11 +1477,11 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "kampetrold",
+          "speciesId": "ildflue",
           "level": 11
         },
         {
-          "speciesId": "torvdue",
+          "speciesId": "lynspurv",
           "level": 13
         }
       ],
@@ -1497,11 +1497,11 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "grimaelling",
+          "speciesId": "ildflue",
           "level": 10
         },
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "mosbille",
           "level": 11
         }
       ],
@@ -1517,11 +1517,11 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "grimaelling",
+          "speciesId": "mosling",
           "level": 11
         },
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "torvdue",
           "level": 13
         }
       ],
@@ -1537,11 +1537,11 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "rendsnude",
+          "speciesId": "grimaelling",
           "level": 9
         },
         {
-          "speciesId": "kampetrold",
+          "speciesId": "lygtling",
           "level": 10
         }
       ],
@@ -1557,11 +1557,11 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "ildflue",
           "level": 12
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "mosling",
           "level": 13
         }
       ],
@@ -1577,7 +1577,7 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "lygtling",
+          "speciesId": "lynspurv",
           "level": 9
         },
         {
@@ -1597,11 +1597,11 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "flintling",
           "level": 11
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "torvdue",
           "level": 13
         }
       ],
@@ -1617,11 +1617,11 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "torvdue",
+          "speciesId": "grimaelling",
           "level": 12
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "lygtling",
           "level": 13
         }
       ],
@@ -1637,19 +1637,19 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "mosbille",
+          "speciesId": "vinddue",
           "level": 44
         },
         {
-          "speciesId": "soeormling",
+          "speciesId": "rottekonge",
           "level": 45
         },
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "mikkelraev",
           "level": 47
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "lygtemand",
           "level": 49
         }
       ],
@@ -1667,19 +1667,19 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "rottekonge",
           "level": 45
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "tordenravn",
           "level": 45
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "mikkelraev",
           "level": 45
         },
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "mosekone",
           "level": 46
         }
       ],
@@ -1697,19 +1697,19 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "gloeddronning",
           "level": 45
         },
         {
-          "speciesId": "mosbille",
+          "speciesId": "eghjort",
           "level": 46
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "essedrage",
           "level": 46
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "tordenravn",
           "level": 47
         }
       ],
@@ -1727,19 +1727,19 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "mosekone",
           "level": 44
         },
         {
-          "speciesId": "lygtling",
+          "speciesId": "eghjort",
           "level": 45
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "ellekonge",
           "level": 46
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "stormmaage",
           "level": 48
         }
       ],
@@ -1757,19 +1757,19 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "lygtling",
+          "speciesId": "stormmaage",
           "level": 38
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "lygtemand",
           "level": 39
         },
         {
-          "speciesId": "kampetrold",
+          "speciesId": "tordenravn",
           "level": 39
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "gaardnisse",
           "level": 41
         }
       ],
@@ -1787,19 +1787,19 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "mosbille",
+          "speciesId": "lygtemand",
           "level": 44
         },
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "tordenravn",
           "level": 45
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "ellekonge",
           "level": 45
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "gloeddronning",
           "level": 45
         }
       ],
@@ -1817,19 +1817,19 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "torvdue",
+          "speciesId": "gloeddronning",
           "level": 46
         },
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "vinddue",
           "level": 47
         },
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "essedrage",
           "level": 47
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "kongesvane",
           "level": 48
         }
       ],
@@ -1847,19 +1847,19 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "grimaelling",
+          "speciesId": "eghjort",
           "level": 44
         },
         {
-          "speciesId": "lygtling",
+          "speciesId": "tordenravn",
           "level": 45
         },
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "lyngkonge",
           "level": 46
         },
         {
-          "speciesId": "mosbille",
+          "speciesId": "flintbjoern",
           "level": 47
         }
       ],
@@ -1877,19 +1877,19 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "mosekone",
           "level": 44
         },
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "kaempekrabbe",
           "level": 46
         },
         {
-          "speciesId": "lygtling",
+          "speciesId": "ellekonge",
           "level": 47
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "mikkelraev",
           "level": 49
         }
       ],
@@ -1907,19 +1907,19 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "kaempekrabbe",
           "level": 38
         },
         {
-          "speciesId": "mosbille",
+          "speciesId": "kongesvane",
           "level": 39
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "flintbjoern",
           "level": 39
         },
         {
-          "speciesId": "soeormling",
+          "speciesId": "lyngkonge",
           "level": 41
         }
       ],
@@ -1937,19 +1937,19 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "soeormling",
+          "speciesId": "kaempekrabbe",
           "level": 46
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "lygtemand",
           "level": 48
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "flintbjoern",
           "level": 48
         },
         {
-          "speciesId": "mosbille",
+          "speciesId": "rottekonge",
           "level": 49
         }
       ],
@@ -1967,19 +1967,19 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "tordenravn",
           "level": 48
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "mikkelraev",
           "level": 48
         },
         {
-          "speciesId": "torvdue",
+          "speciesId": "stormmaage",
           "level": 49
         },
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "vinddue",
           "level": 49
         }
       ],
@@ -1997,19 +1997,19 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "mosbille",
+          "speciesId": "vinddue",
           "level": 48
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "tordenravn",
           "level": 49
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "mikkelraev",
           "level": 49
         },
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "kaempekrabbe",
           "level": 49
         }
       ],
@@ -2027,19 +2027,19 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "gloeddronning",
           "level": 45
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "eghjort",
           "level": 46
         },
         {
-          "speciesId": "lygtling",
+          "speciesId": "essedrage",
           "level": 48
         },
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "bjergtrold",
           "level": 49
         }
       ],
@@ -2057,19 +2057,19 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "soeormling",
+          "speciesId": "rottekonge",
           "level": 44
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "eghjort",
           "level": 45
         },
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "mikkelraev",
           "level": 48
         },
         {
-          "speciesId": "lygtling",
+          "speciesId": "essedrage",
           "level": 48
         }
       ],
@@ -2087,19 +2087,19 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "grimaelling",
+          "speciesId": "tordenravn",
           "level": 46
         },
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "eghjort",
           "level": 46
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "stormmaage",
           "level": 48
         },
         {
-          "speciesId": "torvdue",
+          "speciesId": "mikkelraev",
           "level": 49
         }
       ],
@@ -2117,19 +2117,19 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "lygtling",
+          "speciesId": "essedrage",
           "level": 40
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "rottekonge",
           "level": 41
         },
         {
-          "speciesId": "soeormling",
+          "speciesId": "gloeddronning",
           "level": 41
         },
         {
-          "speciesId": "torvdue",
+          "speciesId": "kaempekrabbe",
           "level": 42
         }
       ],
@@ -2147,15 +2147,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "mosbille",
+          "speciesId": "eghjort",
           "level": 32
         },
         {
-          "speciesId": "loftnisse",
+          "speciesId": "mosekone",
           "level": 33
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "lyngkonge",
           "level": 36
         }
       ],
@@ -2173,15 +2173,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "rendsnude",
+          "speciesId": "stormmaage",
           "level": 34
         },
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "rottekonge",
           "level": 34
         },
         {
-          "speciesId": "torvdue",
+          "speciesId": "tordenkrage",
           "level": 36
         }
       ],
@@ -2199,15 +2199,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "kaempekrabbe",
           "level": 34
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "rottekonge",
           "level": 34
         },
         {
-          "speciesId": "lygtling",
+          "speciesId": "kampetrold",
           "level": 34
         }
       ],
@@ -2225,19 +2225,19 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "mosekone",
           "level": 46
         },
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "eghjort",
           "level": 48
         },
         {
-          "speciesId": "soeormling",
+          "speciesId": "gaardnisse",
           "level": 48
         },
         {
-          "speciesId": "lygtling",
+          "speciesId": "lindorm",
           "level": 49
         }
       ],
@@ -2255,19 +2255,19 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "mosbille",
+          "speciesId": "essedrage",
           "level": 44
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "flintbjoern",
           "level": 44
         },
         {
-          "speciesId": "lygtling",
+          "speciesId": "gloeddronning",
           "level": 46
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "rottekonge",
           "level": 46
         }
       ],
@@ -2285,15 +2285,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "gloeddronning",
           "level": 32
         },
         {
-          "speciesId": "mosbille",
+          "speciesId": "kaempekrabbe",
           "level": 32
         },
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "ellepige",
           "level": 34
         }
       ],
@@ -2311,15 +2311,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "svaneunge",
           "level": 32
         },
         {
-          "speciesId": "lygtling",
+          "speciesId": "gloeddronning",
           "level": 34
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "soeormling",
           "level": 37
         }
       ],
@@ -2337,15 +2337,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "rendsnude",
+          "speciesId": "kirkedue",
           "level": 33
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "mosekone",
           "level": 33
         },
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "gaardnisse",
           "level": 37
         }
       ],
@@ -2363,15 +2363,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "mikkelraev",
           "level": 34
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "gloedoegle",
           "level": 37
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "vinddue",
           "level": 37
         }
       ],
@@ -2389,15 +2389,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "mosbille",
+          "speciesId": "gloeddronning",
           "level": 35
         },
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "flintbjoern",
           "level": 36
         },
         {
-          "speciesId": "loftnisse",
+          "speciesId": "gloedoegle",
           "level": 36
         }
       ],
@@ -2415,15 +2415,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "grimaelling",
+          "speciesId": "tordenkrage",
           "level": 28
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "lygtemand",
           "level": 31
         },
         {
-          "speciesId": "lygtling",
+          "speciesId": "stormmaage",
           "level": 31
         }
       ],
@@ -2441,15 +2441,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "mosbille",
+          "speciesId": "mostrold",
           "level": 26
         },
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "tordenkrage",
           "level": 28
         },
         {
-          "speciesId": "loftnisse",
+          "speciesId": "skovbille",
           "level": 28
         }
       ],
@@ -2467,15 +2467,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "rendsnude",
+          "speciesId": "ildflue",
           "level": 27
         },
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "rokkeling",
           "level": 27
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "gloedoegle",
           "level": 30
         }
       ],
@@ -2493,15 +2493,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "mosbille",
+          "speciesId": "rottekonge",
           "level": 26
         },
         {
-          "speciesId": "torvdue",
+          "speciesId": "ildflue",
           "level": 27
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "kirkedue",
           "level": 28
         }
       ],
@@ -2519,15 +2519,15 @@
       "tier": "trainer",
       "team": [
         {
+          "speciesId": "rokkeling",
+          "level": 27
+        },
+        {
           "speciesId": "brokrabbe",
           "level": 27
         },
         {
-          "speciesId": "rendsnude",
-          "level": 27
-        },
-        {
-          "speciesId": "lygtling",
+          "speciesId": "soeormling",
           "level": 28
         }
       ],
@@ -2545,15 +2545,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "rendsnude",
+          "speciesId": "kaempekrabbe",
           "level": 33
         },
         {
-          "speciesId": "torvdue",
+          "speciesId": "rokkevinge",
           "level": 35
         },
         {
-          "speciesId": "mosbille",
+          "speciesId": "bjergtrold",
           "level": 37
         }
       ],
@@ -2571,15 +2571,15 @@
       "tier": "trainer",
       "team": [
         {
+          "speciesId": "skovbille",
+          "level": 21
+        },
+        {
           "speciesId": "kulingmaage",
           "level": 21
         },
         {
-          "speciesId": "ellepige",
-          "level": 21
-        },
-        {
-          "speciesId": "rendsnude",
+          "speciesId": "ildflue",
           "level": 23
         }
       ],
@@ -2597,15 +2597,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "lygtling",
+          "speciesId": "svaneunge",
           "level": 26
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "rottekonge",
           "level": 28
         },
         {
-          "speciesId": "mosbille",
+          "speciesId": "soeormling",
           "level": 28
         }
       ],
@@ -2623,15 +2623,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "mosbille",
-          "level": 23
-        },
-        {
           "speciesId": "brokrabbe",
           "level": 23
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "rokkeling",
+          "level": 23
+        },
+        {
+          "speciesId": "soeormling",
           "level": 25
         }
       ],
@@ -2649,7 +2649,7 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "tordenkrage",
           "level": 22
         },
         {
@@ -2657,7 +2657,7 @@
           "level": 22
         },
         {
-          "speciesId": "mosbille",
+          "speciesId": "kulingmaage",
           "level": 25
         }
       ],
@@ -2675,15 +2675,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "lygtling",
+          "speciesId": "rokkeling",
           "level": 26
         },
         {
-          "speciesId": "mosbille",
+          "speciesId": "skovbille",
           "level": 28
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "soeormling",
           "level": 29
         }
       ],
@@ -2701,15 +2701,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "lygtling",
+          "speciesId": "kirkedue",
           "level": 28
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "flintling",
           "level": 29
         },
         {
-          "speciesId": "mosbille",
+          "speciesId": "mikkelraev",
           "level": 31
         }
       ],
@@ -2727,15 +2727,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "torvdue",
+          "speciesId": "tordenkrage",
           "level": 27
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "brokrabbe",
           "level": 27
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "stormmaage",
           "level": 31
         }
       ],
@@ -2753,15 +2753,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "torvdue",
+          "speciesId": "lygtemand",
           "level": 26
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "gloeddronning",
           "level": 28
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "loftnisse",
           "level": 30
         }
       ],
@@ -2779,15 +2779,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "mosbille",
+          "speciesId": "ildflue",
           "level": 27
         },
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "kaempekrabbe",
           "level": 28
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "gloedoegle",
           "level": 30
         }
       ],
@@ -2805,15 +2805,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "loftnisse",
+          "speciesId": "mostrold",
           "level": 26
         },
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "tordenkrage",
           "level": 28
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "gloeddronning",
           "level": 31
         }
       ],
@@ -2831,15 +2831,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "loftnisse",
+          "speciesId": "dugpust",
           "level": 27
         },
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "lygtemand",
           "level": 29
         },
         {
-          "speciesId": "lygtling",
+          "speciesId": "ellepige",
           "level": 30
         }
       ],
@@ -2857,15 +2857,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "rendsnude",
+          "speciesId": "kulingmaage",
           "level": 27
         },
         {
-          "speciesId": "grimaelling",
+          "speciesId": "flintling",
           "level": 28
         },
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "tordenkrage",
           "level": 30
         }
       ],
@@ -2883,15 +2883,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "lygtling",
+          "speciesId": "skovbille",
           "level": 26
         },
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "gloedoegle",
           "level": 30
         },
         {
-          "speciesId": "rendsnude",
+          "speciesId": "mostrold",
           "level": 31
         }
       ],
@@ -2909,15 +2909,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "grimaelling",
+          "speciesId": "tordenkrage",
           "level": 26
         },
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "dugpust",
           "level": 26
         },
         {
-          "speciesId": "loftnisse",
+          "speciesId": "kulingmaage",
           "level": 28
         }
       ],
@@ -2935,15 +2935,15 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "loftnisse",
+          "speciesId": "skovbille",
           "level": 26
         },
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "rottekonge",
           "level": 27
         },
         {
-          "speciesId": "mosbille",
+          "speciesId": "gloeddronning",
           "level": 29
         }
       ],
@@ -2961,7 +2961,7 @@
       "tier": "trainer",
       "team": [
         {
-          "speciesId": "lygtling",
+          "speciesId": "ildflue",
           "level": 26
         },
         {
@@ -2969,7 +2969,7 @@
           "level": 27
         },
         {
-          "speciesId": "torvdue",
+          "speciesId": "gloedoegle",
           "level": 28
         }
       ],
@@ -2979,6 +2979,293 @@
       "reward": {
         "itemId": "large_tonic",
         "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "arena3_junior",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "grimaelling",
+          "level": 16
+        },
+        {
+          "speciesId": "rokkeling",
+          "level": 17
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "good_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "leader_grove",
+      "tier": "leader",
+      "team": [
+        {
+          "speciesId": "mostrold",
+          "level": 29
+        },
+        {
+          "speciesId": "skovbille",
+          "level": 30
+        },
+        {
+          "speciesId": "ellepige",
+          "level": 31
+        },
+        {
+          "speciesId": "boegevaette",
+          "level": 32
+        }
+      ],
+      "items": {
+        "large_tonic": 2
+      },
+      "arena": 4,
+      "theme": "grove",
+      "placeholder": true,
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      }
+    },
+    {
+      "id": "arena4_junior",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "skovbille",
+          "level": 23
+        },
+        {
+          "speciesId": "mikkelraev",
+          "level": 24
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "good_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "leader_spirit",
+      "tier": "leader",
+      "team": [
+        {
+          "speciesId": "lygtemand",
+          "level": 33
+        },
+        {
+          "speciesId": "mosekone",
+          "level": 33
+        },
+        {
+          "speciesId": "noekkeling",
+          "level": 34
+        },
+        {
+          "speciesId": "gaardnisse",
+          "level": 35
+        }
+      ],
+      "items": {
+        "large_tonic": 2
+      },
+      "arena": 5,
+      "theme": "spirit",
+      "placeholder": true,
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      }
+    },
+    {
+      "id": "arena5_junior",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "lygtemand",
+          "level": 29
+        },
+        {
+          "speciesId": "mosekone",
+          "level": 30
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "good_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "leader_fire",
+      "tier": "leader",
+      "team": [
+        {
+          "speciesId": "gloedoegle",
+          "level": 35
+        },
+        {
+          "speciesId": "lygtemand",
+          "level": 37
+        },
+        {
+          "speciesId": "essedrage",
+          "level": 36
+        },
+        {
+          "speciesId": "brandloeve",
+          "level": 39
+        }
+      ],
+      "items": {
+        "large_tonic": 2
+      },
+      "arena": 6,
+      "theme": "fire",
+      "placeholder": true,
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      }
+    },
+    {
+      "id": "arena6_junior",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "gloedoegle",
+          "level": 34
+        },
+        {
+          "speciesId": "flintbjoern",
+          "level": 35
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "great_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "leader_mixed",
+      "tier": "leader",
+      "team": [
+        {
+          "speciesId": "kongesvane",
+          "level": 40
+        },
+        {
+          "speciesId": "eghjort",
+          "level": 42
+        },
+        {
+          "speciesId": "lygtemand",
+          "level": 40
+        },
+        {
+          "speciesId": "tordenravn",
+          "level": 43
+        },
+        {
+          "speciesId": "essedrage",
+          "level": 42
+        }
+      ],
+      "items": {
+        "large_tonic": 3
+      },
+      "arena": 7,
+      "placeholder": true,
+      "reward": {
+        "itemId": "revive_blossom",
+        "count": 1
+      }
+    },
+    {
+      "id": "arena7_junior",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "mikkelraev",
+          "level": 39
+        },
+        {
+          "speciesId": "rokkevinge",
+          "level": 40
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "great_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "leader_storm",
+      "tier": "leader",
+      "team": [
+        {
+          "speciesId": "stormmaage",
+          "level": 49
+        },
+        {
+          "speciesId": "tordenravn",
+          "level": 49
+        },
+        {
+          "speciesId": "rokkevinge",
+          "level": 48
+        },
+        {
+          "speciesId": "vinddue",
+          "level": 49
+        },
+        {
+          "speciesId": "essedrage",
+          "level": 49
+        }
+      ],
+      "items": {
+        "large_tonic": 3
+      },
+      "arena": 8,
+      "theme": "storm",
+      "placeholder": true,
+      "reward": {
+        "itemId": "revive_blossom",
+        "count": 1
+      }
+    },
+    {
+      "id": "arena8_junior",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "tordenravn",
+          "level": 45
+        },
+        {
+          "speciesId": "stormmaage",
+          "level": 46
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "great_charm",
+        "count": 3
       },
       "placeholder": true
     }

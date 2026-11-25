@@ -78,11 +78,17 @@ describe('Journal: the main goal chain (P22)', () => {
     expect(open[0]!.done).toBe(true);
   });
 
-  it('an arena that is not built yet is "coming soon"', () => {
+  it('D168: every arena is built, so no arena goal is "coming soon"', () => {
     const save: SaveGame = { ...fresh(), badges: [1, 2], zones: ['stige'] };
     const d3 = journal(save, KONGENS_HAVE).districts.find((d) => d.district === 3)!;
     expect(d3.main.at(-1)!.kind).toBe('arena');
-    expect(d3.main.at(-1)!.comingSoon).toBe(true);
+    expect(d3.main.at(-1)!.comingSoon).toBeUndefined();
+    // with every zone open and seven badges, no district shows a "coming soon" arena
+    const all = journal(
+      { ...fresh(), badges: [1, 2, 3, 4, 5, 6, 7], zones: Object.keys(content.zones) },
+      null,
+    );
+    for (const d of all.districts) expect(d.main.some((g) => g.comingSoon)).toBe(false);
   });
 
   it('with all 8 badges there is no current goal', () => {

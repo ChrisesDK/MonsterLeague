@@ -11,13 +11,14 @@ describe('content', () => {
 
   it('has the expected placeholder content sizes', () => {
     expect(content.typeIds).toHaveLength(7);
-    expect(Object.keys(content.species)).toHaveLength(17);
+    // roster v2 (D167): 3 starter lines and 20 wild lines, each with 2 or 3 stages
+    expect(Object.keys(content.species)).toHaveLength(55);
     expect(Object.keys(content.moves).length).toBeGreaterThanOrEqual(30);
     expect(Object.keys(content.items)).toHaveLength(9); // + Medium Tonic (D165)
     // every item has a market price (D165)
     for (const i of Object.values(content.items)) expect(i.price, i.id).toBeGreaterThan(0);
     const kinds = Object.values(content.pois).map((p) => p.kind);
-    expect(kinds.filter((k) => k === 'arena')).toHaveLength(2);
+    expect(kinds.filter((k) => k === 'arena')).toHaveLength(8);
     // D163: route trainers on every route (about one per 1.5 km), plus Lise by Kongens Have
     expect(kinds.filter((k) => k === 'trainer').length).toBeGreaterThanOrEqual(
       Object.keys(content.routes).length,
@@ -25,7 +26,7 @@ describe('content', () => {
     expect(kinds.filter((k) => k === 'restStop')).toHaveLength(24);
     // 13 hand-made trainers + generated route trainers (D163)
     expect(Object.keys(content.trainers).length).toBeGreaterThanOrEqual(13 + 50);
-    expect(Object.keys(content.playerTeams)).toHaveLength(3);
+    expect(Object.keys(content.playerTeams)).toHaveLength(8);
     for (const s of Object.values(content.species)) expect(s.placeholder).toBe(true);
   });
 
@@ -158,17 +159,22 @@ describe('field abilities (M1.7, GDD v1.2 / P1)', () => {
 });
 
 describe('POIs (M2b)', () => {
-  it('arenas 1 and 2 (junior then leader), route trainers in their level range, rest stops everywhere, all unverified', () => {
+  it('arenas 1–8 (junior then leader), route trainers in their level range, rest stops everywhere, all unverified', () => {
     const pois = Object.values(content.pois);
     const arenas = pois.filter((p) => p.kind === 'arena');
     expect(arenas.map((a) => a.kind === 'arena' && [a.district, a.trainers])).toEqual([
       [1, ['arena1_junior', 'leader_folk']],
       [2, ['arena2_junior', 'leader_stone']],
+      [3, ['arena3_junior', 'leader_water']],
+      [4, ['arena4_junior', 'leader_grove']],
+      [5, ['arena5_junior', 'leader_spirit']],
+      [6, ['arena6_junior', 'leader_fire']],
+      [7, ['arena7_junior', 'leader_mixed']],
+      [8, ['arena8_junior', 'leader_storm']],
     ]);
     // route trainers stay inside their district's band (district 1: 4–9, the starter's range)
     const range: Record<number, [number, number]> = { ...content.districtBands, 1: [4, 9] };
     for (const p of pois) {
-      if (p.kind === 'arena') expect([1, 2]).toContain(p.district);
       expect(p.verified).toBe(false);
       if (p.kind === 'trainer') {
         const t = content.trainers[p.trainer]!;
@@ -187,9 +193,54 @@ describe('POIs (M2b)', () => {
     const rested = new Set(pois.filter((p) => p.kind === 'restStop').map((p) => p.zone));
     for (const z of Object.values(content.zones))
       if (z.kind === 'arena' || z.kind === 'town') expect(rested.has(z.id), z.id).toBe(true);
-    // Arena 3 (Water, Stige Ø) exists as data only until M3 (P22: was arena 4).
-    expect(content.trainers.leader_water!.arena).toBe(3);
-    expect(content.trainers.leader_water!.team).toHaveLength(4);
+    // D168: every leader's team sits at the top of its district's band (arena 8 at the cap)
+    for (const t of Object.values(content.trainers))
+      if (t.tier === 'leader') {
+        const top = Math.max(...t.team.map((m) => m.level));
+        expect(top, t.id).toBeGreaterThanOrEqual(content.districtBands[t.arena!]![1] - 2);
+        expect(top, t.id).toBeLessThanOrEqual(50);
+      }
+  });
+
+  it('roster v2 (D167): every wild line has 2–3 stages, evolved forms fit their level', () => {
+    const species = Object.values(content.species);
+    const parent = (id: string) => species.find((s) => s.evolution?.into === id);
+    const firsts = species.filter((s) => !parent(s.id));
+    expect(firsts).toHaveLength(23); // 3 starters + 20 wild lines
+    for (const f of firsts) {
+      let n = 1;
+      for (let s = f; s.evolution; s = content.species[s.evolution.into]!) n++;
+      expect(n, f.id).toBeGreaterThanOrEqual(2);
+      expect(n, f.id).toBeLessThanOrEqual(3);
+    }
+    // trainers never field a first stage far above the level it evolves at
+    for (const t of Object.values(content.trainers))
+      for (const m of t.team) {
+        const evo = content.species[m.speciesId]!.evolution;
+        if (evo) expect(m.level, `${t.id} ${m.speciesId}`).toBeLessThan(evo.level + 3);
+      }
+    // every rarity is used; very rare creatures only in destinations
+    const rarities = new Set(species.map((s) => s.rarity));
+    expect([...rarities].sort()).toEqual(['common', 'rare', 'uncommon', 'veryRare']);
+    for (const e of content.spawns)
+      if (content.species[e.species]!.rarity === 'veryRare') expect(e.destinationOnly).toBe(true);
+    // some creatures only spawn in destinations (forest, field and lake zones)
+    const destOnly = new Set(
+      firsts
+        .map((f) => f.id)
+        .filter((id) => {
+          const entries = content.spawns.filter((e) => e.species === id && !e.requires);
+          return entries.length > 0 && entries.every((e) => e.destinationOnly);
+        }),
+    );
+    expect(destOnly.size).toBeGreaterThanOrEqual(5);
+    // every wild line spawns somewhere
+    for (const f of firsts)
+      if (!['gnistkat', 'aaodder', 'boegling'].includes(f.id))
+        expect(
+          content.spawns.some((e) => e.species === f.id),
+          f.id,
+        ).toBe(true);
   });
 
   it("each POI's own map cell counts as the POI's zone and district (region build)", () => {
@@ -240,7 +291,9 @@ describe('arena sites, routes and Journal goals (M2d)', () => {
 
   it('has 8 arena sites in order, built ones linked to their arena POI', () => {
     expect(content.arenaSites.map((a) => a.arena)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
-    expect(content.arenaSites.filter((a) => a.poi).map((a) => a.poi)).toEqual(['arena1', 'arena2']);
+    expect(content.arenaSites.map((a) => a.poi)).toEqual(
+      [1, 2, 3, 4, 5, 6, 7, 8].map((n) => `arena${n}`),
+    );
   });
 
   it('P22: 50 routes between zones; the badge path links every arena in order', () => {
