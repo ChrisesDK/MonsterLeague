@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import maplibregl, { type Map as MlMap, type Marker } from 'maplibre-gl';
-import { badgeUrl, stampUrl } from '@oml/art';
+import { stampUrl } from '@oml/art';
 import { MAP_FRAMES, regions, type RegionId } from '@oml/data';
 import {
   arenaReady,
@@ -177,9 +177,11 @@ export function TownMap({
     for (const site of dex.arenaSites) {
       const img = document.createElement('img');
       img.alt = '';
-      img.src = badgeUrl(site.arena);
+      // the arena stamp, like the play map's stamps (owner: badges were hard to see here; they
+      // stay on the Fyn map and the Badges screen); a won arena shows the stamp's done look
       const won = save.badges.includes(site.arena);
-      const el = markerElement('button', `tm-marker cat-arenas${won ? '' : ' locked'}`, img);
+      img.src = stampUrl('arena', won);
+      const el = markerElement('button', `tm-marker arena cat-arenas${won ? ' won' : ''}`, img);
       el.dataset.testid = `tm-arena-${site.arena}`;
       el.setAttribute(
         'aria-label',
@@ -309,7 +311,7 @@ export function TownMap({
     if (selected.kind === 'arena') {
       const site = dex.arenaSites[selected.arena - 1]!;
       title = t('townMap.arenaLabel', { place: t(`arenaSite.${site.arena}.name`) });
-      icon = badgeUrl(site.arena);
+      icon = stampUrl('arena', save.badges.includes(site.arena));
       zone = site.zone;
       distance = away(site);
       needs = save.badges.includes(site.arena)

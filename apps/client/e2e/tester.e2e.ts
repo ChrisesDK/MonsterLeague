@@ -63,10 +63,18 @@ test('feedback, version, save export and import, home hints in the field guide',
   expect(copied).not.toMatch(/\d{2}\.\d{4,}/); // no coordinates
   await page.getByTestId('screen-back').click();
 
-  // the field guide names Mosling's main home (district 2)
+  // the field guide: one numbered list per region, each creature once; Mosling's entry
+  // names its main home, and the Svendborg tab lists Svendborg's own creatures
   await page.getByTestId('menu-guide').click();
-  await page.locator('.chip-row .btn', { hasText: /^2$/ }).click();
   await expect(page.getByTestId('guide-mosling')).toContainText('Kirkendrup Skov');
+  await expect(page.getByTestId('guide-gnistkat')).toContainText('#001');
+  await expect(page.locator('[data-testid^=guide-]').filter({ hasText: /^#/ })).toHaveCount(55);
+  await expect(page.locator('[data-testid=guide-mosling]')).toHaveCount(1);
+  await page.getByTestId('guide-tab-svendborg').click();
+  await expect(page.getByTestId('guide-svb_saelkalv')).toContainText('#001');
+  await expect(page.getByTestId('guide-svb_svampling')).toContainText('Svinehaverne');
+  await expect(page.getByTestId('guide-totals')).toContainText('0');
+  await expect(page.getByTestId('guide-gnistkat')).toHaveCount(0);
   await page.getByTestId('screen-back').click();
 
   // version, export, then import the exported file back

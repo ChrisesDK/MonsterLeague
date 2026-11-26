@@ -265,6 +265,15 @@
   background: var(--card);
   border: 2px solid var(--line);
 }
+/* the field guide's number (#001), like a collector's list */
+.guide-no {
+  flex: none;
+  min-width: 3.2em;
+  padding-top: 18px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--muted);
+}
 .guide-row-card img {
   width: 56px;
   height: 56px;

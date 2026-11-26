@@ -1,6 +1,6 @@
 # Odense Monster League — Game Design Document
 
-Version 1.19 · Nov 26, 2026 · maintained in the repository (see Change log)
+Version 1.20 · Nov 26, 2026 · maintained in the repository (see Change log)
 
 ## Overview
 
@@ -69,7 +69,7 @@ Version 1.19 · Nov 26, 2026 · maintained in the repository (see Change log)
 - **Route trainers** stand on every route, about one per 1.5 km (1–3 per route), and creatures are denser within about 30 m of a route.
 - **Streets** stay sparse, like the towns between routes, and mostly have urban creatures.
 
-**Town Map.** A full-screen overview of the region in the same paper style: the region border (solid yellow, with a pale wash outside the region), district and zone borders (dotted; each edge drawn once, never on top of another line), closed zones lightly dimmed with how to open them, arenas with badge state, every route with its number and walked part, rest stops, the player's position and the Journal's current target. It is held on the region (it can't be dragged out of it), and its map ends in an even frame 2 km around the region, plain beyond (v1.15). It zooms from the whole municipality, where only the arenas show, down to the streets. Arenas are badges; everything else is a stamp: trainers (ticked when beaten; shown when zoomed in), rest stops, markets and the **destinations**, one stamp per zone that says what it is (forest, meadow and field, lake and water, town), so players can see what a route leads to. Tapping a place shows its straight-line distance, its zone and what it needs (a destination: what it is, which routes lead there and which route to walk next); no turn-by-turn directions. A **filter** button (a funnel) in the top bar, next to the Fyn button, opens a short menu of switches to show or hide arenas, routes, trainers, rest stops, markets and destinations; the choice is remembered on the phone.
+**Town Map.** A full-screen overview of the region in the same paper style: the region border (solid yellow, with a pale wash outside the region), district and zone borders (dotted; each edge drawn once, never on top of another line), closed zones lightly dimmed with how to open them, arenas (won or not), every route with its number and walked part, rest stops, the player's position and the Journal's current target. It is held on the region (it can't be dragged out of it), and its map ends in an even frame 2 km around the region, plain beyond (v1.15). It zooms from the whole municipality, where only the arenas show, down to the streets. Every place is a stamp (v1.20: arenas too, with a done look once won; the badges themselves show on the Fyn map and the Badges screen): trainers (ticked when beaten; shown when zoomed in), rest stops, markets and the **destinations**, one stamp per zone that says what it is (forest, meadow and field, lake and water, town), so players can see what a route leads to. Tapping a place shows its straight-line distance, its zone and what it needs (a destination: what it is, which routes lead there and which route to walk next); no turn-by-turn directions. A **filter** button (a funnel) in the top bar, next to the Fyn button, opens a short menu of switches to show or hide arenas, routes, trainers, rest stops, markets and destinations; the choice is remembered on the phone.
 
 **Fyn map.** A "Fyn" button on the Town Map opens a map of Fyn's municipalities, each a region: in the same paper style, held on Fyn with a small zoom range, showing each region's 8 arena badges (grey until won). It is for choosing a region: the region being played opens its Town Map, another playable region (Odense and Svendborg since v1.19) says to walk there to play its campaign, and the others say "coming later". Back closes the Fyn map first, then the Town Map.
 
@@ -364,7 +364,7 @@ Locked layers are shown on the map (rustling trees, rings on water, a stone glyp
 | Storage | Creatures beyond 6 | Grid, swap into team |
 | Bag | Items | Grouped list with the skilling balance, use from map or battle |
 | Market | Buy and sell (v1.12) | Opened at a market on the map; Buy and Sell tabs, prices, the balance; back returns to the map |
-| Field guide | Collection | Seen / caught per district, biome hints ("found near water at night") |
+| Field guide | Collection | One tab per region (v1.20), each a numbered list of all its creatures (#001 …), every creature once; seen or caught anywhere in the region counts; hints where to find each ("found near water at night", a destination creature's home); other regions' tabs show their own campaign |
 | Badges and progress | Campaign | 8 badge slots, next arena and its distance |
 | Settings | Safety and comfort | Sound, Vibration (its own switch), reduce motion, battle speed, text size and language (dropdowns), 3D buildings, "How far you can see" (0.8–1.4 km), Battle playtest, data export/delete, safety reminder; the last line is the credits ("Developed by Christian Bröchner Rasmussen with Claude") |
 
@@ -604,6 +604,7 @@ M1.7 (done, 148 tests): field abilities are data in `field-abilities.json`; a fr
 
 | Version | Date | Changes |
 | --- | --- | --- |
+| 1.20 | 2026-11-26 | The field guide becomes one numbered list per region (tabs by region, each creature once, seen or caught anywhere in the region counts); the Town Map shows arenas as arena stamps (badges stay on the Fyn map and the Badges screen) |
 | 1.19 | 2026-11-26 | Svendborg is playable: its own roster of 55 creatures (Water/Stone/Storm starters, 20 wild lines with the same rarity mix as Odense's, seven destination creatures at their homes), spawn tables, Journal goals, eight leaders and juniors, 102 route trainers; its leaders meet the same win-rate targets |
 | 1.18 | 2026-11-26 | Campaigns per region in the game: the campaign follows the region the player walks in (up to 500 m off its coast), switching after any battle; a new region starts at its own starter choice and the other campaigns wait unchanged; ferry crossings are sailed, not walked, and an island opens when the player lands there |
 | 1.17 | 2026-11-25 | Regions: one campaign per municipality, with an update queue between regions (P27); Svendborg designed: Water/Stone/Storm starters, eight arenas and badges, ferry islands that open on arrival with dotted crossings, its own creatures; every badge its own design |

@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import { badgeUrl, spriteUrl } from '@oml/art';
-import { content, regions, type Dex } from '@oml/data';
+import { content, PLAYABLE_MUNICIPALITIES, regions, type Dex, type RegionId } from '@oml/data';
 import { getMaxHp, getStats, xpForLevel, type CreatureInstance } from '@oml/engine';
 import {
   canTeach,
@@ -31,7 +31,7 @@ import { creatureName } from '../eventText';
 import { Button, ListRow, ProgressBar, Pill, Tabs } from '../ui/components';
 import { Icon, type IconName } from '../ui/icons';
 import { goalProgress, goalTitle } from './goalText';
-import type { Translate } from '../i18n';
+import { makeT, type Translate } from '../i18n';
 import { deleteGame, exportGameFile, readGameFile, shareOrDownload, writeGame } from './store';
 import { APP_VERSION } from '../version';
 import { WelcomeScreen } from './Onboarding';
@@ -766,59 +766,73 @@ function FeedbackScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onB
   );
 }
 
+/**
+ * The field guide (owner request): one tab per playable region and a numbered list of every
+ * creature of that region (#001 …), each listed once. A creature counts as seen or caught
+ * when it was seen or caught anywhere in that region (in any district). Each region's tab
+ * shows that region's own campaign and names, also while another region is played.
+ */
 function GuideScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBack: () => void }) {
-  const dex = useContext(RegionDex);
-  const districts = [1, 2, 3, 4, 5, 6, 7, 8];
-  const [district, setDistrict] = useState(1);
-  const inDistrict = Object.values(dex.species).filter(
-    (s) =>
-      dex.spawns.some((e) => e.species === s.id && e.district === district) ||
-      save.seen[s.id]?.includes(district),
-  );
-  const seenCount = Object.keys(save.seen).length;
-  const caughtCount = Object.keys(save.caught).length;
+  const [region, setRegion] = useState<RegionId>(save.region);
+  const tabs = PLAYABLE_MUNICIPALITIES as readonly RegionId[];
+  const dex = regions[region];
+  const tr = region === save.region ? t : makeT(save.settings.language, region);
+  const progress =
+    region === save.region
+      ? { seen: save.seen, caught: save.caught }
+      : (save.campaigns[region] ?? { seen: {}, caught: {} });
+  const species = Object.values(dex.species);
+  const seenCount = species.filter((s) => progress.seen[s.id]?.length).length;
+  const caughtCount = species.filter((s) => progress.caught[s.id]?.length).length;
   return (
     <Shell t={t} title={t('menu.guide')} onBack={onBack} testId="screen-guide">
-      <p className="muted small">
-        {t('guide.totals', {
-          seen: seenCount,
-          caught: caughtCount,
-          all: Object.keys(dex.species).length,
-        })}
+      {tabs.length > 1 && (
+        <div className="chip-row" role="tablist">
+          {tabs.map((r) => (
+            <button
+              key={r}
+              role="tab"
+              data-testid={`guide-tab-${r}`}
+              className={`btn choice${r === region ? ' on' : ''}`}
+              aria-selected={r === region}
+              onClick={() => setRegion(r)}
+            >
+              {t(`municipality.${r}.name`)}
+            </button>
+          ))}
+        </div>
+      )}
+      <p className="muted small" data-testid="guide-totals">
+        {t('guide.totals', { seen: seenCount, caught: caughtCount, all: species.length })}
       </p>
-      <div className="chip-row">
-        {districts.map((d) => (
-          <button
-            key={d}
-            className={`btn choice${d === district ? ' on' : ''}`}
-            aria-pressed={d === district}
-            onClick={() => setDistrict(d)}
-          >
-            {d}
-          </button>
-        ))}
-      </div>
-      <div className="list-panel">
-        {inDistrict.length === 0 && <p className="muted">{t('guide.none')}</p>}
-        {inDistrict.map((s) => {
-          const seen = save.seen[s.id]?.includes(district) ?? false;
-          const caught = save.caught[s.id]?.includes(district) ?? false;
+      <div className="list-panel guide-list">
+        {species.map((s, i) => {
+          const caught = !!progress.caught[s.id]?.length;
+          const seen = caught || !!progress.seen[s.id]?.length;
+          const starter = dex.starters.includes(s.id);
+          // where to find it (also before it is seen: the guide is the player's to-do list)
+          const hints = hintText(tr, s.id, dex);
           return (
-            <div key={s.id} className="guide-row-card" data-testid={`guide-${s.id}`}>
-              <img src={spriteUrl(s.id)} alt="" className={seen || caught ? '' : 'unseen'} />
+            <div
+              key={s.id}
+              className="guide-row-card"
+              data-testid={`guide-${s.id}`}
+              data-state={caught ? 'caught' : seen ? 'seen' : 'unseen'}
+            >
+              <span className="guide-no">#{String(i + 1).padStart(3, '0')}</span>
+              <img src={spriteUrl(s.id)} alt="" className={seen ? '' : 'unseen'} />
               <div>
-                <strong>{seen || caught ? t(`species.${s.id}.name`) : '???'}</strong>
+                <strong>{seen ? tr(`species.${s.id}.name`) : '???'}</strong>
                 <span className="muted small">
                   {' '}
                   · {caught ? t('guide.caught') : seen ? t('guide.seen') : t('guide.unseen')}
                 </span>
-                {hintText(t, s.id, dex)
-                  .filter((_, i) => guideHints(s.id, dex)[i]!.district === district)
-                  .map((h) => (
-                    <p key={h} className="muted small">
-                      {h}
-                    </p>
-                  ))}
+                {starter && <p className="muted small">{t('guide.starter')}</p>}
+                {hints.map((h) => (
+                  <p key={h} className="muted small">
+                    {h}
+                  </p>
+                ))}
               </div>
             </div>
           );

@@ -1812,3 +1812,17 @@ length, position resolution and spawn tables>`.
   lands on Skarø (it opens) and walks back to an unchanged Odense campaign. It found three
   places that still read Odense's content in a Svendborg battle (legal actions, event
   playback, dev hooks), now fixed.
+- **D182. Field guide by region; arena stamps on the Town Map** (owner request, GDD v1.20).
+  The field guide no longer has district pages (a creature found in several districts was
+  listed on each): it has one tab per playable region and a numbered list of that region's
+  species in roster order (#001 starter lines first), each once. Seen and caught are read
+  from the save's per-district lists, so anything seen or caught in any district counts;
+  the save format is unchanged. A tab for a region the player isn't in reads that region's
+  parked campaign and uses that region's names (`makeT(language, region)`). Every entry
+  keeps its hints (where it spawns, a destination creature's homes), also before it is seen,
+  and starters say how they are chosen. The Town Map draws arenas with the arena stamp
+  (its done variant once won) instead of the badge, which was hard to read at map size and
+  showed Odense's badges in Svendborg; badges stay on the Fyn map and the Badges screen.
+  Places on the play map now do nothing while the player moves faster than 25 km/h (a
+  press says so): before, a press acted while the card stayed hidden, which made CI's
+  slower runs press twice and fail.
