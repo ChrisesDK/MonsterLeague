@@ -1,5 +1,6 @@
-import { content, type RegionFile } from '@oml/data';
-import regionJson from '@oml/data/region/odense/region.json';
+import { REGION_IDS, regions, type RegionFile, type RegionId } from '@oml/data';
+import odenseJson from '@oml/data/region/odense/region.json';
+import svendborgJson from '@oml/data/region/svendborg/region.json';
 import {
   computeSpawns,
   decodeRegion,
@@ -26,19 +27,33 @@ const ALLOWED_ORIGINS = [
 /** The only query parameters accepted: nothing that could carry a precise position. */
 const ALLOWED_PARAMS = new Set(['region', 'cell', 'window']);
 
-const ODENSE = regionJson as unknown as RegionFile;
-const REGIONS: Record<string, Region> = {
-  odense: decodeRegion(ODENSE),
+/** Each region's file and spawn tables (P27); a request names its region, never mixed. */
+const FILES: Record<RegionId, RegionFile> = {
+  odense: odenseJson as unknown as RegionFile,
+  svendborg: svendborgJson as unknown as RegionFile,
 };
+const decoded = new Map<RegionId, Region>();
+/** Decoded on the first request for the region (keeps the Worker's start-up short). */
+function regionFor(id: string): Region | null {
+  if (!(REGION_IDS as readonly string[]).includes(id)) return null;
+  const rid = id as RegionId;
+  let r = decoded.get(rid);
+  if (!r) decoded.set(rid, (r = decodeRegion(FILES[rid])));
+  return r;
+}
 
 /**
- * What this deployment runs: the region-data hash and the spawn-rules version. Returned in
- * every response so the client can detect a Worker deployed from a different commit.
+ * What this deployment runs for a region: the region-data hash and the spawn-rules version.
+ * Returned in every response so the client can detect a Worker deployed from a different commit.
  */
-export const VERSIONS: ServiceVersions = {
-  regionData: ODENSE.dataVersion,
-  spawnRules: spawnRulesVersion(content.spawns),
-};
+export function versionsFor(region: RegionId): ServiceVersions {
+  return {
+    regionData: FILES[region].dataVersion,
+    spawnRules: spawnRulesVersion(regions[region].spawns),
+  };
+}
+/** Odense's (the first region). */
+export const VERSIONS: ServiceVersions = versionsFor('odense');
 
 function corsHeaders(origin: string | null): Record<string, string> {
   const headers: Record<string, string> = { Vary: 'Origin' };
@@ -92,7 +107,7 @@ export async function handle(request: Request, env: Env, nowSeconds: number): Pr
   }
 
   const regionId = url.searchParams.get('region') ?? '';
-  const region = REGIONS[regionId];
+  const region = regionFor(regionId);
   if (!region) return json(400, { error: 'unknown region' }, cors);
 
   const cell = url.searchParams.get('cell') ?? '';
@@ -119,11 +134,24 @@ export async function handle(request: Request, env: Env, nowSeconds: number): Pr
 
   if (!env.SPAWN_SECRET) return json(500, { error: 'spawn service not configured' }, cors);
   const seed = await windowSeed(env.SPAWN_SECRET, region.id, window);
-  const spawns = computeSpawns({ region, spawnTables: content.spawns, seed, window, cellIds });
+  const spawns = computeSpawns({
+    region,
+    spawnTables: regions[region.id as RegionId].spawns,
+    seed,
+    window,
+    cellIds,
+  });
   const expiresAt = windowEnd(window);
   return json(
     200,
-    { region: region.id, cell, window, expiresAt, versions: VERSIONS, spawns },
+    {
+      region: region.id,
+      cell,
+      window,
+      expiresAt,
+      versions: versionsFor(region.id as RegionId),
+      spawns,
+    },
     {
       ...cors,
       'Cache-Control': `public, max-age=${Math.max(1, expiresAt - nowSeconds)}`,

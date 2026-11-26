@@ -1,8 +1,9 @@
 import { SELF } from 'cloudflare:test';
 import { cellToChildren, latLngToCell } from 'h3-js';
 import { describe, expect, it } from 'vitest';
-import { content } from '@oml/data';
+import { content, regions } from '@oml/data';
 import regionVersion from '@oml/data/region/odense/version.json';
+import svendborgVersion from '@oml/data/region/svendborg/version.json';
 import { spawnRulesVersion } from '@oml/spawn';
 import { handle, windowSeed, type Env } from '../src/handler';
 
@@ -41,6 +42,30 @@ describe('GET /v1/spawns', () => {
       regionData: regionVersion.dataVersion,
       spawnRules: spawnRulesVersion(content.spawns),
     });
+  });
+
+  it('serves each region from its own data, never mixed (P27)', async () => {
+    const harbour = latLngToCell(55.06, 10.615, 7); // Svendborg harbour
+    const r = await get(
+      `https://spawns.test/v1/spawns?region=svendborg&cell=${harbour}&window=current`,
+    );
+    expect(r.status).toBe(200);
+    const body = (await r.json()) as {
+      region: string;
+      spawns: { speciesId: string }[];
+      versions: { regionData: string; spawnRules: string };
+    };
+    expect(body.region).toBe('svendborg');
+    expect(body.versions).toEqual({
+      regionData: svendborgVersion.dataVersion,
+      spawnRules: spawnRulesVersion(regions.svendborg.spawns),
+    });
+    for (const s of body.spawns) expect(regions.svendborg.species[s.speciesId]).toBeDefined();
+    // an Odense cell is outside Svendborg, and the other way round
+    const wrong = `https://spawns.test/v1/spawns?region=svendborg&cell=${KONGENS_HAVE}&window=current`;
+    expect((await get(wrong)).status).toBe(400);
+    const wrong2 = `https://spawns.test/v1/spawns?region=odense&cell=${harbour}&window=current`;
+    expect((await get(wrong2)).status).toBe(400);
   });
 
   it('serves the next window, and numeric current/next windows', async () => {
