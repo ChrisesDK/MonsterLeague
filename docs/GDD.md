@@ -1,6 +1,6 @@
 # Odense Monster League — Game Design Document
 
-Version 1.20 · Nov 26, 2026 · maintained in the repository (see Change log)
+Version 1.21 · Nov 26, 2026 · maintained in the repository (see Change log)
 
 ## Overview
 
@@ -71,7 +71,7 @@ Version 1.20 · Nov 26, 2026 · maintained in the repository (see Change log)
 
 **Town Map.** A full-screen overview of the region in the same paper style: the region border (solid yellow, with a pale wash outside the region), district and zone borders (dotted; each edge drawn once, never on top of another line), closed zones lightly dimmed with how to open them, arenas (won or not), every route with its number and walked part, rest stops, the player's position and the Journal's current target. It is held on the region (it can't be dragged out of it), and its map ends in an even frame 2 km around the region, plain beyond (v1.15). It zooms from the whole municipality, where only the arenas show, down to the streets. Every place is a stamp (v1.20: arenas too, with a done look once won; the badges themselves show on the Fyn map and the Badges screen): trainers (ticked when beaten; shown when zoomed in), rest stops, markets and the **destinations**, one stamp per zone that says what it is (forest, meadow and field, lake and water, town), so players can see what a route leads to. Tapping a place shows its straight-line distance, its zone and what it needs (a destination: what it is, which routes lead there and which route to walk next); no turn-by-turn directions. A **filter** button (a funnel) in the top bar, next to the Fyn button, opens a short menu of switches to show or hide arenas, routes, trainers, rest stops, markets and destinations; the choice is remembered on the phone.
 
-**Fyn map.** A "Fyn" button on the Town Map opens a map of Fyn's municipalities, each a region: in the same paper style, held on Fyn with a small zoom range, showing each region's 8 arena badges (grey until won). It is for choosing a region: the region being played opens its Town Map, another playable region (Odense and Svendborg since v1.19) says to walk there to play its campaign, and the others say "coming later". Back closes the Fyn map first, then the Town Map.
+**Fyn map.** A "Fyn" button on the Town Map opens a map of Fyn's municipalities, each a region: in the same paper style, held on Fyn with a small zoom range, showing each region's 8 arena badges (grey until won). It is for choosing a region: the region being played opens its Town Map, another playable region (Odense and Svendborg since v1.19) opens its Town Map to look at (v1.21: to plan a trip before travelling there; it shows that region's own progress, nothing before the first visit, no player position, and a note that play there starts by walking there, with a button back to the own region), and the others say "coming later". Back closes the Fyn map first, then goes from a looked-at region back to the own one, then closes the Town Map.
 
 **Journal (quest log).**
 
@@ -604,6 +604,7 @@ M1.7 (done, 148 tests): field abilities are data in `field-abilities.json`; a fr
 
 | Version | Date | Changes |
 | --- | --- | --- |
+| 1.21 | 2026-11-26 | The Fyn map opens another playable region's Town Map to look at and plan a trip (its own progress, changes nothing; play still starts by walking there) |
 | 1.20 | 2026-11-26 | The field guide becomes one numbered list per region (tabs by region, each creature once, seen or caught anywhere in the region counts); the Town Map shows arenas as arena stamps (badges stay on the Fyn map and the Badges screen) |
 | 1.19 | 2026-11-26 | Svendborg is playable: its own roster of 55 creatures (Water/Stone/Storm starters, 20 wild lines with the same rarity mix as Odense's, seven destination creatures at their homes), spawn tables, Journal goals, eight leaders and juniors, 102 route trainers; its leaders meet the same win-rate targets |
 | 1.18 | 2026-11-26 | Campaigns per region in the game: the campaign follows the region the player walks in (up to 500 m off its coast), switching after any battle; a new region starts at its own starter choice and the other campaigns wait unchanged; ferry crossings are sailed, not walked, and an island opens when the player lands there |

@@ -1826,3 +1826,15 @@ length, position resolution and spawn tables>`.
   Places on the play map now do nothing while the player moves faster than 25 km/h (a
   press says so): before, a press acted while the card stayed hidden, which made CI's
   slower runs press twice and fail.
+- **D183. Looking at another region's Town Map** (owner request, GDD v1.21). On the Fyn map
+  a playable region other than the one being viewed opens its Town Map instead of the old
+  "walk there" card. The Town Map keeps the viewed region in its own state and builds a
+  view-only save: the save with that region's parked campaign spread over it (a new
+  campaign before the first visit) and `region` set to it, so every rule (open zones,
+  route progress, arena readiness, next route) reads that region; nothing is saved and the
+  campaign doesn't switch. Texts come from `makeT(language, region)`, wild areas from that
+  region's file (loaded lazily). The player marker and the Journal target are left out
+  (they belong to the region being played); distances on cards are still straight lines
+  from the player. A banner says play starts by walking there and has a "Back to …" button;
+  the back gesture closes the Fyn map first, then returns to the own region, then closes
+  the Town Map.

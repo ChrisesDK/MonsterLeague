@@ -11,8 +11,8 @@ import type { Palette } from './style';
 
 /**
  * Fyn map (P22, owner request): the regions of Fyn, one per municipality, for choosing a
- * region. Only Odense can be opened today (it goes back to the Town Map, also handy for
- * planning a trip from elsewhere); the others say "coming later". It shows each region's
+ * region. A playable region opens its Town Map (the one being played, or another one to look
+ * at before travelling there: owner request); the others say "coming later". It shows each region's
  * arena badges (grey until won) and nothing else, in the Town Map's paper style. The view is
  * held on Fyn (no panning out to the rest of Denmark) and zoom is kept to a narrow range.
  */
@@ -150,20 +150,26 @@ function fynStyle(
 export function FynMap({
   t,
   save,
+  viewing,
   palette,
   onClose,
+  onOpen,
 }: {
   t: Translate;
   save: SaveGame;
+  /** The region whose Town Map is open under the Fyn map. */
+  viewing: MunicipalityId;
   palette: Palette;
   onClose: () => void;
+  /** Opens a playable region's Town Map (to look at it; play needs walking there). */
+  onOpen: (region: MunicipalityId) => void;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [later, setLater] = useState<MunicipalityId | null>(null);
-  /** P27: another playable region: its campaign starts when the player walks there. */
-  const [elsewhere, setElsewhere] = useState<MunicipalityId | null>(null);
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
+  const onOpenRef = useRef(onOpen);
+  onOpenRef.current = onOpen;
 
   useEffect(() => {
     if (!ref.current) return;
@@ -199,9 +205,8 @@ export function FynMap({
     });
     const open = (id: string) => {
       setLater(null);
-      setElsewhere(null);
-      if (id === save.region) onCloseRef.current();
-      else if (playable(id)) setElsewhere(id as MunicipalityId);
+      if (id === viewing) onCloseRef.current();
+      else if (playable(id)) onOpenRef.current(id as MunicipalityId);
       else setLater(id as MunicipalityId);
     };
     map.on('click', 'land', (e) => {
@@ -262,25 +267,6 @@ export function FynMap({
       <p className="fyn-hint" data-testid="fyn-hint">
         {t('fynMap.hint')}
       </p>
-      {elsewhere && (
-        <div className="town-map-card" data-testid="fynmap-elsewhere">
-          <div className="poi-card">
-            <div>
-              <strong>{t(`municipality.${elsewhere}.name`)}</strong>
-              <p className="small">
-                {t('fynMap.walkThere', { region: t(`municipality.${elsewhere}.name`) })}
-              </p>
-            </div>
-            <Button
-              round
-              variant="ghost"
-              icon="close"
-              aria-label={t('fynMap.close')}
-              onClick={() => setElsewhere(null)}
-            />
-          </div>
-        </div>
-      )}
       {later && (
         <div className="town-map-card" data-testid="fynmap-card">
           <div className="poi-card">

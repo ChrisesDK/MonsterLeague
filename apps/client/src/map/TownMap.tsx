@@ -6,14 +6,16 @@ import {
   arenaReady,
   distanceM,
   isZoneOpen,
+  newCampaign,
   nextRouteToward,
   routeProgress,
   type LatLng,
   type SaveGame,
 } from '@oml/game';
 import type { Region } from '@oml/spawn';
-import type { Translate } from '../i18n';
+import { makeT, type Translate } from '../i18n';
 import { formatM, routePercent } from '../game/goalText';
+import { loadRegion } from '../game/region';
 import { useBackHandler } from '../ui/backStack';
 import { Button } from '../ui/components';
 import { FynMap } from './FynMap';
@@ -26,7 +28,10 @@ import { paperStyle, type Palette } from './style';
  * Zones (locked ones dimmed), arenas with badge state, routes with their walked part and
  * number, rest stops, the player and the Journal's target. Tapping a place shows its name,
  * straight-line distance and what it needs. No turn-by-turn directions. The Fyn button opens
- * the overview of all regions on Fyn (FynMap); back closes that first.
+ * the overview of all regions on Fyn (FynMap); back closes that first. From the Fyn map the
+ * player can also open another playable region's Town Map to plan a trip there (owner
+ * request): it shows that region's own progress (nothing yet before the first visit) and
+ * changes nothing; play there starts by walking there.
  */
 type Selected =
   | { kind: 'arena'; arena: number }
@@ -117,6 +122,87 @@ export function TownMap({
   palette: Palette;
   onClose: () => void;
 }) {
+  const [view, setView] = useState<RegionId>(save.region);
+  const [fyn, setFyn] = useState(false);
+  const [viewRegion, setViewRegion] = useState<Region | null>(null);
+  const home = view === save.region;
+  // back closes the Fyn map first, then goes from a looked-at region back to the own one
+  useBackHandler(!home, () => setView(save.region));
+  useBackHandler(fyn, () => setFyn(false));
+  useEffect(() => {
+    if (home) return;
+    let live = true;
+    setViewRegion(null);
+    void loadRegion(view).then((r) => live && setViewRegion(r));
+    return () => {
+      live = false;
+    };
+  }, [view, home]);
+  // Another region's map reads that region's parked campaign (a new one before the first
+  // visit), as a view only: nothing here is saved.
+  const viewSave: SaveGame = home
+    ? save
+    : { ...save, ...(save.campaigns[view] ?? newCampaign(save.onboarding)), region: view };
+  const tr = home ? t : makeT(save.settings.language, view);
+  return (
+    <>
+      <RegionTownMap
+        key={view}
+        t={tr}
+        save={viewSave}
+        home={home}
+        position={position}
+        region={home ? region : viewRegion}
+        target={home ? target : null}
+        palette={palette}
+        onClose={onClose}
+        onFyn={() => setFyn(true)}
+        onHome={() => setView(save.region)}
+        homeName={t(`municipality.${save.region}.name`)}
+      />
+      {fyn && (
+        <FynMap
+          t={tr}
+          save={save}
+          viewing={view}
+          palette={palette}
+          onClose={() => setFyn(false)}
+          onOpen={(id) => {
+            setView(id);
+            setFyn(false);
+          }}
+        />
+      )}
+    </>
+  );
+}
+
+function RegionTownMap({
+  t,
+  save,
+  home,
+  position,
+  region,
+  target,
+  palette,
+  onClose,
+  onFyn,
+  onHome,
+  homeName,
+}: {
+  t: Translate;
+  save: SaveGame;
+  /** The region being played (false: another region, opened from the Fyn map to look at). */
+  home: boolean;
+  position: LatLng | null;
+  region: Region | null;
+  target: LatLng | null;
+  palette: Palette;
+  onClose: () => void;
+  onFyn: () => void;
+  onHome: () => void;
+  homeName: string;
+}) {
   const ref = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MlMap | null>(null);
   const [ready, setReady] = useState(false);
@@ -125,15 +211,13 @@ export function TownMap({
   const [hidden, setHidden] = useState<LayerId[]>(loadHidden);
   const [filterOpen, setFilterOpen] = useState(false);
   const [selected, setSelected] = useState<Selected | null>(null);
-  const [fyn, setFyn] = useState(false);
-  useBackHandler(fyn, () => setFyn(false));
   // P27: the Town Map is the campaign's own region
   const dex = regions[save.region];
 
   useEffect(() => {
     if (!ref.current) return;
     const base = appBase();
-    const centre = position ?? regionStart(save.region);
+    const centre = (home && position) || regionStart(save.region);
     const map = new maplibregl.Map({
       container: ref.current,
       style: paperStyle(base, `${base}tiles/${save.region}.pmtiles`, palette),
@@ -249,7 +333,7 @@ export function TownMap({
       el.innerHTML = `<div class="target-body">${STAR_SVG}</div>`;
       add(el, target, 'bottom');
     }
-    if (position) {
+    if (position && home) {
       const el = markerElement('div', 'player-marker', PLAYER_SVG);
       el.dataset.testid = 'tm-player';
       add(el, position, 'bottom');
@@ -431,7 +515,7 @@ export function TownMap({
           data-testid="townmap-fyn"
           onClick={() => {
             setSelected(null);
-            setFyn(true);
+            onFyn();
           }}
         >
           {t('townMap.fyn')}
@@ -465,8 +549,15 @@ export function TownMap({
           ))}
         </div>
       )}
+      {!home && (
+        <div className="town-map-visit" data-testid="townmap-visit" data-region={save.region}>
+          <p>{t('townMap.visiting', { region: t(`municipality.${save.region}.name`) })}</p>
+          <Button variant="ghost" data-testid="townmap-home" onClick={onHome}>
+            {t('townMap.backHome', { region: homeName })}
+          </Button>
+        </div>
+      )}
       {card}
-      {fyn && <FynMap t={t} save={save} palette={palette} onClose={() => setFyn(false)} />}
     </section>
   );
 }

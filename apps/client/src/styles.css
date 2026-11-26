@@ -1577,6 +1577,25 @@ html[data-theme='night'] .arena-field {
 .fyn-badges img.locked {
   filter: grayscale(1) opacity(0.5);
 }
+.town-map-visit {
+  position: absolute;
+  top: calc(var(--sp-3) + env(safe-area-inset-top) + 64px);
+  left: var(--sp-3);
+  right: var(--sp-3);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-md);
+  background: var(--hud);
+  color: var(--ink-2);
+  font-size: var(--fs-sm);
+}
+.town-map-visit p {
+  flex: 1;
+  margin: 0;
+}
 .fyn-hint {
   position: absolute;
   left: var(--sp-3);

@@ -76,6 +76,7 @@ Statuses: `pending` · `apply` · `adapt` · `done` · `skip` · `n/a` (a note m
 | D180 Campaigns per region (save v11, region from position, island arrival)                  | shared    | 2026-11-26 | done                                                          | done                          |
 | D181 Svendborg playable: roster, spawns, trainers, balance; sim and spawn report per region | svendborg | 2026-11-26 | n/a: Svendborg content; the per-region tools cover Odense too | done                          |
 | D182 Field guide by region (numbered list, tabs); arena stamps on the Town Map              | shared    | 2026-11-26 | done                                                          | done                          |
+| D183 The Fyn map opens other regions' Town Maps to look at                                  | shared    | 2026-11-26 | done                                                          | done                          |
 
 ## Features
 

@@ -446,7 +446,7 @@ test('Town Map: zones, arenas and routes; a card tells what a place needs (P22)'
   await expect(page.getByTestId('town-map')).toHaveCount(0);
 });
 
-test('Fyn map: the regions of Fyn, only Odense opens; badges grey until won; held on Fyn', async ({
+test('Fyn map: the regions of Fyn, Odense and Svendborg open; badges grey until won; held on Fyn', async ({
   page,
 }) => {
   await startDone(page);
@@ -505,6 +505,29 @@ test('Fyn map: the regions of Fyn, only Odense opens; badges grey until won; hel
   await page.getByTestId('fyn-badges-odense').click();
   await expect(page.getByTestId('fyn-map')).toHaveCount(0);
   await expect(page.getByTestId('town-map')).toBeVisible();
+  // another playable region opens its own Town Map to look at (owner request): its own
+  // arenas, no progress before the first visit, no player; it changes nothing
+  await page.getByTestId('townmap-fyn').click();
+  await page.getByTestId('fyn-badges-svendborg').click();
+  await expect(page.getByTestId('fyn-map')).toHaveCount(0);
+  await expect(page.getByTestId('townmap-visit')).toHaveAttribute('data-region', 'svendborg');
+  await expect(page.getByTestId('townmap-visit')).toContainText('Svendborg');
+  await page.waitForFunction(() => '__omlTownMap' in window);
+  const centre = await page.evaluate(() =>
+    (
+      window as unknown as { __omlTownMap: { getCenter: () => { lat: number } } }
+    ).__omlTownMap.getCenter(),
+  );
+  expect(centre.lat).toBeLessThan(55.2);
+  await expect(page.getByTestId('tm-arena-1')).not.toHaveClass(/won/);
+  await expect(page.getByTestId('tm-player')).toHaveCount(0);
+  await page.getByTestId('tm-arena-1').click();
+  await expect(page.getByTestId('townmap-card')).toContainText('Frederiksø');
+  expect(await dev(page, 'save').then((x) => (x as { region: string }).region)).toBe('odense');
+  await page.getByTestId('townmap-home').click();
+  await expect(page.getByTestId('townmap-visit')).toHaveCount(0);
+  await expect(page.getByTestId('tm-arena-1')).toHaveClass(/won/);
+  await expect(page.getByTestId('tm-player')).toHaveCount(1);
   // the close button also returns to the Town Map, which closes to the game view
   await page.getByTestId('townmap-fyn').click();
   await page.getByTestId('fynmap-close').click();
