@@ -1,3 +1,1433 @@
 {
-  "spawns": []
+  "spawns": [
+    {
+      "species": "svb_havnekat",
+      "district": 1,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "urban": 1,
+        "industrial": 1.2,
+        "historic": 1,
+        "park": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_sildeling",
+      "district": 1,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "water": 2,
+        "park": 0.2,
+        "urban": 0.2
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_egernling",
+      "district": 1,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "forest": 1.5,
+        "park": 1,
+        "meadow": 0.5,
+        "farmland": 0.4
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_hareling",
+      "district": 1,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "farmland": 1.5,
+        "meadow": 1,
+        "park": 0.4,
+        "urban": 0.2
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_blaamusling",
+      "district": 1,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "water": 1.5,
+        "industrial": 0.6,
+        "historic": 0.4,
+        "urban": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_strandskade",
+      "district": 1,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "water": 1,
+        "meadow": 0.8,
+        "farmland": 0.4
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_aalling",
+      "district": 1,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "water": 1.5,
+        "meadow": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_flagling",
+      "district": 1,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "historic": 1,
+        "park": 1,
+        "forest": 1,
+        "water": 0.6
+      },
+      "time": "night"
+    },
+    {
+      "species": "svb_fyrling",
+      "district": 1,
+      "weight": 18,
+      "rarity": "common",
+      "biomes": {
+        "industrial": 1.2,
+        "historic": 1,
+        "urban": 0.5,
+        "water": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_soepindling",
+      "district": 1,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "farmland": 1,
+        "historic": 0.8,
+        "meadow": 0.5,
+        "industrial": 0.5
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_askeling",
+      "district": 1,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "industrial": 1.2,
+        "urban": 0.6,
+        "park": 0.6,
+        "meadow": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_skibsnisse",
+      "district": 1,
+      "weight": 2.5,
+      "rarity": "rare",
+      "biomes": {
+        "historic": 2,
+        "water": 0.5,
+        "urban": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_skibsnisse",
+      "district": 1,
+      "weight": 4,
+      "rarity": "rare",
+      "biomes": {
+        "historic": 2,
+        "urban": 0.2
+      },
+      "time": "any",
+      "requires": "runereader"
+    },
+    {
+      "species": "svb_egernling",
+      "district": 1,
+      "weight": 4,
+      "rarity": "rare",
+      "biomes": {
+        "forest": 2,
+        "park": 1
+      },
+      "time": "any",
+      "requires": "forager"
+    },
+    {
+      "species": "svb_havnekat",
+      "district": 2,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "urban": 1,
+        "industrial": 1.2,
+        "historic": 1,
+        "park": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_sildeling",
+      "district": 2,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "water": 2,
+        "park": 0.2,
+        "urban": 0.2
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_egernling",
+      "district": 2,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "forest": 1.5,
+        "park": 1,
+        "meadow": 0.5,
+        "farmland": 0.4
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_hareling",
+      "district": 2,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "farmland": 1.5,
+        "meadow": 1,
+        "park": 0.4,
+        "urban": 0.2
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_blaamusling",
+      "district": 2,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "water": 1.5,
+        "industrial": 0.6,
+        "historic": 0.4,
+        "urban": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_strandskade",
+      "district": 2,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "water": 1,
+        "meadow": 0.8,
+        "farmland": 0.4
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_aalling",
+      "district": 2,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "water": 1.5,
+        "meadow": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_flagling",
+      "district": 2,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "historic": 1,
+        "park": 1,
+        "forest": 1,
+        "water": 0.6
+      },
+      "time": "night"
+    },
+    {
+      "species": "svb_fyrling",
+      "district": 2,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "industrial": 1.2,
+        "historic": 1,
+        "urban": 0.5,
+        "water": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_soepindling",
+      "district": 2,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "farmland": 1,
+        "historic": 0.8,
+        "meadow": 0.5,
+        "industrial": 0.5
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_askeling",
+      "district": 2,
+      "weight": 18,
+      "rarity": "common",
+      "biomes": {
+        "industrial": 1.2,
+        "urban": 0.6,
+        "park": 0.6,
+        "meadow": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_skibsnisse",
+      "district": 2,
+      "weight": 2.5,
+      "rarity": "rare",
+      "biomes": {
+        "historic": 2,
+        "water": 0.5,
+        "urban": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_svampling",
+      "district": 2,
+      "weight": 15,
+      "rarity": "common",
+      "biomes": {
+        "forest": 1.5,
+        "meadow": 0.6,
+        "park": 0.5
+      },
+      "time": "any",
+      "destinationOnly": true,
+      "zones": ["svb_hestehaven"]
+    },
+    {
+      "species": "svb_uglunge",
+      "district": 2,
+      "weight": 8,
+      "rarity": "common",
+      "biomes": {
+        "forest": 1.5,
+        "farmland": 0.6,
+        "meadow": 0.5
+      },
+      "time": "night",
+      "destinationOnly": true,
+      "zones": ["svb_hovgaard"]
+    },
+    {
+      "species": "svb_havnekat",
+      "district": 3,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "urban": 1,
+        "industrial": 1.2,
+        "historic": 1,
+        "park": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_sildeling",
+      "district": 3,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "water": 2,
+        "park": 0.2,
+        "urban": 0.2
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_egernling",
+      "district": 3,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "forest": 1.5,
+        "park": 1,
+        "meadow": 0.5,
+        "farmland": 0.4
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_hareling",
+      "district": 3,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "farmland": 1.5,
+        "meadow": 1,
+        "park": 0.4,
+        "urban": 0.2
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_blaamusling",
+      "district": 3,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "water": 1.5,
+        "industrial": 0.6,
+        "historic": 0.4,
+        "urban": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_strandskade",
+      "district": 3,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "water": 1,
+        "meadow": 0.8,
+        "farmland": 0.4
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_aalling",
+      "district": 3,
+      "weight": 18,
+      "rarity": "common",
+      "biomes": {
+        "water": 1.5,
+        "meadow": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_flagling",
+      "district": 3,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "historic": 1,
+        "park": 1,
+        "forest": 1,
+        "water": 0.6
+      },
+      "time": "night"
+    },
+    {
+      "species": "svb_fyrling",
+      "district": 3,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "industrial": 1.2,
+        "historic": 1,
+        "urban": 0.5,
+        "water": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_soepindling",
+      "district": 3,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "farmland": 1,
+        "historic": 0.8,
+        "meadow": 0.5,
+        "industrial": 0.5
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_askeling",
+      "district": 3,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "industrial": 1.2,
+        "urban": 0.6,
+        "park": 0.6,
+        "meadow": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_skibsnisse",
+      "district": 3,
+      "weight": 2.5,
+      "rarity": "rare",
+      "biomes": {
+        "historic": 2,
+        "water": 0.5,
+        "urban": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_havnekat",
+      "district": 4,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "urban": 1,
+        "industrial": 1.2,
+        "historic": 1,
+        "park": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_sildeling",
+      "district": 4,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "water": 2,
+        "park": 0.2,
+        "urban": 0.2
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_egernling",
+      "district": 4,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "forest": 1.5,
+        "park": 1,
+        "meadow": 0.5,
+        "farmland": 0.4
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_hareling",
+      "district": 4,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "farmland": 1.5,
+        "meadow": 1,
+        "park": 0.4,
+        "urban": 0.2
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_blaamusling",
+      "district": 4,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "water": 1.5,
+        "industrial": 0.6,
+        "historic": 0.4,
+        "urban": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_strandskade",
+      "district": 4,
+      "weight": 18,
+      "rarity": "common",
+      "biomes": {
+        "water": 1,
+        "meadow": 0.8,
+        "farmland": 0.4
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_aalling",
+      "district": 4,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "water": 1.5,
+        "meadow": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_flagling",
+      "district": 4,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "historic": 1,
+        "park": 1,
+        "forest": 1,
+        "water": 0.6
+      },
+      "time": "night"
+    },
+    {
+      "species": "svb_fyrling",
+      "district": 4,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "industrial": 1.2,
+        "historic": 1,
+        "urban": 0.5,
+        "water": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_soepindling",
+      "district": 4,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "farmland": 1,
+        "historic": 0.8,
+        "meadow": 0.5,
+        "industrial": 0.5
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_askeling",
+      "district": 4,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "industrial": 1.2,
+        "urban": 0.6,
+        "park": 0.6,
+        "meadow": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_skibsnisse",
+      "district": 4,
+      "weight": 2.5,
+      "rarity": "rare",
+      "biomes": {
+        "historic": 2,
+        "water": 0.5,
+        "urban": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_brunfiskling",
+      "district": 4,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "water": 2
+      },
+      "time": "any",
+      "destinationOnly": true,
+      "zones": ["svb_vindebyoere"]
+    },
+    {
+      "species": "svb_havfoel",
+      "district": 4,
+      "weight": 6,
+      "rarity": "rare",
+      "biomes": {
+        "water": 2
+      },
+      "time": "any",
+      "destinationOnly": true,
+      "zones": ["svb_vindebyoere"]
+    },
+    {
+      "species": "svb_havfoel",
+      "district": 4,
+      "weight": 4,
+      "rarity": "rare",
+      "biomes": {
+        "water": 2
+      },
+      "time": "any",
+      "requires": "angler",
+      "destinationOnly": true,
+      "zones": ["svb_vindebyoere"]
+    },
+    {
+      "species": "svb_havnekat",
+      "district": 5,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "urban": 1,
+        "industrial": 1.2,
+        "historic": 1,
+        "park": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_sildeling",
+      "district": 5,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "water": 2,
+        "park": 0.2,
+        "urban": 0.2
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_egernling",
+      "district": 5,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "forest": 1.5,
+        "park": 1,
+        "meadow": 0.5,
+        "farmland": 0.4
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_hareling",
+      "district": 5,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "farmland": 1.5,
+        "meadow": 1,
+        "park": 0.4,
+        "urban": 0.2
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_blaamusling",
+      "district": 5,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "water": 1.5,
+        "industrial": 0.6,
+        "historic": 0.4,
+        "urban": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_strandskade",
+      "district": 5,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "water": 1,
+        "meadow": 0.8,
+        "farmland": 0.4
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_aalling",
+      "district": 5,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "water": 1.5,
+        "meadow": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_flagling",
+      "district": 5,
+      "weight": 18,
+      "rarity": "common",
+      "biomes": {
+        "historic": 1,
+        "park": 1,
+        "forest": 1,
+        "water": 0.6
+      },
+      "time": "night"
+    },
+    {
+      "species": "svb_fyrling",
+      "district": 5,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "industrial": 1.2,
+        "historic": 1,
+        "urban": 0.5,
+        "water": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_soepindling",
+      "district": 5,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "farmland": 1,
+        "historic": 0.8,
+        "meadow": 0.5,
+        "industrial": 0.5
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_askeling",
+      "district": 5,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "industrial": 1.2,
+        "urban": 0.6,
+        "park": 0.6,
+        "meadow": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_guldgubbe",
+      "district": 5,
+      "weight": 2.5,
+      "rarity": "rare",
+      "biomes": {
+        "historic": 1.5,
+        "farmland": 1,
+        "urban": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_svampling",
+      "district": 5,
+      "weight": 12,
+      "rarity": "common",
+      "biomes": {
+        "forest": 1.5,
+        "meadow": 0.6,
+        "park": 0.5
+      },
+      "time": "any",
+      "destinationOnly": true,
+      "zones": ["svb_kohaverne"]
+    },
+    {
+      "species": "svb_taageling",
+      "district": 5,
+      "weight": 30,
+      "rarity": "common",
+      "biomes": {
+        "water": 1,
+        "meadow": 1.5,
+        "farmland": 0.5
+      },
+      "time": "any",
+      "destinationOnly": true,
+      "zones": ["svb_vejlen"]
+    },
+    {
+      "species": "svb_hyldeknop",
+      "district": 5,
+      "weight": 4,
+      "rarity": "rare",
+      "biomes": {
+        "forest": 2,
+        "park": 0.5
+      },
+      "time": "any",
+      "destinationOnly": true,
+      "zones": ["svb_bjerreby"]
+    },
+    {
+      "species": "svb_havnekat",
+      "district": 6,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "urban": 1,
+        "industrial": 1.2,
+        "historic": 1,
+        "park": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_sildeling",
+      "district": 6,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "water": 2,
+        "park": 0.2,
+        "urban": 0.2
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_egernling",
+      "district": 6,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "forest": 1.5,
+        "park": 1,
+        "meadow": 0.5,
+        "farmland": 0.4
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_hareling",
+      "district": 6,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "farmland": 1.5,
+        "meadow": 1,
+        "park": 0.4,
+        "urban": 0.2
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_blaamusling",
+      "district": 6,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "water": 1.5,
+        "industrial": 0.6,
+        "historic": 0.4,
+        "urban": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_strandskade",
+      "district": 6,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "water": 1,
+        "meadow": 0.8,
+        "farmland": 0.4
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_aalling",
+      "district": 6,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "water": 1.5,
+        "meadow": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_flagling",
+      "district": 6,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "historic": 1,
+        "park": 1,
+        "forest": 1,
+        "water": 0.6
+      },
+      "time": "night"
+    },
+    {
+      "species": "svb_fyrling",
+      "district": 6,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "industrial": 1.2,
+        "historic": 1,
+        "urban": 0.5,
+        "water": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_soepindling",
+      "district": 6,
+      "weight": 18,
+      "rarity": "common",
+      "biomes": {
+        "farmland": 1,
+        "historic": 0.8,
+        "meadow": 0.5,
+        "industrial": 0.5
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_askeling",
+      "district": 6,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "industrial": 1.2,
+        "urban": 0.6,
+        "park": 0.6,
+        "meadow": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_guldgubbe",
+      "district": 6,
+      "weight": 2.5,
+      "rarity": "rare",
+      "biomes": {
+        "historic": 1.5,
+        "farmland": 1,
+        "urban": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_svampling",
+      "district": 6,
+      "weight": 60,
+      "rarity": "common",
+      "biomes": {
+        "forest": 1.5,
+        "meadow": 0.6,
+        "park": 0.5
+      },
+      "time": "any",
+      "destinationOnly": true,
+      "zones": ["svb_svinehaverne"]
+    },
+    {
+      "species": "svb_havnekat",
+      "district": 7,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "urban": 1,
+        "industrial": 1.2,
+        "historic": 1,
+        "park": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_sildeling",
+      "district": 7,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "water": 2,
+        "park": 0.2,
+        "urban": 0.2
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_egernling",
+      "district": 7,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "forest": 1.5,
+        "park": 1,
+        "meadow": 0.5,
+        "farmland": 0.4
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_hareling",
+      "district": 7,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "farmland": 1.5,
+        "meadow": 1,
+        "park": 0.4,
+        "urban": 0.2
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_blaamusling",
+      "district": 7,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "water": 1.5,
+        "industrial": 0.6,
+        "historic": 0.4,
+        "urban": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_strandskade",
+      "district": 7,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "water": 1,
+        "meadow": 0.8,
+        "farmland": 0.4
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_aalling",
+      "district": 7,
+      "weight": 18,
+      "rarity": "common",
+      "biomes": {
+        "water": 1.5,
+        "meadow": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_flagling",
+      "district": 7,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "historic": 1,
+        "park": 1,
+        "forest": 1,
+        "water": 0.6
+      },
+      "time": "night"
+    },
+    {
+      "species": "svb_fyrling",
+      "district": 7,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "industrial": 1.2,
+        "historic": 1,
+        "urban": 0.5,
+        "water": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_soepindling",
+      "district": 7,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "farmland": 1,
+        "historic": 0.8,
+        "meadow": 0.5,
+        "industrial": 0.5
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_askeling",
+      "district": 7,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "industrial": 1.2,
+        "urban": 0.6,
+        "park": 0.6,
+        "meadow": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_guldgubbe",
+      "district": 7,
+      "weight": 2.5,
+      "rarity": "rare",
+      "biomes": {
+        "historic": 1.5,
+        "farmland": 1,
+        "urban": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_taageling",
+      "district": 7,
+      "weight": 8,
+      "rarity": "common",
+      "biomes": {
+        "water": 1,
+        "meadow": 1.5,
+        "farmland": 0.5
+      },
+      "time": "any",
+      "destinationOnly": true,
+      "zones": ["svb_ollerupsoe"]
+    },
+    {
+      "species": "svb_havfoel",
+      "district": 7,
+      "weight": 3,
+      "rarity": "rare",
+      "biomes": {
+        "water": 2
+      },
+      "time": "any",
+      "destinationOnly": true,
+      "zones": ["svb_skaroe"]
+    },
+    {
+      "species": "svb_hyldeknop",
+      "district": 7,
+      "weight": 2,
+      "rarity": "rare",
+      "biomes": {
+        "forest": 2,
+        "park": 0.5
+      },
+      "time": "any",
+      "destinationOnly": true,
+      "zones": ["svb_lehnskov"]
+    },
+    {
+      "species": "svb_havnekat",
+      "district": 8,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "urban": 1,
+        "industrial": 1.2,
+        "historic": 1,
+        "park": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_sildeling",
+      "district": 8,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "water": 2,
+        "park": 0.2,
+        "urban": 0.2
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_egernling",
+      "district": 8,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "forest": 1.5,
+        "park": 1,
+        "meadow": 0.5,
+        "farmland": 0.4
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_hareling",
+      "district": 8,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "farmland": 1.5,
+        "meadow": 1,
+        "park": 0.4,
+        "urban": 0.2
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_blaamusling",
+      "district": 8,
+      "weight": 25,
+      "rarity": "common",
+      "biomes": {
+        "water": 1.5,
+        "industrial": 0.6,
+        "historic": 0.4,
+        "urban": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_strandskade",
+      "district": 8,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "water": 1,
+        "meadow": 0.8,
+        "farmland": 0.4
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_aalling",
+      "district": 8,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "water": 1.5,
+        "meadow": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_flagling",
+      "district": 8,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "historic": 1,
+        "park": 1,
+        "forest": 1,
+        "water": 0.6
+      },
+      "time": "night"
+    },
+    {
+      "species": "svb_fyrling",
+      "district": 8,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "industrial": 1.2,
+        "historic": 1,
+        "urban": 0.5,
+        "water": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_soepindling",
+      "district": 8,
+      "weight": 9,
+      "rarity": "common",
+      "biomes": {
+        "farmland": 1,
+        "historic": 0.8,
+        "meadow": 0.5,
+        "industrial": 0.5
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_askeling",
+      "district": 8,
+      "weight": 18,
+      "rarity": "common",
+      "biomes": {
+        "industrial": 1.2,
+        "urban": 0.6,
+        "park": 0.6,
+        "meadow": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_guldgubbe",
+      "district": 8,
+      "weight": 2.5,
+      "rarity": "rare",
+      "biomes": {
+        "historic": 1.5,
+        "farmland": 1,
+        "urban": 0.3
+      },
+      "time": "any"
+    },
+    {
+      "species": "svb_brunfiskling",
+      "district": 8,
+      "weight": 8,
+      "rarity": "common",
+      "biomes": {
+        "water": 2
+      },
+      "time": "any",
+      "destinationOnly": true,
+      "zones": ["svb_elsehoved"]
+    },
+    {
+      "species": "svb_uglunge",
+      "district": 8,
+      "weight": 30,
+      "rarity": "common",
+      "biomes": {
+        "forest": 1.5,
+        "farmland": 0.6,
+        "meadow": 0.5
+      },
+      "time": "night",
+      "destinationOnly": true,
+      "zones": ["svb_tangeskov"]
+    },
+    {
+      "species": "svb_maremaeling",
+      "district": 8,
+      "weight": 18,
+      "rarity": "rare",
+      "biomes": {
+        "water": 2
+      },
+      "time": "any",
+      "destinationOnly": true,
+      "zones": ["svb_klintholm"]
+    }
+  ]
 }

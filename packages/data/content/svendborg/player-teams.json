@@ -1,3 +1,223 @@
 {
-  "playerTeams": []
+  "playerTeams": [
+    {
+      "id": "svb_arena1",
+      "arena": 1,
+      "starterLevel": 10,
+      "team": [
+        {
+          "speciesId": "svb_havnekat",
+          "level": 9
+        },
+        {
+          "speciesId": "svb_egernling",
+          "level": 10
+        }
+      ],
+      "items": {
+        "small_tonic": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_arena2",
+      "arena": 2,
+      "starterLevel": 15,
+      "team": [
+        {
+          "speciesId": "svb_sildeling",
+          "level": 13
+        },
+        {
+          "speciesId": "svb_boegeegern",
+          "level": 14
+        },
+        {
+          "speciesId": "svb_havnekat",
+          "level": 14
+        }
+      ],
+      "items": {
+        "small_tonic": 2,
+        "large_tonic": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_arena3",
+      "arena": 3,
+      "starterLevel": 22,
+      "team": [
+        {
+          "speciesId": "svb_strandskade",
+          "level": 21
+        },
+        {
+          "speciesId": "svb_blaamusling",
+          "level": 21
+        },
+        {
+          "speciesId": "svb_boegeegern",
+          "level": 22
+        },
+        {
+          "speciesId": "svb_havnekat",
+          "level": 21
+        }
+      ],
+      "items": {
+        "small_tonic": 2,
+        "large_tonic": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_arena4",
+      "arena": 4,
+      "starterLevel": 28,
+      "team": [
+        {
+          "speciesId": "svb_strandskade",
+          "level": 26
+        },
+        {
+          "speciesId": "svb_hestemusling",
+          "level": 26
+        },
+        {
+          "speciesId": "svb_stimsild",
+          "level": 26
+        },
+        {
+          "speciesId": "svb_fyrvogter",
+          "level": 27
+        }
+      ],
+      "items": {
+        "small_tonic": 2,
+        "large_tonic": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_arena5",
+      "arena": 5,
+      "starterLevel": 33,
+      "team": [
+        {
+          "speciesId": "svb_kystskade",
+          "level": 31
+        },
+        {
+          "speciesId": "svb_hestemusling",
+          "level": 31
+        },
+        {
+          "speciesId": "svb_stimsild",
+          "level": 31
+        },
+        {
+          "speciesId": "svb_fyrvogter",
+          "level": 32
+        }
+      ],
+      "items": {
+        "small_tonic": 2,
+        "large_tonic": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_arena6",
+      "arena": 6,
+      "starterLevel": 38,
+      "team": [
+        {
+          "speciesId": "svb_kystskade",
+          "level": 36
+        },
+        {
+          "speciesId": "svb_maanehare",
+          "level": 36
+        },
+        {
+          "speciesId": "svb_skibskat",
+          "level": 36
+        },
+        {
+          "speciesId": "svb_kronegern",
+          "level": 36
+        }
+      ],
+      "items": {
+        "small_tonic": 2,
+        "large_tonic": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_arena7",
+      "arena": 7,
+      "starterLevel": 43,
+      "team": [
+        {
+          "speciesId": "svb_kystskade",
+          "level": 41
+        },
+        {
+          "speciesId": "svb_hestemusling",
+          "level": 41
+        },
+        {
+          "speciesId": "svb_sildekonge",
+          "level": 41
+        },
+        {
+          "speciesId": "svb_kronegern",
+          "level": 41
+        },
+        {
+          "speciesId": "svb_aftenbakke",
+          "level": 41
+        }
+      ],
+      "items": {
+        "small_tonic": 2,
+        "large_tonic": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_arena8",
+      "arena": 8,
+      "starterLevel": 46,
+      "team": [
+        {
+          "speciesId": "svb_maanehare",
+          "level": 44
+        },
+        {
+          "speciesId": "svb_skibskat",
+          "level": 44
+        },
+        {
+          "speciesId": "svb_sildekonge",
+          "level": 44
+        },
+        {
+          "speciesId": "svb_kronegern",
+          "level": 44
+        },
+        {
+          "speciesId": "svb_aftenbakke",
+          "level": 44
+        }
+      ],
+      "items": {
+        "small_tonic": 2,
+        "large_tonic": 2
+      },
+      "placeholder": true
+    }
+  ]
 }

@@ -1,3 +1,3069 @@
 {
-  "trainers": []
+  "trainers": [
+    {
+      "id": "svb_arena1_junior",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_havnekat",
+          "level": 8
+        },
+        {
+          "speciesId": "svb_sildeling",
+          "level": 9
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_leader_spirit",
+      "tier": "leader",
+      "team": [
+        {
+          "speciesId": "svb_flagling",
+          "level": 13
+        },
+        {
+          "speciesId": "svb_taageling",
+          "level": 11,
+          "moves": ["wisp_flicker", "moonless_stare", "boulder_roll"]
+        }
+      ],
+      "items": {
+        "small_tonic": 2
+      },
+      "arena": 1,
+      "theme": "spirit",
+      "placeholder": true,
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      }
+    },
+    {
+      "id": "svb_arena2_junior",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_askeling",
+          "level": 11
+        },
+        {
+          "speciesId": "svb_hareling",
+          "level": 12
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_leader_fire",
+      "tier": "leader",
+      "team": [
+        {
+          "speciesId": "svb_askeling",
+          "level": 13,
+          "moves": ["hearth_spark", "stoke_up", "sky_crackle"]
+        },
+        {
+          "speciesId": "svb_soepindling",
+          "level": 16,
+          "moves": ["prickle_charge", "hunker_down", "grit_spray", "cobbler_kick"]
+        },
+        {
+          "speciesId": "svb_fyrling",
+          "level": 17,
+          "moves": ["cobble_toss", "stoke_up", "cobbler_kick", "ember_hop"]
+        }
+      ],
+      "items": {},
+      "arena": 2,
+      "theme": "fire",
+      "placeholder": true,
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      }
+    },
+    {
+      "id": "svb_arena3_junior",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_sildeling",
+          "level": 16
+        },
+        {
+          "speciesId": "svb_blaamusling",
+          "level": 17
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "good_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_leader_water",
+      "tier": "leader",
+      "team": [
+        {
+          "speciesId": "svb_brunfiskling",
+          "level": 17
+        },
+        {
+          "speciesId": "svb_havfoel",
+          "level": 22
+        },
+        {
+          "speciesId": "svb_aal",
+          "level": 26
+        },
+        {
+          "speciesId": "svb_sundsael",
+          "level": 24
+        }
+      ],
+      "items": {
+        "large_tonic": 2
+      },
+      "arena": 3,
+      "theme": "water",
+      "placeholder": true,
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      }
+    },
+    {
+      "id": "svb_arena4_junior",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_strandskade",
+          "level": 23
+        },
+        {
+          "speciesId": "svb_askeling",
+          "level": 24
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "good_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_leader_storm",
+      "tier": "leader",
+      "team": [
+        {
+          "speciesId": "svb_havfoel",
+          "level": 30
+        },
+        {
+          "speciesId": "svb_kirkeugle",
+          "level": 31
+        },
+        {
+          "speciesId": "svb_havterne",
+          "level": 31
+        },
+        {
+          "speciesId": "svb_kirkeugle",
+          "level": 30
+        }
+      ],
+      "items": {
+        "large_tonic": 2
+      },
+      "arena": 4,
+      "theme": "storm",
+      "placeholder": true,
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      }
+    },
+    {
+      "id": "svb_arena5_junior",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_markhare",
+          "level": 29
+        },
+        {
+          "speciesId": "svb_skibskat",
+          "level": 30
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "good_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_leader_folk",
+      "tier": "leader",
+      "team": [
+        {
+          "speciesId": "svb_markhare",
+          "level": 28,
+          "moves": ["boulder_roll", "stern_glare", "cobbler_kick", "cartwheel"]
+        },
+        {
+          "speciesId": "svb_skibskat",
+          "level": 33
+        },
+        {
+          "speciesId": "svb_aftenbakke",
+          "level": 34
+        },
+        {
+          "speciesId": "svb_klabautermand",
+          "level": 35
+        }
+      ],
+      "items": {
+        "large_tonic": 2
+      },
+      "arena": 5,
+      "theme": "folk",
+      "placeholder": true,
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      }
+    },
+    {
+      "id": "svb_arena6_junior",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_soepindsvin",
+          "level": 34
+        },
+        {
+          "speciesId": "svb_fyrvogter",
+          "level": 35
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "great_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_leader_stone",
+      "tier": "leader",
+      "team": [
+        {
+          "speciesId": "svb_guldgubbe",
+          "level": 35
+        },
+        {
+          "speciesId": "svb_hestemusling",
+          "level": 37
+        },
+        {
+          "speciesId": "svb_guldhoevding",
+          "level": 41
+        },
+        {
+          "speciesId": "svb_klintkonge",
+          "level": 46
+        }
+      ],
+      "items": {
+        "large_tonic": 2
+      },
+      "arena": 6,
+      "theme": "stone",
+      "placeholder": true,
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      }
+    },
+    {
+      "id": "svb_arena7_junior",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_heksering",
+          "level": 39
+        },
+        {
+          "speciesId": "svb_kronegern",
+          "level": 40
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "great_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_leader_grove",
+      "tier": "leader",
+      "team": [
+        {
+          "speciesId": "svb_kronegern",
+          "level": 44
+        },
+        {
+          "speciesId": "svb_heksering",
+          "level": 38
+        },
+        {
+          "speciesId": "svb_hyldemor",
+          "level": 38
+        },
+        {
+          "speciesId": "svb_klintkonge",
+          "level": 42,
+          "moves": ["sky_crackle", "rampart_slam", "market_stampede", "rune_slab"]
+        },
+        {
+          "speciesId": "svb_kirkeugle",
+          "level": 41
+        }
+      ],
+      "items": {
+        "large_tonic": 3
+      },
+      "arena": 7,
+      "theme": "grove",
+      "placeholder": true,
+      "reward": {
+        "itemId": "revive_blossom",
+        "count": 1
+      }
+    },
+    {
+      "id": "svb_arena8_junior",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_klabautermand",
+          "level": 45
+        },
+        {
+          "speciesId": "svb_aalekonge",
+          "level": 46
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "great_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_leader_mixed",
+      "tier": "leader",
+      "team": [
+        {
+          "speciesId": "svb_taagefrue",
+          "level": 45
+        },
+        {
+          "speciesId": "svb_kirkeugle",
+          "level": 45
+        },
+        {
+          "speciesId": "svb_baalfugl",
+          "level": 48
+        },
+        {
+          "speciesId": "svb_sildekonge",
+          "level": 45
+        },
+        {
+          "speciesId": "svb_vejrhane",
+          "level": 47
+        }
+      ],
+      "items": {
+        "large_tonic": 3
+      },
+      "arena": 8,
+      "placeholder": true,
+      "reward": {
+        "itemId": "revive_blossom",
+        "count": 1
+      }
+    },
+    {
+      "id": "svb_route1_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_sildeling",
+          "level": 5
+        },
+        {
+          "speciesId": "svb_askeling",
+          "level": 7
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "small_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route1_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_havnekat",
+          "level": 10
+        },
+        {
+          "speciesId": "svb_egernling",
+          "level": 12
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route2_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_egernling",
+          "level": 11
+        },
+        {
+          "speciesId": "svb_uglunge",
+          "level": 11
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route2_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_uglunge",
+          "level": 15
+        },
+        {
+          "speciesId": "svb_blaamusling",
+          "level": 17
+        },
+        {
+          "speciesId": "svb_havfoel",
+          "level": 18
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route3_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_askeling",
+          "level": 5
+        },
+        {
+          "speciesId": "svb_sildeling",
+          "level": 5
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "small_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route3_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_havnekat",
+          "level": 5
+        },
+        {
+          "speciesId": "svb_strandskade",
+          "level": 6
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "small_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route3_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_uglunge",
+          "level": 23
+        },
+        {
+          "speciesId": "svb_soepindling",
+          "level": 25
+        },
+        {
+          "speciesId": "svb_havfoel",
+          "level": 25
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "good_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route4_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_brunfiskling",
+          "level": 22
+        },
+        {
+          "speciesId": "svb_markhare",
+          "level": 25
+        },
+        {
+          "speciesId": "svb_skibsnisse",
+          "level": 25
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "good_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route4_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_hattesvamp",
+          "level": 23
+        },
+        {
+          "speciesId": "svb_taageling",
+          "level": 24
+        },
+        {
+          "speciesId": "svb_hyldeknop",
+          "level": 25
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "good_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route5_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_taageling",
+          "level": 26
+        },
+        {
+          "speciesId": "svb_boegeegern",
+          "level": 27
+        },
+        {
+          "speciesId": "svb_guldgubbe",
+          "level": 29
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route6_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_skibskat",
+          "level": 29
+        },
+        {
+          "speciesId": "svb_kirkeugle",
+          "level": 29
+        },
+        {
+          "speciesId": "svb_markhare",
+          "level": 31
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route6_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_stimsild",
+          "level": 28
+        },
+        {
+          "speciesId": "svb_taageling",
+          "level": 29
+        },
+        {
+          "speciesId": "svb_brunfisk",
+          "level": 30
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route6_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_blaamusling",
+          "level": 22
+        },
+        {
+          "speciesId": "svb_markhare",
+          "level": 24
+        },
+        {
+          "speciesId": "svb_soepindling",
+          "level": 24
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "good_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route7_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_markhare",
+          "level": 21
+        },
+        {
+          "speciesId": "svb_stimsild",
+          "level": 22
+        },
+        {
+          "speciesId": "svb_skibsnisse",
+          "level": 25
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "good_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route7_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_flagling",
+          "level": 22
+        },
+        {
+          "speciesId": "svb_skibskat",
+          "level": 24
+        },
+        {
+          "speciesId": "svb_taageling",
+          "level": 25
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "good_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route7_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_soepindling",
+          "level": 7
+        },
+        {
+          "speciesId": "svb_taageling",
+          "level": 7
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "small_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route8_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_havnekat",
+          "level": 4
+        },
+        {
+          "speciesId": "svb_soepindling",
+          "level": 6
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "small_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route8_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_baalfugl",
+          "level": 40
+        },
+        {
+          "speciesId": "svb_sildekonge",
+          "level": 41
+        },
+        {
+          "speciesId": "svb_fyrtaarn",
+          "level": 41
+        },
+        {
+          "speciesId": "svb_heksering",
+          "level": 43
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "great_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route9_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_maanehare",
+          "level": 42
+        },
+        {
+          "speciesId": "svb_taagefrue",
+          "level": 42
+        },
+        {
+          "speciesId": "svb_klabautermand",
+          "level": 42
+        },
+        {
+          "speciesId": "svb_kronegern",
+          "level": 42
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "great_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route9_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_kystskade",
+          "level": 39
+        },
+        {
+          "speciesId": "svb_maanehare",
+          "level": 39
+        },
+        {
+          "speciesId": "svb_kirkeugle",
+          "level": 39
+        },
+        {
+          "speciesId": "svb_hyldemor",
+          "level": 41
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "great_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route9_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_heksering",
+          "level": 38
+        },
+        {
+          "speciesId": "svb_aalekonge",
+          "level": 39
+        },
+        {
+          "speciesId": "svb_hyldemor",
+          "level": 40
+        },
+        {
+          "speciesId": "svb_kirkeugle",
+          "level": 42
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "great_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route10_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_heksering",
+          "level": 39
+        },
+        {
+          "speciesId": "svb_aalekonge",
+          "level": 40
+        },
+        {
+          "speciesId": "svb_hyldemor",
+          "level": 40
+        },
+        {
+          "speciesId": "svb_soepindsvin",
+          "level": 40
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "great_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route10_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_aalekonge",
+          "level": 39
+        },
+        {
+          "speciesId": "svb_skibskat",
+          "level": 41
+        },
+        {
+          "speciesId": "svb_klabautermand",
+          "level": 42
+        },
+        {
+          "speciesId": "svb_baalfugl",
+          "level": 42
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "great_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route10_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_markhare",
+          "level": 32
+        },
+        {
+          "speciesId": "svb_kronegern",
+          "level": 32
+        },
+        {
+          "speciesId": "svb_klabautermand",
+          "level": 36
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route11_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_kronegern",
+          "level": 33
+        },
+        {
+          "speciesId": "svb_hestemusling",
+          "level": 35
+        },
+        {
+          "speciesId": "svb_heksering",
+          "level": 37
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route11_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_kirkeugle",
+          "level": 33
+        },
+        {
+          "speciesId": "svb_brunfisk",
+          "level": 34
+        },
+        {
+          "speciesId": "svb_havfoel",
+          "level": 35
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route12_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_soepindsvin",
+          "level": 32
+        },
+        {
+          "speciesId": "svb_baalfugl",
+          "level": 33
+        },
+        {
+          "speciesId": "svb_guldgubbe",
+          "level": 35
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route12_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_brunfisk",
+          "level": 35
+        },
+        {
+          "speciesId": "svb_baalfugl",
+          "level": 35
+        },
+        {
+          "speciesId": "svb_sildekonge",
+          "level": 36
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route13_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_fyrvogter",
+          "level": 32
+        },
+        {
+          "speciesId": "svb_markhare",
+          "level": 33
+        },
+        {
+          "speciesId": "svb_baalfugl",
+          "level": 33
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route13_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_aal",
+          "level": 32
+        },
+        {
+          "speciesId": "svb_hestemusling",
+          "level": 34
+        },
+        {
+          "speciesId": "svb_havfoel",
+          "level": 36
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route13_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_hestemusling",
+          "level": 45
+        },
+        {
+          "speciesId": "svb_kystskade",
+          "level": 47
+        },
+        {
+          "speciesId": "svb_soepindsvin",
+          "level": 47
+        },
+        {
+          "speciesId": "svb_fyrtaarn",
+          "level": 48
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route14_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_heksering",
+          "level": 44
+        },
+        {
+          "speciesId": "svb_aalekonge",
+          "level": 44
+        },
+        {
+          "speciesId": "svb_hyldemor",
+          "level": 49
+        },
+        {
+          "speciesId": "svb_kirkeugle",
+          "level": 49
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route14_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_brunfisk",
+          "level": 45
+        },
+        {
+          "speciesId": "svb_baalfugl",
+          "level": 46
+        },
+        {
+          "speciesId": "svb_klabautermand",
+          "level": 48
+        },
+        {
+          "speciesId": "svb_guldhoevding",
+          "level": 49
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route14_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_maanehare",
+          "level": 45
+        },
+        {
+          "speciesId": "svb_taagefrue",
+          "level": 46
+        },
+        {
+          "speciesId": "svb_klabautermand",
+          "level": 48
+        },
+        {
+          "speciesId": "svb_kronegern",
+          "level": 49
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route15_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_blaamusling",
+          "level": 4
+        },
+        {
+          "speciesId": "svb_flagling",
+          "level": 5
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "small_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route15_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_taageling",
+          "level": 6
+        },
+        {
+          "speciesId": "svb_egernling",
+          "level": 7
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "small_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route16_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_taageling",
+          "level": 4
+        },
+        {
+          "speciesId": "svb_brunfiskling",
+          "level": 6
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "small_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route17_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_flagling",
+          "level": 4
+        },
+        {
+          "speciesId": "svb_svampling",
+          "level": 7
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "small_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route17_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_hareling",
+          "level": 11
+        },
+        {
+          "speciesId": "svb_egernling",
+          "level": 11
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route18_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_uglunge",
+          "level": 9
+        },
+        {
+          "speciesId": "svb_egernling",
+          "level": 12
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route19_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_havnekat",
+          "level": 4
+        },
+        {
+          "speciesId": "svb_blaamusling",
+          "level": 7
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "small_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route20_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_egernling",
+          "level": 4
+        },
+        {
+          "speciesId": "svb_uglunge",
+          "level": 6
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "small_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route20_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_uglunge",
+          "level": 20
+        },
+        {
+          "speciesId": "svb_flagling",
+          "level": 21
+        },
+        {
+          "speciesId": "svb_havfoel",
+          "level": 25
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "good_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route21_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_hattesvamp",
+          "level": 20
+        },
+        {
+          "speciesId": "svb_stimsild",
+          "level": 22
+        },
+        {
+          "speciesId": "svb_hyldeknop",
+          "level": 24
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "good_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route22_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_strandskade",
+          "level": 9
+        },
+        {
+          "speciesId": "svb_hareling",
+          "level": 12
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route22_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_taageling",
+          "level": 4
+        },
+        {
+          "speciesId": "svb_brunfiskling",
+          "level": 5
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "small_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route22_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_fyrling",
+          "level": 10
+        },
+        {
+          "speciesId": "svb_uglunge",
+          "level": 13
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route23_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_sildeling",
+          "level": 10
+        },
+        {
+          "speciesId": "svb_taageling",
+          "level": 13
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route24_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_flagling",
+          "level": 10
+        },
+        {
+          "speciesId": "svb_uglunge",
+          "level": 13
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route24_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_askeling",
+          "level": 11
+        },
+        {
+          "speciesId": "svb_blaamusling",
+          "level": 12
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route24_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_kronegern",
+          "level": 44
+        },
+        {
+          "speciesId": "svb_hestemusling",
+          "level": 44
+        },
+        {
+          "speciesId": "svb_heksering",
+          "level": 47
+        },
+        {
+          "speciesId": "svb_brunfisk",
+          "level": 48
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route25_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_soepindsvin",
+          "level": 46
+        },
+        {
+          "speciesId": "svb_baalfugl",
+          "level": 46
+        },
+        {
+          "speciesId": "svb_guldhoevding",
+          "level": 46
+        },
+        {
+          "speciesId": "svb_sildekonge",
+          "level": 47
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route25_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_kronegern",
+          "level": 46
+        },
+        {
+          "speciesId": "svb_kystskade",
+          "level": 46
+        },
+        {
+          "speciesId": "svb_heksering",
+          "level": 47
+        },
+        {
+          "speciesId": "svb_skibskat",
+          "level": 47
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route25_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_baalfugl",
+          "level": 44
+        },
+        {
+          "speciesId": "svb_soepindsvin",
+          "level": 47
+        },
+        {
+          "speciesId": "svb_fyrtaarn",
+          "level": 48
+        },
+        {
+          "speciesId": "svb_kystskade",
+          "level": 49
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route26_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_aalling",
+          "level": 15
+        },
+        {
+          "speciesId": "svb_flagling",
+          "level": 19
+        },
+        {
+          "speciesId": "svb_skibsnisse",
+          "level": 19
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route26_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_svampling",
+          "level": 14
+        },
+        {
+          "speciesId": "svb_taageling",
+          "level": 16
+        },
+        {
+          "speciesId": "svb_hyldeknop",
+          "level": 19
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route27_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_uglunge",
+          "level": 11
+        },
+        {
+          "speciesId": "svb_soepindling",
+          "level": 13
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route27_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_boegeegern",
+          "level": 19
+        },
+        {
+          "speciesId": "svb_havnekat",
+          "level": 19
+        },
+        {
+          "speciesId": "svb_svampling",
+          "level": 19
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route27_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_askeling",
+          "level": 14
+        },
+        {
+          "speciesId": "svb_soepindling",
+          "level": 17
+        },
+        {
+          "speciesId": "svb_fyrling",
+          "level": 17
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route28_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_fyrling",
+          "level": 4
+        },
+        {
+          "speciesId": "svb_havnekat",
+          "level": 7
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "small_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route28_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_svampling",
+          "level": 6
+        },
+        {
+          "speciesId": "svb_askeling",
+          "level": 7
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "small_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route28_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_strandskade",
+          "level": 10
+        },
+        {
+          "speciesId": "svb_soepindling",
+          "level": 10
+        }
+      ],
+      "items": {},
+      "reward": {
+        "itemId": "basic_charm",
+        "count": 3
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route29_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_uglunge",
+          "level": 26
+        },
+        {
+          "speciesId": "svb_aftenbakke",
+          "level": 27
+        },
+        {
+          "speciesId": "svb_havfoel",
+          "level": 29
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route29_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_hestemusling",
+          "level": 26
+        },
+        {
+          "speciesId": "svb_markhare",
+          "level": 26
+        },
+        {
+          "speciesId": "svb_soepindling",
+          "level": 30
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route30_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_soepindling",
+          "level": 20
+        },
+        {
+          "speciesId": "svb_boegeegern",
+          "level": 21
+        },
+        {
+          "speciesId": "svb_guldgubbe",
+          "level": 22
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "good_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route30_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_brunfiskling",
+          "level": 26
+        },
+        {
+          "speciesId": "svb_skibskat",
+          "level": 27
+        },
+        {
+          "speciesId": "svb_stimsild",
+          "level": 28
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route31_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_hestemusling",
+          "level": 29
+        },
+        {
+          "speciesId": "svb_kirkeugle",
+          "level": 30
+        },
+        {
+          "speciesId": "svb_soepindling",
+          "level": 31
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route31_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_uglunge",
+          "level": 27
+        },
+        {
+          "speciesId": "svb_brunfisk",
+          "level": 31
+        },
+        {
+          "speciesId": "svb_havfoel",
+          "level": 31
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route32_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_markhare",
+          "level": 27
+        },
+        {
+          "speciesId": "svb_boegeegern",
+          "level": 31
+        },
+        {
+          "speciesId": "svb_skibsnisse",
+          "level": 31
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route32_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_aftenbakke",
+          "level": 27
+        },
+        {
+          "speciesId": "svb_soepindling",
+          "level": 28
+        },
+        {
+          "speciesId": "svb_guldgubbe",
+          "level": 29
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route32_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_soepindling",
+          "level": 28
+        },
+        {
+          "speciesId": "svb_stimsild",
+          "level": 30
+        },
+        {
+          "speciesId": "svb_guldgubbe",
+          "level": 31
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route33_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_boegeegern",
+          "level": 29
+        },
+        {
+          "speciesId": "svb_soepindling",
+          "level": 29
+        },
+        {
+          "speciesId": "svb_hattesvamp",
+          "level": 31
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route33_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_kirkeugle",
+          "level": 30
+        },
+        {
+          "speciesId": "svb_hestemusling",
+          "level": 31
+        },
+        {
+          "speciesId": "svb_havfoel",
+          "level": 31
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route33_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_skibskat",
+          "level": 27
+        },
+        {
+          "speciesId": "svb_aftenbakke",
+          "level": 30
+        },
+        {
+          "speciesId": "svb_markhare",
+          "level": 31
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "large_tonic",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route34_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_markhare",
+          "level": 32
+        },
+        {
+          "speciesId": "svb_kronegern",
+          "level": 37
+        },
+        {
+          "speciesId": "svb_klabautermand",
+          "level": 37
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route34_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_kystskade",
+          "level": 34
+        },
+        {
+          "speciesId": "svb_aftenbakke",
+          "level": 37
+        },
+        {
+          "speciesId": "svb_kirkeugle",
+          "level": 37
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route35_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_kronegern",
+          "level": 38
+        },
+        {
+          "speciesId": "svb_soepindsvin",
+          "level": 40
+        },
+        {
+          "speciesId": "svb_heksering",
+          "level": 40
+        },
+        {
+          "speciesId": "svb_skibskat",
+          "level": 41
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "great_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route35_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_soepindsvin",
+          "level": 39
+        },
+        {
+          "speciesId": "svb_hestemusling",
+          "level": 39
+        },
+        {
+          "speciesId": "svb_guldhoevding",
+          "level": 40
+        },
+        {
+          "speciesId": "svb_sildekonge",
+          "level": 41
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "great_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route35_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_aftenbakke",
+          "level": 32
+        },
+        {
+          "speciesId": "svb_hattesvamp",
+          "level": 33
+        },
+        {
+          "speciesId": "svb_hyldeknop",
+          "level": 35
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route36_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_taagefrue",
+          "level": 38
+        },
+        {
+          "speciesId": "svb_soepindsvin",
+          "level": 40
+        },
+        {
+          "speciesId": "svb_hyldemor",
+          "level": 41
+        },
+        {
+          "speciesId": "svb_hestemusling",
+          "level": 43
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "great_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route36_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_kystskade",
+          "level": 38
+        },
+        {
+          "speciesId": "svb_skibskat",
+          "level": 38
+        },
+        {
+          "speciesId": "svb_kirkeugle",
+          "level": 41
+        },
+        {
+          "speciesId": "svb_aalekonge",
+          "level": 43
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "great_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route37_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_brunfisk",
+          "level": 38
+        },
+        {
+          "speciesId": "svb_heksering",
+          "level": 39
+        },
+        {
+          "speciesId": "svb_sildekonge",
+          "level": 40
+        },
+        {
+          "speciesId": "svb_hyldemor",
+          "level": 43
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "great_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route37_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_soepindsvin",
+          "level": 40
+        },
+        {
+          "speciesId": "svb_hestemusling",
+          "level": 40
+        },
+        {
+          "speciesId": "svb_guldhoevding",
+          "level": 41
+        },
+        {
+          "speciesId": "svb_kronegern",
+          "level": 41
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "great_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route38_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_maanehare",
+          "level": 39
+        },
+        {
+          "speciesId": "svb_kronegern",
+          "level": 42
+        },
+        {
+          "speciesId": "svb_klabautermand",
+          "level": 43
+        },
+        {
+          "speciesId": "svb_hestemusling",
+          "level": 43
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "great_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route38_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_kystskade",
+          "level": 39
+        },
+        {
+          "speciesId": "svb_maanehare",
+          "level": 42
+        },
+        {
+          "speciesId": "svb_kirkeugle",
+          "level": 43
+        },
+        {
+          "speciesId": "svb_hyldemor",
+          "level": 43
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "great_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route39_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_kystskade",
+          "level": 38
+        },
+        {
+          "speciesId": "svb_heksering",
+          "level": 41
+        },
+        {
+          "speciesId": "svb_kirkeugle",
+          "level": 41
+        },
+        {
+          "speciesId": "svb_aalekonge",
+          "level": 42
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "great_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route39_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_taagefrue",
+          "level": 40
+        },
+        {
+          "speciesId": "svb_kystskade",
+          "level": 40
+        },
+        {
+          "speciesId": "svb_hyldemor",
+          "level": 40
+        },
+        {
+          "speciesId": "svb_hestemusling",
+          "level": 43
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "great_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route39_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_fyrtaarn",
+          "level": 39
+        },
+        {
+          "speciesId": "svb_aalekonge",
+          "level": 41
+        },
+        {
+          "speciesId": "svb_baalfugl",
+          "level": 42
+        },
+        {
+          "speciesId": "svb_aftenbakke",
+          "level": 43
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "great_charm",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route40_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_aftenbakke",
+          "level": 35
+        },
+        {
+          "speciesId": "svb_maanehare",
+          "level": 36
+        },
+        {
+          "speciesId": "svb_hyldemor",
+          "level": 37
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route40_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_markhare",
+          "level": 32
+        },
+        {
+          "speciesId": "svb_fyrvogter",
+          "level": 33
+        },
+        {
+          "speciesId": "svb_klabautermand",
+          "level": 34
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 1
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route41_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_heksering",
+          "level": 47
+        },
+        {
+          "speciesId": "svb_aalekonge",
+          "level": 47
+        },
+        {
+          "speciesId": "svb_hyldemor",
+          "level": 47
+        },
+        {
+          "speciesId": "svb_guldhoevding",
+          "level": 49
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route41_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_fyrtaarn",
+          "level": 44
+        },
+        {
+          "speciesId": "svb_brunfisk",
+          "level": 48
+        },
+        {
+          "speciesId": "svb_baalfugl",
+          "level": 48
+        },
+        {
+          "speciesId": "svb_kirkeugle",
+          "level": 49
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route41_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_taagefrue",
+          "level": 44
+        },
+        {
+          "speciesId": "svb_aftenbakke",
+          "level": 45
+        },
+        {
+          "speciesId": "svb_hyldemor",
+          "level": 46
+        },
+        {
+          "speciesId": "svb_fyrtaarn",
+          "level": 49
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route42_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_kystskade",
+          "level": 44
+        },
+        {
+          "speciesId": "svb_kirkeugle",
+          "level": 44
+        },
+        {
+          "speciesId": "svb_havhest",
+          "level": 47
+        },
+        {
+          "speciesId": "svb_hyldemor",
+          "level": 48
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route43_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_aalekonge",
+          "level": 46
+        },
+        {
+          "speciesId": "svb_sildekonge",
+          "level": 47
+        },
+        {
+          "speciesId": "svb_brunfisk",
+          "level": 47
+        },
+        {
+          "speciesId": "svb_heksering",
+          "level": 48
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route43_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_fyrtaarn",
+          "level": 47
+        },
+        {
+          "speciesId": "svb_soepindsvin",
+          "level": 48
+        },
+        {
+          "speciesId": "svb_baalfugl",
+          "level": 49
+        },
+        {
+          "speciesId": "svb_heksering",
+          "level": 49
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route44_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_skibskat",
+          "level": 44
+        },
+        {
+          "speciesId": "svb_hestemusling",
+          "level": 46
+        },
+        {
+          "speciesId": "svb_maanehare",
+          "level": 48
+        },
+        {
+          "speciesId": "svb_guldhoevding",
+          "level": 49
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route44_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_baalfugl",
+          "level": 45
+        },
+        {
+          "speciesId": "svb_kystskade",
+          "level": 45
+        },
+        {
+          "speciesId": "svb_fyrtaarn",
+          "level": 47
+        },
+        {
+          "speciesId": "svb_klabautermand",
+          "level": 47
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route44_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_kronegern",
+          "level": 44
+        },
+        {
+          "speciesId": "svb_kirkeugle",
+          "level": 45
+        },
+        {
+          "speciesId": "svb_heksering",
+          "level": 46
+        },
+        {
+          "speciesId": "svb_hyldemor",
+          "level": 47
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route45_a",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_maanehare",
+          "level": 44
+        },
+        {
+          "speciesId": "svb_baalfugl",
+          "level": 45
+        },
+        {
+          "speciesId": "svb_klabautermand",
+          "level": 46
+        },
+        {
+          "speciesId": "svb_brunfisk",
+          "level": 47
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route45_b",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_kystskade",
+          "level": 45
+        },
+        {
+          "speciesId": "svb_soepindsvin",
+          "level": 46
+        },
+        {
+          "speciesId": "svb_kirkeugle",
+          "level": 46
+        },
+        {
+          "speciesId": "svb_aftenbakke",
+          "level": 48
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    },
+    {
+      "id": "svb_route45_c",
+      "tier": "trainer",
+      "team": [
+        {
+          "speciesId": "svb_heksering",
+          "level": 44
+        },
+        {
+          "speciesId": "svb_taagefrue",
+          "level": 48
+        },
+        {
+          "speciesId": "svb_hyldemor",
+          "level": 48
+        },
+        {
+          "speciesId": "svb_hestemusling",
+          "level": 48
+        }
+      ],
+      "items": {
+        "small_tonic": 1
+      },
+      "reward": {
+        "itemId": "revive_leaf",
+        "count": 2
+      },
+      "placeholder": true
+    }
+  ]
 }

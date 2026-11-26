@@ -1,6 +1,6 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { content } from '@oml/data';
+import { allSpeciesIds } from '../src/inputs';
 import { describe, expect, it } from 'vitest';
 import manifestJson from '../assets.json';
 import {
@@ -23,7 +23,7 @@ const manifest = AssetManifestSchema.parse(manifestJson);
 
 describe('asset manifest (CI gate)', () => {
   it('has an entry for every species sprite and marker, and every entry has a file', () => {
-    for (const id of Object.keys(content.species)) {
+    for (const id of allSpeciesIds()) {
       for (const kind of ['sprite', 'marker'] as const) {
         expect(
           manifest.assets.some((a) => a.kind === kind && a.species === id),
@@ -77,7 +77,7 @@ describe('asset manifest (CI gate)', () => {
   });
 
   it('generated files are up to date with the generator (run pnpm art:build)', () => {
-    for (const id of Object.keys(content.species)) {
+    for (const id of allSpeciesIds()) {
       expect(readFileSync(root(`generated/sprites/${id}.svg`), 'utf8').trim()).toBe(
         creatureSvg(artInput(id)),
       );
@@ -98,7 +98,7 @@ describe('asset manifest (CI gate)', () => {
 
 describe('generator', () => {
   it('is deterministic and gives each species its own look', () => {
-    const svgs = Object.keys(content.species).map((id) => creatureSvg(artInput(id)));
+    const svgs = allSpeciesIds().map((id) => creatureSvg(artInput(id)));
     expect(new Set(svgs).size).toBe(svgs.length);
     expect(creatureSvg(artInput('torvdue'))).toBe(creatureSvg(artInput('torvdue')));
     for (const s of svgs) {

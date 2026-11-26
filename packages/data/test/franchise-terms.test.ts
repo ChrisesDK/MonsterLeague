@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { content, i18n } from '../src/index';
+import { i18nFor, REGION_IDS, regions } from '../src/index';
 import { deniedName, deniedWords } from './franchise-terms';
 
 describe('franchise-term matcher', () => {
@@ -21,7 +21,9 @@ describe('franchise-term matcher', () => {
   });
 });
 
-describe('content uses no franchise terms', () => {
+describe.each(REGION_IDS)('%s content uses no franchise terms', (region) => {
+  const content = regions[region];
+  const i18n = i18nFor(region);
   const names: { where: string; name: string }[] = [];
   const add = (kind: string, ids: string[], key: (id: string) => string) => {
     for (const id of ids) {

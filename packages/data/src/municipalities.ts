@@ -22,8 +22,8 @@ export const REGION_ID_PREFIX: Partial<Record<MunicipalityId, string>> = {
   svendborg: 'svb_',
 };
 
-/** Municipalities whose region can be inspected today (P22: Odense is the first region). */
-export const PLAYABLE_MUNICIPALITIES: readonly MunicipalityId[] = ['odense'];
+/** Regions that can be played (P22: Odense first; P27: Svendborg once its creatures and arenas exist). */
+export const PLAYABLE_MUNICIPALITIES: readonly MunicipalityId[] = ['odense', 'svendborg'];
 
 /**
  * Map frame per region (D172, owner request): the region's bounding box plus an even 2 km

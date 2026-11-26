@@ -1,3 +1,148 @@
 {
-  "sideGoals": []
+  "sideGoals": [
+    {
+      "id": "svb_d1_explore",
+      "district": 1,
+      "kind": "exploreWild",
+      "metres": 300
+    },
+    {
+      "id": "svb_d1_catch_water",
+      "district": 1,
+      "kind": "catchType",
+      "type": "water"
+    },
+    {
+      "id": "svb_d1_rare",
+      "district": 1,
+      "kind": "findRare",
+      "species": "svb_skibsnisse"
+    },
+    {
+      "id": "svb_d2_explore",
+      "district": 2,
+      "kind": "exploreWild",
+      "metres": 300
+    },
+    {
+      "id": "svb_d2_catch_fire",
+      "district": 2,
+      "kind": "catchType",
+      "type": "fire"
+    },
+    {
+      "id": "svb_d2_rare",
+      "district": 2,
+      "kind": "findRare",
+      "species": "svb_skibsnisse"
+    },
+    {
+      "id": "svb_d3_explore",
+      "district": 3,
+      "kind": "exploreWild",
+      "metres": 300
+    },
+    {
+      "id": "svb_d3_catch_water",
+      "district": 3,
+      "kind": "catchType",
+      "type": "water"
+    },
+    {
+      "id": "svb_d3_rare",
+      "district": 3,
+      "kind": "findRare",
+      "species": "svb_skibsnisse"
+    },
+    {
+      "id": "svb_d4_explore",
+      "district": 4,
+      "kind": "exploreWild",
+      "metres": 300
+    },
+    {
+      "id": "svb_d4_catch_storm",
+      "district": 4,
+      "kind": "catchType",
+      "type": "storm"
+    },
+    {
+      "id": "svb_d4_rare",
+      "district": 4,
+      "kind": "findRare",
+      "species": "svb_havfoel"
+    },
+    {
+      "id": "svb_d5_explore",
+      "district": 5,
+      "kind": "exploreWild",
+      "metres": 300
+    },
+    {
+      "id": "svb_d5_catch_folk",
+      "district": 5,
+      "kind": "catchType",
+      "type": "folk"
+    },
+    {
+      "id": "svb_d5_rare",
+      "district": 5,
+      "kind": "findRare",
+      "species": "svb_hyldeknop"
+    },
+    {
+      "id": "svb_d6_explore",
+      "district": 6,
+      "kind": "exploreWild",
+      "metres": 300
+    },
+    {
+      "id": "svb_d6_catch_stone",
+      "district": 6,
+      "kind": "catchType",
+      "type": "stone"
+    },
+    {
+      "id": "svb_d6_rare",
+      "district": 6,
+      "kind": "findRare",
+      "species": "svb_guldgubbe"
+    },
+    {
+      "id": "svb_d7_explore",
+      "district": 7,
+      "kind": "exploreWild",
+      "metres": 300
+    },
+    {
+      "id": "svb_d7_catch_grove",
+      "district": 7,
+      "kind": "catchType",
+      "type": "grove"
+    },
+    {
+      "id": "svb_d7_rare",
+      "district": 7,
+      "kind": "findRare",
+      "species": "svb_hyldeknop"
+    },
+    {
+      "id": "svb_d8_explore",
+      "district": 8,
+      "kind": "exploreWild",
+      "metres": 300
+    },
+    {
+      "id": "svb_d8_catch_storm",
+      "district": 8,
+      "kind": "catchType",
+      "type": "storm"
+    },
+    {
+      "id": "svb_d8_rare",
+      "district": 8,
+      "kind": "findRare",
+      "species": "svb_guldgubbe"
+    }
+  ]
 }

@@ -1,8 +1,22 @@
-import { content, type Dex } from '@oml/data';
+import { REGION_IDS, regions, type Dex } from '@oml/data';
 import type { CreatureArtInput } from './creature';
 
+/**
+ * The region whose content has the species (P27: ids never repeat across regions, so a
+ * species id names exactly one region).
+ */
+export function regionDexOf(speciesId: string): Dex {
+  for (const r of REGION_IDS) if (regions[r].species[speciesId]) return regions[r];
+  return regions.odense;
+}
+
+/** Every species of every region, by id (sprites are drawn for all of them). */
+export function allSpeciesIds(): string[] {
+  return REGION_IDS.flatMap((r) => Object.keys(regions[r].species)).sort();
+}
+
 /** Art inputs for a species, derived from content (types, colours, stats, stage). */
-export function artInput(speciesId: string, dex: Dex = content): CreatureArtInput {
+export function artInput(speciesId: string, dex: Dex = regionDexOf(speciesId)): CreatureArtInput {
   const s = dex.species[speciesId];
   if (!s) throw new Error(`Unknown species "${speciesId}"`);
   // stage: how many evolutions lead to this species (0 → 1, 1 → 2, 2 → 3)
