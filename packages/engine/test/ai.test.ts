@@ -123,25 +123,39 @@ describe('leader AI', () => {
     expect(chooseAiAction(s, 1, 'leader', dex)).toEqual({ type: 'switch', index: 1 });
   });
 
-  it('heals with a heal move below half HP', () => {
-    const active = mk('grimaelling', 14, ['brook_spout', 't_heal']);
-    active.hp = 10;
-    const s = battle([mk('torvdue', 14)], { team: [active], ai: 'leader' }, 'leader');
-    expect(chooseAiAction(s, 1, 'leader', dex)).toEqual(move(1));
+  it('heals with a heal move below half HP, about half of the time', () => {
+    const picks = seeds(100, (seed) => {
+      const active = mk('grimaelling', 14, ['brook_spout', 't_heal']);
+      active.hp = 10;
+      const s = battle([mk('torvdue', 14)], { team: [active], ai: 'leader' }, 'leader', seed);
+      return chooseAiAction(s, 1, 'leader', dex);
+    });
+    const heals = picks.filter((a) => a.type === 'move' && a.index === 1).length;
+    expect(heals).toBeGreaterThan(30);
+    expect(heals).toBeLessThan(70);
   });
 
-  it("lowers the target's stats while healthy, once", () => {
-    const s = battle(
-      [mk('torvdue', 14)],
-      { team: [mk('grimaelling', 14, ['brook_spout', 't_spd_down'])], ai: 'leader' },
-      'leader',
-    );
-    expect(chooseAiAction(s, 1, 'leader', dex)).toEqual(move(1));
-    const lowered: BattleState = {
-      ...s,
-      sides: [{ ...s.sides[0], stages: { ...s.sides[0].stages, spd: -1 } }, s.sides[1]],
-    };
-    expect(chooseAiAction(lowered, 1, 'leader', dex)).toEqual(move(0));
+  it("lowers the target's stats while healthy, about half of the time, once", () => {
+    const at = (seed: number) =>
+      battle(
+        [mk('torvdue', 14)],
+        { team: [mk('grimaelling', 14, ['brook_spout', 't_spd_down'])], ai: 'leader' },
+        'leader',
+        seed,
+      );
+    const lowers = seeds(100, (seed) => chooseAiAction(at(seed), 1, 'leader', dex)).filter(
+      (a) => a.type === 'move' && a.index === 1,
+    ).length;
+    expect(lowers).toBeGreaterThan(30);
+    expect(lowers).toBeLessThan(70);
+    for (const seed of [1, 2, 3, 4, 5, 6, 7, 8]) {
+      const s = at(seed);
+      const lowered: BattleState = {
+        ...s,
+        sides: [{ ...s.sides[0], stages: { ...s.sides[0].stages, spd: -1 } }, s.sides[1]],
+      };
+      expect(chooseAiAction(lowered, 1, 'leader', dex)).toEqual(move(0));
+    }
   });
 
   it('otherwise attacks with the best move', () => {

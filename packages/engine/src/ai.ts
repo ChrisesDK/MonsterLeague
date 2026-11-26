@@ -26,6 +26,13 @@ export const LOWER_HP_THRESHOLD = 0.5;
 /** A wild creature low on HP uses a heal move it knows this often. */
 export const WILD_HEAL_CHANCE = 0.5;
 export const WILD_HEAL_THRESHOLD = 0.35;
+/**
+ * Leaders use a heal move or a stat-lowering move this often when the set-up rule calls for
+ * one (owner: a chance, not every time, so a leader does not heal turn after turn). Trainers
+ * already reach the set-up rule only half of the time.
+ */
+export const LEADER_HEAL_MOVE_CHANCE = 0.5;
+export const LEADER_LOWER_CHANCE = 0.5;
 
 type MoveData = ReturnType<typeof getMove>;
 /** A move that only heals (no damage, no stat change). */
@@ -43,11 +50,12 @@ const lowers = (m: MoveData) =>
 
 /**
  * Set-up rule (leaders always, trainers 50% of the time):
- * 1. a heal move, if HP is below 50%;
+ * 1. a heal move, if HP is below 50% (with `rng`: a leader, only LEADER_HEAL_MOVE_CHANCE of
+ *    the time);
  * 2. a stat-boost move, if HP > 70%, none of the stats it raises is boosted yet, and the
  *    opponent cannot KO us next turn (its best expected damage is below our HP);
  * 3. a move that lowers the target's stats, if HP > 50% and none of those stats is lowered
- *    yet;
+ *    yet (with `rng`: only LEADER_LOWER_CHANCE of the time);
  * 4. otherwise a status-inflicting move, if the target has no status.
  */
 export function setupAction(
@@ -55,6 +63,7 @@ export function setupAction(
   side: SideIndex,
   legal: Action[],
   dex: Dex = content,
+  rng?: Rng,
 ): Action | null {
   const active = getActive(state, side);
   const oppSide: SideIndex = side === 0 ? 1 : 0;
@@ -66,7 +75,7 @@ export function setupAction(
   );
 
   const hpShare = active.hp / getMaxHp(active, dex);
-  if (hpShare < HEAL_MOVE_THRESHOLD) {
+  if (hpShare < HEAL_MOVE_THRESHOLD && (!rng || rng.next() < LEADER_HEAL_MOVE_CHANCE)) {
     const heal = candidates.find(({ move }) => isHealMove(move));
     if (heal) return heal.action;
   }
@@ -90,7 +99,7 @@ export function setupAction(
     }
   }
 
-  if (hpShare > LOWER_HP_THRESHOLD) {
+  if (hpShare > LOWER_HP_THRESHOLD && (!rng || rng.next() < LEADER_LOWER_CHANCE)) {
     const oppStages = state.sides[oppSide].stages;
     const lower = candidates.find(({ move }) => {
       const l = lowers(move);
@@ -306,5 +315,5 @@ export function chooseAiAction(
     }
   }
 
-  return setupAction(state, side, moves, dex) ?? bestDamageMove(state, side, moves, dex);
+  return setupAction(state, side, moves, dex, rng) ?? bestDamageMove(state, side, moves, dex);
 }

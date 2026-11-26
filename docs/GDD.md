@@ -1,6 +1,6 @@
 # Odense Monster League — Game Design Document
 
-Version 1.23 · Nov 26, 2026 · maintained in the repository (see Change log)
+Version 1.24 · Nov 26, 2026 · maintained in the repository (see Change log)
 
 ## Overview
 
@@ -214,9 +214,9 @@ L = attacker level, P = move power, A = attacker Attack, D = defender Defence, S
 | --- | --- | --- |
 | Wild | Wild creatures | Random move, but never one that would do nothing (a heal above half HP, lowering a stat already down 2, raising one already up 2); below 35% HP it heals with a heal move it knows half of the time (v1.23) |
 | Trainer | Route trainers | Highest expected damage, 20% random move; applies the set-up rule 50% of the time |
-| Leader | Arena leaders | Expected damage, type-aware switching, up to 2 healing items below 30% HP, and always the set-up rule |
+| Leader | Arena leaders | Expected damage, type-aware switching, up to 2 healing items below 30% HP, and always the set-up rule (its heal and stat-lowering steps each only half of the time, v1.24) |
 
-**Set-up rule:** use a heal move if own HP < 50% (v1.23); use a stat-boost move if own HP > 70%, the stat is not boosted yet, and the opponent cannot KO next turn; use a move that lowers the target's stats if own HP > 50% and none of those stats is lowered yet (v1.23); use a status move if the target has no status. (Heal and stat-lowering moves were left out in M1.5 because they made fights longer; the owner brought them back in v1.23 and the leaders were re-tuned to the targets.) AI randomness uses a separate stream derived from the battle state, so AI choices are repeatable and do not consume the battle's random numbers.
+**Set-up rule:** use a heal move if own HP < 50% (v1.23; a leader only half of the time, v1.24, so it never heals turn after turn); use a stat-boost move if own HP > 70%, the stat is not boosted yet, and the opponent cannot KO next turn; use a move that lowers the target's stats if own HP > 50% and none of those stats is lowered yet (v1.23; a leader only half of the time, v1.24); use a status move if the target has no status. (Heal and stat-lowering moves were left out in M1.5 because they made fights longer; the owner brought them back in v1.23 and the leaders were re-tuned to the targets.) AI randomness uses a separate stream derived from the battle state, so AI choices are repeatable and do not consume the battle's random numbers.
 
 **Battle log:** the engine emits a list of events (`move_used`, `damage`, `effectiveness`, `status`, `faint`, `switch`, `catch_attempt`...). The UI only animates events and never calculates results itself.
 
@@ -604,6 +604,7 @@ M1.7 (done, 148 tests): field abilities are data in `field-abilities.json`; a fr
 
 | Version | Date | Changes |
 | --- | --- | --- |
+| 1.24 | 2026-11-26 | Leaders use heal moves and stat-lowering moves half of the time instead of every time (owner: a chance, so a leader never heals turn after turn); Odense arena 3 and Svendborg arenas 5–7 re-tuned |
 | 1.23 | 2026-11-26 | Individual values (HP, Attack, Defence, 0–15) and Glimmer creatures (1 in 256, colours only); the AI uses heal moves and stat-lowering moves (leaders re-tuned); the field guide list is minimal and an entry opens its page; badges per region, also from the Town Map |
 | 1.22 | 2026-11-26 | Town Map: every icon shows at every zoom (only the filter hides kinds); route labels get their own filter switch under routes; another region's Town Map has no "you're not here" note |
 | 1.21 | 2026-11-26 | The Fyn map opens another playable region's Town Map to look at and plan a trip (its own progress, changes nothing; play still starts by walking there) |

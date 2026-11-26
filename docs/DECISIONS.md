@@ -1896,3 +1896,14 @@ length, position resolution and spawn tables>`.
   Glimmer switch (Glimmer disabled until seen) and previous / next buttons through the
   region's numbered list; a sparkle follows a Glimmer creature's name in battle, in team
   and storage rows and in its page title.
+- **D190. Leaders heal and lower stats by chance** (owner request, GDD v1.24). The set-up
+  rule's heal step and stat-lowering step take an optional AI rng; leaders pass it, and
+  each step then fires only `LEADER_HEAL_MOVE_CHANCE` / `LEADER_LOWER_CHANCE` (0.5) of the
+  time, otherwise the leader goes on down the rule (boost, status, best damage). Trainers
+  already reach the set-up rule half of the time and wild creatures heal half of the time,
+  so they are unchanged. Leaders that leaned on healing got easier and those whose lowering
+  turns became attacks got harder; re-tuned with a level search (and, for Odense's water
+  leader, fire and storm coverage swaps: kulingmaage and the second strømodder take
+  thunder_squall, both strømodders take ember_hop against the grove starter):
+  leader_water 17/7/23/20, svb_leader_folk 19/31/38/35, svb_leader_stone 32/41/40/49,
+  svb_leader_grove 44/39/38/45/40. All 56 balance tests pass.

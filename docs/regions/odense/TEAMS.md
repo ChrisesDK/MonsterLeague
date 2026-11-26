@@ -35,7 +35,7 @@ Zone Stige Ø, district 3 (wild levels 13–20). Badge: Fjord badge. Needs badge
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Fisher Karen (`arena3_junior`) | Grimælling 16, Rokkeling 17 | – | 2× Good Charm + 425 coins |
-| 2 | Harbour Leader Ingrid (`leader_water`) | Grimælling 15 (Brook Spout, Rinse and Mend, Sea Fog, Shoulder Shove), Kulingmåge 9 (Squall Slap, Sky Crackle, Gale Step, Nimble Jab), Strømodder 22 (Harbour Wave, Kiln Blast, Rinse and Mend, Cobble Toss), Strømodder 21 (Harbour Wave, Squall Slap, Rinse and Mend, Cobble Toss) | 2× Large Tonic | 1× Revive Leaf + 1320 coins |
+| 2 | Harbour Leader Ingrid (`leader_water`) | Grimælling 17 (Brook Spout, Rinse and Mend, Sea Fog, Shoulder Shove), Kulingmåge 7 (Thunder Squall, Sky Crackle, Gale Step, Nimble Jab), Strømodder 23 (Harbour Wave, Kiln Blast, Rinse and Mend, Ember Hop), Strømodder 20 (Harbour Wave, Thunder Squall, Rinse and Mend, Ember Hop) | 2× Large Tonic | 1× Revive Leaf + 1380 coins |
 
 Expected player team (balance sim): starter at 22, Kulingmåge 21, Brokrabbe 21, Mosbille 22, Torvdue 21; items 2× Small Tonic, 2× Large Tonic.
 

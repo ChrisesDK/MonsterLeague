@@ -229,17 +229,17 @@
       "team": [
         {
           "speciesId": "svb_markhare",
-          "level": 23,
+          "level": 19,
           "moves": ["shoulder_shove", "stern_glare", "cobbler_kick", "cartwheel"]
         },
         {
           "speciesId": "svb_skibskat",
-          "level": 29,
+          "level": 31,
           "moves": ["stern_glare", "cobbler_kick", "gust_lance", "cartwheel"]
         },
         {
           "speciesId": "svb_aftenbakke",
-          "level": 34,
+          "level": 38,
           "moves": ["wisp_flicker", "cobbler_kick", "grave_chill", "blight_touch"]
         },
         {
@@ -285,16 +285,16 @@
       "team": [
         {
           "speciesId": "svb_guldgubbe",
-          "level": 38,
+          "level": 32,
           "moves": ["hunker_down", "grave_chill", "cobble_toss", "hollow_wail"]
         },
         {
           "speciesId": "svb_hestemusling",
-          "level": 43
+          "level": 41
         },
         {
           "speciesId": "svb_guldhoevding",
-          "level": 44
+          "level": 40
         },
         {
           "speciesId": "svb_klintkonge",
@@ -338,7 +338,7 @@
       "team": [
         {
           "speciesId": "svb_kronegern",
-          "level": 47,
+          "level": 44,
           "moves": ["drowsy_pollen", "beech_lash", "gust_lance", "beech_crown"]
         },
         {
@@ -348,7 +348,7 @@
         },
         {
           "speciesId": "svb_hyldemor",
-          "level": 39,
+          "level": 38,
           "moves": ["drowsy_pollen", "nettle_sting", "beech_lash", "hollow_wail"]
         },
         {

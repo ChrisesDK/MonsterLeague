@@ -72,23 +72,23 @@
       "team": [
         {
           "speciesId": "grimaelling",
-          "level": 15,
+          "level": 17,
           "moves": ["brook_spout", "rinse_and_mend", "sea_fog", "shoulder_shove"]
         },
         {
           "speciesId": "kulingmaage",
-          "level": 9,
-          "moves": ["squall_slap", "sky_crackle", "gale_step", "nimble_jab"]
+          "level": 7,
+          "moves": ["thunder_squall", "sky_crackle", "gale_step", "nimble_jab"]
         },
         {
           "speciesId": "stroemodder",
-          "level": 22,
-          "moves": ["harbour_wave", "kiln_blast", "rinse_and_mend", "cobble_toss"]
+          "level": 23,
+          "moves": ["harbour_wave", "kiln_blast", "rinse_and_mend", "ember_hop"]
         },
         {
           "speciesId": "stroemodder",
-          "level": 21,
-          "moves": ["harbour_wave", "squall_slap", "rinse_and_mend", "cobble_toss"]
+          "level": 20,
+          "moves": ["harbour_wave", "thunder_squall", "rinse_and_mend", "ember_hop"]
         }
       ],
       "items": {

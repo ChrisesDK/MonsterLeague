@@ -57,7 +57,7 @@ Zone Valdemars Slot, district 5 (wild levels 25–32). Badge: Castle badge. Need
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Castle Gardener Poul (`svb_arena5_junior`) | Markhare 29, Skibskat 30 | – | 3× Good Charm + 750 coins |
-| 2 | Castle Steward Ebba (`svb_leader_folk`) | Markhare 23 (Shoulder Shove, Stern Glare, Cobbler Kick, Cartwheel), Skibskat 29 (Stern Glare, Cobbler Kick, Gust Lance, Cartwheel), Aftenbakke 34 (Wisp Flicker, Cobbler Kick, Grave Chill, Blight Touch), Klabautermand 35 (Stern Glare, Cobbler Kick, Ripple Dash, Market Stampede) | 2× Large Tonic | 2× Revive Leaf + 2100 coins |
+| 2 | Castle Steward Ebba (`svb_leader_folk`) | Markhare 19 (Shoulder Shove, Stern Glare, Cobbler Kick, Cartwheel), Skibskat 31 (Stern Glare, Cobbler Kick, Gust Lance, Cartwheel), Aftenbakke 38 (Wisp Flicker, Cobbler Kick, Grave Chill, Blight Touch), Klabautermand 35 (Stern Glare, Cobbler Kick, Ripple Dash, Market Stampede) | 2× Large Tonic | 2× Revive Leaf + 2280 coins |
 
 Expected player team (balance sim): starter at 33, Kystskade 31, Hestemusling 31, Stimsild 31, Fyrvogter 32; items 2× Small Tonic, 2× Large Tonic.
 
@@ -68,7 +68,7 @@ Zone Egebjerg, district 6 (wild levels 31–38). Badge: Mill badge. Needs badge 
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Stonemason Lise (`svb_arena6_junior`) | Søpindsvin 34, Fyrvogter 35 | – | 2× Great Charm + 875 coins |
-| 2 | Miller Torben (`svb_leader_stone`) | Guldgubbe 38 (Hunker Down, Grave Chill, Cobble Toss, Hollow Wail), Hestemusling 43, Guldhøvding 44, Klintkonge 49 | 2× Large Tonic | 2× Revive Leaf + 2940 coins |
+| 2 | Miller Torben (`svb_leader_stone`) | Guldgubbe 32 (Hunker Down, Grave Chill, Cobble Toss, Hollow Wail), Hestemusling 41, Guldhøvding 40, Klintkonge 49 | 2× Large Tonic | 2× Revive Leaf + 2940 coins |
 
 Expected player team (balance sim): starter at 38, Kystskade 36, Månehare 36, Skibskat 36, Kronegern 36; items 2× Small Tonic, 2× Large Tonic.
 
@@ -79,7 +79,7 @@ Zone Hvidkilde, district 7 (wild levels 37–44). Badge: Forest badge. Needs bad
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Hunter Anders (`svb_arena7_junior`) | Heksering 39, Kronegern 40 | – | 2× Great Charm + 1000 coins |
-| 2 | Head Forester Agnete (`svb_leader_grove`) | Kronegern 47 (Drowsy Pollen, Beech Lash, Gust Lance, Beech Crown), Heksering 39 (Drowsy Pollen, Beech Lash, Thorn Volley, Hollow Wail), Hyldemor 39 (Drowsy Pollen, Nettle Sting, Beech Lash, Hollow Wail), Klintkonge 45 (Sky Crackle, Rampart Slam, Market Stampede, Grit Spray), Kirkeugle 40 | 3× Large Tonic | 1× Revive Blossom + 2820 coins |
+| 2 | Head Forester Agnete (`svb_leader_grove`) | Kronegern 44 (Drowsy Pollen, Beech Lash, Gust Lance, Beech Crown), Heksering 39 (Drowsy Pollen, Beech Lash, Thorn Volley, Hollow Wail), Hyldemor 38 (Drowsy Pollen, Nettle Sting, Beech Lash, Hollow Wail), Klintkonge 45 (Sky Crackle, Rampart Slam, Market Stampede, Grit Spray), Kirkeugle 40 | 3× Large Tonic | 1× Revive Blossom + 2700 coins |
 
 Expected player team (balance sim): starter at 43, Kystskade 41, Hestemusling 41, Sildekonge 41, Kronegern 41, Aftenbakke 41; items 2× Small Tonic, 2× Large Tonic.
 

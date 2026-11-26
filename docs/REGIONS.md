@@ -36,8 +36,8 @@ if two regions overlap.
 
 | Region                   | Level | State                                                                                  | GDD   | Region data                         | Basemap                    | Testers                          |
 | ------------------------ | ----- | -------------------------------------------------------------------------------------- | ----- | ----------------------------------- | -------------------------- | -------------------------------- |
-| Odense                   | R1.19 | Playable: whole campaign, arenas 1–8                                                   | v1.19 | d67730978603                        | 24 Nov 2026 build, 16.2 MB | Odense residents (from Nov 2026) |
-| Svendborg                | R1.1  | Playable (D181): whole campaign, arenas 1–8, 55 creatures, 118 trainers, ferry islands | v1.19 | see `region/svendborg/version.json` | 24 Nov 2026 build, 12.1 MB | Svendborg residents (after R1)   |
+| Odense                   | R1.20 | Playable: whole campaign, arenas 1–8                                                   | v1.19 | d67730978603                        | 24 Nov 2026 build, 16.2 MB | Odense residents (from Nov 2026) |
+| Svendborg                | R1.2  | Playable (D181): whole campaign, arenas 1–8, 55 creatures, 118 trainers, ferry islands | v1.19 | see `region/svendborg/version.json` | 24 Nov 2026 build, 12.1 MB | Svendborg residents (after R1)   |
 | Other Fyn municipalities | —     | Shown on the Fyn map, not playable                                                     | —     | —                                   | —                          | —                                |
 
 **Region level** `R<major>.<minor>`: the major number goes up when a region reaches a new
@@ -82,6 +82,7 @@ Statuses: `pending` · `apply` · `adapt` · `done` · `skip` · `n/a` (a note m
 | D186 AI heal and stat-lowering moves; leaders re-tuned                                      | shared    | 2026-11-26 | done                                                          | done                          |
 | D187 Individual values; D188 Glimmer creatures                                              | shared    | 2026-11-26 | done                                                          | done                          |
 | D189 Glimmer forms in the field guide, previous/next; save v12                              | shared    | 2026-11-26 | done                                                          | done                          |
+| D190 Leaders heal and lower stats by chance; leaders re-tuned                               | shared    | 2026-11-26 | done                                                          | done                          |
 
 ## Features
 
