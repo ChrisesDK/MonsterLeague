@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import maplibregl, { type Map as MlMap, type StyleSpecification } from 'maplibre-gl';
 import { badgeUrl } from '@oml/art';
-import { PLAYABLE_MUNICIPALITIES, type MunicipalityId } from '@oml/data';
+import { PLAYABLE_MUNICIPALITIES, type MunicipalityId, type RegionId } from '@oml/data';
 import fynRaw from '@oml/data/content/shared/fyn.geojson?raw';
 import type { SaveGame } from '@oml/game';
 import type { Translate } from '../i18n';
@@ -162,7 +162,7 @@ export function FynMap({
   palette: Palette;
   onClose: () => void;
   /** Opens a playable region's Town Map (to look at it; play needs walking there). */
-  onOpen: (region: MunicipalityId) => void;
+  onOpen: (region: RegionId) => void;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [later, setLater] = useState<MunicipalityId | null>(null);
@@ -206,7 +206,7 @@ export function FynMap({
     const open = (id: string) => {
       setLater(null);
       if (id === viewing) onCloseRef.current();
-      else if (playable(id)) onOpenRef.current(id as MunicipalityId);
+      else if (playable(id)) onOpenRef.current(id as RegionId);
       else setLater(id as MunicipalityId);
     };
     map.on('click', 'land', (e) => {

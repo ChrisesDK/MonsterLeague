@@ -1837,4 +1837,6 @@ length, position resolution and spawn tables>`.
   (they belong to the region being played); distances on cards are still straight lines
   from the player. A banner says play starts by walking there and has a "Back to …" button;
   the back gesture closes the Fyn map first, then returns to the own region, then closes
-  the Town Map.
+  the Town Map. The play map lists the places a press acts on (`data-reach`, empty while
+  moving fast); the e2e helpers wait for it and press once (before, a card slower than
+  400 ms on CI made them press a rest stop twice: "already healthy").

@@ -1469,7 +1469,13 @@ export function MapScreen({
 
   return (
     <main className="map-screen" data-night={night ? 'true' : 'false'}>
-      <div ref={containerRef} className="map" data-testid="play-map" />
+      <div
+        ref={containerRef}
+        className="map"
+        data-testid="play-map"
+        // the places a press acts on now (tests press once this lists the place)
+        data-reach={fast ? '' : inReach.map((p) => p.id).join(' ')}
+      />
       <div className="hud-top">
         <div className="hud-left">
           {card}

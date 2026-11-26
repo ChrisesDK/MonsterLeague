@@ -103,15 +103,13 @@ async function tapPoi(page: Page, poiId: string) {
   const acted = page.locator(
     `[data-testid=poi-card][data-poi=${poiId}], main.battle, [data-testid=screen-market]`,
   );
-  for (let i = 0; i < 60; i++) {
-    await page.getByTestId(`poi-stamp-${poiId}`).evaluate((e) => (e as HTMLElement).click());
-    const ok = await acted
-      .first()
-      .waitFor({ state: 'visible', timeout: 400 })
-      .then(() => true)
-      .catch(() => false);
-    if (ok) break;
-  }
+  // the simulated GPS fix lands a moment after the teleport, and a jump reads as moving
+  // fast: press once the place is in reach (a second press would act twice)
+  await page
+    .locator(`[data-testid=play-map][data-reach~="${poiId}"]`)
+    .waitFor({ state: 'attached', timeout: 45_000 });
+  await page.getByTestId(`poi-stamp-${poiId}`).evaluate((e) => (e as HTMLElement).click());
+  await acted.first().waitFor({ state: 'visible', timeout: 15_000 });
 }
 
 /** Closes whatever follows a battle: the result card, then any learn-move/evolve question. */
