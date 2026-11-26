@@ -1907,3 +1907,58 @@ length, position resolution and spawn tables>`.
   thunder_squall, both strømodders take ember_hop against the grove starter):
   leader_water 17/7/23/20, svb_leader_folk 19/31/38/35, svb_leader_stone 32/41/40/49,
   svb_leader_grove 44/39/38/45/40. All 56 balance tests pass.
+- **D191. Open regions; Odense first** (owner decisions on P28, GDD v1.25). `open` in a
+  region's zones file (`Dex.open`). In an open region `isZoneOpen` is always true (so
+  rares, layers, trainers, the Town Map and the Journal see no locks), `arenaReady` is
+  always true and `trainerStatus` skips the badge n − 1 check; `openZones` and
+  `arriveInZone` do nothing (no "is open" toasts; the save's zone list stays as it was). Rare creatures use the player's band
+  (`spawnLevel(..., open)`), markets count badges (`marketStock`), and field abilities come
+  from `arenas.json` `fieldAbility` (`fieldAbilityArena`; Odense: folk Sealbreaker, stone
+  Runereader, water Angler, grove Forager, spirit Nightseer, storm Homing; validate checks
+  each ability is taught by exactly one arena). The Journal suggests the nearest arena not
+  won (`suggestedArena`, from the position each time, never stored) and drops the route
+  step. The badge ceremony takes the save's badges (they come in any order) and names the
+  ability learned and the new tier. Svendborg stays closed until Odense's version is
+  deployed (owner).
+- **D192. Leaders and trainers scale with badges** (P28). `scaledTeam(trainer, badges)` in
+  `packages/game/src/scaling.ts`, used by `startTrainerBattle` and the sim (`leader@tier`).
+  Tier = badges held, at most 7. A leader's `team` is its roster at full strength in the
+  order members join; `tiers[t]` = { size, level, items }: the first `size` members, the
+  strongest at `level`, the others as far below it as in the roster, sent out weakest
+  first, each in the form its line has at that level (`formAtLevel`: back to the first
+  stage, then evolve by level). A roster member's `coverage` move joins the moves learned
+  by its level before `autoMoveset` picks four. Juniors and route trainers shift by the
+  difference between the low ends of the player's band (district badges + 1) and their
+  POI district's band, clamped to 2–50. Coins are paid for the team met (levels from the
+  battle state). The v9 → v10 migration pays a tiered leader at tier arena − 1 (what it was
+  on the old path), so old saves get what they always got.
+- **D193. Open-region balance** (P28). The old presets were built to counter their own
+  arena, so as generic teams they made every result swing on the teammates. An open
+  region's preset arena n is a balanced team for n − 1 badges: the starter at the old
+  starter level plus a wild Fire, Water and Grove creature and Folk ones one level lower
+  (the one sharing the starter's type is left out, so presets list up to 6). One level per
+  tier cannot put all three starters in their advantage / neutral / disadvantage bands at
+  64 cells (searches showed it; the old game hand-made one team per arena), so open
+  regions are guarded on what matters there: the mean over the starters 35–65 % (aimed at
+  40–60) and every starter above 0 % and below 100 %; the class bands are a tie-breaker in
+  the search. A lone starter could still beat a two-member tier-0 leader of a type it beats
+  (one level moves tier-0 results by 30–60 points), so the owner's "never with the starter
+  alone" is a rule instead: in an open region an arena takes a team of at least
+  `ARENA_MIN_TEAM` = 3 creatures (`trainerStatus` → `smallTeam`; route trainers take
+  anyone). Known swings to watch in Gate 3: at 5 badges (the starters' final forms) the fire
+  starter wins about 95 % and the grove starter (grove/spirit) 1–7 % against the storm and
+  water leaders. Rosters: each themed leader opens with a folk creature (or a folk dual type)
+  so a two-member tier-0 team is no wall, and coverage moves aim at the starter that would
+  otherwise win too easily. Roster members sit at the ace's level or one below (gaps made the top tiers
+  too easy at the level cap). The balance test checks all 8 leaders at all 8 tiers with
+  N = 300. Levels, sizes and items per
+  tier come from a search with `pnpm sim` (results in docs/BALANCE.md).
+- **D194. Route finds and extra creatures on finished routes** (P28). `noteRoutesWithFinds`:
+  every 10th checkpoint reached for the first time is a find (`routeFind`, hash of seed,
+  route and checkpoint: one in three an item from a pool that grows at 2 and 5 badges,
+  otherwise 20 + 10 per badge + 0–10 coins); only in open regions; old checkpoints pay
+  nothing. The map shows a toast; the Town Map route card says what walking it gives.
+  `routeBonusSpawns`: for finished routes, the res-10 cells of their checkpoints within
+  1.2 km get extra spawns from `computeSpawns` with `densityScale` 0.5, the seed
+  `<save seed>|routes` and the id tag `route` (new optional inputs; shared spawns are
+  unchanged, so no `SPAWN_ALGORITHM` bump). Worked out on the phone, nothing sent.

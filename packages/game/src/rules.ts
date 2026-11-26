@@ -15,6 +15,7 @@ import {
 import { payoutFor, type ActiveBattle, type PostBattleChoice, type SaveGame } from './save';
 import { noteRestStop } from './journal';
 import { givenIvs, wildTraits } from './traits';
+import { scaledTeam } from './scaling';
 
 // ---------------------------------------------------------------------------
 // Badges, obedience, zones and districts
@@ -40,7 +41,7 @@ export function isZoneOpen(
   zone: string,
   dex: Dex = regions[save.region ?? 'odense'],
 ): boolean {
-  if (!zone || !dex.zones[zone]) return true;
+  if (dex.open || !zone || !dex.zones[zone]) return true;
   return dex.zones[zone]!.start === true || save.zones.includes(zone);
 }
 
@@ -60,21 +61,34 @@ export function badgeNeededFor(arena: number): number {
   return Math.max(1, arena - 1);
 }
 
-/** Whether arena `n` takes a challenge: its zone is open and the player has badge n − 1. */
+/**
+ * Whether arena `n` takes a challenge: its zone is open and the player has badge n − 1. In an
+ * open region (P28) every arena takes a challenge, in any order.
+ */
 export function arenaReady(
   save: Pick<SaveGame, 'zones' | 'badges'> & { region?: RegionId },
   arena: number,
   dex: Dex = regions[save.region ?? 'odense'],
 ): boolean {
+  if (dex.open) return true;
   const zone = Object.values(dex.zones).find((z) => z.arena === arena);
   return (
     (!zone || isZoneOpen(save, zone.id, dex)) && (arena <= 1 || save.badges.includes(arena - 1))
   );
 }
 
+/** The arena whose badge unlocks a field ability (P28: open regions name it per arena). */
+export function fieldAbilityArena(abilityId: string, dex: Dex = content): number | null {
+  if (dex.open) return dex.arenaSites.find((a) => a.fieldAbility === abilityId)?.arena ?? null;
+  return dex.fieldAbilities[abilityId]?.badge ?? null;
+}
+
 export function fieldAbilitiesUnlocked(save: SaveGame, dex: Dex = regions[save.region]): string[] {
   return Object.values(dex.fieldAbilities)
-    .filter((f) => save.badges.includes(f.badge) || save.devAbilities.includes(f.id))
+    .filter((f) => {
+      const arena = fieldAbilityArena(f.id, dex);
+      return (arena !== null && save.badges.includes(arena)) || save.devAbilities.includes(f.id);
+    })
     .map((f) => f.id);
 }
 
@@ -257,14 +271,17 @@ export function playerBandDistrict(badges: readonly number[]): number {
 
 /**
  * A spawn's level for this player (GDD v1.7): common creatures use the player's own band,
- * rare ones their district's band. `levelRoll` in [0, 1) picks the level inside the band.
+ * rare ones their district's band. In an open region (P28, `open`) rare ones use the player's
+ * band too, so a rare creature near home is never far above the team. `levelRoll` in [0, 1)
+ * picks the level inside the band.
  */
 export function spawnLevel(
   spawn: { rarity: 'common' | 'rare'; levelRoll: number; district: number },
   badges: readonly number[],
   bands: LevelBands,
+  open = false,
 ): number {
-  const d = spawn.rarity === 'common' ? playerBandDistrict(badges) : spawn.district;
+  const d = spawn.rarity === 'common' || open ? playerBandDistrict(badges) : spawn.district;
   const band = bands[d];
   if (!band) throw new Error(`No level band for district ${d}`);
   const [lo, hi] = band;
@@ -354,12 +371,16 @@ export function startTutorialBattle(
   };
 }
 
+/** P28 (owner): in an open region an arena takes challengers with at least this many creatures. */
+export const ARENA_MIN_TEAM = 3;
+
 export type TrainerStatus =
   | { kind: 'ready'; trainerId: string }
   | { kind: 'locked'; badge: number }
   | { kind: 'zoneLocked'; zone: string }
   | { kind: 'beaten'; trainerId: string }
   | { kind: 'needsJunior'; trainerId: string }
+  | { kind: 'smallTeam'; need: number }
   | { kind: 'teamFainted' }
   | { kind: 'noTeam' };
 
@@ -374,12 +395,15 @@ export function trainerStatus(
 ): TrainerStatus | null {
   if (poi.kind === 'restStop' || poi.kind === 'market') return null;
   if (!isZoneOpen(save, poi.zone, dex)) return { kind: 'zoneLocked', zone: poi.zone };
-  if (poi.kind === 'arena' && poi.arena > 1 && !save.badges.includes(poi.arena - 1))
+  if (!dex.open && poi.kind === 'arena' && poi.arena > 1 && !save.badges.includes(poi.arena - 1))
     return { kind: 'locked', badge: badgeNeededFor(poi.arena) };
   const order = poi.kind === 'arena' ? poi.trainers : [poi.trainer];
   const next = order.find((id) => !save.defeatedTrainers.includes(id));
   if (!next) return { kind: 'beaten', trainerId: order[order.length - 1]! };
   if (save.team.length === 0) return { kind: 'noTeam' };
+  // P28 (owner): an arena wants a real team, never the starter alone.
+  if (dex.open && poi.kind === 'arena' && save.team.length < ARENA_MIN_TEAM)
+    return { kind: 'smallTeam', need: ARENA_MIN_TEAM };
   if (teamFainted(save.team)) return { kind: 'teamFainted' };
   return { kind: 'ready', trainerId: next };
 }
@@ -393,12 +417,14 @@ export function startTrainerBattle(
 ): SaveGame {
   const trainer = dex.trainers[trainerId];
   if (!trainer) throw new Error(`Unknown trainer ${trainerId}`);
+  // P28: in an open region the team follows the player's badges.
+  const { team, items } = scaledTeam(trainer, save.badges, dex);
   const opponent: SideConfig = {
     name: trainer.id,
-    team: trainer.team.map((m, i) =>
+    team: team.map((m, i) =>
       createCreature(m.speciesId, m.level, `o${i}`, dex, m.moves ? { moves: m.moves } : {}),
     ),
-    items: { ...trainer.items },
+    items,
     ai: trainer.tier,
   };
   const state = createBattle(
@@ -536,7 +562,8 @@ export function finishBattle(
         next = { ...next, bag: addItems(next.bag, { [reward.itemId]: reward.count }) };
       }
       if (trainer) {
-        coins = payoutFor(trainer);
+        // Paid for the team actually met (P28: a scaled team pays by its own levels).
+        coins = payoutFor({ tier: trainer.tier, team: finalState.sides[1].team });
         next = { ...next, coins: next.coins + coins };
       }
       if (trainer?.tier === 'leader' && trainer.arena && !next.badges.includes(trainer.arena)) {
@@ -555,10 +582,14 @@ export function finishBattle(
 // ---------------------------------------------------------------------------
 // Markets (D165)
 
-/** What a market sells to this player: priced items, minus those behind a badge. */
+/**
+ * What a market sells to this player: priced items, minus those behind a badge (in an open
+ * region, P28, behind a number of badges: any arena's).
+ */
 export function marketStock(save: Pick<SaveGame, 'badges'>, dex: Dex = content): string[] {
+  const has = (n: number) => (dex.open ? save.badges.length >= n : save.badges.includes(n));
   return Object.values(dex.items)
-    .filter((i) => i.price !== undefined && (!i.marketBadge || save.badges.includes(i.marketBadge)))
+    .filter((i) => i.price !== undefined && (!i.marketBadge || has(i.marketBadge)))
     .map((i) => i.id);
 }
 

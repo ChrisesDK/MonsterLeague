@@ -424,14 +424,15 @@ test('Town Map: zones, arenas and routes; a card tells what a place needs (P22)'
   await expect(page.locator('[data-testid^=tm-route-]')).toHaveCount(ROUTE_COUNT);
   await expect(page.getByTestId('tm-player')).toHaveCount(1);
   await expect(page.getByTestId('tm-target')).toHaveCount(1);
-  // arena 2's zone is not open yet: the card says to walk a route there
+  // P28: Odense is open: arena 2 takes a challenge now, at the strength for 0 badges
   await page.getByTestId('tm-arena-2').evaluate((e) => (e as HTMLElement).click());
-  await expect(page.getByTestId('townmap-needs')).toContainText('Walk a route to');
+  await expect(page.getByTestId('townmap-needs')).toContainText('0 of 8 badges');
   await expect(page.getByTestId('townmap-distance')).toContainText('straight line');
   await page.getByTestId('tm-route-route1').evaluate((e) => (e as HTMLElement).click());
   await expect(page.getByTestId('townmap-card')).toContainText('Route 1');
   await expect(page.getByTestId('townmap-card')).toContainText('Leads to');
   await expect(page.getByTestId('townmap-needs')).toContainText(/\d+% walked of/);
+  await expect(page.getByTestId('townmap-needs')).toContainText('coins and items');
   // the Town Map can't be dragged out of Odense Kommune
   const bounds = await page.evaluate(() =>
     (
@@ -667,35 +668,32 @@ test('Town Map (D165): destinations, markets and trainers as stamps; the filter 
   await expect(page.getByTestId('town-map')).toHaveClass(/hide-routes/);
 });
 
-test('Journal: walking Route 1 with the GPS simulator fills it and opens Næsbyhoved', async ({
+test('Journal (P28): walking Route 1 with the GPS simulator fills it and turns up finds', async ({
   page,
 }) => {
   await startDone(page);
   await dev(page, 'setBadges', [1]);
   await teleport(page, KONGENS_HAVE);
   const card = page.getByTestId('journal-card');
-  await expect(card).toHaveAttribute('data-guide', 'd2.route');
+  // an open region has no "walk a route to open" steps
+  await expect(card).toHaveAttribute('data-guide', /^d\d\.(trainers|rest|arena)$/);
+  const before = ((await dev(page, 'save')) as { coins: number }).coins;
   // walk the route, a step every 15 m
   for (const p of along(route1.path)) {
     await teleport(page, p);
     await page.waitForTimeout(120);
   }
   await expect
-    .poll(async () => {
-      const s = (await dev(page, 'save')) as { zones: string[] };
-      return s.zones;
-    })
-    .toContain('naesbyhoved');
-  // the route is done: the card moves on to the district's trainers
-  await expect(card).toHaveAttribute('data-guide', 'd2.trainers');
+    .poll(async () => ((await dev(page, 'save')) as { coins: number }).coins)
+    .toBeGreaterThan(before);
+  const save = (await dev(page, 'save')) as { zones: string[] };
+  expect(save.zones).toEqual([]); // nothing to open
   // the goal card starts folded: the first tap opens it, the next opens the Journal
   await expect(card).toHaveAttribute('data-open', 'false');
   await card.click();
   await expect(card).toHaveAttribute('data-open', 'true');
-  await expect(card).toContainText('trainers');
   await card.click();
   await expect(page.getByTestId('screen-journal')).toBeVisible();
-  await expect(page.getByTestId('goal-d2.route')).toHaveClass(/done/);
   await expect(page.getByTestId('journal-region')).toContainText('Routes walked: 1 of');
   await page.getByTestId('screen-back').click();
   await expect(page.getByTestId('play-map')).toBeVisible();

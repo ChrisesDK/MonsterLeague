@@ -159,11 +159,17 @@ export function buildReport(opts: ReportOptions): ReportResult {
   const teams: TeamRow[] = [];
   const presets = Object.values(dex.playerTeams).sort((x, y) => x.arena - y.arena);
   for (const preset of presets) {
-    const trainers = Object.values(dex.trainers).filter((t) => t.arena === preset.arena);
+    // P28: in an open region preset arena n is the team a player brings with n − 1 badges,
+    // met by every leader at that tier.
+    const trainers = dex.open
+      ? Object.values(dex.trainers)
+          .filter((t) => t.tier === 'leader')
+          .sort((x, y) => (x.arena ?? 0) - (y.arena ?? 0))
+      : Object.values(dex.trainers).filter((t) => t.arena === preset.arena);
     for (const trainer of trainers) {
       for (const starter of startersOf(dex)) {
         const a: SideSpec = playerTeamSide(preset.id, starter, dex);
-        const b = parseSide(trainer.id, dex);
+        const b = parseSide(dex.open ? `${trainer.id}@${preset.arena - 1}` : trainer.id, dex);
         const r = runSim({ a, b, n: opts.teamN, seed: opts.seed, dex });
         if (r.errors.length)
           flags.push(
@@ -176,7 +182,7 @@ export function buildReport(opts: ReportOptions): ReportResult {
         teams.push({
           preset: preset.id,
           starter,
-          trainer: trainer.id,
+          trainer: dex.open ? `${trainer.id} (${preset.arena - 1} badges)` : trainer.id,
           tier: trainer.tier,
           cls,
           win,

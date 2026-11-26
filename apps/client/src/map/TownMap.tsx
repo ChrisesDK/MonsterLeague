@@ -4,6 +4,7 @@ import { stampUrl } from '@oml/art';
 import { MAP_FRAMES, regions, type RegionId } from '@oml/data';
 import {
   arenaReady,
+  challengeTier,
   distanceM,
   isZoneOpen,
   campaignView,
@@ -398,13 +399,15 @@ function RegionTownMap({
       distance = away(site);
       needs = save.badges.includes(site.arena)
         ? t('townMap.badgeEarned', { badge: t(`badge.${site.arena}.name`) })
-        : !isZoneOpen(save, site.zone)
-          ? t('townMap.needsZone', { zone: t(`zone.${site.zone}.name`) })
-          : !arenaReady(save, site.arena)
-            ? t('townMap.needsBadge', { badge: t(`badge.${site.arena - 1}.name`) })
-            : !site.poi
-              ? t('townMap.later')
-              : t('townMap.arenaOpen');
+        : dex.open
+          ? t('townMap.arenaTier', { n: challengeTier(save.badges) })
+          : !isZoneOpen(save, site.zone)
+            ? t('townMap.needsZone', { zone: t(`zone.${site.zone}.name`) })
+            : !arenaReady(save, site.arena)
+              ? t('townMap.needsBadge', { badge: t(`badge.${site.arena - 1}.name`) })
+              : !site.poi
+                ? t('townMap.later')
+                : t('townMap.arenaOpen');
     } else if (selected.kind === 'route') {
       const r = dex.routes[selected.id]!;
       const p = routeProgress(save, r);
@@ -423,6 +426,9 @@ function RegionTownMap({
                 m: formatM(r.lengthM),
                 wild: Math.round(r.wildShare * 100),
               });
+      // P28: what walking a route is good for in an open region.
+      if (dex.open && r.kind !== 'ferry')
+        needs += ` · ${t(p.done ? 'townMap.routeBonus' : 'townMap.routeFinds')}`;
     } else if (selected.kind === 'zone') {
       const z = dex.zones[selected.id]!;
       title = t(`zone.${z.id}.name`);

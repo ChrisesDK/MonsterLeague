@@ -1,3 +1,4 @@
+import { regions } from '@oml/data';
 import { content } from '@oml/data';
 import { describe, expect, it } from 'vitest';
 import {
@@ -12,13 +13,16 @@ import {
   type SaveGame,
 } from '../src/index';
 
+// These tests cover the locked rules (regions that are not open, P28), on Odense's content.
+Object.assign(regions.odense, { open: false });
+
 const SEED = '0123456789abcdef0123456789abcdef';
 const rich = (coins: number): SaveGame => ({ ...chooseStarter(newSave(SEED), 'gnistkat'), coins });
 
 describe('skilling and markets (D165)', () => {
   it('trainers pay their highest level × 25, leaders × 60', () => {
     expect(payoutFor(content.trainers.route1_lise!)).toBe(5 * 25);
-    expect(payoutFor(content.trainers.leader_folk!)).toBe(10 * 60);
+    expect(payoutFor({ tier: 'leader', team: [{ level: 10 }, { level: 8 }] })).toBe(10 * 60);
   });
 
   it('a market sells priced items; Good and Great Charms need badges 2 and 5', () => {
@@ -56,6 +60,7 @@ describe('skilling and markets (D165)', () => {
     const { coins: _c, ...rest } = chooseStarter(newSave(SEED), 'gnistkat');
     const v9 = { ...rest, version: 9, defeatedTrainers: ['route1_lise', 'leader_folk'] };
     const r = loadSave(JSON.parse(JSON.stringify(v9)), 'x');
-    expect(r.ok && r.save.coins).toBe(125 + 600);
+    // P28: a tiered leader pays for the team met on the old path (arena − 1 badges).
+    expect(r.ok && r.save.coins).toBe(125 + content.trainers.leader_folk!.tiers![0]!.level * 60);
   });
 });

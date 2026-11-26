@@ -1,6 +1,7 @@
 import { content, type Dex } from '@oml/data';
 import { createBattle, createCreature, type BattleState, type SideConfig } from '@oml/engine';
 import type { BattleKind } from '@oml/playtest';
+import { pathBadges, presetMates, scaledTeam } from '@oml/game';
 
 export type Starter = 'fire' | 'water' | 'grove';
 export const STARTERS: Starter[] = ['fire', 'water', 'grove'];
@@ -54,7 +55,7 @@ export function playerSide(arena: number, starter: Starter, dex: Dex = content):
   if (!preset) throw new Error(`No player-team preset for arena ${arena}`);
   const members = [
     { speciesId: STARTER_SPECIES[starter], level: preset.starterLevel },
-    ...preset.team,
+    ...presetMates(preset, STARTER_SPECIES[starter], dex),
   ];
   return {
     team: members.map((m, i) => createCreature(m.speciesId, m.level, `p${i}`, dex)),
@@ -89,12 +90,14 @@ export function buildPlaytestBattle(
   }
   const trainer = dex.trainers[slot.trainerId ?? ''];
   if (!trainer) throw new Error(`Unknown trainer ${slot.trainerId}`);
+  // P28: a tiered leader as met on the old path (arena − 1 badges).
+  const scaled = scaledTeam(trainer, pathBadges(slot.arena), dex);
   const opponent: SideConfig = {
     name: trainer.id,
-    team: trainer.team.map((m, i) =>
+    team: scaled.team.map((m, i) =>
       createCreature(m.speciesId, m.level, `o${i}`, dex, m.moves ? { moves: m.moves } : {}),
     ),
-    items: { ...trainer.items },
+    items: scaled.items,
     ai: trainer.tier,
   };
   const state = createBattle({ kind: trainer.tier, sides: [player, opponent] }, seed, dex);

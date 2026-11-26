@@ -9,6 +9,7 @@ import {
   marketStock,
   sellItem,
   sellPrice,
+  challengeTier,
   fieldAbilitiesUnlocked,
   forgetFieldAbility,
   guideHints,
@@ -600,7 +601,7 @@ function MarketScreen({
   const dex = useContext(RegionDex);
   const [tab, setTab] = useState<'buy' | 'sell'>('buy');
   const [msg, setMsg] = useState<string | null>(null);
-  const stock = marketStock(save);
+  const stock = marketStock(save, dex);
   const priced = Object.values(dex.items).filter((i) => i.price !== undefined);
   const sellable = Object.entries(save.bag).filter(([id, n]) => n > 0 && sellPrice(id) > 0);
   const buy = (id: string) => {
@@ -654,7 +655,9 @@ function MarketScreen({
                 <span className="muted small">
                   {open
                     ? `${t(`item.${i.id}.desc`)} · ${t('coins.amount', { n: i.price! })}`
-                    : t('market.needsBadge', { badge: t(`badge.${i.marketBadge}.name`) })}
+                    : dex.open
+                      ? t('market.needsBadges', { n: i.marketBadge! })
+                      : t('market.needsBadge', { badge: t(`badge.${i.marketBadge}.name`) })}
                 </span>
               </button>
             );
@@ -1044,16 +1047,19 @@ export function BadgesScreen({
       <p>
         {next === null
           ? t('badges.all')
-          : arenaPoi
-            ? t('badges.next', { name: tr(`poi.${arenaPoi.id}.name`) })
-            : t('badges.nextUnknown', { n: next })}
+          : dex.open
+            ? t('badges.anyOrder', { n: challengeTier(view.badges) })
+            : arenaPoi
+              ? t('badges.next', { name: tr(`poi.${arenaPoi.id}.name`) })
+              : t('badges.nextUnknown', { n: next })}
       </p>
       <p className="muted small">
-        {t('team.obedience', { level: obedienceLevel(view.badges) })} ·{' '}
-        {t('badges.zones', {
-          n: Object.keys(dex.zones).filter((z) => isZoneOpen(view, z)).length,
-          of: Object.keys(dex.zones).length,
-        })}
+        {t('team.obedience', { level: obedienceLevel(view.badges) })}
+        {!dex.open &&
+          ` · ${t('badges.zones', {
+            n: Object.keys(dex.zones).filter((z) => isZoneOpen(view, z)).length,
+            of: Object.keys(dex.zones).length,
+          })}`}
       </p>
       <p className="muted small" data-testid="badges-trainers">
         {t('badges.trainers', { n: view.defeatedTrainers.length })}

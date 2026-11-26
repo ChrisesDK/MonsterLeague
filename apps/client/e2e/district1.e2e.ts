@@ -204,13 +204,13 @@ test('onboarding to badge 2 (districts 1 and 2, open wildlife), with reloads', a
     levelRoll: 0.5,
     ...HARBOUR,
   });
-  await expect(page.locator('.spawn-marker.too-wild')).toHaveCount(1);
-  const common = page.locator('.spawn-marker[data-kind=ok]');
-  await expect(common).toHaveCount(1);
-  // band 1 is L3-8; roll 0.5 → L6 for a player with 0 badges (the rare would be L43-50)
+  // P28: Odense is open, so nothing is too wild: the far district's rare battles too, at
+  // the player's own band
+  await expect(page.locator('.spawn-marker.too-wild')).toHaveCount(0);
+  await expect(page.locator('.spawn-marker[data-kind=ok]')).toHaveCount(2);
+  const common = page.locator('.spawn-marker[data-kind=ok][aria-label*="Grim"]');
+  // band 1 is L3-8; roll 0.5 → L6 for a player with 0 badges
   await expect(common).toHaveAttribute('aria-label', /level 6/);
-  await page.locator('.spawn-marker.too-wild').evaluate((e) => (e as HTMLElement).click());
-  await expect(page.locator('.map-toast')).toContainText('too wild');
   await common.evaluate((e) => (e as HTMLElement).click());
   await expect(page.locator('.combatant.side-1')).toContainText('Level 6');
   await fight(page, { charm: true });
@@ -345,10 +345,7 @@ test('onboarding to badge 2 (districts 1 and 2, open wildlife), with reloads', a
   );
   expect(save.bag.revive_leaf).toBe(1);
 
-  // P22: walking Route 1 opens Næsbyhoved (district 2): its rares are catchable; Munke Mose
-  // (not walked to) stays wild.
-  await dev(page, 'walkRoute', 'route1');
-  await expect(page.locator('.map-toast')).toContainText('is open');
+  // P28: Odense is open: the rares of Næsbyhoved and Munke Mose battle without a route walked.
   await teleport(page, DISTRICT2);
   await dev(page, 'injectSpawn', {
     speciesId: 'kampetrold',
@@ -365,7 +362,7 @@ test('onboarding to badge 2 (districts 1 and 2, open wildlife), with reloads', a
     district: 4,
     ...MUNKEMOSE,
   });
-  await expect(page.locator('.spawn-marker.too-wild')).toHaveCount(1);
+  await expect(page.locator('.spawn-marker.too-wild')).toHaveCount(0);
 
   // ---- district 2: a route trainer, the junior, the Stone leader, badge 2 ---------------------
   await dev(page, 'setTeamLevel', 15);

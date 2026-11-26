@@ -19,7 +19,7 @@ import {
   type Species,
   type Trainer,
 } from '@oml/data';
-import { payoutFor } from '@oml/game';
+import { payoutFor, scaledTeam } from '@oml/game';
 import {
   cellDensity,
   decodeRegion,
@@ -399,7 +399,7 @@ function team(t: Trainer): string {
   return t.team
     .map(
       (m) =>
-        `${speciesName(m.speciesId)} ${m.level}${m.moves ? ` (${m.moves.map(moveName).join(', ')})` : ''}`,
+        `${speciesName(m.speciesId)} ${m.level}${m.moves ? ` (${m.moves.map(moveName).join(', ')})` : ''}${m.coverage ? ` (+${moveName(m.coverage)})` : ''}`,
     )
     .join(', ');
 }
@@ -420,6 +420,12 @@ function teamsDoc(dex: Dex): DocFile {
     '',
     'Every arena and trainer team in the game (`trainers.json` in the region content folder, placed by its `pois.json`). Leader levels are tuned so the expected player team (`player-teams.json`) wins 40–60 % neutral, 75–90 % with type advantage and 15–30 % with disadvantage (see [BALANCE.md](../../BALANCE.md)). Coins are paid on the first win: the highest level × 25, × 60 for leaders (D165).',
     '',
+    ...(dex.open
+      ? [
+          'This is an open region (P28): leaders scale with the badges the player holds (tables below; tuned so a balanced team wins 40–60 % at every tier), and juniors and route trainers move with the player’s level band; the levels listed are those of their own district.',
+          '',
+        ]
+      : []),
     '## Arenas',
     '',
   ];
@@ -430,7 +436,7 @@ function teamsDoc(dex: Dex): DocFile {
     out.push(
       `### Arena ${site.arena}: ${en(`arenaSite.${site.arena}.name`, site.zone)} (${site.type ?? 'mixed'})`,
       '',
-      `Zone ${zoneName(site.zone)}, district ${site.district} (wild levels ${band[0]}–${band[1]}). Badge: ${en(`badge.${site.arena}.name`, '')}. Needs badge ${site.arena - 1 || '–'}.`,
+      `Zone ${zoneName(site.zone)}, district ${site.district} (wild levels ${band[0]}–${band[1]}). Badge: ${en(`badge.${site.arena}.name`, '')}. ${dex.open ? `Open region (P28): any order${site.fieldAbility ? `; teaches ${en(`fieldAbility.${site.fieldAbility}.name`, site.fieldAbility)}` : ''}; juniors scale with the badges held.` : `Needs badge ${site.arena - 1 || '–'}.`}`,
       '',
       '| Order | Trainer | Team | Items | Reward |',
       '|---|---|---|---|---|',
@@ -442,7 +448,28 @@ function teamsDoc(dex: Dex): DocFile {
           `| ${i + 1} | ${trainerName(id)} (\`${id}\`) | ${team(t)} | ${bag(t.items)} | ${reward(t)} |`,
         );
       });
-    const preset = Object.values(dex.playerTeams).find((x) => x.arena === site.arena);
+    const leader =
+      poi?.kind === 'arena' ? dex.trainers[poi.trainers[poi.trainers.length - 1]!] : undefined;
+    if (leader?.tiers) {
+      out.push(
+        '',
+        `Leader by badges held (P28; the roster above at full strength, ${leader.team.filter((m) => m.coverage).length} with a coverage move):`,
+        '',
+        '| Badges | Team | Items | Coins |',
+        '|---|---|---|---|',
+      );
+      for (let tier = 0; tier < 8; tier++) {
+        const s = scaledTeam(
+          leader,
+          Array.from({ length: tier }, (_, i) => i + 1),
+          dex,
+        );
+        out.push(
+          `| ${tier} | ${s.team.map((m) => `${speciesName(m.speciesId)} ${m.level}`).join(', ')} | ${bag(s.items)} | ${payoutFor({ tier: 'leader', team: s.team })} |`,
+        );
+      }
+    }
+    const preset = !dex.open && Object.values(dex.playerTeams).find((x) => x.arena === site.arena);
     if (preset)
       out.push(
         '',
@@ -455,7 +482,9 @@ function teamsDoc(dex: Dex): DocFile {
   out.push(
     '## Route trainers',
     '',
-    'Ordered by route. Routes open the zones at both ends when walked (P22).',
+    dex.open
+      ? 'Ordered by route. Walking a route turns up coins and items; a finished route has more creatures (P28).'
+      : 'Ordered by route. Routes open the zones at both ends when walked (P22).',
     '',
   );
   const routes = Object.values(dex.routes).sort((a, b) => a.number - b.number);

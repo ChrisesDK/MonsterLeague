@@ -12,7 +12,7 @@ entry here then gets the status `accepted (GDD v1.x)` (or `rejected`, with a rea
 | P21  | Where the Revive Blossom (revive at full HP) comes from                                                                                                                         |
 | P24  | Leaderboards (for example longest distance walked) and a competitive scene for players with all 8 badges: what to show, and how it fits the privacy rules (no location history) |
 | P25  | Tourism content for visitors (later; the campaigns are made mainly for residents)                                                                                               |
-| P28  | An open region: every zone and arena open from the start, arenas in any order, difficulty from the number of badges (see the questions in P28)                                  |
+| P29  | Trainer rematches in an open region: a beaten trainer fights again after new badges?                                                                                            |
 
 ## Template
 
@@ -594,4 +594,26 @@ entry here then gets the status `accepted (GDD v1.x)` (or `rejected`, with a rea
    whose testers are fewer).
 7. The championship (still open) would then need all 8 badges, in any order.
 
-- **Status:** open (brainstorm; nothing built)
+- **Owner's answers (2026-11-26):** difficulty follows badges; everything open, with nudges
+  and rewards for the intended play; field abilities from their arenas; more creatures on
+  finished routes plus coins and items for walking a route (with a line saying so); route
+  trainers scale with badges; Odense first, Svendborg once Odense deploys. Leaders keep one
+  roster and bring more of it with more badges. A player needs a creature or two besides the
+  starter for any arena.
+- **Status:** accepted (GDD v1.25; Odense first)
+
+### P29. Trainer rematches in an open region
+
+- **GDD sections:** Open regions, Arenas and trainers
+- **Problem (owner, with P28):** trainers scale with badges, but a trainer beaten once stays
+  beaten. A player who walks a lot before the first arena can beat every trainer at tier 0
+  (small rewards, low XP) and then has none left when the leaders are stronger.
+- **Proposal:** a beaten trainer takes a rematch once the player holds more badges than when
+  it was beaten (at the new tier, paying coins again, its reward item only the first time).
+  The save would note the badge count per beaten trainer (a number, no position). The map
+  shows such a trainer with a "rematch" stamp.
+- **Alternatives:** leave it (scaled XP and coins already make early trainers worth little);
+  or rematches only for route trainers, not juniors.
+- **Question for the owner:** rematches after each new badge, only after some (for example
+  every second badge), or none?
+- **Status:** open

@@ -1,3 +1,4 @@
+import { regions } from '@oml/data';
 import { describe, expect, it } from 'vitest';
 import {
   chooseStarter,
@@ -10,6 +11,9 @@ import {
   startWildBattle,
   isZoneOpen,
 } from '../src/index';
+
+// These tests cover the locked rules (regions that are not open, P28), on Odense's content.
+Object.assign(regions.odense, { open: false });
 
 const SEED = '0123456789abcdef0123456789abcdef';
 

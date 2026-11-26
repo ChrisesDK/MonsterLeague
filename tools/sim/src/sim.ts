@@ -12,6 +12,7 @@ import {
   type CreatureInstance,
   type SideConfig,
 } from '@oml/engine';
+import { presetMates, scaledTeam } from '@oml/game';
 
 export const STARTER_ALIASES: Record<string, string> = {
   starter_fire: 'gnistkat',
@@ -35,14 +36,19 @@ export function parseSide(spec: string, dex: Dex = content, defaultLevel = 10): 
     const [, presetId = '', starter = 'fire'] = spec.split(':');
     return playerTeamSide(presetId, starter, dex);
   }
-  const trainer = dex.trainers[spec];
+  // `leader_water@3`: in an open region (P28) the team met by a player holding 3 badges.
+  const [trainerId = '', tierText] = spec.split('@');
+  const trainer = dex.trainers[trainerId];
   if (trainer) {
+    const badges = Array.from({ length: Number(tierText ?? 0) }, (_, i) => i + 1);
+    const scaled =
+      tierText === undefined ? trainer : { ...trainer, ...scaledTeam(trainer, badges, dex) };
     return {
-      label: `${trainer.id} [${trainer.team.map((m) => `${m.speciesId} L${m.level}`).join(', ')}]`,
+      label: `${spec} [${scaled.team.map((m) => `${m.speciesId} L${m.level}`).join(', ')}]`,
       tier: trainer.tier,
       build: (prefix) => ({
         name: trainer.id,
-        team: trainer.team.map((m, i) =>
+        team: scaled.team.map((m, i) =>
           createCreature(
             m.speciesId,
             m.level,
@@ -51,7 +57,7 @@ export function parseSide(spec: string, dex: Dex = content, defaultLevel = 10): 
             m.moves ? { moves: m.moves } : {},
           ),
         ),
-        items: { ...trainer.items },
+        items: { ...scaled.items },
       }),
     };
   }
@@ -107,7 +113,8 @@ export function playerTeamSide(presetId: string, starter: string, dex: Dex = con
     starterId = evo.into;
     evo = dex.species[starterId]?.evolution;
   }
-  const members = [{ speciesId: starterId, level: preset.starterLevel }, ...preset.team];
+  const mates = presetMates(preset, baseId, dex);
+  const members = [{ speciesId: starterId, level: preset.starterLevel }, ...mates];
   return {
     label: `${preset.id}/${starter} [${members.map((m) => `${m.speciesId} L${m.level}`).join(', ')}]`,
     tier: 'leader',

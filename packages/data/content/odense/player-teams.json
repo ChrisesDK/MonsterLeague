@@ -6,12 +6,16 @@
       "starterLevel": 10,
       "team": [
         {
-          "speciesId": "torvdue",
+          "speciesId": "gloeding",
+          "level": 9
+        },
+        {
+          "speciesId": "grimaelling",
           "level": 9
         },
         {
           "speciesId": "mosbille",
-          "level": 10
+          "level": 9
         }
       ],
       "items": {
@@ -25,15 +29,19 @@
       "starterLevel": 15,
       "team": [
         {
-          "speciesId": "grimaelling",
-          "level": 13
-        },
-        {
-          "speciesId": "mosbille",
+          "speciesId": "gloeding",
           "level": 14
         },
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "grimaelling",
+          "level": 14
+        },
+        {
+          "speciesId": "skovbille",
+          "level": 14
+        },
+        {
+          "speciesId": "torvdue",
           "level": 14
         }
       ],
@@ -49,19 +57,23 @@
       "starterLevel": 22,
       "team": [
         {
-          "speciesId": "kulingmaage",
+          "speciesId": "gloedoegle",
           "level": 21
         },
         {
-          "speciesId": "brokrabbe",
+          "speciesId": "svaneunge",
           "level": 21
         },
         {
-          "speciesId": "mosbille",
-          "level": 22
+          "speciesId": "skovbille",
+          "level": 21
         },
         {
-          "speciesId": "torvdue",
+          "speciesId": "kirkedue",
+          "level": 21
+        },
+        {
+          "speciesId": "rendsnude",
           "level": 21
         }
       ],
@@ -77,19 +89,23 @@
       "starterLevel": 28,
       "team": [
         {
-          "speciesId": "kulingmaage",
-          "level": 26
-        },
-        {
-          "speciesId": "brokrabbe",
-          "level": 26
+          "speciesId": "gloedoegle",
+          "level": 27
         },
         {
           "speciesId": "svaneunge",
-          "level": 26
+          "level": 27
         },
         {
-          "speciesId": "gloedoegle",
+          "speciesId": "skovbille",
+          "level": 27
+        },
+        {
+          "speciesId": "kirkedue",
+          "level": 27
+        },
+        {
+          "speciesId": "rottekonge",
           "level": 27
         }
       ],
@@ -105,19 +121,23 @@
       "starterLevel": 33,
       "team": [
         {
-          "speciesId": "stormmaage",
-          "level": 31
-        },
-        {
-          "speciesId": "kaempekrabbe",
-          "level": 31
+          "speciesId": "gloedoegle",
+          "level": 32
         },
         {
           "speciesId": "svaneunge",
-          "level": 31
+          "level": 32
         },
         {
-          "speciesId": "gloedoegle",
+          "speciesId": "eghjort",
+          "level": 32
+        },
+        {
+          "speciesId": "kirkedue",
+          "level": 32
+        },
+        {
+          "speciesId": "rottekonge",
           "level": 32
         }
       ],
@@ -133,20 +153,24 @@
       "starterLevel": 38,
       "team": [
         {
-          "speciesId": "stormmaage",
-          "level": 36
+          "speciesId": "gloedoegle",
+          "level": 37
         },
         {
-          "speciesId": "vinddue",
-          "level": 36
-        },
-        {
-          "speciesId": "mikkelraev",
-          "level": 36
+          "speciesId": "kongesvane",
+          "level": 37
         },
         {
           "speciesId": "eghjort",
-          "level": 36
+          "level": 37
+        },
+        {
+          "speciesId": "vinddue",
+          "level": 37
+        },
+        {
+          "speciesId": "rottekonge",
+          "level": 37
         }
       ],
       "items": {
@@ -161,24 +185,28 @@
       "starterLevel": 43,
       "team": [
         {
-          "speciesId": "stormmaage",
-          "level": 41
-        },
-        {
-          "speciesId": "kaempekrabbe",
-          "level": 41
+          "speciesId": "essedrage",
+          "level": 42
         },
         {
           "speciesId": "kongesvane",
-          "level": 41
+          "level": 42
         },
         {
           "speciesId": "eghjort",
-          "level": 41
+          "level": 42
         },
         {
-          "speciesId": "lygtemand",
-          "level": 41
+          "speciesId": "vinddue",
+          "level": 42
+        },
+        {
+          "speciesId": "rottekonge",
+          "level": 42
+        },
+        {
+          "speciesId": "mikkelraev",
+          "level": 42
         }
       ],
       "items": {
@@ -193,24 +221,28 @@
       "starterLevel": 46,
       "team": [
         {
-          "speciesId": "vinddue",
-          "level": 44
-        },
-        {
-          "speciesId": "rottekonge",
-          "level": 44
+          "speciesId": "essedrage",
+          "level": 45
         },
         {
           "speciesId": "kongesvane",
-          "level": 44
+          "level": 45
+        },
+        {
+          "speciesId": "eghjort",
+          "level": 45
+        },
+        {
+          "speciesId": "vinddue",
+          "level": 45
+        },
+        {
+          "speciesId": "rottekonge",
+          "level": 45
         },
         {
           "speciesId": "mikkelraev",
-          "level": 44
-        },
-        {
-          "speciesId": "lygtemand",
-          "level": 44
+          "level": 45
         }
       ],
       "items": {

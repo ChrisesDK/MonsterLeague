@@ -432,7 +432,9 @@ migrations[9] = (old) => {
   let coins = 0;
   for (const id of beaten) {
     const t = content.trainers[id];
-    if (t) coins += payoutFor(t);
+    // P28: a tiered leader was met on the old path with arena − 1 badges.
+    const tier = t?.tiers?.[(t.arena ?? 1) - 1];
+    if (t) coins += payoutFor(tier ? { tier: t.tier, team: [{ level: tier.level }] } : t);
   }
   return { ...old, version: 10, coins };
 };

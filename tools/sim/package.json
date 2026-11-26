@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@oml/data": "workspace:*",
-    "@oml/engine": "workspace:*"
+    "@oml/engine": "workspace:*",
+    "@oml/game": "workspace:*"
   }
 }

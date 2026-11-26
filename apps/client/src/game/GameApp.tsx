@@ -373,7 +373,13 @@ export function GameApp({ t: appT, locale, onLocale, devTools, welcome = false }
 
   if (ceremony !== null) {
     return (
-      <BadgeCeremony t={t} arena={ceremony} region={save.region} onDone={() => setCeremony(null)} />
+      <BadgeCeremony
+        t={t}
+        arena={ceremony}
+        badges={save.badges}
+        region={save.region}
+        onDone={() => setCeremony(null)}
+      />
     );
   }
 

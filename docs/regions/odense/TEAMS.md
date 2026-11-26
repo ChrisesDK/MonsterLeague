@@ -4,99 +4,189 @@
 
 Every arena and trainer team in the game (`trainers.json` in the region content folder, placed by its `pois.json`). Leader levels are tuned so the expected player team (`player-teams.json`) wins 40–60 % neutral, 75–90 % with type advantage and 15–30 % with disadvantage (see [BALANCE.md](../../BALANCE.md)). Coins are paid on the first win: the highest level × 25, × 60 for leaders (D165).
 
+This is an open region (P28): leaders scale with the badges the player holds (tables below; tuned so a balanced team wins 40–60 % at every tier), and juniors and route trainers move with the player’s level band; the levels listed are those of their own district.
+
 ## Arenas
 
 ### Arena 1: Kongens Have (folk)
 
-Zone Centrum, district 1 (wild levels 3–8). Badge: Kongens Have badge. Needs badge –.
+Zone Centrum, district 1 (wild levels 3–8). Badge: Kongens Have badge. Open region (P28): any order; teaches Sealbreaker; juniors scale with the badges held.
 
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Gardener Jens (`arena1_junior`) | Mosbille 8, Torvdue 9 | – | 2× Basic Charm + 225 coins |
-| 2 | Market Leader Søren (`leader_folk`) | Rendsnude 8, Loftnisse 10 | 2× Small Tonic | 1× Revive Leaf + 600 coins |
+| 2 | Market Leader Søren (`leader_folk`) | Rottekonge 49 (+Cobble Toss), Gårdnisse 50 (+Cobble Toss), Mikkelræv 49, Vinddue 49, Stormmåge 49, Rottekonge 49 | 2× Small Tonic | 1× Revive Leaf + 3000 coins |
 
-Expected player team (balance sim): starter at 10, Torvdue 9, Mosbille 10; items 2× Small Tonic.
+Leader by badges held (P28; the roster above at full strength, 2 with a coverage move):
+
+| Badges | Team | Items | Coins |
+|---|---|---|---|
+| 0 | Rendsnude 9, Loftnisse 10 | – | 600 |
+| 1 | Rendsnude 15, Ræveling 15, Torvdue 15, Loftnisse 16 | 2× Small Tonic | 960 |
+| 2 | Rendsnude 23, Ræveling 23, Kirkedue 23, Kulingmåge 23, Loftnisse 24 | 2× Large Tonic | 1440 |
+| 3 | Rottekonge 28, Mikkelræv 28, Kirkedue 28, Kulingmåge 28, Loftnisse 29 | – | 1740 |
+| 4 | Rottekonge 32, Mikkelræv 32, Kirkedue 32, Stormmåge 32, Loftnisse 33 | 2× Large Tonic | 1980 |
+| 5 | Rottekonge 39, Mikkelræv 39, Vinddue 39, Stormmåge 39, Gårdnisse 40 | – | 2400 |
+| 6 | Rottekonge 46, Mikkelræv 46, Vinddue 46, Stormmåge 46, Rottekonge 46, Gårdnisse 47 | 2× Small Tonic | 2820 |
+| 7 | Rottekonge 49, Mikkelræv 49, Vinddue 49, Stormmåge 49, Rottekonge 49, Gårdnisse 50 | 2× Small Tonic | 3000 |
 
 ### Arena 2: Næsbyhoved castle mound (stone)
 
-Zone Næsbyhoved castle mound, district 2 (wild levels 8–14). Badge: Castle Mound badge. Needs badge 1.
+Zone Næsbyhoved castle mound, district 2 (wild levels 8–14). Badge: Castle Mound badge. Open region (P28): any order; teaches Runereader; juniors scale with the badges held.
 
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Bell-ringer Poul (`arena2_junior`) | Brokrabbe 11, Torvdue 12 | – | 3× Basic Charm + 300 coins |
-| 2 | Stonemason Dorthe (`leader_stone`) | Kampetrold 14 (Cobble Toss, Squall Slap, Cobbler Kick, Hunker Down), Kulingmåge 14, Brokrabbe 15 (Cobble Toss, Grit Spray, Sky Crackle, Shoulder Shove) | – | 1× Revive Leaf + 900 coins |
+| 2 | Stonemason Dorthe (`leader_stone`) | Rottekonge 49, Bjergtrold 50 (+Thorn Volley), Eghjort 49, Flintbjørn 49 (+Thorn Volley), Lindorm 49, Kæmpekrabbe 49 | – | 1× Revive Leaf + 3000 coins |
 
-Expected player team (balance sim): starter at 15, Grimælling 13, Mosbille 14, Kulingmåge 14; items 2× Small Tonic, 1× Large Tonic.
+Leader by badges held (P28; the roster above at full strength, 2 with a coverage move):
+
+| Badges | Team | Items | Coins |
+|---|---|---|---|
+| 0 | Rendsnude 11, Kampetrold 12 | 2× Small Tonic | 720 |
+| 1 | Rendsnude 15, Skovbille 15, Kampetrold 16 | – | 960 |
+| 2 | Rendsnude 22, Skovbille 22, Flintling 22, Søormling 22, Kampetrold 23 | 1× Large Tonic | 1380 |
+| 3 | Rottekonge 27, Skovbille 27, Flintling 27, Søormling 27, Kampetrold 28 | 2× Large Tonic | 1680 |
+| 4 | Rottekonge 32, Eghjort 32, Flintbjørn 32, Søormling 32, Kampetrold 33 | 2× Large Tonic | 1980 |
+| 5 | Rottekonge 37, Eghjort 37, Flintbjørn 37, Søormling 37, Bjergtrold 38 | – | 2280 |
+| 6 | Rottekonge 44, Eghjort 44, Flintbjørn 44, Lindorm 44, Bjergtrold 45 | 3× Large Tonic | 2700 |
+| 7 | Rottekonge 48, Eghjort 48, Flintbjørn 48, Lindorm 48, Bjergtrold 49 | 2× Small Tonic | 2940 |
 
 ### Arena 3: Stige Ø (water)
 
-Zone Stige Ø, district 3 (wild levels 13–20). Badge: Fjord badge. Needs badge 2.
+Zone Stige Ø, district 3 (wild levels 13–20). Badge: Fjord badge. Open region (P28): any order; teaches Angler; juniors scale with the badges held.
 
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Fisher Karen (`arena3_junior`) | Grimælling 16, Rokkeling 17 | – | 2× Good Charm + 425 coins |
-| 2 | Harbour Leader Ingrid (`leader_water`) | Grimælling 17 (Brook Spout, Rinse and Mend, Sea Fog, Shoulder Shove), Kulingmåge 7 (Thunder Squall, Sky Crackle, Gale Step, Nimble Jab), Strømodder 23 (Harbour Wave, Kiln Blast, Rinse and Mend, Ember Hop), Strømodder 20 (Harbour Wave, Thunder Squall, Rinse and Mend, Ember Hop) | 2× Large Tonic | 1× Revive Leaf + 1380 coins |
+| 2 | Harbour Leader Ingrid (`leader_water`) | Rottekonge 49, Havodder 50 (+Gust Lance), Rokkevinge 49, Nøkken 49, Lindorm 49 (+Gust Lance), Kongesvane 49 (+Ember Hop) | 2× Large Tonic | 1× Revive Leaf + 3000 coins |
 
-Expected player team (balance sim): starter at 22, Kulingmåge 21, Brokrabbe 21, Mosbille 22, Torvdue 21; items 2× Small Tonic, 2× Large Tonic.
+Leader by badges held (P28; the roster above at full strength, 3 with a coverage move):
+
+| Badges | Team | Items | Coins |
+|---|---|---|---|
+| 0 | Rendsnude 9, Åodder 10 | – | 600 |
+| 1 | Rendsnude 16, Strømodder 17 | – | 1020 |
+| 2 | Rottekonge 25, Rokkeling 25, Strømodder 26 | 1× Large Tonic | 1560 |
+| 3 | Rottekonge 27, Rokkeling 27, Nøkkeling 27, Søormling 27, Strømodder 28 | 2× Large Tonic | 1680 |
+| 4 | Rottekonge 31, Rokkevinge 31, Nøkkeling 31, Søormling 31, Strømodder 32 | 2× Large Tonic | 1920 |
+| 5 | Rottekonge 39, Rokkevinge 39, Nøkken 39, Lindorm 39, Havodder 40 | 1× Large Tonic | 2400 |
+| 6 | Rottekonge 49, Rokkevinge 49, Nøkken 49, Lindorm 49, Havodder 50 | 1× Large Tonic | 3000 |
+| 7 | Rottekonge 49, Rokkevinge 49, Nøkken 49, Lindorm 49, Kongesvane 49, Havodder 50 | 1× Large Tonic | 3000 |
 
 ### Arena 4: H.C. Andersen Skoven (grove)
 
-Zone H.C. Andersen Skoven, district 4 (wild levels 19–26). Badge: Fairy-tale Forest badge. Needs badge 3.
+Zone H.C. Andersen Skoven, district 4 (wild levels 19–26). Badge: Fairy-tale Forest badge. Open region (P28): any order; teaches Forager; juniors scale with the badges held.
 
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Scout Mads (`arena4_junior`) | Skovbille 23, Mikkelræv 24 | – | 3× Good Charm + 600 coins |
-| 2 | Forester Asger (`leader_grove`) | Mostrold 30, Skovbille 29, Ellepige 32, Bøgevætte 32 | 2× Large Tonic | 1× Revive Leaf + 1920 coins |
+| 2 | Forester Asger (`leader_grove`) | Mikkelræv 49 (+Cobble Toss), Lundekonge 50 (+Ripple Dash), Ellekonge 49, Lyngkonge 49 (+Cobble Toss), Gløddronning 49, Eghjort 49 (+Ripple Dash) | 2× Large Tonic | 1× Revive Leaf + 3000 coins |
 
-Expected player team (balance sim): starter at 28, Kulingmåge 26, Brokrabbe 26, Svaneunge 26, Glødøgle 27; items 2× Small Tonic, 1× Large Tonic.
+Leader by badges held (P28; the roster above at full strength, 4 with a coverage move):
+
+| Badges | Team | Items | Coins |
+|---|---|---|---|
+| 0 | Ræveling 10, Bøgling 11 | 1× Large Tonic | 660 |
+| 1 | Ræveling 14, Ellepige 14, Bøgling 15 | – | 900 |
+| 2 | Ræveling 21, Ellepige 21, Mostrold 21, Bøgevætte 22 | 2× Large Tonic | 1320 |
+| 3 | Mikkelræv 26, Ellepige 26, Mostrold 26, Bøgevætte 27 | 2× Small Tonic | 1620 |
+| 4 | Mikkelræv 33, Ellepige 33, Mostrold 33, Bøgevætte 34 | 2× Large Tonic | 2040 |
+| 5 | Mikkelræv 38, Ellekonge 38, Lyngkonge 38, Lundekonge 39 | 2× Large Tonic | 2340 |
+| 6 | Mikkelræv 41, Ellekonge 41, Lyngkonge 41, Gløddronning 41, Eghjort 41, Lundekonge 42 | 3× Large Tonic | 2520 |
+| 7 | Mikkelræv 44, Ellekonge 44, Lyngkonge 44, Gløddronning 44, Eghjort 44, Lundekonge 45 | 3× Large Tonic | 2700 |
 
 ### Arena 5: Hollufgård (spirit)
 
-Zone Hollufgård, district 5 (wild levels 25–32). Badge: Sculpture badge. Needs badge 4.
+Zone Hollufgård, district 5 (wild levels 25–32). Badge: Sculpture badge. Open region (P28): any order; teaches Nightseer; juniors scale with the badges held.
 
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Miller Ane (`arena5_junior`) | Lygtemand 29, Mosekone 30 | – | 3× Good Charm + 750 coins |
-| 2 | Sculptor Mette (`leader_spirit`) | Lygtemand 36 (Moonless Stare, Grave Chill, Hollow Wail, Ember Hop), Mosekone 36 (Moonless Stare, Grave Chill, Hollow Wail, Thorn Volley), Nøkkeling 30 (Brook Spout, Grave Chill, Rinse and Mend, Harbour Wave), Gårdnisse 35 (Shoulder Shove, Cobbler Kick, Grave Chill, Market Stampede) | 2× Large Tonic | 2× Revive Leaf + 2160 coins |
+| 2 | Sculptor Mette (`leader_spirit`) | Gårdnisse 49, Nøkken 50, Mosekone 49, Gårdnisse 49, Ellekonge 49, Lygtemand 49 | 2× Large Tonic | 2× Revive Leaf + 3000 coins |
 
-Expected player team (balance sim): starter at 33, Stormmåge 31, Kæmpekrabbe 31, Svaneunge 31, Glødøgle 32; items 2× Small Tonic, 2× Large Tonic.
+Leader by badges held (P28; the roster above at full strength, 0 with a coverage move):
+
+| Badges | Team | Items | Coins |
+|---|---|---|---|
+| 0 | Loftnisse 10, Nøkkeling 11 | 2× Small Tonic | 660 |
+| 1 | Loftnisse 17, Nøkkeling 18 | – | 1080 |
+| 2 | Loftnisse 23, Dugpust 23, Loftnisse 23, Nøkkeling 24 | 2× Large Tonic | 1440 |
+| 3 | Loftnisse 27, Dugpust 27, Loftnisse 27, Nøkkeling 28 | 2× Large Tonic | 1680 |
+| 4 | Loftnisse 27, Dugpust 27, Loftnisse 27, Ellepige 27, Nøkkeling 28 | 2× Large Tonic | 1680 |
+| 5 | Gårdnisse 36, Mosekone 36, Gårdnisse 36, Ellepige 36, Nøkken 37 | 1× Large Tonic | 2220 |
+| 6 | Gårdnisse 45, Mosekone 45, Gårdnisse 45, Ellekonge 45, Nøkken 46 | – | 2760 |
+| 7 | Gårdnisse 48, Mosekone 48, Gårdnisse 48, Ellekonge 48, Nøkken 49 | – | 2940 |
 
 ### Arena 6: Den Fynske Landsby (fire)
 
-Zone Den Fynske Landsby, district 6 (wild levels 31–38). Badge: Village badge. Needs badge 5.
+Zone Den Fynske Landsby, district 6 (wild levels 31–38). Badge: Village badge. Open region (P28): any order; juniors scale with the badges held.
 
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Baker Lars (`arena6_junior`) | Glødøgle 34, Flintbjørn 35 | – | 2× Great Charm + 875 coins |
-| 2 | Smith Niels (`leader_fire`) | Glødøgle 30, Lygtemand 26, Essedrage 37, Brandløve 40 | 2× Large Tonic | 2× Revive Leaf + 2400 coins |
+| 2 | Smith Niels (`leader_fire`) | Rottekonge 49, Brandløve 50 (+Boulder Roll), Gløddronning 49, Lygtemand 49, Essedrage 49 (+Gust Lance), Essedrage 49 (+Cobble Toss) | 2× Large Tonic | 2× Revive Leaf + 3000 coins |
 
-Expected player team (balance sim): starter at 38, Stormmåge 36, Vinddue 36, Mikkelræv 36, Eghjort 36; items 2× Small Tonic, 2× Large Tonic.
+Leader by badges held (P28; the roster above at full strength, 3 with a coverage move):
+
+| Badges | Team | Items | Coins |
+|---|---|---|---|
+| 0 | Rendsnude 8, Ildflue 8, Gnistkat 9 | 1× Large Tonic | 540 |
+| 1 | Rendsnude 14, Ildflue 14, Lygtling 14, Gnistkat 15 | 2× Large Tonic | 900 |
+| 2 | Rendsnude 21, Ildflue 21, Lygtling 21, Glødøgle 21, Bålkat 22 | – | 1320 |
+| 3 | Rottekonge 25, Ildflue 25, Lygtemand 25, Glødøgle 25, Bålkat 26 | – | 1560 |
+| 4 | Rottekonge 31, Gløddronning 31, Lygtemand 31, Glødøgle 31, Bålkat 32 | 2× Small Tonic | 1920 |
+| 5 | Rottekonge 38, Gløddronning 38, Lygtemand 38, Essedrage 38, Brandløve 39 | 2× Small Tonic | 2340 |
+| 6 | Rottekonge 44, Gløddronning 44, Lygtemand 44, Essedrage 44, Brandløve 45 | – | 2700 |
+| 7 | Rottekonge 44, Gløddronning 44, Lygtemand 44, Essedrage 44, Essedrage 44, Brandløve 45 | 3× Large Tonic | 2700 |
 
 ### Arena 7: Odense Zoo (mixed)
 
-Zone Odense Zoo, district 7 (wild levels 37–44). Badge: Zoo badge. Needs badge 6.
+Zone Odense Zoo, district 7 (wild levels 37–44). Badge: Zoo badge. Open region (P28): any order; juniors scale with the badges held.
 
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Guide Yasmin (`arena7_junior`) | Mikkelræv 39, Rokkevinge 40 | – | 2× Great Charm + 1000 coins |
-| 2 | Keeper Fatima (`leader_mixed`) | Kongesvane 34, Eghjort 44, Lygtemand 44, Tordenravn 32, Essedrage 45 | 3× Large Tonic | 1× Revive Blossom + 2700 coins |
+| 2 | Keeper Fatima (`leader_mixed`) | Rottekonge 49, Bjergtrold 50, Eghjort 49, Tordenravn 49, Essedrage 49, Lygtemand 49 | 3× Large Tonic | 1× Revive Blossom + 3000 coins |
 
-Expected player team (balance sim): starter at 43, Stormmåge 41, Kæmpekrabbe 41, Kongesvane 41, Eghjort 41, Lygtemand 41; items 2× Small Tonic, 2× Large Tonic.
+Leader by badges held (P28; the roster above at full strength, 0 with a coverage move):
+
+| Badges | Team | Items | Coins |
+|---|---|---|---|
+| 0 | Rendsnude 11, Kampetrold 12 | 2× Small Tonic | 720 |
+| 1 | Rendsnude 15, Skovbille 15, Kampetrold 16 | 2× Small Tonic | 960 |
+| 2 | Rendsnude 22, Skovbille 22, Tordenkrage 22, Glødøgle 22, Kampetrold 23 | 2× Large Tonic | 1380 |
+| 3 | Rottekonge 27, Skovbille 27, Tordenkrage 27, Glødøgle 27, Kampetrold 28 | 1× Large Tonic | 1680 |
+| 4 | Rottekonge 32, Eghjort 32, Tordenkrage 32, Glødøgle 32, Kampetrold 33 | 2× Small Tonic | 1980 |
+| 5 | Rottekonge 38, Eghjort 38, Tordenravn 38, Essedrage 38, Bjergtrold 39 | 2× Small Tonic | 2340 |
+| 6 | Rottekonge 44, Eghjort 44, Tordenravn 44, Essedrage 44, Lygtemand 44, Bjergtrold 45 | – | 2700 |
+| 7 | Rottekonge 47, Eghjort 47, Tordenravn 47, Essedrage 47, Lygtemand 47, Bjergtrold 48 | – | 2880 |
 
 ### Arena 8: Tusindårsskoven (storm)
 
-Zone Tusindårsskoven, district 8 (wild levels 43–50). Badge: Hilltop badge. Needs badge 7.
+Zone Tusindårsskoven, district 8 (wild levels 43–50). Badge: Hilltop badge. Open region (P28): any order; teaches Homing; juniors scale with the badges held.
 
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Runner Freja (`arena8_junior`) | Tordenravn 45, Stormmåge 46 | – | 3× Great Charm + 1150 coins |
-| 2 | Weatherwatcher Bo (`leader_storm`) | Stormmåge 48 (Gale Step, Cobbler Kick, Sky Crackle, Squall Slap), Tordenravn 48 (Gale Step, Grave Chill, Hollow Wail, Thunder Squall), Rokkevinge 45 (Sea Fog, Rinse and Mend, Sky Crackle, Brook Spout), Vinddue 49 (Stern Glare, Gust Lance, Market Stampede, Shoulder Shove), Essedrage 50 | 3× Large Tonic | 1× Revive Blossom + 3000 coins |
+| 2 | Weatherwatcher Bo (`leader_storm`) | Vinddue 49 (+Ripple Dash), Tordenravn 50 (+Ripple Dash), Rokkevinge 49, Vinddue 49, Kongesvane 49, Stormmåge 49 (+Ripple Dash) | 3× Large Tonic | 1× Revive Blossom + 3000 coins |
 
-Expected player team (balance sim): starter at 46, Vinddue 44, Rottekonge 44, Kongesvane 44, Mikkelræv 44, Lygtemand 44; items 2× Small Tonic, 2× Large Tonic.
+Leader by badges held (P28; the roster above at full strength, 3 with a coverage move):
+
+| Badges | Team | Items | Coins |
+|---|---|---|---|
+| 0 | Torvdue 8, Rokkeling 8, Lynspurv 9 | – | 540 |
+| 1 | Torvdue 16, Rokkeling 16, Torvdue 16, Lynspurv 17 | 2× Small Tonic | 1020 |
+| 2 | Kirkedue 24, Rokkeling 24, Kirkedue 24, Tordenkrage 25 | 2× Large Tonic | 1500 |
+| 3 | Kirkedue 30, Rokkevinge 30, Kirkedue 30, Tordenkrage 31 | 2× Small Tonic | 1860 |
+| 4 | Kirkedue 35, Rokkevinge 35, Kirkedue 35, Svaneunge 35, Tordenkrage 36 | – | 2160 |
+| 5 | Vinddue 40, Rokkevinge 40, Vinddue 40, Kongesvane 40, Tordenravn 41 | 2× Large Tonic | 2460 |
+| 6 | Vinddue 45, Rokkevinge 45, Vinddue 45, Kongesvane 45, Stormmåge 45, Tordenravn 46 | 2× Small Tonic | 2760 |
+| 7 | Vinddue 48, Rokkevinge 48, Vinddue 48, Kongesvane 48, Stormmåge 48, Tordenravn 49 | – | 2940 |
 
 ## Route trainers
 
-Ordered by route. Routes open the zones at both ends when walked (P22).
+Ordered by route. Walking a route turns up coins and items; a finished route has more creatures (P28).
 
 ### Route 1: Centrum – Næsbyhoved castle mound (main, 3.1 km)
 

@@ -567,5 +567,15 @@
   "trainer.lost": "{name} vandt denne gang.",
   "trainer.reward": "Du fik {n}× {item}.",
   "trainer.refuseZone": "\"Gå en rute hertil først, så kæmper vi i {zone}.\"",
-  "trainer.coins": "Du fik {n} skilling."
+  "trainer.coins": "Du fik {n} skilling.",
+  "townMap.arenaTier": "Åben: lederen er afstemt efter en spiller med {n} af 8 mærker, så mange som du har",
+  "townMap.routeFinds": "gå den for skilling og ting, du finder undervejs",
+  "townMap.routeBonus": "flere vilde væsner på den nu",
+  "map.routeFind": "Fundet på rute {n}: {what}",
+  "map.routeFindCoins": "{coins} skilling",
+  "badges.anyOrder": "Vind arenaerne i den rækkefølge, du vil. Ledere og trænere er afstemt efter en spiller med {n} af 8 mærker.",
+  "ceremony.ability": "Dit hold kan nu lære {ability}.",
+  "ceremony.tier": "Ledere og trænere er nu afstemt efter en spiller med {n} af 8 mærker. Alle arenaer, du ikke har vundet, tager imod din udfordring.",
+  "market.needsBadges": "Sælges, når du har {n} af 8 mærker",
+  "arena.smallTeam": "\"Kom med et hold på mindst {n} væsner: fang et par stykker først, og kom så tilbage.\""
 }

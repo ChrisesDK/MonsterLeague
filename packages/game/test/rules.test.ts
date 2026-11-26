@@ -1,3 +1,4 @@
+import { regions } from '@oml/data';
 import { content } from '@oml/data';
 import {
   chooseAiAction,
@@ -39,6 +40,9 @@ import {
   visitRestStop,
   type SaveGame,
 } from '../src/index';
+
+// These tests cover the locked rules (regions that are not open, P28), on Odense's content.
+Object.assign(regions.odense, { open: false });
 
 const SEED = 'feedfacefeedfacefeedfacefeedface';
 const poi = (id: string) => content.pois[id]!;
@@ -230,6 +234,15 @@ describe('tutorial without a catch', () => {
 
 describe('district 1 run: trainers, losing, rest stops, arena 1, badge', () => {
   it('plays through to badge 1 and district 2', () => {
+    // Odense as it plays (open, P28): the leader at the strength for 0 badges.
+    Object.assign(regions.odense, { open: true });
+    try {
+      playDistrict1();
+    } finally {
+      Object.assign(regions.odense, { open: false });
+    }
+  });
+  function playDistrict1() {
     let save: SaveGame = { ...chooseStarter(newSave(SEED), 'boegling'), onboarding: 'done' };
 
     // Route trainer at the expected level: a win, a reward, marked beaten.
@@ -268,7 +281,12 @@ describe('district 1 run: trainers, losing, rest stops, arena 1, badge', () => {
     expect(rest.restocked).toEqual({ basic_charm: 5, small_tonic: 2 });
     for (const c of save.team) expect(c.hp).toBe(getMaxHp(c));
 
-    // Arena: junior before leader, then the badge.
+    // Arena: never with the starter alone (P28), then junior before leader, then the badge.
+    expect(trainerStatus(save, poi('arena1'))).toEqual({ kind: 'smallTeam', need: 3 });
+    save = {
+      ...save,
+      team: [...save.team, createCreature('torvdue', 9, 'pt'), createCreature('mosbille', 9, 'pm')],
+    };
     expect(trainerStatus(save, poi('arena1'))).toEqual({
       kind: 'ready',
       trainerId: 'arena1_junior',
@@ -301,7 +319,7 @@ describe('district 1 run: trainers, losing, rest stops, arena 1, badge', () => {
     expect(obedienceLevel(save.badges)).toBe(20);
     expect(arenaReady({ ...save, zones: ['naesbyhoved'] }, 2)).toBe(true);
     expect(trainerStatus(save, poi('arena1'))!.kind).toBe('beaten');
-  });
+  }
 });
 
 describe('rest stop restock timer', () => {

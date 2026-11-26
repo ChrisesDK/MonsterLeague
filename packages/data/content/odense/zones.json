@@ -2,6 +2,7 @@
   "region": "odense",
   "starters": ["gnistkat", "aaodder", "boegling"],
   "tutorial": "torvdue",
+  "open": true,
   "districts": [
     {
       "id": 1,

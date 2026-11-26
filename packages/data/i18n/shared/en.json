@@ -567,5 +567,15 @@
   "trainer.lost": "{name} won this time.",
   "trainer.reward": "You got {n}× {item}.",
   "trainer.refuseZone": "\"Walk a route here first, then we can battle in {zone}.\"",
-  "trainer.coins": "You got {n} skilling."
+  "trainer.coins": "You got {n} skilling.",
+  "townMap.arenaTier": "Open: the leader matches a player with {n} of 8 badges, as many as you hold",
+  "townMap.routeFinds": "walk it for coins and items found along the way",
+  "townMap.routeBonus": "more wild creatures on it now",
+  "map.routeFind": "Found while walking route {n}: {what}",
+  "map.routeFindCoins": "{coins} skilling",
+  "badges.anyOrder": "Win the arenas in any order. Leaders and trainers match a player with {n} of 8 badges.",
+  "ceremony.ability": "Your team can now learn {ability}.",
+  "ceremony.tier": "Leaders and trainers now match a player with {n} of 8 badges. Any arena you have not won takes your challenge.",
+  "market.needsBadges": "Sold once you have {n} of 8 badges",
+  "arena.smallTeam": "\"Bring a team of at least {n} creatures: catch a few first, then come back.\""
 }

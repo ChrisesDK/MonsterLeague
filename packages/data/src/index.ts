@@ -107,6 +107,8 @@ export interface Dex {
   starters: string[];
   /** P27: the onboarding tutorial's creature (null until its creatures exist). */
   tutorial: string | null;
+  /** P28: an open region (no locks; difficulty follows the player's badges). */
+  open: boolean;
   /** Journal side goals per district. */
   sideGoals: SideGoal[];
 }
@@ -166,6 +168,7 @@ export function parseContent(raw: RawContent, region: RegionId = 'odense'): Dex 
         districtBands: Object.fromEntries(z.districts.map((d) => [d.id, d.wildLevels])),
         starters: z.starters ?? [],
         tutorial: z.tutorial ?? null,
+        open: z.open === true,
       };
     })(),
     sideGoals: GoalsFileSchema.parse(raw.goals).sideGoals,

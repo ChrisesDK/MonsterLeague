@@ -1,3 +1,4 @@
+import { regions } from '@oml/data';
 import { content } from '@oml/data';
 import { describe, expect, it } from 'vitest';
 import {
@@ -22,6 +23,9 @@ import {
   isMainTrainer,
   type SaveGame,
 } from '../src/index';
+
+// These tests cover the locked rules (regions that are not open, P28), on Odense's content.
+Object.assign(regions.odense, { open: false });
 
 const SEED = '0123456789abcdef0123456789abcdef';
 const fresh = (): SaveGame => ({

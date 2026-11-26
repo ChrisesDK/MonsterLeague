@@ -70,6 +70,12 @@ export interface ComputeSpawnsInput {
   seed: string;
   window: number;
   cellIds: Iterable<string>;
+  /**
+   * P28: extra spawns made on the phone (finished routes) use a share of each cell's density
+   * and a tag in their ids so they never collide with the shared ones. Default: 1 and none.
+   */
+  densityScale?: number;
+  idTag?: string;
 }
 
 /** FNV-1a, 32-bit. */
@@ -153,7 +159,10 @@ export function computeSpawns({
   seed,
   window,
   cellIds,
+  densityScale = 1,
+  idTag,
 }: ComputeSpawnsInput): Spawn[] {
+  const idRegion = idTag ? `${region.id}+${idTag}` : region.id;
   const words = seedWords(seed);
   const night = isNight(
     window * WINDOW_SECONDS + WINDOW_SECONDS / 2,
@@ -174,7 +183,7 @@ export function computeSpawns({
     if (total <= 0) continue;
 
     const rng = new Rng(seedRng(mixSeed(...words, hash32(cellId), window)));
-    const density = cellDensity(cell);
+    const density = cellDensity(cell) * densityScale;
     const count = Math.min(
       MAX_SPAWNS_PER_CELL,
       Math.floor(density) + (rng.next() < density % 1 ? 1 : 0),
@@ -193,7 +202,7 @@ export function computeSpawns({
       }
       const [lat, lng] = children[rng.int(0, children.length - 1)]!;
       out.push({
-        id: spawnId(region.id, window, cellId, i),
+        id: spawnId(idRegion, window, cellId, i),
         speciesId: entry.species,
         rarity: entry.rarity,
         levelRoll: rng.next(),

@@ -164,6 +164,12 @@ export const TrainerSchema = z
             speciesId: id,
             level: z.number().int().min(1).max(100),
             moves: z.array(id).min(1).max(4).optional(),
+            /**
+             * P28: a tiered leader's member also knows this move (it joins the moves learned
+             * by its level, and the best four are kept), so a themed team is not a wall for
+             * one starter and a pushover for another.
+             */
+            coverage: id.optional(),
           })
           .strict(),
       )
@@ -174,6 +180,25 @@ export const TrainerSchema = z
     arena: z.number().int().min(1).max(8).optional(),
     /** Leader theme type, used by balance tooling to classify match-ups. */
     theme: TypeIdSchema.optional(),
+    /**
+     * P28 (open regions): a leader's strength for each number of badges the player holds
+     * (0–7). `team` is the leader's roster in the order its members join, at full strength;
+     * at tier t the leader brings the first `size` members, the strongest at `level` and the
+     * others as far below it as they are below the strongest in `team`. `items` replaces the
+     * trainer's items at that tier.
+     */
+    tiers: z
+      .array(
+        z
+          .object({
+            size: z.number().int().min(1).max(6),
+            level: z.number().int().min(2).max(100),
+            items: z.record(id, z.number().int().min(0)).optional(),
+          })
+          .strict(),
+      )
+      .length(8)
+      .optional(),
     /** Item given once when the player wins (GDD: trainers give a reward item). */
     reward: z
       .object({ itemId: id, count: z.number().int().min(1) })
@@ -195,7 +220,9 @@ export const PlayerTeamSchema = z
     starterLevel: z.number().int().min(1).max(100),
     team: z
       .array(z.object({ speciesId: id, level: z.number().int().min(1).max(100) }).strict())
-      .max(5),
+      // P28: an open region's preset lists one more (the one sharing the starter's type is
+      // left out), so up to 6.
+      .max(6),
     items: z.record(id, z.number().int().min(0)).default({}),
     placeholder,
   })
@@ -395,6 +422,8 @@ export const ArenaSiteSchema = z
     lng: z.number().min(-180).max(180),
     /** The arena POI once the arena is built (null until then). */
     poi: id.nullable(),
+    /** P28 (open regions): the field ability this arena's badge unlocks. */
+    fieldAbility: id.optional(),
     note: z.string().optional(),
   })
   .strict();
@@ -440,6 +469,12 @@ export const ZonesFileSchema = z
      */
     starters: z.array(id).length(3).optional(),
     tutorial: id.optional(),
+    /**
+     * P28: an open region. Every zone, route and arena is open from the start, arenas can be
+     * won in any order, leaders and trainers scale with the player's badges, field abilities
+     * come from their arenas and walking routes pays off (finds, more creatures).
+     */
+    open: z.boolean().optional(),
     /** Level bands per district (GDD World table). */
     districts: z
       .array(

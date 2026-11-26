@@ -15,7 +15,9 @@ import {
   journal as buildJournal,
   nearestPoi,
   noteDistrict,
-  noteRoutes,
+  noteRoutesWithFinds,
+  routeBonusSpawns,
+  type RouteFind,
   noteWildWalk,
   arriveInZone,
   placeTutorial,
@@ -45,7 +47,7 @@ import {
   type Gate3Event,
 } from '@oml/playtest';
 import type { Region } from '@oml/spawn';
-import { latLngToCell } from 'h3-js';
+import { cellToLatLng, latLngToCell } from 'h3-js';
 import { BattleScreen } from '../BattleScreen';
 import type { Translate } from '../i18n';
 import { districtAt, levelBands, loadRegion, zoneAt } from '../game/region';
@@ -331,9 +333,23 @@ export function MapScreen({
     if (r && r !== saveRef.current.region) onRegion(r);
   }, [position, onRegion, playable]);
   const { status, versionDrift } = service;
+  // P28: the player's own extra creatures on the routes they finished (made on the phone).
+  // Worked out again when the player moves to another ~100 m H3 cell, not on every fix.
+  const nearCell = position ? latLngToCell(position.lat, position.lng, 9) : null;
+  const routesWalked = save.journal.routes;
+  const bonus = useMemo(() => {
+    if (!region || !nearCell || !regions[saveRef.current.region].open) return [];
+    const [lat, lng] = cellToLatLng(nearCell);
+    return routeBonusSpawns(
+      { ...saveRef.current, journal: { ...saveRef.current.journal, routes: routesWalked } },
+      region,
+      service.window,
+      { lat, lng },
+    );
+  }, [region, nearCell, routesWalked, service.window]);
   const spawns = useMemo(
-    () => (devSpawns?.length ? [...service.spawns, ...devSpawns] : service.spawns),
-    [service.spawns, devSpawns],
+    () => [...service.spawns, ...bonus, ...(devSpawns ?? [])],
+    [service.spawns, bonus, devSpawns],
   );
 
   // ---- Journal progress (districts reached, route checkpoints, wild metres) --------------
@@ -357,13 +373,30 @@ export function MapScreen({
     if (wild > 0) wildPending.current = 0;
     const zone = zoneAt(region, goodFix);
     const cur = saveRef.current;
-    if (zone && regions[cur.region].zones[zone]?.opensOnArrival && !cur.zones.includes(zone))
+    const curDex = regions[cur.region];
+    if (zone && !curDex.open && curDex.zones[zone]?.opensOnArrival && !cur.zones.includes(zone))
       setToast(t('map.islandOpen', { zone: t(`zone.${zone}.name`) }));
+    let finds: RouteFind[] = [];
     update((s) => {
-      let next = arriveInZone(noteRoutes(noteDistrict(s, district), goodFix), zone);
+      const routes = noteRoutesWithFinds(noteDistrict(s, district), goodFix);
+      finds = routes.finds;
+      let next = arriveInZone(routes.save, zone);
       if (wild > 0 && district !== null) next = noteWildWalk(next, district, wild);
       return next;
     });
+    // P28: what walking a route turned up (coins and items are already in the bag).
+    if (finds.length > 0) {
+      const route = regions[cur.region].routes[finds[0]!.routeId];
+      const coins = finds.reduce((a, f) => a + f.coins, 0);
+      const items = finds.flatMap((f) => (f.itemId ? [t(`item.${f.itemId}.name`)] : []));
+      setToast(
+        t('map.routeFind', {
+          n: route?.number ?? '',
+          what: [...(coins > 0 ? [t('map.routeFindCoins', { coins })] : []), ...items].join(', '),
+        }),
+      );
+      buzz('zone');
+    }
   }, [goodFix, fast, region, save.onboarding, update, t]);
 
   const visible = useMemo<Seen[]>(() => {
@@ -373,7 +406,7 @@ export function MapScreen({
         s,
         d: distanceM(position, s),
         st: spawnStatus(save, { ...s, zone: zoneAt(region, s) ?? '' }),
-        level: spawnLevel(s, save.badges, levelBands(save.region)),
+        level: spawnLevel(s, save.badges, levelBands(save.region), regions[save.region].open),
       }))
       .filter(({ d, st }) => d <= SHOW_RADIUS_M && st !== 'used')
       .sort((a, b) => a.d - b.d);
@@ -843,7 +876,7 @@ export function MapScreen({
         return;
       }
       // GDD v1.7: the level is per player (own band for commons, district band for rares).
-      const level = spawnLevel(spawn, s.badges, levelBands(s.region));
+      const level = spawnLevel(spawn, s.badges, levelBands(s.region), regions[s.region].open);
       update((cur) =>
         startWildBattle(cur, { ...spawn, level }, Math.floor(Math.random() * 2 ** 31)),
       );
@@ -1196,6 +1229,8 @@ export function MapScreen({
         here.kind === 'arena'
           ? t('arena.won', { badge: t(`badge.${here.arena}.name`) })
           : t(`trainer.${st.trainerId}.defeated`);
+    } else if (st.kind === 'smallTeam') {
+      body = t('arena.smallTeam', { n: st.need });
     } else if (st.kind === 'teamFainted' || st.kind === 'noTeam') {
       body = t('map.teamFainted');
     } else {

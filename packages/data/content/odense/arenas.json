@@ -9,6 +9,7 @@
       "lat": 55.39978,
       "lng": 10.38522,
       "poi": "arena1",
+      "fieldAbility": "sealbreaker",
       "note": "Kongens Have, the start town by the station (unchanged)"
     },
     {
@@ -19,6 +20,7 @@
       "lat": 55.41346,
       "lng": 10.37515,
       "poi": "arena2",
+      "fieldAbility": "runereader",
       "note": "Næsbyhoved Slotsbanke, the medieval castle mound in Næsbyhoved Skov by Odense Å (OSM way 229383133; P22, moved from Klosterhaven)"
     },
     {
@@ -29,6 +31,7 @@
       "lat": 55.4478,
       "lng": 10.4285,
       "poi": "arena3",
+      "fieldAbility": "angler",
       "note": "Stige Ø, the island in Odense Fjord (recreation area, OSM way 353799265), its southern part by the slipway (P22)"
     },
     {
@@ -39,6 +42,7 @@
       "lat": 55.4143,
       "lng": 10.4621,
       "poi": "arena4",
+      "fieldAbility": "forager",
       "note": "H.C. Andersen Skoven, the young fairy-tale forest by Lungs Grave (P22)"
     },
     {
@@ -49,6 +53,7 @@
       "lat": 55.3541,
       "lng": 10.4421,
       "poi": "arena5",
+      "fieldAbility": "nightseer",
       "note": "Sneglehøjen at Hollufgård: the sculpture park, mill and manor (P22)"
     },
     {
@@ -79,6 +84,7 @@
       "lat": 55.3816,
       "lng": 10.3387,
       "poi": "arena8",
+      "fieldAbility": "homing",
       "note": "Viewpoint hill of Tusindårsskoven, the Millennium Forest (P22)"
     }
   ]

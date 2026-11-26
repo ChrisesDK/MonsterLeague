@@ -24,6 +24,8 @@ import {
   type SideGoal,
   type TypeId,
 } from '@oml/data';
+import { computeSpawns, hash32, type Region, type Spawn } from '@oml/spawn';
+import { cellToLatLng, latLngToCell } from 'h3-js';
 import { isDistrictOpen, isZoneOpen } from './rules';
 import type { JournalProgress, SaveGame } from './save';
 import { distanceM, type LatLng } from './world';
@@ -59,7 +61,7 @@ export function arriveInZone(
   dex: Dex = regions[save.region],
 ): SaveGame {
   const z = zone ? dex.zones[zone] : undefined;
-  if (!z?.opensOnArrival || save.zones.includes(z.id)) return save;
+  if (dex.open || !z?.opensOnArrival || save.zones.includes(z.id)) return save;
   return openZones({ ...save, zones: [...save.zones, z.id].sort() }, dex);
 }
 
@@ -104,6 +106,7 @@ export function routeProgress(
  * other end, repeated until nothing changes. Same object when nothing opened.
  */
 export function openZones(save: SaveGame, dex: Dex = regions[save.region]): SaveGame {
+  if (dex.open) return save; // P28: nothing to open
   const open = new Set(save.zones);
   const isOpen = (z: string) => open.has(z) || dex.zones[z]?.start === true;
   const done = walkingRoutes(dex).filter((r) => routeProgress(save, r).done);
@@ -232,6 +235,22 @@ export function nextArenaDistrict(save: SaveGame): number | null {
   return null;
 }
 
+/**
+ * The arena the Journal suggests next: the next in order, or in an open region (P28) the
+ * nearest one not yet won (worked out each time, never stored; without a position the
+ * lowest-numbered). Arena n stands in district n. Null when all 8 are won.
+ */
+export function suggestedArena(
+  save: SaveGame,
+  from: LatLng | null,
+  dex: Dex = regions[save.region],
+): number | null {
+  if (!dex.open || !from) return nextArenaDistrict(save);
+  const left = dex.arenaSites.filter((a) => !save.badges.includes(a.arena));
+  if (left.length === 0) return null;
+  return left.reduce((a, b) => (distanceM(from, a) <= distanceM(from, b) ? a : b)).arena;
+}
+
 /** The nearest point as a plain position (POIs carry more fields). */
 function nearest(from: LatLng | null, points: LatLng[]): LatLng | null {
   if (points.length === 0) return null;
@@ -263,7 +282,8 @@ export function mainGoals(
   const goals: Goal[] = [];
   const base = { district: d, main: true };
 
-  if (!dex.zones[site.zone]?.start) {
+  // P28: in an open region nothing needs opening, so there is no route step.
+  if (!dex.open && !dex.zones[site.zone]?.start) {
     const route = nextRouteToward(save, site.zone, dex);
     const open = isZoneOpen(save, site.zone, dex);
     const p = route ? routeProgress(save, route) : null;
@@ -353,7 +373,7 @@ export function journal(
   dex: Dex = regions[save.region],
 ): Journal {
   const districts: DistrictGoals[] = [];
-  const next = nextArenaDistrict(save);
+  const next = suggestedArena(save, from, dex);
   for (let d = 1; d <= 8; d++) {
     const open = isDistrictOpen(save, d, dex);
     if (!open && d !== next && !save.journal.reached.includes(d)) continue;
@@ -409,11 +429,62 @@ function routeBox(r: Route): [number, number, number, number] {
   return b;
 }
 
+/** P28: walking a route for the first time turns up a find every this many checkpoints. */
+export const FIND_EVERY = 10;
+
+export interface RouteFind {
+  routeId: string;
+  coins: number;
+  itemId: string | null;
+}
+
+/** Items a find can be, by the badges held (better ones later). */
+function findItems(badges: number): string[] {
+  const items = ['basic_charm', 'small_tonic', 'clear_drops'];
+  if (badges >= 2) items.push('good_charm', 'medium_tonic');
+  if (badges >= 5) items.push('great_charm', 'large_tonic', 'revive_leaf');
+  return items;
+}
+
+/**
+ * P28 (open regions): what checkpoint `index` of a route turns up for this player, or null
+ * when it is not a find spot (every FIND_EVERY-th checkpoint). Fixed per player and spot: one
+ * in three is an item, the others coins (more with more badges).
+ */
+export function routeFind(
+  save: Pick<SaveGame, 'seed' | 'badges'>,
+  routeId: string,
+  index: number,
+  dex: Dex = content,
+): RouteFind | null {
+  if ((index + 1) % FIND_EVERY !== 0) return null;
+  const roll = hash32(`${save.seed}|find|${routeId}|${index}`);
+  const badges = save.badges.length;
+  if (roll % 3 === 0) {
+    const pool = findItems(badges).filter((id) => dex.items[id]);
+    return { routeId, coins: 0, itemId: pool[(roll >>> 2) % pool.length] ?? null };
+  }
+  return { routeId, coins: 20 + 10 * badges + ((roll >>> 2) % 3) * 5, itemId: null };
+}
+
 /**
  * Route checkpoints within reach of `pos` (every walking route, P22), then the zones finished routes
  * open. Same object when nothing changed.
  */
 export function noteRoutes(save: SaveGame, pos: LatLng, dex: Dex = regions[save.region]): SaveGame {
+  return noteRoutesWithFinds(save, pos, dex).save;
+}
+
+/**
+ * `noteRoutes`, plus (open regions, P28) the finds on newly reached checkpoints: coins and
+ * items go straight into the save and are listed for the map to show.
+ */
+export function noteRoutesWithFinds(
+  save: SaveGame,
+  pos: LatLng,
+  dex: Dex = regions[save.region],
+): { save: SaveGame; finds: RouteFind[] } {
+  const finds: RouteFind[] = [];
   let routes = save.journal.routes;
   const dLat = CHECKPOINT_RADIUS_M / 110_540;
   const dLng = CHECKPOINT_RADIUS_M / (111_320 * Math.cos((pos.lat * Math.PI) / 180));
@@ -426,9 +497,20 @@ export function noteRoutes(save: SaveGame, pos: LatLng, dex: Dex = regions[save.
       .map((cp, i) => (distanceM(pos, cp) <= CHECKPOINT_RADIUS_M && !have.includes(i) ? i : -1))
       .filter((i) => i >= 0);
     if (add.length > 0) routes = { ...routes, [r.id]: [...have, ...add].sort((a, b) => a - b) };
+    if (dex.open)
+      for (const i of add) {
+        const f = routeFind(save, r.id, i, dex);
+        if (f) finds.push(f);
+      }
   }
-  if (routes === save.journal.routes) return save;
-  return openZones({ ...save, journal: { ...save.journal, routes } }, dex);
+  if (routes === save.journal.routes) return { save, finds };
+  let next: SaveGame = openZones({ ...save, journal: { ...save.journal, routes } }, dex);
+  if (finds.length > 0) {
+    const bag = { ...next.bag };
+    for (const f of finds) if (f.itemId) bag[f.itemId] = (bag[f.itemId] ?? 0) + 1;
+    next = { ...next, bag, coins: next.coins + finds.reduce((a, f) => a + f.coins, 0) };
+  }
+  return { save: next, finds };
 }
 
 /** Metres walked inside a wild area of `district` (capped at the district's explore goal). */
@@ -455,4 +537,57 @@ export function noteRestStop(save: SaveGame, poiId: string): SaveGame {
     ...save,
     journal: { ...save.journal, restStops: [...save.journal.restStops, poiId].sort() },
   };
+}
+
+// ---------------------------------------------------------------------------
+// P28: more creatures on finished routes
+
+/** Extra creatures on a finished route: this share of the cells' usual density on top. */
+export const ROUTE_BONUS = 0.5;
+/** How far from the player the extra route creatures are worked out. */
+export const ROUTE_BONUS_RADIUS_M = 1200;
+
+const routeCellCache = new WeakMap<Route, string[]>();
+/** The res-10 cells a route's checkpoints lie in. */
+export function routeCells(route: Route): string[] {
+  let cells = routeCellCache.get(route);
+  if (!cells) {
+    cells = [...new Set(routeCheckpoints(route).map((p) => latLngToCell(p.lat, p.lng, 10)))];
+    routeCellCache.set(route, cells);
+  }
+  return cells;
+}
+
+/**
+ * P28 (open regions): the player's own extra creatures on the routes they finished, near
+ * `near`, in `window`. Made on the phone from the player's seed (nothing is sent), with ids
+ * that never collide with the shared spawns.
+ */
+export function routeBonusSpawns(
+  save: Pick<SaveGame, 'seed' | 'journal' | 'region'>,
+  region: Region,
+  window: number,
+  near: LatLng,
+  dex: Dex = regions[save.region],
+): Spawn[] {
+  if (!dex.open) return [];
+  const cells = new Set<string>();
+  for (const r of walkingRoutes(dex)) {
+    if (!routeProgress(save, r).done) continue;
+    for (const c of routeCells(r)) {
+      if (cells.has(c)) continue;
+      const [lat, lng] = cellToLatLng(c);
+      if (distanceM(near, { lat, lng }) <= ROUTE_BONUS_RADIUS_M) cells.add(c);
+    }
+  }
+  if (cells.size === 0) return [];
+  return computeSpawns({
+    region,
+    spawnTables: dex.spawns,
+    seed: `${save.seed}|routes`,
+    window,
+    cellIds: [...cells].sort(),
+    densityScale: ROUTE_BONUS,
+    idTag: 'route',
+  });
 }

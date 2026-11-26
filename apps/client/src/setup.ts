@@ -1,4 +1,5 @@
 import { content, type Dex } from '@oml/data';
+import { pathBadges, scaledTeam } from '@oml/game';
 import {
   createBattle,
   createCreature,
@@ -33,13 +34,15 @@ function trainerSide(
 ): SideConfig & { tier: 'trainer' | 'leader' } {
   const trainer = dex.trainers[id];
   if (!trainer) throw new Error(`Unknown trainer ${id}`);
+  // P28: a tiered leader as met on the old path (arena − 1 badges).
+  const scaled = scaledTeam(trainer, pathBadges(trainer.arena ?? 1), dex);
   return {
     name: trainer.id,
     tier: trainer.tier,
-    team: trainer.team.map((m, i) =>
+    team: scaled.team.map((m, i) =>
       createCreature(m.speciesId, m.level, `${prefix}${i}`, dex, m.moves ? { moves: m.moves } : {}),
     ),
-    items: { ...trainer.items },
+    items: scaled.items,
   };
 }
 

@@ -1,7 +1,7 @@
 import { useEffect, type CSSProperties } from 'react';
 import { badgeUrl } from '@oml/art';
 import { regions, type RegionId } from '@oml/data';
-import { obedienceLevel } from '@oml/game';
+import { challengeTier, fieldAbilityArena, obedienceLevel } from '@oml/game';
 import type { Translate } from '../i18n';
 import { buzz } from '../ui/feedback';
 
@@ -18,16 +18,23 @@ const CONFETTI = Array.from({ length: 28 }, (_, i) => ({
 export function BadgeCeremony({
   t,
   arena,
+  badges: held,
   region = 'odense',
   onDone,
 }: {
   t: Translate;
   arena: number;
+  /** All badges held now (P28: in an open region they come in any order). */
+  badges?: readonly number[];
   /** P27: the campaign's region (its own badges and arenas). */
   region?: RegionId;
   onDone: () => void;
 }) {
-  const badges = Array.from({ length: arena }, (_, i) => i + 1);
+  const dex = regions[region];
+  const badges = held ?? Array.from({ length: arena }, (_, i) => i + 1);
+  const ability = Object.keys(dex.fieldAbilities).find(
+    (f) => dex.open && fieldAbilityArena(f, dex) === arena,
+  );
   useEffect(() => buzz('badge'), []);
   return (
     <main className="setup ceremony" data-testid="badge-ceremony" data-badge={arena}>
@@ -58,7 +65,15 @@ export function BadgeCeremony({
       />
       <ul className="ceremony-list">
         <li>{t('ceremony.obedience', { level: obedienceLevel(badges) })}</li>
-        {arena < 8 && (
+        {ability && (
+          <li data-testid="ceremony-ability">
+            {t('ceremony.ability', { ability: t(`fieldAbility.${ability}.name`) })}
+          </li>
+        )}
+        {dex.open && badges.length < 8 && (
+          <li data-testid="ceremony-tier">{t('ceremony.tier', { n: challengeTier(badges) })}</li>
+        )}
+        {!dex.open && arena < 8 && (
           <li>
             {t('ceremony.nextArena', {
               place: t(`arenaSite.${arena + 1}.name`),

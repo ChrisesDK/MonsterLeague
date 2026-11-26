@@ -91,7 +91,16 @@ export function checkContent(dex: Dex): string[] {
       if (!dex.items[itemId]) errors.push(`player team ${p.id}: item "${itemId}" does not exist`);
     }
     const leader = arenas.get(p.arena);
+    const tiers = leader ? dex.trainers[leader]!.tiers : undefined;
     if (!leader) errors.push(`player team ${p.id}: arena ${p.arena} has no leader`);
+    // P28: preset arena n is the team a player brings with n − 1 badges; no leader brings
+    // more creatures than that at tier n − 1.
+    else if (tiers) {
+      for (const [lid, t] of Object.entries(dex.trainers))
+        // the preset lists all three starter lines; the chosen one's is left out
+        if (t.tiers && t.tiers[p.arena - 1]!.size > p.team.length)
+          errors.push(`player team ${p.id}: ${lid} brings more than the player at its tier`);
+    }
     // Starter + preset team = one creature more than the leader.
     else if (p.team.length !== dex.trainers[leader]!.team.length)
       errors.push(
@@ -133,8 +142,40 @@ export function checkContent(dex: Dex): string[] {
   if (new Set(usedTrainers).size !== usedTrainers.length)
     errors.push('pois: a trainer is placed twice');
 
-  // GDD: each badge (2–7) unlocks exactly one field ability.
+  // GDD: each badge (2–7) unlocks exactly one field ability; in an open region (P28) each
+  // arena's badge unlocks the ability its site names, every ability exactly once.
   const badges = new Map<number, string>();
+  if (dex.open) {
+    const taught = dex.arenaSites.flatMap((a) => (a.fieldAbility ? [a.fieldAbility] : []));
+    for (const f of Object.keys(dex.fieldAbilities))
+      if (taught.filter((x) => x === f).length !== 1)
+        errors.push(`open region: field ability ${f} must be taught by exactly one arena`);
+    for (const f of taught)
+      if (!dex.fieldAbilities[f]) errors.push(`arenas: field ability "${f}" does not exist`);
+  } else if (dex.arenaSites.some((a) => a.fieldAbility))
+    errors.push('arenas: fieldAbility is for open regions (P28)');
+  for (const t of Object.values(dex.trainers)) {
+    if (t.tiers && t.tier !== 'leader') errors.push(`trainer ${t.id}: only leaders have tiers`);
+    for (const m of t.team) {
+      if (m.coverage && !t.tiers)
+        errors.push(`trainer ${t.id}: coverage moves are for tiered leaders (P28)`);
+      if (m.coverage && !dex.moves[m.coverage])
+        errors.push(`trainer ${t.id}: coverage move "${m.coverage}" does not exist`);
+    }
+    if (dex.open && t.tier === 'leader' && !t.tiers)
+      errors.push(`trainer ${t.id}: leaders of an open region need tiers (P28)`);
+    t.tiers?.forEach((tier, i) => {
+      if (tier.size > t.team.length)
+        errors.push(`trainer ${t.id}: tier ${i} brings ${tier.size} of ${t.team.length}`);
+      if (i > 0 && (tier.size < t.tiers![i - 1]!.size || tier.level < t.tiers![i - 1]!.level))
+        errors.push(`trainer ${t.id}: tier ${i} is weaker than tier ${i - 1}`);
+      if (tier.level > ODENSE_LEVEL_CAP)
+        errors.push(`trainer ${t.id}: tier ${i} level ${tier.level} above the cap`);
+      for (const itemId of Object.keys(tier.items ?? {}))
+        if (!dex.items[itemId])
+          errors.push(`trainer ${t.id}: tier item "${itemId}" does not exist`);
+    });
+  }
   for (const f of Object.values(dex.fieldAbilities)) {
     const other = badges.get(f.badge);
     if (other) errors.push(`field ability ${f.id}: badge ${f.badge} already unlocks "${other}"`);

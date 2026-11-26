@@ -200,3 +200,10 @@
 - [x] Svendborg creatures: Water/Stone/Storm starters and 20 wild lines, spawns, destination homes (D181)
 - [x] Svendborg trainers, arena leaders and juniors, balance, Journal goals, e2e; Svendborg playable (D181)
 - [ ] Owner checks Svendborg's places on site; Svendborg testers
+
+## Open regions (P28, owner decisions, GDD v1.25)
+
+- [x] Odense open: no locks, arenas in any order, leaders scaled by badges (rosters, tiers, coverage), trainers and rares scaled, field abilities from arenas, arena team of 3, route finds, more creatures on finished routes, Journal suggests the nearest arena (D191–D194)
+- [ ] Deploy Odense and check it live
+- [ ] Svendborg open (its rosters, tiers, presets and arena abilities)
+- [ ] Gate 3: watch the known swings (5 badges: fire starter strong, grove starter weak against the storm and water leaders) and P29 (trainer rematches)

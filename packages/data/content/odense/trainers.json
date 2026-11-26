@@ -47,12 +47,30 @@
       "tier": "leader",
       "team": [
         {
-          "speciesId": "rendsnude",
-          "level": 8
+          "speciesId": "rottekonge",
+          "level": 49,
+          "coverage": "cobble_toss"
         },
         {
-          "speciesId": "loftnisse",
-          "level": 10
+          "speciesId": "gaardnisse",
+          "level": 50,
+          "coverage": "cobble_toss"
+        },
+        {
+          "speciesId": "mikkelraev",
+          "level": 49
+        },
+        {
+          "speciesId": "vinddue",
+          "level": 49
+        },
+        {
+          "speciesId": "stormmaage",
+          "level": 49
+        },
+        {
+          "speciesId": "rottekonge",
+          "level": 49
         }
       ],
       "items": {
@@ -64,31 +82,90 @@
       "reward": {
         "itemId": "revive_leaf",
         "count": 1
-      }
+      },
+      "tiers": [
+        {
+          "size": 2,
+          "level": 10,
+          "items": {}
+        },
+        {
+          "size": 4,
+          "level": 16,
+          "items": {
+            "small_tonic": 2
+          }
+        },
+        {
+          "size": 5,
+          "level": 24,
+          "items": {
+            "large_tonic": 2
+          }
+        },
+        {
+          "size": 5,
+          "level": 29,
+          "items": {}
+        },
+        {
+          "size": 5,
+          "level": 33,
+          "items": {
+            "large_tonic": 2
+          }
+        },
+        {
+          "size": 5,
+          "level": 40,
+          "items": {}
+        },
+        {
+          "size": 6,
+          "level": 47,
+          "items": {
+            "small_tonic": 2
+          }
+        },
+        {
+          "size": 6,
+          "level": 50,
+          "items": {
+            "small_tonic": 2
+          }
+        }
+      ]
     },
     {
       "id": "leader_water",
       "tier": "leader",
       "team": [
         {
-          "speciesId": "grimaelling",
-          "level": 17,
-          "moves": ["brook_spout", "rinse_and_mend", "sea_fog", "shoulder_shove"]
+          "speciesId": "rottekonge",
+          "level": 49
         },
         {
-          "speciesId": "kulingmaage",
-          "level": 7,
-          "moves": ["thunder_squall", "sky_crackle", "gale_step", "nimble_jab"]
+          "speciesId": "havodder",
+          "level": 50,
+          "coverage": "gust_lance"
         },
         {
-          "speciesId": "stroemodder",
-          "level": 23,
-          "moves": ["harbour_wave", "kiln_blast", "rinse_and_mend", "ember_hop"]
+          "speciesId": "rokkevinge",
+          "level": 49
         },
         {
-          "speciesId": "stroemodder",
-          "level": 20,
-          "moves": ["harbour_wave", "thunder_squall", "rinse_and_mend", "ember_hop"]
+          "speciesId": "noekken",
+          "level": 49
+        },
+        {
+          "speciesId": "lindorm",
+          "level": 49,
+          "coverage": "gust_lance"
+        },
+        {
+          "speciesId": "kongesvane",
+          "level": 49,
+          "coverage": "ember_hop"
         }
       ],
       "items": {
@@ -100,7 +177,61 @@
       "reward": {
         "itemId": "revive_leaf",
         "count": 1
-      }
+      },
+      "tiers": [
+        {
+          "size": 2,
+          "level": 10,
+          "items": {}
+        },
+        {
+          "size": 2,
+          "level": 17,
+          "items": {}
+        },
+        {
+          "size": 3,
+          "level": 26,
+          "items": {
+            "large_tonic": 1
+          }
+        },
+        {
+          "size": 5,
+          "level": 28,
+          "items": {
+            "large_tonic": 2
+          }
+        },
+        {
+          "size": 5,
+          "level": 32,
+          "items": {
+            "large_tonic": 2
+          }
+        },
+        {
+          "size": 5,
+          "level": 40,
+          "items": {
+            "large_tonic": 1
+          }
+        },
+        {
+          "size": 5,
+          "level": 50,
+          "items": {
+            "large_tonic": 1
+          }
+        },
+        {
+          "size": 6,
+          "level": 50,
+          "items": {
+            "large_tonic": 1
+          }
+        }
+      ]
     },
     {
       "id": "route1_lise",
@@ -215,18 +346,30 @@
       "tier": "leader",
       "team": [
         {
-          "speciesId": "kampetrold",
-          "level": 14,
-          "moves": ["cobble_toss", "squall_slap", "cobbler_kick", "hunker_down"]
+          "speciesId": "rottekonge",
+          "level": 49
         },
         {
-          "speciesId": "kulingmaage",
-          "level": 14
+          "speciesId": "bjergtrold",
+          "level": 50,
+          "coverage": "thorn_volley"
         },
         {
-          "speciesId": "brokrabbe",
-          "level": 15,
-          "moves": ["cobble_toss", "grit_spray", "sky_crackle", "shoulder_shove"]
+          "speciesId": "eghjort",
+          "level": 49
+        },
+        {
+          "speciesId": "flintbjoern",
+          "level": 49,
+          "coverage": "thorn_volley"
+        },
+        {
+          "speciesId": "lindorm",
+          "level": 49
+        },
+        {
+          "speciesId": "kaempekrabbe",
+          "level": 49
         }
       ],
       "items": {},
@@ -236,7 +379,61 @@
       "reward": {
         "itemId": "revive_leaf",
         "count": 1
-      }
+      },
+      "tiers": [
+        {
+          "size": 2,
+          "level": 12,
+          "items": {
+            "small_tonic": 2
+          }
+        },
+        {
+          "size": 3,
+          "level": 16,
+          "items": {}
+        },
+        {
+          "size": 5,
+          "level": 23,
+          "items": {
+            "large_tonic": 1
+          }
+        },
+        {
+          "size": 5,
+          "level": 28,
+          "items": {
+            "large_tonic": 2
+          }
+        },
+        {
+          "size": 5,
+          "level": 33,
+          "items": {
+            "large_tonic": 2
+          }
+        },
+        {
+          "size": 5,
+          "level": 38,
+          "items": {}
+        },
+        {
+          "size": 5,
+          "level": 45,
+          "items": {
+            "large_tonic": 3
+          }
+        },
+        {
+          "size": 5,
+          "level": 49,
+          "items": {
+            "small_tonic": 2
+          }
+        }
+      ]
     },
     {
       "id": "arena2_junior",
@@ -3007,20 +3204,32 @@
       "tier": "leader",
       "team": [
         {
-          "speciesId": "mostrold",
-          "level": 30
+          "speciesId": "mikkelraev",
+          "level": 49,
+          "coverage": "cobble_toss"
         },
         {
-          "speciesId": "skovbille",
-          "level": 29
+          "speciesId": "lundekonge",
+          "level": 50,
+          "coverage": "ripple_dash"
         },
         {
-          "speciesId": "ellepige",
-          "level": 32
+          "speciesId": "ellekonge",
+          "level": 49
         },
         {
-          "speciesId": "boegevaette",
-          "level": 32
+          "speciesId": "lyngkonge",
+          "level": 49,
+          "coverage": "cobble_toss"
+        },
+        {
+          "speciesId": "gloeddronning",
+          "level": 49
+        },
+        {
+          "speciesId": "eghjort",
+          "level": 49,
+          "coverage": "ripple_dash"
         }
       ],
       "items": {
@@ -3032,7 +3241,63 @@
       "reward": {
         "itemId": "revive_leaf",
         "count": 1
-      }
+      },
+      "tiers": [
+        {
+          "size": 2,
+          "level": 11,
+          "items": {
+            "large_tonic": 1
+          }
+        },
+        {
+          "size": 3,
+          "level": 15,
+          "items": {}
+        },
+        {
+          "size": 4,
+          "level": 22,
+          "items": {
+            "large_tonic": 2
+          }
+        },
+        {
+          "size": 4,
+          "level": 27,
+          "items": {
+            "small_tonic": 2
+          }
+        },
+        {
+          "size": 4,
+          "level": 34,
+          "items": {
+            "large_tonic": 2
+          }
+        },
+        {
+          "size": 4,
+          "level": 39,
+          "items": {
+            "large_tonic": 2
+          }
+        },
+        {
+          "size": 6,
+          "level": 42,
+          "items": {
+            "large_tonic": 3
+          }
+        },
+        {
+          "size": 6,
+          "level": 45,
+          "items": {
+            "large_tonic": 3
+          }
+        }
+      ]
     },
     {
       "id": "arena4_junior",
@@ -3059,24 +3324,28 @@
       "tier": "leader",
       "team": [
         {
-          "speciesId": "lygtemand",
-          "level": 36,
-          "moves": ["moonless_stare", "grave_chill", "hollow_wail", "ember_hop"]
+          "speciesId": "gaardnisse",
+          "level": 49
+        },
+        {
+          "speciesId": "noekken",
+          "level": 50
         },
         {
           "speciesId": "mosekone",
-          "level": 36,
-          "moves": ["moonless_stare", "grave_chill", "hollow_wail", "thorn_volley"]
-        },
-        {
-          "speciesId": "noekkeling",
-          "level": 30,
-          "moves": ["brook_spout", "grave_chill", "rinse_and_mend", "harbour_wave"]
+          "level": 49
         },
         {
           "speciesId": "gaardnisse",
-          "level": 35,
-          "moves": ["shoulder_shove", "cobbler_kick", "grave_chill", "market_stampede"]
+          "level": 49
+        },
+        {
+          "speciesId": "ellekonge",
+          "level": 49
+        },
+        {
+          "speciesId": "lygtemand",
+          "level": 49
         }
       ],
       "items": {
@@ -3088,7 +3357,59 @@
       "reward": {
         "itemId": "revive_leaf",
         "count": 2
-      }
+      },
+      "tiers": [
+        {
+          "size": 2,
+          "level": 11,
+          "items": {
+            "small_tonic": 2
+          }
+        },
+        {
+          "size": 2,
+          "level": 18,
+          "items": {}
+        },
+        {
+          "size": 4,
+          "level": 24,
+          "items": {
+            "large_tonic": 2
+          }
+        },
+        {
+          "size": 4,
+          "level": 28,
+          "items": {
+            "large_tonic": 2
+          }
+        },
+        {
+          "size": 5,
+          "level": 28,
+          "items": {
+            "large_tonic": 2
+          }
+        },
+        {
+          "size": 5,
+          "level": 37,
+          "items": {
+            "large_tonic": 1
+          }
+        },
+        {
+          "size": 5,
+          "level": 46,
+          "items": {}
+        },
+        {
+          "size": 5,
+          "level": 49,
+          "items": {}
+        }
+      ]
     },
     {
       "id": "arena5_junior",
@@ -3115,20 +3436,31 @@
       "tier": "leader",
       "team": [
         {
-          "speciesId": "gloedoegle",
-          "level": 30
-        },
-        {
-          "speciesId": "lygtemand",
-          "level": 26
-        },
-        {
-          "speciesId": "essedrage",
-          "level": 37
+          "speciesId": "rottekonge",
+          "level": 49
         },
         {
           "speciesId": "brandloeve",
-          "level": 40
+          "level": 50,
+          "coverage": "boulder_roll"
+        },
+        {
+          "speciesId": "gloeddronning",
+          "level": 49
+        },
+        {
+          "speciesId": "lygtemand",
+          "level": 49
+        },
+        {
+          "speciesId": "essedrage",
+          "level": 49,
+          "coverage": "gust_lance"
+        },
+        {
+          "speciesId": "essedrage",
+          "level": 49,
+          "coverage": "cobble_toss"
         }
       ],
       "items": {
@@ -3140,7 +3472,59 @@
       "reward": {
         "itemId": "revive_leaf",
         "count": 2
-      }
+      },
+      "tiers": [
+        {
+          "size": 3,
+          "level": 9,
+          "items": {
+            "large_tonic": 1
+          }
+        },
+        {
+          "size": 4,
+          "level": 15,
+          "items": {
+            "large_tonic": 2
+          }
+        },
+        {
+          "size": 5,
+          "level": 22,
+          "items": {}
+        },
+        {
+          "size": 5,
+          "level": 26,
+          "items": {}
+        },
+        {
+          "size": 5,
+          "level": 32,
+          "items": {
+            "small_tonic": 2
+          }
+        },
+        {
+          "size": 5,
+          "level": 39,
+          "items": {
+            "small_tonic": 2
+          }
+        },
+        {
+          "size": 5,
+          "level": 45,
+          "items": {}
+        },
+        {
+          "size": 6,
+          "level": 45,
+          "items": {
+            "large_tonic": 3
+          }
+        }
+      ]
     },
     {
       "id": "arena6_junior",
@@ -3167,24 +3551,28 @@
       "tier": "leader",
       "team": [
         {
-          "speciesId": "kongesvane",
-          "level": 34
+          "speciesId": "rottekonge",
+          "level": 49
+        },
+        {
+          "speciesId": "bjergtrold",
+          "level": 50
         },
         {
           "speciesId": "eghjort",
-          "level": 44
-        },
-        {
-          "speciesId": "lygtemand",
-          "level": 44
+          "level": 49
         },
         {
           "speciesId": "tordenravn",
-          "level": 32
+          "level": 49
         },
         {
           "speciesId": "essedrage",
-          "level": 45
+          "level": 49
+        },
+        {
+          "speciesId": "lygtemand",
+          "level": 49
         }
       ],
       "items": {
@@ -3195,7 +3583,61 @@
       "reward": {
         "itemId": "revive_blossom",
         "count": 1
-      }
+      },
+      "tiers": [
+        {
+          "size": 2,
+          "level": 12,
+          "items": {
+            "small_tonic": 2
+          }
+        },
+        {
+          "size": 3,
+          "level": 16,
+          "items": {
+            "small_tonic": 2
+          }
+        },
+        {
+          "size": 5,
+          "level": 23,
+          "items": {
+            "large_tonic": 2
+          }
+        },
+        {
+          "size": 5,
+          "level": 28,
+          "items": {
+            "large_tonic": 1
+          }
+        },
+        {
+          "size": 5,
+          "level": 33,
+          "items": {
+            "small_tonic": 2
+          }
+        },
+        {
+          "size": 5,
+          "level": 39,
+          "items": {
+            "small_tonic": 2
+          }
+        },
+        {
+          "size": 6,
+          "level": 45,
+          "items": {}
+        },
+        {
+          "size": 6,
+          "level": 48,
+          "items": {}
+        }
+      ]
     },
     {
       "id": "arena7_junior",
@@ -3222,28 +3664,31 @@
       "tier": "leader",
       "team": [
         {
-          "speciesId": "stormmaage",
-          "level": 48,
-          "moves": ["gale_step", "cobbler_kick", "sky_crackle", "squall_slap"]
+          "speciesId": "vinddue",
+          "level": 49,
+          "coverage": "ripple_dash"
         },
         {
           "speciesId": "tordenravn",
-          "level": 48,
-          "moves": ["gale_step", "grave_chill", "hollow_wail", "thunder_squall"]
+          "level": 50,
+          "coverage": "ripple_dash"
         },
         {
           "speciesId": "rokkevinge",
-          "level": 45,
-          "moves": ["sea_fog", "rinse_and_mend", "sky_crackle", "brook_spout"]
+          "level": 49
         },
         {
           "speciesId": "vinddue",
-          "level": 49,
-          "moves": ["stern_glare", "gust_lance", "market_stampede", "shoulder_shove"]
+          "level": 49
         },
         {
-          "speciesId": "essedrage",
-          "level": 50
+          "speciesId": "kongesvane",
+          "level": 49
+        },
+        {
+          "speciesId": "stormmaage",
+          "level": 49,
+          "coverage": "ripple_dash"
         }
       ],
       "items": {
@@ -3255,7 +3700,59 @@
       "reward": {
         "itemId": "revive_blossom",
         "count": 1
-      }
+      },
+      "tiers": [
+        {
+          "size": 3,
+          "level": 9,
+          "items": {}
+        },
+        {
+          "size": 4,
+          "level": 17,
+          "items": {
+            "small_tonic": 2
+          }
+        },
+        {
+          "size": 4,
+          "level": 25,
+          "items": {
+            "large_tonic": 2
+          }
+        },
+        {
+          "size": 4,
+          "level": 31,
+          "items": {
+            "small_tonic": 2
+          }
+        },
+        {
+          "size": 5,
+          "level": 36,
+          "items": {}
+        },
+        {
+          "size": 5,
+          "level": 41,
+          "items": {
+            "large_tonic": 2
+          }
+        },
+        {
+          "size": 6,
+          "level": 46,
+          "items": {
+            "small_tonic": 2
+          }
+        },
+        {
+          "size": 6,
+          "level": 49,
+          "items": {}
+        }
+      ]
     },
     {
       "id": "arena8_junior",
