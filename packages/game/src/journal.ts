@@ -15,7 +15,15 @@
  * Side goals (content/odense/goals.json) are finite and never daily: explore the district's wild
  * areas, catch a creature of its typical type, meet its rare creature.
  */
-import { content, type Dex, type Poi, type Route, type SideGoal, type TypeId } from '@oml/data';
+import {
+  content,
+  regions,
+  type Dex,
+  type Poi,
+  type Route,
+  type SideGoal,
+  type TypeId,
+} from '@oml/data';
 import { isDistrictOpen, isZoneOpen } from './rules';
 import type { JournalProgress, SaveGame } from './save';
 import { distanceM, type LatLng } from './world';
@@ -32,6 +40,28 @@ export const emptyJournal = (): JournalProgress => ({
   wildMetres: {},
   restStops: [],
 });
+
+/**
+ * The routes a player walks (P27): every route except ferry crossings. A crossing is sailed,
+ * not walked, so it has no progress bar; its island opens on arrival (`arriveInZone`).
+ */
+export function walkingRoutes(dex: Dex = content): Route[] {
+  return Object.values(dex.routes).filter((r) => r.kind !== 'ferry');
+}
+
+/**
+ * The player is in `zone` now (P27): a ferry island opens when the player arrives there.
+ * Same object when nothing changed.
+ */
+export function arriveInZone(
+  save: SaveGame,
+  zone: string | null,
+  dex: Dex = regions[save.region],
+): SaveGame {
+  const z = zone ? dex.zones[zone] : undefined;
+  if (!z?.opensOnArrival || save.zones.includes(z.id)) return save;
+  return openZones({ ...save, zones: [...save.zones, z.id].sort() }, dex);
+}
 
 const checkpointCache = new WeakMap<Route, LatLng[]>();
 /** Points every CHECKPOINT_SPACING_M along a route, including both ends. */
@@ -73,10 +103,10 @@ export function routeProgress(
  * Opens the zones that finished routes lead to: a finished route with one open end opens the
  * other end, repeated until nothing changes. Same object when nothing opened.
  */
-export function openZones(save: SaveGame, dex: Dex = content): SaveGame {
+export function openZones(save: SaveGame, dex: Dex = regions[save.region]): SaveGame {
   const open = new Set(save.zones);
   const isOpen = (z: string) => open.has(z) || dex.zones[z]?.start === true;
-  const done = Object.values(dex.routes).filter((r) => routeProgress(save, r).done);
+  const done = walkingRoutes(dex).filter((r) => routeProgress(save, r).done);
   for (let changed = true; changed;) {
     changed = false;
     for (const r of done) {
@@ -90,8 +120,8 @@ export function openZones(save: SaveGame, dex: Dex = content): SaveGame {
 }
 
 /** Routes with exactly one end open: the ones that open a new zone when finished. */
-export function frontierRoutes(save: SaveGame, dex: Dex = content): Route[] {
-  return Object.values(dex.routes).filter(
+export function frontierRoutes(save: SaveGame, dex: Dex = regions[save.region]): Route[] {
+  return walkingRoutes(dex).filter(
     (r) => isZoneOpen(save, r.from, dex) !== isZoneOpen(save, r.to, dex),
   );
 }
@@ -100,7 +130,11 @@ export function frontierRoutes(save: SaveGame, dex: Dex = content): Route[] {
  * The next route to walk toward `zone`: the first unfinished route on the shortest way from
  * the open zones, measured in metres still to walk (null when the zone is open already).
  */
-export function nextRouteToward(save: SaveGame, zone: string, dex: Dex = content): Route | null {
+export function nextRouteToward(
+  save: SaveGame,
+  zone: string,
+  dex: Dex = regions[save.region],
+): Route | null {
   if (isZoneOpen(save, zone, dex)) return null;
   const left = (r: Route) => {
     const p = routeProgress(save, r);
@@ -115,7 +149,7 @@ export function nextRouteToward(save: SaveGame, zone: string, dex: Dex = content
     for (const [k, d] of dist) if (!done.has(k) && (u === null || d < dist.get(u)!)) u = k;
     if (u === null || u === zone) break;
     done.add(u);
-    for (const r of Object.values(dex.routes)) {
+    for (const r of walkingRoutes(dex)) {
       if (r.from !== u && r.to !== u) continue;
       const v = r.from === u ? r.to : r.from;
       const d = dist.get(u)! + left(r);
@@ -138,7 +172,11 @@ export function nextRouteToward(save: SaveGame, zone: string, dex: Dex = content
 }
 
 /** The next checkpoint to walk to on `route`, starting from its open end. */
-export function nextCheckpoint(save: SaveGame, route: Route, dex: Dex = content): LatLng | null {
+export function nextCheckpoint(
+  save: SaveGame,
+  route: Route,
+  dex: Dex = regions[save.region],
+): LatLng | null {
   const cps = routeCheckpoints(route);
   const got = new Set(save.journal.routes[route.id] ?? []);
   const order = cps.map((_, i) => i);
@@ -216,7 +254,7 @@ export function mainGoals(
   save: SaveGame,
   d: number,
   from: LatLng | null,
-  dex: Dex = content,
+  dex: Dex = regions[save.region],
 ): Goal[] {
   const j = save.journal;
   const site = dex.arenaSites[d - 1]!;
@@ -292,7 +330,7 @@ export function wildMetresGoal(d: number, dex: Dex = content): number {
   );
 }
 
-export function sideGoal(save: SaveGame, g: SideGoal, dex: Dex = content): Goal {
+export function sideGoal(save: SaveGame, g: SideGoal, dex: Dex = regions[save.region]): Goal {
   const base = { id: g.id, district: g.district, main: false, target: null };
   if (g.kind === 'exploreWild') {
     const n = Math.min(g.metres, Math.floor(save.journal.wildMetres[String(g.district)] ?? 0));
@@ -309,7 +347,11 @@ export function sideGoal(save: SaveGame, g: SideGoal, dex: Dex = content): Goal 
 }
 
 /** The whole Journal for the save, with arrows measured from `from`. */
-export function journal(save: SaveGame, from: LatLng | null, dex: Dex = content): Journal {
+export function journal(
+  save: SaveGame,
+  from: LatLng | null,
+  dex: Dex = regions[save.region],
+): Journal {
   const districts: DistrictGoals[] = [];
   const next = nextArenaDistrict(save);
   for (let d = 1; d <= 8; d++) {
@@ -326,7 +368,7 @@ export function journal(save: SaveGame, from: LatLng | null, dex: Dex = content)
       ? null
       : (districts.find((x) => x.district === next)?.main.find((g) => !g.done) ?? null);
   const completed = districts.flatMap((x) => [...x.main, ...x.side]).filter((g) => g.done);
-  const routes = Object.values(dex.routes);
+  const routes = walkingRoutes(dex);
   const zones = Object.values(dex.zones);
   return {
     current,
@@ -368,14 +410,14 @@ function routeBox(r: Route): [number, number, number, number] {
 }
 
 /**
- * Route checkpoints within reach of `pos` (every route, P22), then the zones finished routes
+ * Route checkpoints within reach of `pos` (every walking route, P22), then the zones finished routes
  * open. Same object when nothing changed.
  */
-export function noteRoutes(save: SaveGame, pos: LatLng, dex: Dex = content): SaveGame {
+export function noteRoutes(save: SaveGame, pos: LatLng, dex: Dex = regions[save.region]): SaveGame {
   let routes = save.journal.routes;
   const dLat = CHECKPOINT_RADIUS_M / 110_540;
   const dLng = CHECKPOINT_RADIUS_M / (111_320 * Math.cos((pos.lat * Math.PI) / 180));
-  for (const r of Object.values(dex.routes)) {
+  for (const r of walkingRoutes(dex)) {
     const [s, w, n, e] = routeBox(r);
     if (pos.lat < s - dLat || pos.lat > n + dLat || pos.lng < w - dLng || pos.lng > e + dLng)
       continue;
@@ -394,7 +436,7 @@ export function noteWildWalk(
   save: SaveGame,
   district: number,
   metres: number,
-  dex: Dex = content,
+  dex: Dex = regions[save.region],
 ): SaveGame {
   const cap = wildMetresGoal(district, dex);
   const key = String(district);

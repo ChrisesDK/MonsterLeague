@@ -1,4 +1,4 @@
-import { content, type Dex, type Poi } from '@oml/data';
+import { content, regions, type Dex, type Poi, type RegionId } from '@oml/data';
 import {
   canEvolve,
   createBattle,
@@ -35,9 +35,9 @@ export function obedienceLevel(badges: readonly number[]): number {
  * as open, so nothing outside the map is ever locked by mistake.
  */
 export function isZoneOpen(
-  save: Pick<SaveGame, 'zones'>,
+  save: Pick<SaveGame, 'zones'> & { region?: RegionId },
   zone: string,
-  dex: Dex = content,
+  dex: Dex = regions[save.region ?? 'odense'],
 ): boolean {
   if (!zone || !dex.zones[zone]) return true;
   return dex.zones[zone]!.start === true || save.zones.includes(zone);
@@ -45,9 +45,9 @@ export function isZoneOpen(
 
 /** A district counts as open (Journal, Town Map) once any of its zones is open. */
 export function isDistrictOpen(
-  save: Pick<SaveGame, 'zones'>,
+  save: Pick<SaveGame, 'zones'> & { region?: RegionId },
   district: number,
-  dex: Dex = content,
+  dex: Dex = regions[save.region ?? 'odense'],
 ): boolean {
   return Object.values(dex.zones).some(
     (z) => z.district === district && isZoneOpen(save, z.id, dex),
@@ -61,9 +61,9 @@ export function badgeNeededFor(arena: number): number {
 
 /** Whether arena `n` takes a challenge: its zone is open and the player has badge n − 1. */
 export function arenaReady(
-  save: Pick<SaveGame, 'zones' | 'badges'>,
+  save: Pick<SaveGame, 'zones' | 'badges'> & { region?: RegionId },
   arena: number,
-  dex: Dex = content,
+  dex: Dex = regions[save.region ?? 'odense'],
 ): boolean {
   const zone = Object.values(dex.zones).find((z) => z.arena === arena);
   return (
@@ -71,7 +71,7 @@ export function arenaReady(
   );
 }
 
-export function fieldAbilitiesUnlocked(save: SaveGame, dex: Dex = content): string[] {
+export function fieldAbilitiesUnlocked(save: SaveGame, dex: Dex = regions[save.region]): string[] {
   return Object.values(dex.fieldAbilities)
     .filter((f) => save.badges.includes(f.badge) || save.devAbilities.includes(f.id))
     .map((f) => f.id);
@@ -127,7 +127,7 @@ export function recoversAt(save: SaveGame, uid: string): number | null {
 export function naturalRecovery(
   save: SaveGame,
   nowSeconds: number,
-  dex: Dex = content,
+  dex: Dex = regions[save.region],
 ): { save: SaveGame; recovered: string[] } {
   const due = Object.entries(save.faintedSince)
     .filter(([, since]) => nowSeconds - since >= RECOVERY_SECONDS)
@@ -142,7 +142,7 @@ export function naturalRecovery(
   };
 }
 
-export function healTeam(save: SaveGame, dex: Dex = content): SaveGame {
+export function healTeam(save: SaveGame, dex: Dex = regions[save.region]): SaveGame {
   return { ...save, team: save.team.map((c) => healCreature(c, dex)) };
 }
 
@@ -161,8 +161,14 @@ function markDistrict(map: Record<string, number[]>, speciesId: string, district
 // ---------------------------------------------------------------------------
 // Onboarding
 
-export function chooseStarter(save: SaveGame, speciesId: string, dex: Dex = content): SaveGame {
+export function chooseStarter(
+  save: SaveGame,
+  speciesId: string,
+  dex: Dex = regions[save.region],
+): SaveGame {
   if (save.starter) throw new Error('A starter was already chosen');
+  if (!dex.starters.includes(speciesId))
+    throw new Error(`${speciesId} is not a starter in ${dex.region}`);
   const [uid, next] = freshUid(save);
   const creature = createCreature(speciesId, STARTER_LEVEL, uid, dex);
   return {
@@ -177,18 +183,21 @@ export function chooseStarter(save: SaveGame, speciesId: string, dex: Dex = cont
 }
 
 /**
- * The tutorial creature: a common folk creature at level 3, caught with an easy rate
- * (the dex passed to the battle gets a raised catch rate for this one species, see
- * `tutorialDex`).
+ * The tutorial creature: a common creature at level 3 (each region names its own, P27:
+ * Odense's is the folk creature Torvdue), caught with an easy rate (the dex passed to the
+ * battle gets a raised catch rate for this one species, see `tutorialDex`).
  */
-export const TUTORIAL_SPECIES = 'torvdue';
+export function tutorialSpecies(dex: Dex = content): string {
+  if (!dex.tutorial) throw new Error(`${dex.region} has no tutorial creature yet`);
+  return dex.tutorial;
+}
 export const TUTORIAL_LEVEL = 3;
 /** GDD catch formula with this rate and a basic charm: at full HP ≈ 33%, at 1 HP ≈ 100%. */
 export const TUTORIAL_CATCH_RATE = 255;
 
 export function tutorialDex(dex: Dex = content): Dex {
-  const s = dex.species[TUTORIAL_SPECIES];
-  if (!s) throw new Error(`Missing tutorial species ${TUTORIAL_SPECIES}`);
+  const s = dex.species[tutorialSpecies(dex)];
+  if (!s) throw new Error(`Missing tutorial species ${tutorialSpecies(dex)}`);
   return {
     ...dex,
     species: { ...dex.species, [s.id]: { ...s, catchRate: TUTORIAL_CATCH_RATE } },
@@ -224,7 +233,7 @@ export function spawnStatus(
     requires: string | null;
     rarity: 'common' | 'rare';
   },
-  dex: Dex = content,
+  dex: Dex = regions[save.region],
 ): SpawnStatus {
   if (save.team.length === 0) return 'noTeam';
   if (save.usedSpawns[spawn.id] !== undefined) return 'used';
@@ -264,7 +273,7 @@ export function startWildBattle(
   save: SaveGame,
   spawn: { id: string; speciesId: string; level: number; expiresAt: number; district: number },
   seed: number,
-  dex: Dex = content,
+  dex: Dex = regions[save.region],
 ): SaveGame {
   const state = createBattle(
     {
@@ -295,7 +304,11 @@ export function startWildBattle(
 /** The tutorial never runs out of charms: the guide tops the bag up to this many. */
 export const TUTORIAL_CHARMS = 3;
 
-export function startTutorialBattle(save: SaveGame, seed: number, dex: Dex = content): SaveGame {
+export function startTutorialBattle(
+  save: SaveGame,
+  seed: number,
+  dex: Dex = regions[save.region],
+): SaveGame {
   const tdex = tutorialDex(dex);
   if ((save.bag.basic_charm ?? 0) < TUTORIAL_CHARMS)
     save = { ...save, bag: { ...save.bag, basic_charm: TUTORIAL_CHARMS } };
@@ -304,7 +317,7 @@ export function startTutorialBattle(save: SaveGame, seed: number, dex: Dex = con
       kind: 'wild',
       sides: [
         playerSideConfig(save),
-        { team: [createCreature(TUTORIAL_SPECIES, TUTORIAL_LEVEL, 'w0', tdex)], ai: 'wild' },
+        { team: [createCreature(tutorialSpecies(dex), TUTORIAL_LEVEL, 'w0', tdex)], ai: 'wild' },
       ],
     },
     seed,
@@ -313,7 +326,7 @@ export function startTutorialBattle(save: SaveGame, seed: number, dex: Dex = con
   return {
     ...save,
     battle: { kind: 'tutorial', state },
-    seen: markDistrict(save.seen, TUTORIAL_SPECIES, 1),
+    seen: markDistrict(save.seen, tutorialSpecies(dex), 1),
   };
 }
 
@@ -330,7 +343,11 @@ export type TrainerStatus =
  * What happens when the player is inside a trainer or arena POI's radius (P22): trainers and
  * arenas wait until their zone is open; an arena's leader also needs badge n − 1.
  */
-export function trainerStatus(save: SaveGame, poi: Poi, dex: Dex = content): TrainerStatus | null {
+export function trainerStatus(
+  save: SaveGame,
+  poi: Poi,
+  dex: Dex = regions[save.region],
+): TrainerStatus | null {
   if (poi.kind === 'restStop' || poi.kind === 'market') return null;
   if (!isZoneOpen(save, poi.zone, dex)) return { kind: 'zoneLocked', zone: poi.zone };
   if (poi.kind === 'arena' && poi.arena > 1 && !save.badges.includes(poi.arena - 1))
@@ -348,7 +365,7 @@ export function startTrainerBattle(
   poiId: string,
   trainerId: string,
   seed: number,
-  dex: Dex = content,
+  dex: Dex = regions[save.region],
 ): SaveGame {
   const trainer = dex.trainers[trainerId];
   if (!trainer) throw new Error(`Unknown trainer ${trainerId}`);
@@ -411,7 +428,7 @@ export function applyChoice(
 export function answerPending(
   save: SaveGame,
   answer: number | boolean | null,
-  dex: Dex = content,
+  dex: Dex = regions[save.region],
 ): SaveGame {
   const [choice, ...rest] = save.pending;
   if (!choice) return save;
@@ -451,7 +468,7 @@ export function finishBattle(
   save: SaveGame,
   finalState: BattleState,
   events: readonly BattleEvent[],
-  dex: Dex = content,
+  dex: Dex = regions[save.region],
 ): BattleOutcome {
   const battle = save.battle;
   if (!battle) throw new Error('No active battle');
@@ -532,7 +549,7 @@ export function buyItem(
   save: SaveGame,
   itemId: string,
   count = 1,
-  dex: Dex = content,
+  dex: Dex = regions[save.region],
 ): SaveGame | null {
   const item = dex.items[itemId];
   if (!item?.price || count < 1 || !marketStock(save, dex).includes(itemId)) return null;
@@ -546,7 +563,7 @@ export function sellItem(
   save: SaveGame,
   itemId: string,
   count = 1,
-  dex: Dex = content,
+  dex: Dex = regions[save.region],
 ): SaveGame | null {
   const price = sellPrice(itemId, dex);
   const have = save.bag[itemId] ?? 0;
@@ -587,7 +604,7 @@ export function visitRestStop(
   save: SaveGame,
   poi: Poi,
   nowSeconds: number,
-  dex: Dex = content,
+  dex: Dex = regions[save.region],
 ): RestResult {
   if (poi.kind !== 'restStop') throw new Error(`${poi.id} is not a rest stop`);
   const needsHeal = save.team.some(
@@ -631,7 +648,12 @@ export function canUseItem(c: CreatureInstance, itemId: string, dex: Dex = conte
  * Adds items to the bag. For now only the Settings "Test items" button uses it (owner: a
  * way to test revive items before the game hands them out); content decides real sources.
  */
-export function addToBag(save: SaveGame, itemId: string, n = 1, dex: Dex = content): SaveGame {
+export function addToBag(
+  save: SaveGame,
+  itemId: string,
+  n = 1,
+  dex: Dex = regions[save.region],
+): SaveGame {
   if (!dex.items[itemId]) throw new Error(`Unknown item ${itemId}`);
   if (!Number.isInteger(n) || n < 1) throw new Error(`Bad item count ${n}`);
   return { ...save, bag: { ...save.bag, [itemId]: (save.bag[itemId] ?? 0) + n } };
@@ -642,7 +664,7 @@ export function applyItem(
   save: SaveGame,
   itemId: string,
   uid: string,
-  dex: Dex = content,
+  dex: Dex = regions[save.region],
 ): SaveGame {
   if ((save.bag[itemId] ?? 0) <= 0) throw new Error(`No ${itemId} in the bag`);
   const item = dex.items[itemId];
@@ -712,7 +734,7 @@ export function canTeach(
   save: SaveGame,
   c: CreatureInstance,
   abilityId: string,
-  dex: Dex = content,
+  dex: Dex = regions[save.region],
 ): TeachCheck {
   const ability = dex.fieldAbilities[abilityId];
   if (!ability || !fieldAbilitiesUnlocked(save, dex).includes(abilityId)) return 'locked';
@@ -732,7 +754,7 @@ export function teachFieldAbility(
   uid: string,
   abilityId: string,
   forgetIndex: number | null,
-  dex: Dex = content,
+  dex: Dex = regions[save.region],
 ): SaveGame {
   const update = (c: CreatureInstance): CreatureInstance => {
     if (c.uid !== uid) return c;

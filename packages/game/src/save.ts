@@ -1,5 +1,5 @@
 import type { BattleState, CreatureInstance } from '@oml/engine';
-import { content, StatusSchema } from '@oml/data';
+import { content, REGION_IDS, StatusSchema, type RegionId } from '@oml/data';
 import { z } from 'zod';
 
 /**
@@ -10,8 +10,13 @@ import { z } from 'zod';
  * spawns are kept only until they expire (≤ 15 min) and are pruned on every save. Route
  * progress (P22, owner decision) is kept as numbered checkpoints of the game's own routes:
  * no coordinates, no times, never sent anywhere.
+ *
+ * Campaigns (P27, v11): every region is its own campaign. The save's progress fields belong to
+ * the region being played (`region`); the other regions' campaigns are parked in `campaigns`
+ * and swapped in when the player enters that region (`switchCampaign`). The seed, the uid
+ * counter and the settings are shared.
  */
-export const SAVE_VERSION = 10;
+export const SAVE_VERSION = 11;
 
 export type OnboardingStep = 'safety' | 'location' | 'starter' | 'tutorial' | 'done';
 
@@ -51,8 +56,37 @@ export interface JournalProgress {
   restStops: string[];
 }
 
+/** The save fields that belong to one region's campaign (P27). */
+export const CAMPAIGN_KEYS = [
+  'onboarding',
+  'starter',
+  'team',
+  'storage',
+  'bag',
+  'badges',
+  'zones',
+  'coins',
+  'defeatedTrainers',
+  'seen',
+  'caught',
+  'lastRestock',
+  'usedSpawns',
+  'devAbilities',
+  'battle',
+  'pending',
+  'journal',
+  'faintedSince',
+] as const;
+export type CampaignKey = (typeof CAMPAIGN_KEYS)[number];
+/** One region's progress (P27): parked in `SaveGame.campaigns` while another is played. */
+export type Campaign = Pick<SaveGame, CampaignKey>;
+
 export interface SaveGame {
   version: typeof SAVE_VERSION;
+  /** The region whose campaign is being played: the progress fields below are its (P27). */
+  region: RegionId;
+  /** The other regions' campaigns, parked (never the one in `region`). */
+  campaigns: Partial<Record<RegionId, Campaign>>;
   /** Player seed (hex): seeds the player's own randomness, e.g. the tutorial creature. */
   seed: string;
   onboarding: OnboardingStep;
@@ -102,6 +136,8 @@ export const DEFAULT_SETTINGS: Settings = {
 export function newSave(seed: string, language: Settings['language'] = 'da'): SaveGame {
   return {
     version: SAVE_VERSION,
+    region: 'odense',
+    campaigns: {},
     seed,
     onboarding: 'safety',
     starter: null,
@@ -167,31 +203,49 @@ const Battle = z.discriminatedUnion('kind', [
     .strict(),
 ]);
 
+const campaignShape = {
+  onboarding: z.enum(['safety', 'location', 'starter', 'tutorial', 'done']),
+  starter: z.string().nullable(),
+  team: z.array(Creature).max(6),
+  storage: z.array(Creature),
+  bag: Counts,
+  badges: z.array(z.number().int().min(1).max(8)),
+  zones: z.array(z.string()),
+  coins: z.number().int().min(0),
+  defeatedTrainers: z.array(z.string()),
+  seen: Districts,
+  caught: Districts,
+  lastRestock: z.record(z.number()),
+  usedSpawns: z.record(z.number()),
+  devAbilities: z.array(z.string()),
+  battle: Battle.nullable(),
+  pending: z.array(
+    z.discriminatedUnion('kind', [
+      z.object({ kind: z.literal('learn'), uid: z.string(), moveId: z.string() }).strict(),
+      z.object({ kind: z.literal('evolve'), uid: z.string(), into: z.string() }).strict(),
+    ]),
+  ),
+  journal: z
+    .object({
+      reached: z.array(z.number().int().min(1).max(8)),
+      routes: z.record(z.array(z.number().int().min(0))),
+      wildMetres: z.record(z.number().min(0)),
+      restStops: z.array(z.string()),
+    })
+    .strict(),
+  faintedSince: z.record(z.number()),
+};
+export const CampaignSchema = z.object(campaignShape).strict();
+
 export const SaveSchema = z
   .object({
     version: z.literal(SAVE_VERSION),
+    region: z.enum(REGION_IDS),
+    campaigns: z
+      .object(Object.fromEntries(REGION_IDS.map((r) => [r, CampaignSchema.optional()])))
+      .strict(),
     seed: z.string().min(1),
-    onboarding: z.enum(['safety', 'location', 'starter', 'tutorial', 'done']),
-    starter: z.string().nullable(),
-    team: z.array(Creature).max(6),
-    storage: z.array(Creature),
-    bag: Counts,
-    badges: z.array(z.number().int().min(1).max(8)),
-    zones: z.array(z.string()),
-    coins: z.number().int().min(0),
-    defeatedTrainers: z.array(z.string()),
-    seen: Districts,
-    caught: Districts,
-    lastRestock: z.record(z.number()),
-    usedSpawns: z.record(z.number()),
-    devAbilities: z.array(z.string()),
-    battle: Battle.nullable(),
-    pending: z.array(
-      z.discriminatedUnion('kind', [
-        z.object({ kind: z.literal('learn'), uid: z.string(), moveId: z.string() }).strict(),
-        z.object({ kind: z.literal('evolve'), uid: z.string(), into: z.string() }).strict(),
-      ]),
-    ),
+    ...campaignShape,
     nextUid: z.number().int().min(1),
     settings: z
       .object({
@@ -205,17 +259,11 @@ export const SaveSchema = z
         fogDistance: z.number().int().min(800).max(1400),
       })
       .strict(),
-    journal: z
-      .object({
-        reached: z.array(z.number().int().min(1).max(8)),
-        routes: z.record(z.array(z.number().int().min(0))),
-        wildMetres: z.record(z.number().min(0)),
-        restStops: z.array(z.string()),
-      })
-      .strict(),
-    faintedSince: z.record(z.number()),
   })
-  .strict();
+  .strict()
+  .refine((s) => !(s.region in s.campaigns), {
+    message: 'the region being played is never also parked',
+  });
 
 // ---------------------------------------------------------------------------
 // Migrations
@@ -374,6 +422,9 @@ migrations[9] = (old) => {
   }
   return { ...old, version: 10, coins };
 };
+
+/** v10 → v11 (P27): campaigns per region. Everything so far was played in Odense. */
+migrations[10] = (old) => ({ ...old, version: 11, region: 'odense', campaigns: {} });
 
 /** Skilling paid for beating a trainer (D165): highest level × 25, leaders × 60. */
 export function payoutFor(t: { tier: 'trainer' | 'leader'; team: { level: number }[] }): number {

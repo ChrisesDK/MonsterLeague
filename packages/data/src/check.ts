@@ -1,5 +1,5 @@
 import type { Dex } from './index';
-import { MUNICIPALITIES, REGION_ID_PREFIX } from './municipalities';
+import { MUNICIPALITIES, PLAYABLE_MUNICIPALITIES, REGION_ID_PREFIX } from './municipalities';
 import type { I18nTable } from './schemas';
 import { TYPE_IDS } from './schemas';
 
@@ -207,6 +207,18 @@ function checkWorld(dex: Dex): string[] {
   for (const p of Object.values(dex.pois))
     if (p.kind === 'arena' && dex.arenaSites[p.arena - 1]?.poi !== p.id)
       errors.push(`arenas: arena ${p.arena} site must link its POI "${p.id}"`);
+  // Starters and the tutorial creature (P27): real species, starters never in the wild;
+  // a playable region must have them (its campaign starts with them).
+  for (const id of [...dex.starters, ...(dex.tutorial ? [dex.tutorial] : [])])
+    if (!dex.species[id]) errors.push(`zones: starter/tutorial species "${id}" does not exist`);
+  for (const id of dex.starters)
+    if (dex.spawns.some((sp) => sp.species === id))
+      errors.push(`zones: starter "${id}" must not spawn in the wild`);
+  if (
+    (PLAYABLE_MUNICIPALITIES as readonly string[]).includes(dex.region) &&
+    (dex.starters.length !== 3 || !dex.tutorial)
+  )
+    errors.push('zones: a playable region needs 3 starters and a tutorial creature');
   // Zones (P22): one start zone, one arena zone per arena in its own district.
   const zones = Object.values(dex.zones);
   if (zones.filter((z) => z.start).length !== 1) errors.push('zones: exactly one start zone');

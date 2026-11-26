@@ -103,6 +103,10 @@ export interface Dex {
   zones: Record<string, Zone>;
   /** Level band [min, max] per district 1–8. */
   districtBands: Record<number, [number, number]>;
+  /** P27: the region's starter species (empty until its creatures exist). */
+  starters: string[];
+  /** P27: the onboarding tutorial's creature (null until its creatures exist). */
+  tutorial: string | null;
   /** Journal side goals per district. */
   sideGoals: SideGoal[];
 }
@@ -160,6 +164,8 @@ export function parseContent(raw: RawContent, region: RegionId = 'odense'): Dex 
       return {
         zones: indexById(z.zones, 'zone'),
         districtBands: Object.fromEntries(z.districts.map((d) => [d.id, d.wildLevels])),
+        starters: z.starters ?? [],
+        tutorial: z.tutorial ?? null,
       };
     })(),
     sideGoals: GoalsFileSchema.parse(raw.goals).sideGoals,

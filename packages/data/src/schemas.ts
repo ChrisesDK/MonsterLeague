@@ -434,6 +434,12 @@ export type Zone = z.infer<typeof ZoneSchema>;
 export const ZonesFileSchema = z
   .object({
     region: id,
+    /**
+     * P27: the region's three starter species (its own campaign's choice) and the creature of
+     * the onboarding tutorial. Required once the region is playable (checked by validate).
+     */
+    starters: z.array(id).length(3).optional(),
+    tutorial: id.optional(),
     /** Level bands per district (GDD World table). */
     districts: z
       .array(
