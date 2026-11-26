@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
-import { content } from '@oml/data';
+import { regions, type RegionId } from '@oml/data';
 import type { Translate } from '../i18n';
 import { parseGpx, type SimLocation, type SimState } from './location';
 import sampleGpx from './sample-walk.gpx?raw';
 
 interface Props {
   t: Translate;
+  /** The campaign's region: its routes are the walks on offer (P27). */
+  region?: RegionId;
   sim: SimLocation;
   useSim: boolean;
   onUseSim: (on: boolean) => void;
@@ -13,7 +15,7 @@ interface Props {
 }
 
 /** Dev GPS simulator controls (dev builds and #/dev/map only). */
-export function SimPanel({ t, sim, useSim, onUseSim, onTeleportMode }: Props) {
+export function SimPanel({ t, region = 'odense', sim, useSim, onUseSim, onTeleportMode }: Props) {
   const [state, setState] = useState<SimState>(sim.state);
   const [teleport, setTeleport] = useState(false);
   const [open, setOpen] = useState(false);
@@ -21,7 +23,7 @@ export function SimPanel({ t, sim, useSim, onUseSim, onTeleportMode }: Props) {
   const walks = useMemo(
     () => [
       { id: 'sample', label: t('sim.sample'), points: parseGpx(sampleGpx) },
-      ...Object.values(content.routes)
+      ...Object.values(regions[region].routes)
         .sort((a, b) => a.number - b.number)
         .map((r) => ({
           id: r.id,
@@ -29,7 +31,7 @@ export function SimPanel({ t, sim, useSim, onUseSim, onTeleportMode }: Props) {
           points: r.path.map(([lng, lat]) => ({ lat, lng })),
         })),
     ],
-    [t],
+    [t, region],
   );
   const [walkId, setWalkId] = useState('sample');
   const route = walks.find((w) => w.id === walkId)!.points;

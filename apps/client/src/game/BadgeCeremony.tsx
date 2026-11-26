@@ -1,6 +1,6 @@
 import { useEffect, type CSSProperties } from 'react';
 import { badgeUrl } from '@oml/art';
-import { content } from '@oml/data';
+import { regions, type RegionId } from '@oml/data';
 import { obedienceLevel } from '@oml/game';
 import type { Translate } from '../i18n';
 import { buzz } from '../ui/feedback';
@@ -18,10 +18,13 @@ const CONFETTI = Array.from({ length: 28 }, (_, i) => ({
 export function BadgeCeremony({
   t,
   arena,
+  region = 'odense',
   onDone,
 }: {
   t: Translate;
   arena: number;
+  /** P27: the campaign's region (its own badges and arenas). */
+  region?: RegionId;
   onDone: () => void;
 }) {
   const badges = Array.from({ length: arena }, (_, i) => i + 1);
@@ -48,14 +51,18 @@ export function BadgeCeremony({
         <p className="muted">{t('ceremony.kicker')}</p>
         <h1>{t(`badge.${arena}.name`)}</h1>
       </header>
-      <img className="ceremony-badge" src={badgeUrl(arena)} alt={t(`badge.${arena}.name`)} />
+      <img
+        className="ceremony-badge"
+        src={badgeUrl(arena, true, region)}
+        alt={t(`badge.${arena}.name`)}
+      />
       <ul className="ceremony-list">
         <li>{t('ceremony.obedience', { level: obedienceLevel(badges) })}</li>
         {arena < 8 && (
           <li>
             {t('ceremony.nextArena', {
               place: t(`arenaSite.${arena + 1}.name`),
-              zone: t(`zone.${content.arenaSites[arena]!.zone}.name`),
+              zone: t(`zone.${regions[region].arenaSites[arena]!.zone}.name`),
             })}
           </li>
         )}

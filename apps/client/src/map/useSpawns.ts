@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import type { RegionId } from '@oml/data';
 import { coarseCellsAround } from './geo';
 import {
   fetchSpawnList,
@@ -30,7 +31,10 @@ export function useWindow(): number {
  * neighbour near an edge) for the current and next window, caches them until they expire,
  * and falls back to the cache without a connection.
  */
-export function useSpawns(position: { lat: number; lng: number } | null): {
+export function useSpawns(
+  position: { lat: number; lng: number } | null,
+  region: RegionId = 'odense',
+): {
   spawns: ApiSpawn[];
   status: SpawnStatus;
   window: number;
@@ -61,7 +65,9 @@ export function useSpawns(position: { lat: number; lng: number } | null): {
           ['next', window + 1],
         ] as [WindowParam, number][]) {
           const key = `${cell}:${w}`;
-          const cached = await getList(cell, w, now);
+          const got = await getList(cell, w, now);
+          // a list cached for another region's campaign is not this one's (P27)
+          const cached = got && got.region === region ? got : null;
           if (cached) {
             anyCached = true;
             if (alive) setLists((m) => (m.get(key) === cached ? m : new Map(m).set(key, cached)));
@@ -71,8 +77,8 @@ export function useSpawns(position: { lat: number; lng: number } | null): {
           inFlight.current.add(key);
           if (alive && param === 'current') setStatus((s) => (s === 'ok' ? s : 'loading'));
           try {
-            const list = await fetchSpawnList(base, cell, param);
-            const drift = checkServiceVersions(list.versions);
+            const list = await fetchSpawnList(base, cell, param, fetch, region);
+            const drift = checkServiceVersions(list.versions, undefined, region);
             if (alive) setVersionDrift((d) => (d.join() === drift.join() ? d : drift));
             await putList(list);
             anyFetched = true;
@@ -93,7 +99,7 @@ export function useSpawns(position: { lat: number; lng: number } | null): {
     return () => {
       alive = false;
     };
-  }, [base, cellsKey, window]);
+  }, [base, cellsKey, window, region]);
 
   const spawns = useMemo(() => {
     const out: ApiSpawn[] = [];

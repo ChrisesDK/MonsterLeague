@@ -116,7 +116,7 @@ export function BattleScreen({
   reduceMotion: reduceMotionSetting = false,
 }: Props) {
   const [state, setState] = useState(initial);
-  const [view, setView] = useState<BattleView>(() => viewFromState(initial));
+  const [view, setView] = useState<BattleView>(() => viewFromState(initial, dex));
   const [log, setLog] = useState<string>('');
   const [anim, setAnim] = useState<Anim | null>(null);
   const [busy, setBusy] = useState(false);
@@ -174,7 +174,7 @@ export function BattleScreen({
   async function play(prev: BattleState, result: TurnResult) {
     setBusy(true);
     skip.current = false;
-    let v = viewFromState(prev);
+    let v = viewFromState(prev, dex);
     for (const event of result.events) {
       if (!alive.current) return;
       v = applyEvent(v, event, prev);
@@ -193,7 +193,7 @@ export function BattleScreen({
       if (!skip.current) await wait(text ? textMs : silentMs);
     }
     if (!alive.current) return;
-    const final = viewFromState(result.state);
+    const final = viewFromState(result.state, dex);
     setView([
       { ...final[0], caught: v[0].caught },
       { ...final[1], caught: v[1].caught },
@@ -269,7 +269,7 @@ export function BattleScreen({
             {c.status && <span className="badge">{t(`status.short.${c.status}`)}</span>}
           </span>
           <span className="muted">
-            {c.hp}/{getMaxHp(c)}
+            {c.hp}/{getMaxHp(c, dex)}
           </span>
         </button>
       ))}
@@ -295,7 +295,7 @@ export function BattleScreen({
             data-item={itemId}
             disabled={busy || !usable(itemId)}
             onClick={() => {
-              if (content.items[itemId]?.kind === 'charm') submit({ type: 'catch', itemId });
+              if (dex.items[itemId]?.kind === 'charm') submit({ type: 'catch', itemId });
               else {
                 setPendingItem(itemId);
                 setPanel('target');
@@ -319,7 +319,7 @@ export function BattleScreen({
     const choice = choices[0]!;
     const current = team ?? state.sides[0].team;
     const before = current.find((c) => c.uid === choice.uid)!;
-    const next = applyChoice(current, choice, value);
+    const next = applyChoice(current, choice, value, dex);
     const after = next.find((c) => c.uid === choice.uid)!;
     const name = creatureName(before, t);
     if (choice.kind === 'learn') {
@@ -449,8 +449,8 @@ export function BattleScreen({
         </button>
       </div>
       <section className="arena-field">
-        <Combatant side={1} view={view[1]} anim={anim} t={t} />
-        <Combatant side={0} view={view[0]} anim={anim} t={t} />
+        <Combatant side={1} view={view[1]} anim={anim} t={t} dex={dex} />
+        <Combatant side={0} view={view[0]} anim={anim} t={t} dex={dex} />
         {burst && !reducedMotion && (
           <div
             key={burst.n}
@@ -521,13 +521,15 @@ function Combatant({
   view,
   anim,
   t,
+  dex,
 }: {
   side: SideIndex;
   view: CreatureView;
   anim: Anim | null;
   t: Translate;
+  dex: Dex;
 }) {
-  const species = content.species[view.speciesId]!;
+  const species = dex.species[view.speciesId]!;
   const hpPct = Math.max(0, Math.min(100, (100 * view.hp) / view.maxHp));
   const hpClass = hpPct > 50 ? 'ok' : hpPct > 20 ? 'warn' : 'low';
   const animCls = anim && anim.uid === view.uid ? anim.cls : '';
@@ -568,7 +570,7 @@ function Combatant({
         <img src={spriteUrl(view.speciesId)} alt="" draggable={false} />
         <span className="type-tag">
           {species.types.map((ty) => (
-            <span key={ty} style={{ background: content.typeColors[ty] }}>
+            <span key={ty} style={{ background: dex.typeColors[ty] }}>
               {t(`type.${ty}.icon`)}
             </span>
           ))}

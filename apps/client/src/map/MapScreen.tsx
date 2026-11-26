@@ -4,7 +4,7 @@ import maplibregl, { type GeoJSONSource, type Map as MlMap, type Marker } from '
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { Protocol } from 'pmtiles';
 import { hintMarkerUrl, markerUrl, spriteUrl, stampUrl } from '@oml/art';
-import { content, type Poi } from '@oml/data';
+import { MAP_FRAMES, PLAYABLE_MUNICIPALITIES, regions, type Poi, type RegionId } from '@oml/data';
 import type { BattleState, TurnResult } from '@oml/engine';
 import {
   bearingDeg,
@@ -17,6 +17,7 @@ import {
   noteDistrict,
   noteRoutes,
   noteWildWalk,
+  arriveInZone,
   placeTutorial,
   recoversAt,
   restockReadyAt,
@@ -30,7 +31,7 @@ import {
   tutorialDex,
   visitRestStop,
   TUTORIAL_LEVEL,
-  TUTORIAL_SPECIES,
+  tutorialSpecies,
   type BattleOutcome,
   type LatLng,
   type SaveGame,
@@ -47,7 +48,8 @@ import type { Region } from '@oml/spawn';
 import { latLngToCell } from 'h3-js';
 import { BattleScreen } from '../BattleScreen';
 import type { Translate } from '../i18n';
-import { districtAt, LEVEL_BANDS, loadRegion, zoneAt } from '../game/region';
+import { districtAt, levelBands, loadRegion, zoneAt } from '../game/region';
+import { regionAt } from './regionGeo';
 import { formatM, goalTitle } from '../game/goalText';
 import { Button, Toast } from '../ui/components';
 import { buzz } from '../ui/feedback';
@@ -83,7 +85,7 @@ import { GpsLocation, type LocationSource, type SimLocation } from './location';
 import { SimPanel } from './SimPanel';
 import type { ApiSpawn } from './spawnApi';
 import { applyPalette, NIGHT, paperStyle, PAPER } from './style';
-import { markerElement, PLAYER_SVG, STAR_SVG, START, addAttribution } from './markers';
+import { markerElement, PLAYER_SVG, STAR_SVG, START, addAttribution, regionStart } from './markers';
 import { addSkyWall } from './skyWall';
 import { ringPath, scanPhase, scanRing } from './scanRing';
 import { LoadingScreen } from './LoadingScreen';
@@ -99,7 +101,13 @@ import {
   pitchForZoom,
 } from './orbit';
 
-const POIS: Poi[] = Object.values(content.pois);
+const poisCache = new Map<RegionId, Poi[]>();
+/** The POIs of a region (P27: the map shows only the campaign's own region). */
+function regionPois(region: RegionId): Poi[] {
+  let list = poisCache.get(region);
+  if (!list) poisCache.set(region, (list = Object.values(regions[region].pois)));
+  return list;
+}
 /** POI radius circles appear when the player is this much outside the radius, or closer. */
 const RADIUS_SHOW_M = 60;
 /** GPS slack for POIs: a stamp works up to this far outside its radius (phone fixes wander). */
@@ -134,6 +142,13 @@ interface Props {
   sim?: SimLocation | null;
   /** Dev only: extra spawns injected by tests. */
   devSpawns?: ApiSpawn[];
+  /**
+   * P27: the player walks in another playable region than the campaign's (the game switches
+   * campaigns). Called on fixes inside that region; the game decides when it can switch.
+   */
+  onRegion?: (region: RegionId) => void;
+  /** Regions that can be played (default: the playable municipalities). */
+  playable?: readonly RegionId[];
 }
 
 export { START };
@@ -198,6 +213,8 @@ export function MapScreen({
   onGate3,
   sim = null,
   devSpawns,
+  onRegion,
+  playable = PLAYABLE_MUNICIPALITIES as readonly RegionId[],
 }: Props) {
   const [fixes, setFixes] = useState<Fix[]>([]);
   /** The newest accurate fix (kept through short GPS dips, see playableFix). */
@@ -259,7 +276,7 @@ export function MapScreen({
 
   useEffect(() => {
     let alive = true;
-    loadRegion()
+    loadRegion(saveRef.current.region)
       .then((r) => alive && setRegion(r))
       .catch(() => undefined);
     return () => {
@@ -305,7 +322,14 @@ export function MapScreen({
     () => (posLat !== undefined && posLng !== undefined ? { lat: posLat, lng: posLng } : null),
     [posLat, posLng],
   );
-  const service = useSpawns(position);
+  const service = useSpawns(position, save.region);
+
+  // P27: the campaign follows the region the player walks in.
+  useEffect(() => {
+    if (!position || !onRegion) return;
+    const r = regionAt(position, playable);
+    if (r && r !== saveRef.current.region) onRegion(r);
+  }, [position, onRegion, playable]);
   const { status, versionDrift } = service;
   const spawns = useMemo(
     () => (devSpawns?.length ? [...service.spawns, ...devSpawns] : service.spawns),
@@ -331,12 +355,16 @@ export function MapScreen({
     }
     const wild = wildPending.current >= 20 && district !== null ? wildPending.current : 0;
     if (wild > 0) wildPending.current = 0;
+    const zone = zoneAt(region, goodFix);
+    const cur = saveRef.current;
+    if (zone && regions[cur.region].zones[zone]?.opensOnArrival && !cur.zones.includes(zone))
+      setToast(t('map.islandOpen', { zone: t(`zone.${zone}.name`) }));
     update((s) => {
-      let next = noteRoutes(noteDistrict(s, district), goodFix);
+      let next = arriveInZone(noteRoutes(noteDistrict(s, district), goodFix), zone);
       if (wild > 0 && district !== null) next = noteWildWalk(next, district, wild);
       return next;
     });
-  }, [goodFix, fast, region, save.onboarding, update]);
+  }, [goodFix, fast, region, save.onboarding, update, t]);
 
   const visible = useMemo<Seen[]>(() => {
     if (!position || fast) return [];
@@ -345,7 +373,7 @@ export function MapScreen({
         s,
         d: distanceM(position, s),
         st: spawnStatus(save, { ...s, zone: zoneAt(region, s) ?? '' }),
-        level: spawnLevel(s, save.badges, LEVEL_BANDS),
+        level: spawnLevel(s, save.badges, levelBands(save.region)),
       }))
       .filter(({ d, st }) => d <= SHOW_RADIUS_M && st !== 'used')
       .sort((a, b) => a.d - b.d);
@@ -376,10 +404,11 @@ export function MapScreen({
       protocolAdded = true;
     }
     const base = appBase();
-    const start = last ?? START;
+    const start = last ?? regionStart(saveRef.current.region);
+    const [fw, fs, fe, fn] = MAP_FRAMES[saveRef.current.region]!;
     const map = new maplibregl.Map({
       container: containerRef.current,
-      style: paperStyle(base, `${base}tiles/odense.pmtiles`, paletteRef.current),
+      style: paperStyle(base, `${base}tiles/${saveRef.current.region}.pmtiles`, paletteRef.current),
       center: [start.lng, start.lat],
       zoom: CAMERA.zoom,
       minZoom: CAMERA.minZoom,
@@ -395,9 +424,10 @@ export function MapScreen({
           ? { center: new maplibregl.LngLat(drawnAt.current.lng, drawnAt.current.lat) }
           : {}),
       }),
+      // the region's map frame (D172): the basemap has tiles there and nowhere else
       maxBounds: [
-        [10.25, 55.32],
-        [10.52, 55.46],
+        [fw, fs],
+        [fe, fn],
       ],
       attributionControl: false,
       pitchWithRotate: false,
@@ -424,6 +454,7 @@ export function MapScreen({
     addAttribution(map, new maplibregl.AttributionControl({ compact: true }));
     map.on('load', () => {
       addWorldLayers(map, paletteRef.current, {
+        region: saveRef.current.region,
         mode: 'play',
         districtName: (id) => t(`district.${id}.name`),
         zoneName: (id) => t(`zone.${id}.name`),
@@ -497,7 +528,7 @@ export function MapScreen({
     if (devTools) (window as unknown as { __omlMap?: MlMap }).__omlMap = map;
 
     // POI stamps (drawn once; their image follows the beaten state).
-    for (const poi of POIS) {
+    for (const poi of regionPois(saveRef.current.region)) {
       const img = document.createElement('img');
       img.alt = '';
       img.src = stampUrl(poi.kind, poiDone(poi, saveRef.current));
@@ -595,7 +626,9 @@ export function MapScreen({
     const open = { zones: zonesKey ? zonesKey.split(',') : [] };
     setLockedZones(
       map,
-      Object.keys(content.zones).filter((z) => !isZoneOpen(open, z)),
+      Object.keys(regions[saveRef.current.region].zones).filter(
+        (z) => !isZoneOpen(open, z, regions[saveRef.current.region]),
+      ),
     );
   }, [zonesKey, mapReady]);
   const walked = save.journal.routes;
@@ -618,7 +651,7 @@ export function MapScreen({
 
   // Stamp images follow beaten trainers / won arenas.
   useEffect(() => {
-    for (const poi of POIS) {
+    for (const poi of regionPois(saveRef.current.region)) {
       const m = poiMarkers.current.get(poi.id);
       if (m) m.img.src = stampUrl(poi.kind, poiDone(poi, save));
     }
@@ -644,10 +677,12 @@ export function MapScreen({
     };
     (map.getSource('poi-radius') as GeoJSONSource | undefined)?.setData({
       type: 'FeatureCollection',
-      features: POIS.filter((p) => distanceM(playerAt, p) <= p.radius + RADIUS_SHOW_M).map((p) => ({
-        ...circle(p, p.radius),
-        properties: { colour: colours[p.kind], id: p.id },
-      })),
+      features: regionPois(saveRef.current.region)
+        .filter((p) => distanceM(playerAt, p) <= p.radius + RADIUS_SHOW_M)
+        .map((p) => ({
+          ...circle(p, p.radius),
+          properties: { colour: colours[p.kind], id: p.id },
+        })),
     });
   }, [playerAt, mapReady]);
 
@@ -746,7 +781,7 @@ export function MapScreen({
         if (el.style.visibility !== v) el.style.visibility = v;
       };
       for (const [id, { marker }] of poiMarkers.current) {
-        const poi = content.pois[id];
+        const poi = regions[saveRef.current.region].pois[id];
         if (poi) show(marker.getElement(), poi);
       }
       for (const m of markers.current.values()) {
@@ -808,7 +843,7 @@ export function MapScreen({
         return;
       }
       // GDD v1.7: the level is per player (own band for commons, district band for rares).
-      const level = spawnLevel(spawn, s.badges, LEVEL_BANDS);
+      const level = spawnLevel(spawn, s.badges, levelBands(s.region));
       update((cur) =>
         startWildBattle(cur, { ...spawn, level }, Math.floor(Math.random() * 2 ** 31)),
       );
@@ -823,7 +858,7 @@ export function MapScreen({
   const tapTutorial = useCallback(() => {
     if (!position || !tutorialSpot) return;
     const d = distanceM(position, tutorialSpot);
-    const name = t(`species.${TUTORIAL_SPECIES}.name`);
+    const name = t(`species.${tutorialSpecies(regions[saveRef.current.region])}.name`);
     setSelected('tutorial');
     if (d > BATTLE_RADIUS_M) {
       setToast(t('map.walkCloser', { name, m: Math.round(d) }));
@@ -841,7 +876,7 @@ export function MapScreen({
     const tut: Seen = {
       s: {
         id: 'tutorial',
-        speciesId: TUTORIAL_SPECIES,
+        speciesId: tutorialSpecies(regions[saveRef.current.region]),
         rarity: 'common',
         levelRoll: 0,
         district: 1,
@@ -892,9 +927,15 @@ export function MapScreen({
         // the pop-in plays once, when the icon appears (owner: deselecting replayed it, so
         // the icon seemed to shrink to nothing and grow back)
         el.classList.add('entering');
-        el.querySelector('.marker-body')!.addEventListener('animationend', (ev) => {
-          if ((ev as AnimationEvent).animationName === 'marker-in') el.classList.remove('entering');
+        // Ends with the animation, or when another animation replaces it (selecting the icon
+        // while it pops in cancels it, and it would replay on deselect), or after 1 s at most.
+        const entered = () => el.classList.remove('entering');
+        const body = el.querySelector('.marker-body')!;
+        body.addEventListener('animationend', (ev) => {
+          if ((ev as AnimationEvent).animationName === 'marker-in') entered();
         });
+        body.addEventListener('animationcancel', entered);
+        setTimeout(entered, 1000);
         el.dataset.spawnId = s.id;
         el.dataset.lat = String(s.lat);
         el.dataset.lng = String(s.lng);
@@ -1026,9 +1067,9 @@ export function MapScreen({
   // ---- POIs ----------------------------------------------------------------------------------
   // POIs in reach: the radius plus a little GPS slack (a phone fix is often 10–20 m off).
   const inReach = position
-    ? POIS.filter((p) => distanceM(position, p) <= p.radius + POI_SLACK_M).sort(
-        (a, b) => distanceM(position, a) - distanceM(position, b),
-      )
+    ? regionPois(saveRef.current.region)
+        .filter((p) => distanceM(position, p) <= p.radius + POI_SLACK_M)
+        .sort((a, b) => distanceM(position, a) - distanceM(position, b))
     : [];
   // Press-based (owner): no card pops up by itself; a card shows only for the stamp the
   // player tapped, while it stays in reach.
@@ -1157,7 +1198,7 @@ export function MapScreen({
       body = t('map.teamFainted');
     } else {
       const who = t(`trainer.${st.trainerId}.name`);
-      const isLeader = content.trainers[st.trainerId]?.tier === 'leader';
+      const isLeader = regions[saveRef.current.region].trainers[st.trainerId]?.tier === 'leader';
       body = `${who}: “${t(`trainer.${st.trainerId}.intro`)}”`;
       if (here.kind === 'arena')
         body = `${t(isLeader ? 'arena.leaderNext' : 'arena.juniorFirst')} ${body}`;
@@ -1198,12 +1239,18 @@ export function MapScreen({
       kind = 'tutorial';
       title =
         d <= BATTLE_RADIUS_M
-          ? t('tutorial.tap', { name: t(`species.${TUTORIAL_SPECIES}.name`) })
+          ? t('tutorial.tap', {
+              name: t(`species.${tutorialSpecies(regions[saveRef.current.region])}.name`),
+            })
           : t('tutorial.walk', { m: formatM(d) });
     } else if (save.onboarding !== 'done') {
       return null;
     } else if (teamFainted(save.team)) {
-      const r = nearestPoi(position, POIS, (p) => p.kind === 'restStop');
+      const r = nearestPoi(
+        position,
+        regionPois(saveRef.current.region),
+        (p) => p.kind === 'restStop',
+      );
       if (!r) return null;
       target = r.poi;
       kind = 'fainted';
@@ -1364,7 +1411,7 @@ export function MapScreen({
         t={t}
         speed={save.settings.speed}
         reduceMotion={save.settings.reduceMotion}
-        dex={isTutorial ? tutorialDex() : content}
+        dex={isTutorial ? tutorialDex(regions[save.region]) : regions[save.region]}
         onSave={() => undefined}
         onTurn={onTurn}
         askChoices={false}
@@ -1475,6 +1522,7 @@ export function MapScreen({
       )}
       {devTools && sim && (
         <SimPanel
+          region={save.region}
           t={t}
           sim={sim}
           useSim={useSim}

@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import { badgeUrl, spriteUrl } from '@oml/art';
-import { content } from '@oml/data';
+import { content, regions, type Dex } from '@oml/data';
 import { getMaxHp, getStats, xpForLevel, type CreatureInstance } from '@oml/engine';
 import {
   canTeach,
@@ -118,8 +118,9 @@ export function recoveryText(since: number | undefined, nowSeconds: number, t: T
 }
 
 function HpLine({ c, t }: { c: CreatureInstance; t: Translate }) {
+  const dex = useContext(RegionDex);
   const fainted = useContext(FaintedSince);
-  const max = getMaxHp(c);
+  const max = getMaxHp(c, dex);
   const pct = Math.max(0, Math.min(100, (100 * c.hp) / max));
   return (
     <span className="hp-line">
@@ -165,11 +166,16 @@ function CreatureRow({
   );
 }
 
+/** P27: the content of the campaign being played (its creatures, places, badges). */
+const RegionDex = createContext<Dex>(content);
+
 export function Screens(props: Props) {
   return (
-    <FaintedSince.Provider value={props.save.faintedSince}>
-      <ScreensInner {...props} />
-    </FaintedSince.Provider>
+    <RegionDex.Provider value={regions[props.save.region]}>
+      <FaintedSince.Provider value={props.save.faintedSince}>
+        <ScreensInner {...props} />
+      </FaintedSince.Provider>
+    </RegionDex.Provider>
   );
 }
 
@@ -285,11 +291,12 @@ function CreatureDetail({
   update: (fn: (s: SaveGame) => SaveGame) => void;
   onBack: () => void;
 }) {
+  const dex = useContext(RegionDex);
   const [forgetFor, setForgetFor] = useState<string | null>(null);
   const c = [...save.team, ...save.storage].find((x) => x.uid === uid);
   if (!c) return null;
-  const species = content.species[c.speciesId]!;
-  const stats = getStats(c);
+  const species = dex.species[c.speciesId]!;
+  const stats = getStats(c, dex);
   const inTeam = save.team.some((x) => x.uid === uid);
   const next = xpForLevel(c.level + 1);
   const abilities = fieldAbilitiesUnlocked(save).filter(
@@ -324,8 +331,8 @@ function CreatureDetail({
           <li key={m.moveId}>
             {t(`move.${m.moveId}.name`)}{' '}
             <span className="muted small">
-              {t(`type.${content.moves[m.moveId]!.type}.name`)} ·{' '}
-              {t('ui.pp', { pp: m.pp, max: content.moves[m.moveId]!.pp })}
+              {t(`type.${dex.moves[m.moveId]!.type}.name`)} ·{' '}
+              {t('ui.pp', { pp: m.pp, max: dex.moves[m.moveId]!.pp })}
             </span>
           </li>
         ))}
@@ -484,6 +491,7 @@ function BagScreen({
   update: (fn: (s: SaveGame) => SaveGame) => void;
   onBack: () => void;
 }) {
+  const dex = useContext(RegionDex);
   const [using, setUsing] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const items = Object.entries(save.bag).filter(([, n]) => n > 0);
@@ -501,7 +509,7 @@ function BagScreen({
       {items.length === 0 && <p className="muted">{t('ui.emptyBag')}</p>}
       <div className="list-panel">
         {items.map(([id, n]) => {
-          const usable = content.items[id]?.kind !== 'charm';
+          const usable = dex.items[id]?.kind !== 'charm';
           return (
             <button
               key={id}
@@ -529,7 +537,7 @@ function BagScreen({
                 key={c.uid}
                 className="btn list-btn"
                 data-testid={`use-on-${c.uid}`}
-                disabled={!canUseItem(c, using)}
+                disabled={!canUseItem(c, using, dex)}
                 onClick={() => {
                   update((s) => applyItem(s, using, c.uid));
                   setMsg(
@@ -569,10 +577,11 @@ function MarketScreen({
   update: (fn: (s: SaveGame) => SaveGame) => void;
   onBack: () => void;
 }) {
+  const dex = useContext(RegionDex);
   const [tab, setTab] = useState<'buy' | 'sell'>('buy');
   const [msg, setMsg] = useState<string | null>(null);
   const stock = marketStock(save);
-  const priced = Object.values(content.items).filter((i) => i.price !== undefined);
+  const priced = Object.values(dex.items).filter((i) => i.price !== undefined);
   const sellable = Object.entries(save.bag).filter(([id, n]) => n > 0 && sellPrice(id) > 0);
   const buy = (id: string) => {
     const next = buyItem(save, id);
@@ -654,8 +663,8 @@ function MarketScreen({
   );
 }
 
-function hintText(t: Translate, speciesId: string): string[] {
-  return guideHints(speciesId).map((h) => {
+function hintText(t: Translate, speciesId: string, dex: Dex): string[] {
+  return guideHints(speciesId, dex).map((h) => {
     const where = h.biomes.map((b) => t(`biome.${b}.near`)).join(t('guide.or'));
     const when = h.time === 'night' ? t('guide.atNight') : h.time === 'day' ? t('guide.byDay') : '';
     const needs = h.requires ? ` (${t(`fieldAbility.${h.requires}.name`)})` : '';
@@ -683,7 +692,7 @@ export function feedbackText(
   return [
     `[${kind}] ${message.trim()}`,
     '',
-    `Version ${APP_VERSION} · ${save.settings.language} · ${new Date().toISOString().slice(0, 10)}`,
+    `Version ${APP_VERSION} · ${save.region} · ${save.settings.language} · ${new Date().toISOString().slice(0, 10)}`,
     `Badges: ${save.badges.join(', ') || 'none'} · team: ${team || 'none'}`,
     `Caught ${Object.keys(save.caught).length} species · zones open ${save.zones.length} · trainers beaten ${save.defeatedTrainers.length} · coins ${save.coins}`,
   ].join('\n');
@@ -758,11 +767,12 @@ function FeedbackScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onB
 }
 
 function GuideScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBack: () => void }) {
+  const dex = useContext(RegionDex);
   const districts = [1, 2, 3, 4, 5, 6, 7, 8];
   const [district, setDistrict] = useState(1);
-  const inDistrict = Object.values(content.species).filter(
+  const inDistrict = Object.values(dex.species).filter(
     (s) =>
-      content.spawns.some((e) => e.species === s.id && e.district === district) ||
+      dex.spawns.some((e) => e.species === s.id && e.district === district) ||
       save.seen[s.id]?.includes(district),
   );
   const seenCount = Object.keys(save.seen).length;
@@ -773,7 +783,7 @@ function GuideScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBack
         {t('guide.totals', {
           seen: seenCount,
           caught: caughtCount,
-          all: Object.keys(content.species).length,
+          all: Object.keys(dex.species).length,
         })}
       </p>
       <div className="chip-row">
@@ -802,8 +812,8 @@ function GuideScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBack
                   {' '}
                   · {caught ? t('guide.caught') : seen ? t('guide.seen') : t('guide.unseen')}
                 </span>
-                {hintText(t, s.id)
-                  .filter((_, i) => guideHints(s.id)[i]!.district === district)
+                {hintText(t, s.id, dex)
+                  .filter((_, i) => guideHints(s.id, dex)[i]!.district === district)
                   .map((h) => (
                     <p key={h} className="muted small">
                       {h}
@@ -819,8 +829,9 @@ function GuideScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBack
 }
 
 function BadgesScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBack: () => void }) {
+  const dex = useContext(RegionDex);
   const next = [1, 2, 3, 4, 5, 6, 7, 8].find((a) => !save.badges.includes(a)) ?? null;
-  const arenaPoi = Object.values(content.pois).find((p) => p.kind === 'arena' && p.arena === next);
+  const arenaPoi = Object.values(dex.pois).find((p) => p.kind === 'arena' && p.arena === next);
   return (
     <Shell t={t} title={t('menu.badges')} onBack={onBack} testId="screen-badges">
       <div className="badge-grid">
@@ -832,7 +843,7 @@ function BadgesScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBac
               className={`badge-slot${earned ? ' earned' : ''}`}
               data-testid={`badge-${a}`}
             >
-              <img src={badgeUrl(a, earned)} alt="" />
+              <img src={badgeUrl(a, earned, save.region)} alt="" />
               <figcaption className="small">
                 {earned ? t(`badge.${a}.name`) : t('badges.empty', { n: a })}
               </figcaption>
@@ -850,8 +861,8 @@ function BadgesScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBac
       <p className="muted small">
         {t('team.obedience', { level: obedienceLevel(save.badges) })} ·{' '}
         {t('badges.zones', {
-          n: Object.keys(content.zones).filter((z) => isZoneOpen(save, z)).length,
-          of: Object.keys(content.zones).length,
+          n: Object.keys(dex.zones).filter((z) => isZoneOpen(save, z)).length,
+          of: Object.keys(dex.zones).length,
         })}
       </p>
       <p className="muted small" data-testid="badges-trainers">
@@ -1131,10 +1142,11 @@ function DevSection({
   save: SaveGame;
   update: (fn: (s: SaveGame) => SaveGame) => void;
 }) {
+  const dex = useContext(RegionDex);
   return (
     <section className="panel-section dev-section" data-testid="dev-abilities">
       <h2>{t('dev.abilities')}</h2>
-      {Object.values(content.fieldAbilities).map((f) => (
+      {Object.values(dex.fieldAbilities).map((f) => (
         <label key={f.id} className="toggle-row">
           <span>{t(`fieldAbility.${f.id}.name`)}</span>
           <input
@@ -1171,7 +1183,7 @@ const GOAL_ICON: Record<Goal['kind'], IconName> = {
 };
 
 function GoalRow({ g, t, current }: { g: Goal; t: Translate; current?: boolean }) {
-  const p = goalProgress(g, t);
+  const p = goalProgress(g, t, useContext(RegionDex));
   return (
     <ListRow
       icon={GOAL_ICON[g.kind]}

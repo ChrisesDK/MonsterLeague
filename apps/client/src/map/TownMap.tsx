@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import maplibregl, { type Map as MlMap, type Marker } from 'maplibre-gl';
 import { badgeUrl, stampUrl } from '@oml/art';
-import { content, MAP_FRAMES } from '@oml/data';
+import { MAP_FRAMES, regions, type RegionId } from '@oml/data';
 import {
   arenaReady,
   distanceM,
@@ -18,7 +18,7 @@ import { useBackHandler } from '../ui/backStack';
 import { Button } from '../ui/components';
 import { FynMap } from './FynMap';
 import { addWorldLayers, setLockedZones, setRouteProgress, setWild, setZoneLabels } from './layers';
-import { markerElement, PLAYER_SVG, STAR_SVG, START, addAttribution } from './markers';
+import { markerElement, PLAYER_SVG, STAR_SVG, addAttribution, regionStart } from './markers';
 import { paperStyle, type Palette } from './style';
 
 /**
@@ -59,20 +59,16 @@ function loadHidden(): LayerId[] {
 }
 
 /**
- * Odense Kommune with a margin: the map can't be dragged out of the region. Extra room above
- * and below, so a phone held upright can zoom out to the whole municipality.
- */
-/**
  * How far the Town Map pans (D172): the map frame plus a little room, so a tall phone
  * screen still fits at the furthest zoom; beyond the frame the map is plain.
  */
-export const REGION_BOUNDS: [[number, number], [number, number]] = (() => {
-  const [w, s, e, n] = MAP_FRAMES.odense!;
+export function regionBounds(region: RegionId): [[number, number], [number, number]] {
+  const [w, s, e, n] = MAP_FRAMES[region]!;
   return [
     [w - 0.02, s - 0.03],
     [e + 0.02, n + 0.03],
   ];
-})();
+}
 const TOWN = { minZoom: 10.3, maxZoom: 16, zoom: 13 };
 /** Below this zoom only arenas show (route numbers and rest stops would crowd the map). */
 const FAR_ZOOM = 11.8;
@@ -131,14 +127,16 @@ export function TownMap({
   const [selected, setSelected] = useState<Selected | null>(null);
   const [fyn, setFyn] = useState(false);
   useBackHandler(fyn, () => setFyn(false));
+  // P27: the Town Map is the campaign's own region
+  const dex = regions[save.region];
 
   useEffect(() => {
     if (!ref.current) return;
     const base = appBase();
-    const centre = position ?? START;
+    const centre = position ?? regionStart(save.region);
     const map = new maplibregl.Map({
       container: ref.current,
-      style: paperStyle(base, `${base}tiles/odense.pmtiles`, palette),
+      style: paperStyle(base, `${base}tiles/${save.region}.pmtiles`, palette),
       center: [centre.lng, centre.lat],
       zoom: TOWN.zoom,
       minZoom: TOWN.minZoom,
@@ -148,7 +146,7 @@ export function TownMap({
       dragRotate: false,
       pitchWithRotate: false,
       touchPitch: false,
-      maxBounds: REGION_BOUNDS,
+      maxBounds: regionBounds(save.region),
       attributionControl: false,
     });
     map.touchZoomRotate.disableRotation();
@@ -168,6 +166,7 @@ export function TownMap({
     onZoom();
     map.on('load', () => {
       addWorldLayers(map, palette, {
+        region: save.region,
         mode: 'town',
         districtName: (id) => t(`district.${id}.name`),
         zoneName: (id) => t(`zone.${id}.name`),
@@ -175,7 +174,7 @@ export function TownMap({
       });
       setReady(true);
     });
-    for (const site of content.arenaSites) {
+    for (const site of dex.arenaSites) {
       const img = document.createElement('img');
       img.alt = '';
       img.src = badgeUrl(site.arena);
@@ -190,7 +189,7 @@ export function TownMap({
       add(el, site);
     }
     // Destinations (D165): what each zone is, at its centre.
-    for (const z of Object.values(content.zones)) {
+    for (const z of Object.values(dex.zones)) {
       if (!z.icon) continue;
       const img = document.createElement('img');
       img.alt = '';
@@ -202,7 +201,7 @@ export function TownMap({
       add(el, z);
     }
     // Rest stops, markets and trainers as stamps (arenas stay badges).
-    for (const poi of Object.values(content.pois)) {
+    for (const poi of Object.values(dex.pois)) {
       if (poi.kind === 'arena') continue;
       const img = document.createElement('img');
       img.alt = '';
@@ -229,7 +228,7 @@ export function TownMap({
       );
       add(el, poi);
     }
-    for (const r of Object.values(content.routes)) {
+    for (const r of Object.values(dex.routes)) {
       const p = routeProgress(save, r);
       const el = markerElement(
         'button',
@@ -269,17 +268,17 @@ export function TownMap({
     const map = mapRef.current;
     if (!map || !ready) return;
     setWild(map, region);
-    setZoneLabels(map, (id) =>
+    setZoneLabels(map, save.region, (id) =>
       isZoneOpen(save, id)
         ? t(`zone.${id}.name`)
-        : `${t(`zone.${id}.name`)}\n${t('townMap.zoneLocked')}`,
+        : `${t(`zone.${id}.name`)}\n${t(dex.zones[id]?.opensOnArrival ? 'townMap.ferryIsland' : 'townMap.zoneLocked')}`,
     );
     setLockedZones(
       map,
-      Object.keys(content.zones).filter((z) => !isZoneOpen(save, z)),
+      Object.keys(dex.zones).filter((z) => !isZoneOpen(save, z)),
     );
     setRouteProgress(map, save);
-  }, [ready, region, save, t]);
+  }, [ready, region, save, t, dex]);
 
   // The filter (D165): hidden layers are remembered; route lines follow the routes toggle.
   useEffect(() => {
@@ -308,7 +307,7 @@ export function TownMap({
     let needs: string;
     let needsLabel = t('townMap.needs');
     if (selected.kind === 'arena') {
-      const site = content.arenaSites[selected.arena - 1]!;
+      const site = dex.arenaSites[selected.arena - 1]!;
       title = t('townMap.arenaLabel', { place: t(`arenaSite.${site.arena}.name`) });
       icon = badgeUrl(site.arena);
       zone = site.zone;
@@ -323,28 +322,31 @@ export function TownMap({
               ? t('townMap.later')
               : t('townMap.arenaOpen');
     } else if (selected.kind === 'route') {
-      const r = content.routes[selected.id]!;
+      const r = dex.routes[selected.id]!;
       const p = routeProgress(save, r);
       title = t(`route.${r.id}.name`);
       icon = '';
       zone = isZoneOpen(save, r.from) ? r.to : r.from;
       distance = away(midpoint(r.path));
       needsLabel = t('townMap.progress');
-      needs = p.done
-        ? t('townMap.routeDone', { m: formatM(r.lengthM) })
-        : t('townMap.routeProgress', {
-            pct: routePercent(p.n, p.of),
-            m: formatM(r.lengthM),
-            wild: Math.round(r.wildShare * 100),
-          });
+      needs =
+        r.kind === 'ferry'
+          ? t('townMap.ferryRoute', { m: formatM(r.lengthM) })
+          : p.done
+            ? t('townMap.routeDone', { m: formatM(r.lengthM) })
+            : t('townMap.routeProgress', {
+                pct: routePercent(p.n, p.of),
+                m: formatM(r.lengthM),
+                wild: Math.round(r.wildShare * 100),
+              });
     } else if (selected.kind === 'zone') {
-      const z = content.zones[selected.id]!;
+      const z = dex.zones[selected.id]!;
       title = t(`zone.${z.id}.name`);
       icon = stampUrl(z.icon ?? 'field');
       zone = z.id;
       distance = away(z);
       needsLabel = t('townMap.destination');
-      const routesIn = Object.values(content.routes)
+      const routesIn = Object.values(dex.routes)
         .filter((r) => r.from === z.id || r.to === z.id)
         .map((r) => r.number)
         .sort((a, b) => a - b);
@@ -353,7 +355,7 @@ export function TownMap({
         routes: routesIn.join(', '),
       })}${next ? ` · ${t('townMap.walkRoute', { n: next.number })}` : ''}`;
     } else if (selected.kind === 'trainer') {
-      const poi = content.pois[selected.id]!;
+      const poi = dex.pois[selected.id]!;
       const trainerId = poi.kind === 'trainer' ? poi.trainer : '';
       title = t(`trainer.${trainerId}.name`);
       const beaten = save.defeatedTrainers.includes(trainerId);
@@ -366,7 +368,7 @@ export function TownMap({
           ? t('townMap.needsZone', { zone: t(`zone.${poi.zone}.name`) })
           : t('townMap.trainerReady', { place: t(`poi.${poi.id}.name`) });
     } else {
-      const poi = content.pois[selected.id]!;
+      const poi = dex.pois[selected.id]!;
       title = t(`poi.${poi.id}.name`);
       icon = stampUrl(poi.kind === 'market' ? 'market' : 'restStop');
       zone = poi.zone;

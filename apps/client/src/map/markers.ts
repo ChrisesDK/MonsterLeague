@@ -1,7 +1,15 @@
+import { regions, type RegionId } from '@oml/data';
 import type { IControl, Map as MlMap } from 'maplibre-gl';
 /** Shared map marker pieces (play view and Town Map). */
 
 export const START = { lat: 55.3998, lng: 10.3852 }; // Kongens Have
+
+/** Where a map starts before the first fix: Odense's START, else the region's start zone (P27). */
+export function regionStart(region: RegionId): { lat: number; lng: number } {
+  if (region === 'odense') return START;
+  const z = Object.values(regions[region].zones).find((x) => x.start)!;
+  return { lat: z.lat, lng: z.lng };
+}
 
 /** The player's map figure: a traveller in a red knitted cap with a satchel (original). */
 export const PLAYER_SVG = `<svg viewBox="0 0 44 52" width="44" height="52" aria-hidden="true">

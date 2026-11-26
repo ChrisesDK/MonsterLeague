@@ -1,12 +1,12 @@
+import type { RegionId } from '@oml/data';
 import { getResolution, isValidCell } from 'h3-js';
 import { COARSE_RES } from './geo';
 
 /**
  * The ONLY module that talks to the spawn service. Privacy (GDD): the request carries the
  * region, one coarse H3 res-7 cell (~5 km²) and the window: never coordinates, never a
- * res-10 cell, never an id. A test enforces this.
+ * res-10 cell, never an id. A test enforces this. The region is the campaign being played (P27).
  */
-export const REGION = 'odense';
 
 export interface ApiSpawn {
   id: string;
@@ -44,11 +44,16 @@ export function serviceUrl(
   return env.DEV ? 'http://localhost:8787' : null;
 }
 
-export function spawnRequestUrl(base: string, cell: string, window: WindowParam): string {
+export function spawnRequestUrl(
+  base: string,
+  cell: string,
+  window: WindowParam,
+  region: RegionId = 'odense',
+): string {
   if (!isValidCell(cell) || getResolution(cell) !== COARSE_RES) {
     throw new Error(`Refusing to send a non-res-${COARSE_RES} cell to the spawn service`);
   }
-  const params = new URLSearchParams({ region: REGION, cell, window });
+  const params = new URLSearchParams({ region, cell, window });
   return `${base}/v1/spawns?${params}`;
 }
 
@@ -57,8 +62,9 @@ export async function fetchSpawnList(
   cell: string,
   window: WindowParam,
   fetchImpl: typeof fetch = fetch,
+  region: RegionId = 'odense',
 ): Promise<SpawnList> {
-  const res = await fetchImpl(spawnRequestUrl(base, cell, window), {
+  const res = await fetchImpl(spawnRequestUrl(base, cell, window, region), {
     method: 'GET',
     credentials: 'omit',
     referrerPolicy: 'no-referrer',

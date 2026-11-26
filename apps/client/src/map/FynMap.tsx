@@ -160,6 +160,8 @@ export function FynMap({
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [later, setLater] = useState<MunicipalityId | null>(null);
+  /** P27: another playable region: its campaign starts when the player walks there. */
+  const [elsewhere, setElsewhere] = useState<MunicipalityId | null>(null);
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
 
@@ -196,7 +198,10 @@ export function FynMap({
       map.setMaxZoom(z + 1.6);
     });
     const open = (id: string) => {
-      if (playable(id)) onCloseRef.current();
+      setLater(null);
+      setElsewhere(null);
+      if (id === save.region) onCloseRef.current();
+      else if (playable(id)) setElsewhere(id as MunicipalityId);
       else setLater(id as MunicipalityId);
     };
     map.on('click', 'land', (e) => {
@@ -208,6 +213,10 @@ export function FynMap({
 
     // Each playable region's badges, under its name (grey until won).
     const markers: maplibregl.Marker[] = [];
+    const badgesOf = (id: string) =>
+      id === save.region
+        ? save.badges
+        : ((save.campaigns as Record<string, { badges: number[] } | undefined>)[id]?.badges ?? []);
     for (const id of PLAYABLE_MUNICIPALITIES) {
       const el = document.createElement('button');
       el.type = 'button';
@@ -216,9 +225,9 @@ export function FynMap({
       el.setAttribute('aria-label', t('fynMap.open', { region: t(`municipality.${id}.name`) }));
       for (let n = 1; n <= 8; n++) {
         const img = document.createElement('img');
-        img.src = badgeUrl(n);
+        img.src = badgeUrl(n, true, id as typeof save.region);
         img.alt = '';
-        if (!save.badges.includes(n)) img.className = 'locked';
+        if (!badgesOf(id).includes(n)) img.className = 'locked';
         el.appendChild(img);
       }
       el.addEventListener('click', () => open(id));
@@ -253,6 +262,25 @@ export function FynMap({
       <p className="fyn-hint" data-testid="fyn-hint">
         {t('fynMap.hint')}
       </p>
+      {elsewhere && (
+        <div className="town-map-card" data-testid="fynmap-elsewhere">
+          <div className="poi-card">
+            <div>
+              <strong>{t(`municipality.${elsewhere}.name`)}</strong>
+              <p className="small">
+                {t('fynMap.walkThere', { region: t(`municipality.${elsewhere}.name`) })}
+              </p>
+            </div>
+            <Button
+              round
+              variant="ghost"
+              icon="close"
+              aria-label={t('fynMap.close')}
+              onClick={() => setElsewhere(null)}
+            />
+          </div>
+        </div>
+      )}
       {later && (
         <div className="town-map-card" data-testid="fynmap-card">
           <div className="poi-card">

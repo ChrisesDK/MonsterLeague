@@ -4,12 +4,10 @@
  * whose walked part is drawn solid (the progress bar) and the player's accuracy ring.
  */
 import type { GeoJSONSource, Map as MlMap } from 'maplibre-gl';
-import { content, MAP_FRAMES } from '@oml/data';
-import { routeCheckpoints, type SaveGame } from '@oml/game';
-import districtsRaw from '@oml/data/content/odense/districts.geojson?raw';
-import zonesRaw from '@oml/data/content/odense/zones.geojson?raw';
-import bordersRaw from '@oml/data/content/odense/borders.geojson?raw';
+import { regions, type RegionId } from '@oml/data';
+import { routeCheckpoints, walkingRoutes, type SaveGame } from '@oml/game';
 import type { Region } from '@oml/spawn';
+import { regionGeo } from './regionGeo';
 import { cellsToMultiPolygon } from 'h3-js';
 import type { Palette } from './style';
 
@@ -27,105 +25,30 @@ export function glyphSafe(text: string): string {
   return out;
 }
 
-export const districtsGeo = JSON.parse(districtsRaw) as GeoJSON.FeatureCollection<
-  GeoJSON.Polygon | GeoJSON.MultiPolygon,
-  { id: number }
->;
-
-export const zonesGeo = JSON.parse(zonesRaw) as GeoJSON.FeatureCollection<
-  GeoJSON.Polygon | GeoJSON.MultiPolygon,
-  { id: string; district: number; kind: string }
->;
-
-/**
- * D172: the world with the map frame cut out. On the Town Map it is painted plain, so the
- * basemap ends in an even edge 2 km around the region instead of at ragged tile edges.
- */
-const frameMaskGeo: GeoJSON.Feature = (() => {
-  const [w, s, e, n] = MAP_FRAMES.odense!;
-  return {
-    type: 'Feature',
-    properties: {},
-    geometry: {
-      type: 'Polygon',
-      coordinates: [
-        [
-          [-180, -85],
-          [180, -85],
-          [180, 85],
-          [-180, 85],
-          [-180, -85],
-        ],
-        [
-          [w, s],
-          [w, n],
-          [e, n],
-          [e, s],
-          [w, s],
-        ],
-      ],
-    },
-  };
-})();
-
-/** The world with the region cut out (for the wash outside the region). */
-const outsideGeo: GeoJSON.Feature = (() => {
-  const borders = JSON.parse(bordersRaw) as GeoJSON.FeatureCollection<
-    GeoJSON.LineString,
-    { kind: string }
-  >;
-  const holes = borders.features
-    .filter((f) => f.properties.kind === 'region')
-    .map((f) => [...f.geometry.coordinates].reverse());
-  return {
-    type: 'Feature',
-    properties: {},
-    geometry: {
-      type: 'Polygon',
-      coordinates: [
-        [
-          [-180, -85],
-          [180, -85],
-          [180, 85],
-          [-180, 85],
-          [-180, -85],
-        ],
-        ...holes,
-      ],
-    },
-  };
-})();
-
-export const routesGeo: GeoJSON.FeatureCollection<
-  GeoJSON.LineString,
-  { id: string; number: number; kind: string }
-> = {
-  type: 'FeatureCollection',
-  features: Object.values(content.routes).map((r) => ({
-    type: 'Feature',
-    properties: { id: r.id, number: r.number, kind: r.kind },
-    geometry: { type: 'LineString', coordinates: r.path },
-  })),
-};
-
 /**
  * One label point per zone (its centre) and per district (its arena site): the outlines are
  * multi-part, and a label per part repeated names (P22).
  */
-export function zonePoints(label: (id: string) => string): GeoJSON.FeatureCollection {
+export function zonePoints(
+  region: RegionId,
+  label: (id: string) => string,
+): GeoJSON.FeatureCollection {
   return {
     type: 'FeatureCollection',
-    features: Object.values(content.zones).map((z) => ({
+    features: Object.values(regions[region].zones).map((z) => ({
       type: 'Feature',
       properties: { id: z.id, name: glyphSafe(label(z.id)) },
       geometry: { type: 'Point', coordinates: [z.lng, z.lat] },
     })),
   };
 }
-export function districtPoints(label: (id: number) => string): GeoJSON.FeatureCollection {
+export function districtPoints(
+  region: RegionId,
+  label: (id: number) => string,
+): GeoJSON.FeatureCollection {
   return {
     type: 'FeatureCollection',
-    features: content.arenaSites.map((a) => ({
+    features: regions[region].arenaSites.map((a) => ({
       type: 'Feature',
       properties: { id: a.district, name: glyphSafe(label(a.district)) },
       geometry: { type: 'Point', coordinates: [a.lng, a.lat] },
@@ -137,9 +60,11 @@ export function districtPoints(label: (id: number) => string): GeoJSON.FeatureCo
  * The walked parts of every route (P22 progress bar): a piece between two neighbouring
  * checkpoints is drawn once both were reached.
  */
-export function walkedGeo(save: Pick<SaveGame, 'journal'>): GeoJSON.FeatureCollection {
+export function walkedGeo(
+  save: Pick<SaveGame, 'journal'> & { region?: RegionId },
+): GeoJSON.FeatureCollection {
   const features: GeoJSON.Feature[] = [];
-  for (const r of Object.values(content.routes)) {
+  for (const r of walkingRoutes(regions[save.region ?? 'odense'])) {
     const got = new Set(save.journal.routes[r.id] ?? []);
     if (got.size < 2) continue;
     const cps = routeCheckpoints(r);
@@ -246,12 +171,14 @@ export function addWorldLayers(
   map: MlMap,
   p: Palette,
   opts: {
+    region: RegionId;
     mode: 'play' | 'town';
     districtName: (id: number) => string;
     zoneName: (id: string) => string;
     routeName: (id: string) => string;
   },
 ): void {
+  const geo = regionGeo(opts.region);
   setPatterns(map, p);
   map.addSource('wild', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
   map.addLayer({
@@ -266,8 +193,8 @@ export function addWorldLayers(
   map.addSource('zones', {
     type: 'geojson',
     data: {
-      ...zonesGeo,
-      features: zonesGeo.features.map((f) => ({
+      ...geo.zones,
+      features: geo.zones.features.map((f) => ({
         ...f,
         properties: { ...f.properties, name: glyphSafe(opts.zoneName(f.properties.id)) },
       })),
@@ -282,7 +209,7 @@ export function addWorldLayers(
   });
   // D172: nothing of the basemap shows beyond the map frame on the Town Map.
   if (opts.mode === 'town') {
-    map.addSource('frame-mask', { type: 'geojson', data: frameMaskGeo });
+    map.addSource('frame-mask', { type: 'geojson', data: geo.frameMask });
     map.addLayer({
       id: 'frame-mask',
       type: 'fill',
@@ -291,7 +218,7 @@ export function addWorldLayers(
     });
   }
   // A pale wash outside the region, so the region stands out (D162).
-  map.addSource('outside', { type: 'geojson', data: outsideGeo });
+  map.addSource('outside', { type: 'geojson', data: geo.outside });
   map.addLayer({
     id: 'outside-region',
     type: 'fill',
@@ -299,8 +226,8 @@ export function addWorldLayers(
     paint: { 'fill-color': p.earth, 'fill-opacity': opts.mode === 'town' ? 0.6 : 0.45 },
   });
   // Borders (D162): the region's outline solid, district and zone edges dotted. Each edge is
-  // one line in borders.odense.geojson, so no two lines lie on top of each other.
-  map.addSource('borders', { type: 'geojson', data: JSON.parse(bordersRaw) });
+  // one line in the region's borders.geojson, so no two lines lie on top of each other.
+  map.addSource('borders', { type: 'geojson', data: geo.borders });
   const dotted = { 'line-cap': 'round', 'line-join': 'round' } as const;
   map.addLayer({
     id: 'zone-edges',
@@ -340,17 +267,35 @@ export function addWorldLayers(
   map.addSource('routes', {
     type: 'geojson',
     data: {
-      ...routesGeo,
-      features: routesGeo.features.map((f) => ({
+      ...geo.routes,
+      features: geo.routes.features.map((f) => ({
         ...f,
         properties: { ...f.properties, name: glyphSafe(opts.routeName(f.properties.id)) },
       })),
+    },
+  });
+  // P27: a ferry crossing is a loose dotted line over the water (sailed, never walked).
+  map.addLayer({
+    id: 'ferry-routes',
+    type: 'line',
+    source: 'routes',
+    filter: ['==', ['get', 'kind'], 'ferry'],
+    layout: { 'line-cap': 'round', 'line-join': 'round' },
+    paint: {
+      'line-color': p.route,
+      'line-width':
+        opts.mode === 'town'
+          ? ['interpolate', ['linear'], ['zoom'], 10, 2.5, 14, 4]
+          : ['interpolate', ['linear'], ['zoom'], 15, 3.5, 18.5, 7],
+      'line-dasharray': [0.1, 4],
+      'line-opacity': 0.8,
     },
   });
   map.addLayer({
     id: 'routes',
     type: 'line',
     source: 'routes',
+    filter: ['!=', ['get', 'kind'], 'ferry'],
     layout: { 'line-cap': 'butt', 'line-join': 'round' },
     paint: {
       'line-color': ['case', ['==', ['get', 'kind'], 'explore'], p.routeExplore, p.route],
@@ -401,8 +346,11 @@ export function addWorldLayers(
     },
   });
   if (opts.mode === 'town') {
-    map.addSource('zone-points', { type: 'geojson', data: zonePoints(opts.zoneName) });
-    map.addSource('district-points', { type: 'geojson', data: districtPoints(opts.districtName) });
+    map.addSource('zone-points', { type: 'geojson', data: zonePoints(opts.region, opts.zoneName) });
+    map.addSource('district-points', {
+      type: 'geojson',
+      data: districtPoints(opts.region, opts.districtName),
+    });
     map.addLayer({
       id: 'zone-labels',
       type: 'symbol',
@@ -445,8 +393,14 @@ export function setWild(map: MlMap, region: Region | null): void {
 }
 
 /** District labels (Town Map: locked ones also name the badge they need). */
-export function setDistrictLabels(map: MlMap, label: (id: number) => string): void {
-  (map.getSource('district-points') as GeoJSONSource | undefined)?.setData(districtPoints(label));
+export function setDistrictLabels(
+  map: MlMap,
+  region: RegionId,
+  label: (id: number) => string,
+): void {
+  (map.getSource('district-points') as GeoJSONSource | undefined)?.setData(
+    districtPoints(region, label),
+  );
 }
 
 /** Dims the zones the player hasn't opened yet (P22). */
@@ -456,12 +410,15 @@ export function setLockedZones(map: MlMap, locked: string[]): void {
 }
 
 /** Zone labels (Town Map: locked ones say how to open them). */
-export function setZoneLabels(map: MlMap, label: (id: string) => string): void {
-  (map.getSource('zone-points') as GeoJSONSource | undefined)?.setData(zonePoints(label));
+export function setZoneLabels(map: MlMap, region: RegionId, label: (id: string) => string): void {
+  (map.getSource('zone-points') as GeoJSONSource | undefined)?.setData(zonePoints(region, label));
 }
 
 /** Draws the walked parts of the routes (call when the save's route progress changes). */
-export function setRouteProgress(map: MlMap, save: Pick<SaveGame, 'journal'>): void {
+export function setRouteProgress(
+  map: MlMap,
+  save: Pick<SaveGame, 'journal'> & { region?: RegionId },
+): void {
   (map.getSource('routes-walked') as GeoJSONSource | undefined)?.setData(walkedGeo(save));
 }
 

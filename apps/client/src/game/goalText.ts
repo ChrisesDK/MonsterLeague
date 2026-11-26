@@ -1,4 +1,4 @@
-import { content } from '@oml/data';
+import { content, type Dex } from '@oml/data';
 import { ROUTE_DONE_SHARE, type Goal } from '@oml/game';
 import type { Translate } from '../i18n';
 
@@ -28,11 +28,15 @@ export function goalTitle(g: Goal, t: Translate): string {
 }
 
 /** Progress as text and a 0–1 share (null when the goal has no counter). */
-export function goalProgress(g: Goal, t: Translate): { text: string; share: number } | null {
+export function goalProgress(
+  g: Goal,
+  t: Translate,
+  dex: Dex = content,
+): { text: string; share: number } | null {
   if (!g.progress) return null;
   const { n, of } = g.progress;
   if (g.kind === 'route') {
-    const route = content.routes[g.routeId!]!;
+    const route = dex.routes[g.routeId!]!;
     // a route is finished at 90 % of its checkpoints; show progress towards that
     const pct = routePercent(n, of);
     return { text: t('goal.routeProgress', { pct, m: route.lengthM }), share: pct / 100 };

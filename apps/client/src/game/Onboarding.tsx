@@ -1,10 +1,8 @@
 import type { ReactNode } from 'react';
 import { spriteUrl } from '@oml/art';
-import { content } from '@oml/data';
+import type { Dex } from '@oml/data';
 import type { Translate } from '../i18n';
 import { Logo } from '../ui/Logo';
-
-const STARTERS = ['gnistkat', 'aaodder', 'boegling'] as const;
 
 /** D176: the welcome is shown once per phone (a view flag, not game progress). */
 const WELCOME_KEY = 'oml.welcome.v1';
@@ -143,22 +141,35 @@ export function LocationScreen({
 
 export function StarterScreen({
   t,
+  dex,
   onPick,
+  newRegion = false,
   children,
 }: {
   t: Translate;
+  /** The campaign's region (P27): each region has its own three starters. */
+  dex: Dex;
   onPick: (speciesId: string) => void;
+  /** P27: the player has a campaign in another region already (a new region, a new start). */
+  newRegion?: boolean;
   children?: ReactNode;
 }) {
   return (
     <main className="setup onboarding" data-testid="onboarding-starter">
       <header className="setup-header">
         <h1>{t('onboarding.starter.title')}</h1>
+        {newRegion && (
+          <p data-testid="onboarding-new-region">
+            {t('onboarding.starter.newRegion', {
+              region: t(`municipality.${dex.region}.name`),
+            })}
+          </p>
+        )}
         <p>{t('onboarding.starter.body')}</p>
       </header>
       <div className="starter-grid">
-        {STARTERS.map((id) => {
-          const s = content.species[id]!;
+        {dex.starters.map((id) => {
+          const s = dex.species[id]!;
           return (
             <button
               key={id}

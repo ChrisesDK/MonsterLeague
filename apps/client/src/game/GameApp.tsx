@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { content } from '@oml/data';
+import { regions, type RegionId } from '@oml/data';
 import { createCreature } from '@oml/engine';
 import { latLngToCell } from 'h3-js';
 import {
   chooseStarter,
+  switchCampaign,
   openZones,
   routeCheckpoints,
   naturalRecovery,
@@ -12,7 +13,7 @@ import {
   type SaveGame,
 } from '@oml/game';
 import { recordGate3, type Gate3Event, type Gate3Session } from '@oml/playtest';
-import type { Locale, Translate } from '../i18n';
+import { makeT, type Locale, type Translate } from '../i18n';
 import { MapScreen } from '../map/MapScreen';
 import { START } from '../map/markers';
 import { useNight } from '../ui/night';
@@ -34,6 +35,7 @@ import { useBackHandler } from '../ui/backStack';
 import { loadGame, startOver, writeGame, type Loaded } from './store';
 
 interface Props {
+  /** The app's texts (shared UI); the game makes its own with the campaign's region (P27). */
   t: Translate;
   locale: Locale;
   onLocale: (l: Locale) => void;
@@ -70,6 +72,10 @@ export interface OmlDev {
   /** P22: mark every checkpoint of a route as reached (then its zones open as usual). */
   walkRoute: (routeId: string) => void;
   sim: () => SimLocation | null;
+  /** P27: play another region's campaign (dev; the map does this when the player walks there). */
+  enterRegion: (region: RegionId) => void;
+  /** Ends onboarding without a starter (dev: look at a region whose creatures don't exist yet). */
+  finishOnboarding: () => void;
 }
 
 function applySettingsToDocument(save: SaveGame | null, night: boolean) {
@@ -81,11 +87,17 @@ function applySettingsToDocument(save: SaveGame | null, night: boolean) {
   root.dataset.theme = night ? 'night' : 'day';
 }
 
-export function GameApp({ t, locale, onLocale, devTools, welcome = false }: Props) {
+export function GameApp({ t: appT, locale, onLocale, devTools, welcome = false }: Props) {
   const [showWelcome, setShowWelcome] = useState(() => welcome && !welcomeSeen());
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [save, setSave] = useState<SaveGame | null>(null);
   const saveRef = useRef<SaveGame | null>(null);
+  // P27: the texts of the campaign being played (shared UI + that region's names)
+  const region: RegionId = save?.region ?? 'odense';
+  const t = useMemo(
+    () => (region === 'odense' ? appT : makeT(locale, region)),
+    [appT, locale, region],
+  );
   const [screen, setScreen] = useState<ScreenId | null>(null);
   // the back gesture in a menu goes back one level (the game view asks to leave instead)
   useBackHandler(!!screen, () => {
@@ -148,6 +160,9 @@ export function GameApp({ t, locale, onLocale, devTools, welcome = false }: Prop
     if (save && save.settings.language !== locale) onLocale(save.settings.language);
   }, [save, locale, onLocale, night]);
 
+  // P27: walking into another playable region plays its campaign (after any battle).
+  const onRegion = useCallback((r: RegionId) => update((s) => switchCampaign(s, r)), [update]);
+
   const onGate3 = useCallback((e: Gate3Event) => {
     setGate3((cur) => {
       if (!cur || cur.endedAt) return cur;
@@ -168,7 +183,14 @@ export function GameApp({ t, locale, onLocale, devTools, welcome = false }: Prop
       save: () => saveRef.current,
       skipOnboarding: (starter = 'gnistkat') =>
         update((s) => ({
-          ...(s.starter ? s : chooseStarter(s, starter)),
+          ...(s.starter
+            ? s
+            : chooseStarter(
+                s,
+                regions[s.region].starters.includes(starter)
+                  ? starter
+                  : regions[s.region].starters[0]!,
+              )),
           onboarding: 'done',
         })),
       setTeamLevel: (level) =>
@@ -188,8 +210,8 @@ export function GameApp({ t, locale, onLocale, devTools, welcome = false }: Prop
           const target =
             s.team.find((c) => c.uid === uid) ??
             s.team.find((c) =>
-              content.species[c.speciesId]?.types.some((ty) =>
-                content.fieldAbilities[id]?.types.includes(ty),
+              regions[s.region].species[c.speciesId]?.types.some((ty) =>
+                regions[s.region].fieldAbilities[id]?.types.includes(ty),
               ),
             );
           if (!target) return s;
@@ -231,7 +253,7 @@ export function GameApp({ t, locale, onLocale, devTools, welcome = false }: Prop
         update((s) => ({ ...s, zones: [...new Set([...s.zones, ...zones])].sort() })),
       walkRoute: (routeId) =>
         update((s) => {
-          const r = content.routes[routeId];
+          const r = regions[s.region].routes[routeId];
           if (!r) return s;
           const all = routeCheckpoints(r).map((_, i) => i);
           return openZones({
@@ -240,6 +262,8 @@ export function GameApp({ t, locale, onLocale, devTools, welcome = false }: Prop
           });
         }),
       sim: () => sim,
+      enterRegion: (r) => update((s) => switchCampaign(s, r)),
+      finishOnboarding: () => update((s) => ({ ...s, onboarding: 'done' })),
     };
     (window as unknown as { __omlDev?: OmlDev }).__omlDev = dev;
     return () => {
@@ -319,19 +343,28 @@ export function GameApp({ t, locale, onLocale, devTools, welcome = false }: Prop
   }
   if (save.onboarding === 'starter') {
     return (
-      <StarterScreen t={t} onPick={(id) => update((s) => chooseStarter(s, id))}>
+      <StarterScreen
+        t={t}
+        dex={regions[save.region]}
+        newRegion={Object.keys(save.campaigns).length > 0}
+        onPick={(id) => update((s) => chooseStarter(s, id))}
+      >
         {devSkip}
       </StarterScreen>
     );
   }
 
   if (ceremony !== null) {
-    return <BadgeCeremony t={t} arena={ceremony} onDone={() => setCeremony(null)} />;
+    return (
+      <BadgeCeremony t={t} arena={ceremony} region={save.region} onDone={() => setCeremony(null)} />
+    );
   }
 
   return (
     <>
       <MapScreen
+        // P27: one map per region; a new campaign builds the map of its own region
+        key={save.region}
         t={t}
         devTools={devTools}
         save={save}
@@ -344,6 +377,7 @@ export function GameApp({ t, locale, onLocale, devTools, welcome = false }: Prop
         onGate3={gate3 && !gate3.endedAt ? onGate3 : undefined}
         sim={sim}
         devSpawns={devTools ? devSpawns : undefined}
+        onRegion={onRegion}
       />
       {save.pending.length > 0 && !save.battle && !screen && (
         <ChoiceModal t={t} save={save} update={update} />
