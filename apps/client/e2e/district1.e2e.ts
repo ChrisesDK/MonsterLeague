@@ -236,7 +236,8 @@ test('onboarding to badge 2 (districts 1 and 2, open wildlife), with reloads', a
   save = await devSave(page);
   expect(save.defeatedTrainers).toContain('route1_ole');
   expect((save as unknown as { coins: number }).coins).toBeGreaterThan(0);
-  expect(save.bag.clear_drops).toBe(1);
+  // the reward (route finds on Route 1 may add more Clear Drops, P28)
+  expect(save.bag.clear_drops).toBeGreaterThanOrEqual(1);
   // pressing the stamp again: the card says the trainer is beaten (no new battle)
   card = await tapPoi(page, 'trainer_ole');
   await expect(card).toHaveAttribute('data-state', 'beaten');

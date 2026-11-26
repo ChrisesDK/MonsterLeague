@@ -9,6 +9,7 @@
       "lat": 55.05894,
       "lng": 10.61936,
       "poi": "svb_arena1",
+      "fieldAbility": "nightseer",
       "note": "Frederiksø, the old harbour by the ferry quay"
     },
     {
@@ -29,6 +30,7 @@
       "lat": 55.04777,
       "lng": 10.66613,
       "poi": "svb_arena3",
+      "fieldAbility": "angler",
       "note": "Thurø By, the island village and harbour"
     },
     {
@@ -39,6 +41,7 @@
       "lat": 55.0357,
       "lng": 10.64041,
       "poi": "svb_arena4",
+      "fieldAbility": "homing",
       "note": "Troense, the old skipper village on the sound"
     },
     {
@@ -49,6 +52,7 @@
       "lat": 55.02526,
       "lng": 10.65194,
       "poi": "svb_arena5",
+      "fieldAbility": "sealbreaker",
       "note": "Valdemars Slot, the castle park on Tåsinge"
     },
     {
@@ -59,6 +63,7 @@
       "lat": 55.0985,
       "lng": 10.5085,
       "poi": "svb_arena6",
+      "fieldAbility": "runereader",
       "note": "Egebjerg Mølle, the mill on the hills north-west of town"
     },
     {
@@ -69,6 +74,7 @@
       "lat": 55.07252,
       "lng": 10.533,
       "poi": "svb_arena7",
+      "fieldAbility": "forager",
       "note": "Hvidkilde, the manor by its lake and woods (public road and paths; check on site)"
     },
     {

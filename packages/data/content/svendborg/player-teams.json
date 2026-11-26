@@ -6,12 +6,16 @@
       "starterLevel": 10,
       "team": [
         {
-          "speciesId": "svb_havnekat",
+          "speciesId": "svb_sildeling",
           "level": 9
         },
         {
-          "speciesId": "svb_egernling",
-          "level": 10
+          "speciesId": "svb_blaamusling",
+          "level": 9
+        },
+        {
+          "speciesId": "svb_strandskade",
+          "level": 9
         }
       ],
       "items": {
@@ -26,10 +30,14 @@
       "team": [
         {
           "speciesId": "svb_sildeling",
-          "level": 13
+          "level": 14
         },
         {
-          "speciesId": "svb_boegeegern",
+          "speciesId": "svb_blaamusling",
+          "level": 14
+        },
+        {
+          "speciesId": "svb_strandskade",
           "level": 14
         },
         {
@@ -49,7 +57,7 @@
       "starterLevel": 22,
       "team": [
         {
-          "speciesId": "svb_strandskade",
+          "speciesId": "svb_stimsild",
           "level": 21
         },
         {
@@ -57,11 +65,15 @@
           "level": 21
         },
         {
-          "speciesId": "svb_boegeegern",
-          "level": 22
+          "speciesId": "svb_strandskade",
+          "level": 21
         },
         {
           "speciesId": "svb_havnekat",
+          "level": 21
+        },
+        {
+          "speciesId": "svb_markhare",
           "level": 21
         }
       ],
@@ -77,19 +89,23 @@
       "starterLevel": 28,
       "team": [
         {
-          "speciesId": "svb_strandskade",
-          "level": 26
+          "speciesId": "svb_stimsild",
+          "level": 27
         },
         {
           "speciesId": "svb_hestemusling",
-          "level": 26
+          "level": 27
         },
         {
-          "speciesId": "svb_stimsild",
-          "level": 26
+          "speciesId": "svb_strandskade",
+          "level": 27
         },
         {
-          "speciesId": "svb_fyrvogter",
+          "speciesId": "svb_skibskat",
+          "level": 27
+        },
+        {
+          "speciesId": "svb_markhare",
           "level": 27
         }
       ],
@@ -105,19 +121,23 @@
       "starterLevel": 33,
       "team": [
         {
-          "speciesId": "svb_kystskade",
-          "level": 31
+          "speciesId": "svb_stimsild",
+          "level": 32
         },
         {
           "speciesId": "svb_hestemusling",
-          "level": 31
+          "level": 32
         },
         {
-          "speciesId": "svb_stimsild",
-          "level": 31
+          "speciesId": "svb_kystskade",
+          "level": 32
         },
         {
-          "speciesId": "svb_fyrvogter",
+          "speciesId": "svb_skibskat",
+          "level": 32
+        },
+        {
+          "speciesId": "svb_markhare",
           "level": 32
         }
       ],
@@ -133,20 +153,24 @@
       "starterLevel": 38,
       "team": [
         {
-          "speciesId": "svb_kystskade",
-          "level": 36
+          "speciesId": "svb_sildekonge",
+          "level": 37
         },
         {
-          "speciesId": "svb_maanehare",
-          "level": 36
+          "speciesId": "svb_hestemusling",
+          "level": 37
+        },
+        {
+          "speciesId": "svb_kystskade",
+          "level": 37
         },
         {
           "speciesId": "svb_skibskat",
-          "level": 36
+          "level": 37
         },
         {
-          "speciesId": "svb_kronegern",
-          "level": 36
+          "speciesId": "svb_maanehare",
+          "level": 37
         }
       ],
       "items": {
@@ -161,24 +185,28 @@
       "starterLevel": 43,
       "team": [
         {
-          "speciesId": "svb_kystskade",
-          "level": 41
+          "speciesId": "svb_sildekonge",
+          "level": 42
         },
         {
           "speciesId": "svb_hestemusling",
-          "level": 41
+          "level": 42
         },
         {
-          "speciesId": "svb_sildekonge",
-          "level": 41
+          "speciesId": "svb_kystskade",
+          "level": 42
         },
         {
-          "speciesId": "svb_kronegern",
-          "level": 41
+          "speciesId": "svb_skibskat",
+          "level": 42
         },
         {
-          "speciesId": "svb_aftenbakke",
-          "level": 41
+          "speciesId": "svb_maanehare",
+          "level": 42
+        },
+        {
+          "speciesId": "svb_skibskat",
+          "level": 42
         }
       ],
       "items": {
@@ -193,24 +221,28 @@
       "starterLevel": 46,
       "team": [
         {
-          "speciesId": "svb_maanehare",
-          "level": 44
+          "speciesId": "svb_sildekonge",
+          "level": 45
+        },
+        {
+          "speciesId": "svb_hestemusling",
+          "level": 45
+        },
+        {
+          "speciesId": "svb_kystskade",
+          "level": 45
         },
         {
           "speciesId": "svb_skibskat",
-          "level": 44
+          "level": 45
         },
         {
-          "speciesId": "svb_sildekonge",
-          "level": 44
+          "speciesId": "svb_maanehare",
+          "level": 45
         },
         {
-          "speciesId": "svb_kronegern",
-          "level": 44
-        },
-        {
-          "speciesId": "svb_aftenbakke",
-          "level": 44
+          "speciesId": "svb_skibskat",
+          "level": 45
         }
       ],
       "items": {

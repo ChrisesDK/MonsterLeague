@@ -4,99 +4,189 @@
 
 Every arena and trainer team in the game (`trainers.json` in the region content folder, placed by its `pois.json`). Leader levels are tuned so the expected player team (`player-teams.json`) wins 40–60 % neutral, 75–90 % with type advantage and 15–30 % with disadvantage (see [BALANCE.md](../../BALANCE.md)). Coins are paid on the first win: the highest level × 25, × 60 for leaders (D165).
 
+This is an open region (P28): leaders scale with the badges the player holds (tables below; tuned so a balanced team wins 40–60 % at every tier), and juniors and route trainers move with the player’s level band; the levels listed are those of their own district.
+
 ## Arenas
 
 ### Arena 1: The old harbour (Frederiksø) (spirit)
 
-Zone Svendborg centre, district 1 (wild levels 3–8). Badge: Lantern badge. Needs badge –.
+Zone Svendborg centre, district 1 (wild levels 3–8). Badge: Lantern badge. Open region (P28): any order; teaches Nightseer; juniors scale with the badges held.
 
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Ferryman Ole (`svb_arena1_junior`) | Havnekat 8, Sildeling 9 | – | 2× Basic Charm + 225 coins |
-| 2 | Harbour Master Karl (`svb_leader_spirit`) | Flagling 15 (Wisp Flicker, Blight Touch), Tågeling 11 (Wisp Flicker, Boulder Roll) | 2× Small Tonic | 1× Revive Leaf + 900 coins |
+| 2 | Harbour Master Karl (`svb_leader_spirit`) | Månehare 49, Aftenbakke 50, Tågefrue 49, Guldhøvding 49, Hyldemor 49, Kirkeugle 49 | 2× Small Tonic | 1× Revive Leaf + 3000 coins |
 
-Expected player team (balance sim): starter at 10, Havnekat 9, Egernling 10; items 2× Small Tonic.
+Leader by badges held (P28; the roster above at full strength, 0 with a coverage move):
+
+| Badges | Team | Items | Coins |
+|---|---|---|---|
+| 0 | Hareling 11, Flagling 12 | 1× Large Tonic | 720 |
+| 1 | Hareling 17, Flagling 18 | 2× Small Tonic | 1080 |
+| 2 | Hareling 17, Tågeling 17, Guldgubbe 17, Hyldeknop 17, Flagling 18 | 2× Large Tonic | 1080 |
+| 3 | Markhare 22, Tågeling 22, Guldgubbe 22, Hyldeknop 22, Flagling 23 | 1× Large Tonic | 1380 |
+| 4 | Markhare 29, Tågeling 29, Guldgubbe 29, Hyldeknop 29, Aftenbakke 30 | 2× Large Tonic | 1800 |
+| 5 | Månehare 36, Tågefrue 36, Guldgubbe 36, Hyldemor 36, Aftenbakke 37 | – | 2220 |
+| 6 | Månehare 42, Tågefrue 42, Guldhøvding 42, Hyldemor 42, Aftenbakke 43 | – | 2580 |
+| 7 | Månehare 45, Tågefrue 45, Guldhøvding 45, Hyldemor 45, Aftenbakke 46 | – | 2760 |
 
 ### Arena 2: Christiansminde (fire)
 
-Zone Christiansminde, district 2 (wild levels 8–14). Badge: Bonfire badge. Needs badge 1.
+Zone Christiansminde, district 2 (wild levels 8–14). Badge: Bonfire badge. Open region (P28): any order; juniors scale with the badges held.
 
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Lifeguard Mikkel (`svb_arena2_junior`) | Askeling 11, Hareling 12 | – | 3× Basic Charm + 300 coins |
-| 2 | Bonfire Keeper Sanne (`svb_leader_fire`) | Askeling 13 (Hearth Spark, Stoke Up, Sky Crackle), Søpindling 15 (Prickle Charge, Hunker Down, Grit Spray, Cobbler Kick), Fyrling 17 (Cobble Toss, Stoke Up, Cobbler Kick, Ember Hop) | – | 1× Revive Leaf + 1020 coins |
+| 2 | Bonfire Keeper Sanne (`svb_leader_fire`) | Skibskat 49, Fyrtårn 50, Bålfugl 49, Søpindsvin 49, Fyrtårn 49, Bålfugl 49 | – | 1× Revive Leaf + 3000 coins |
 
-Expected player team (balance sim): starter at 15, Sildeling 13, Bøgeegern 14, Havnekat 14; items 2× Small Tonic, 1× Large Tonic.
+Leader by badges held (P28; the roster above at full strength, 0 with a coverage move):
+
+| Badges | Team | Items | Coins |
+|---|---|---|---|
+| 0 | Havnekat 11, Askeling 11, Fyrling 12 | 1× Large Tonic | 720 |
+| 1 | Havnekat 15, Askeling 15, Søpindling 15, Fyrling 16 | 1× Large Tonic | 960 |
+| 2 | Skibskat 25, Askeling 25, Søpindling 25, Fyrvogter 26 | 2× Small Tonic | 1560 |
+| 3 | Skibskat 29, Bålfugl 29, Søpindling 29, Fyrvogter 30 | 2× Large Tonic | 1800 |
+| 4 | Skibskat 32, Bålfugl 32, Søpindsvin 32, Fyrvogter 33 | – | 1980 |
+| 5 | Skibskat 36, Bålfugl 36, Søpindsvin 36, Fyrvogter 36, Fyrvogter 37 | 2× Large Tonic | 2220 |
+| 6 | Skibskat 39, Bålfugl 39, Søpindsvin 39, Fyrtårn 39, Fyrtårn 40 | 3× Large Tonic | 2400 |
+| 7 | Skibskat 41, Bålfugl 41, Søpindsvin 41, Fyrtårn 41, Fyrtårn 42 | 3× Large Tonic | 2520 |
 
 ### Arena 3: Thurø (water)
 
-Zone Thurø, district 3 (wild levels 13–20). Badge: Island badge. Needs badge 2.
+Zone Thurø, district 3 (wild levels 13–20). Badge: Island badge. Open region (P28): any order; teaches Angler; juniors scale with the badges held.
 
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Sailor Freja (`svb_arena3_junior`) | Sildeling 16, Blåmusling 17 | – | 2× Good Charm + 425 coins |
-| 2 | Shipwright Hanne (`svb_leader_water`) | Brunfiskling 13, Havføl 23, Havål 26 (Sea Fog, Cobbler Kick, Brook Spout, Ripple Dash), Sundsæl 22 (Shoulder Shove, Sea Fog, Cobble Toss, Rinse and Mend) | 2× Large Tonic | 1× Revive Leaf + 1560 coins |
+| 2 | Shipwright Hanne (`svb_leader_water`) | Skibskat 49, Ålekonge 50, Sildekonge 49, Brunfisk 49, Havhest 49, Kystskade 49 | 2× Large Tonic | 1× Revive Leaf + 3000 coins |
 
-Expected player team (balance sim): starter at 22, Strandskade 21, Blåmusling 21, Bøgeegern 22, Havnekat 21; items 2× Small Tonic, 2× Large Tonic.
+Leader by badges held (P28; the roster above at full strength, 0 with a coverage move):
+
+| Badges | Team | Items | Coins |
+|---|---|---|---|
+| 0 | Havnekat 11, Ålling 12 | 2× Small Tonic | 720 |
+| 1 | Havnekat 18, Ålling 19 | 2× Small Tonic | 1140 |
+| 2 | Havnekat 23, Stimsild 23, Brunfiskling 23, Havål 24 | – | 1440 |
+| 3 | Skibskat 29, Stimsild 29, Brunfiskling 29, Havføl 29, Havål 30 | – | 1800 |
+| 4 | Skibskat 32, Stimsild 32, Brunfisk 32, Havføl 32, Havål 33 | 1× Large Tonic | 1980 |
+| 5 | Skibskat 37, Sildekonge 37, Brunfisk 37, Havføl 37, Ålekonge 38 | 2× Small Tonic | 2280 |
+| 6 | Skibskat 40, Sildekonge 40, Brunfisk 40, Havhest 40, Kystskade 40, Ålekonge 41 | 3× Large Tonic | 2460 |
+| 7 | Skibskat 43, Sildekonge 43, Brunfisk 43, Havhest 43, Kystskade 43, Ålekonge 44 | – | 2640 |
 
 ### Arena 4: Troense (storm)
 
-Zone Troense, district 4 (wild levels 19–26). Badge: Skipper badge. Needs badge 3.
+Zone Troense, district 4 (wild levels 19–26). Badge: Skipper badge. Open region (P28): any order; teaches Homing; juniors scale with the badges held.
 
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Mate Ida (`svb_arena4_junior`) | Strandskade 23, Askeling 24 | – | 3× Good Charm + 600 coins |
-| 2 | Skipper Jens (`svb_leader_storm`) | Havføl 24 (Sea Fog, Brook Spout, Gust Lance, Rinse and Mend), Kirkeugle 31 (Squall Slap, Gust Lance, Grave Chill, Sky Crackle), Havterne 33, Kirkeugle 29 | 2× Large Tonic | 1× Revive Leaf + 1980 coins |
+| 2 | Skipper Jens (`svb_leader_storm`) | Skibskat 49 (+Thorn Volley), Kirkeugle 50 (+Thorn Volley), Kystskade 49, Havhest 49, Bålfugl 49, Kronegern 49 | 2× Large Tonic | 1× Revive Leaf + 3000 coins |
 
-Expected player team (balance sim): starter at 28, Strandskade 26, Hestemusling 26, Stimsild 26, Fyrvogter 27; items 2× Small Tonic, 1× Large Tonic.
+Leader by badges held (P28; the roster above at full strength, 2 with a coverage move):
+
+| Badges | Team | Items | Coins |
+|---|---|---|---|
+| 0 | Havnekat 9, Strandskade 9, Uglunge 10 | 2× Small Tonic | 600 |
+| 1 | Havnekat 16, Strandskade 16, Uglunge 17 | 2× Small Tonic | 1020 |
+| 2 | Havnekat 23, Strandskade 23, Havføl 23, Askeling 23, Uglunge 24 | 2× Large Tonic | 1440 |
+| 3 | Skibskat 27, Strandskade 27, Havføl 27, Askeling 27, Kirkeugle 28 | 1× Large Tonic | 1680 |
+| 4 | Skibskat 30, Kystskade 30, Havføl 30, Bålfugl 30, Kirkeugle 31 | 1× Large Tonic | 1860 |
+| 5 | Skibskat 39, Kystskade 39, Havhest 39, Bålfugl 39, Kirkeugle 40 | 1× Large Tonic | 2400 |
+| 6 | Skibskat 46, Kystskade 46, Havhest 46, Bålfugl 46, Kirkeugle 47 | 3× Large Tonic | 2820 |
+| 7 | Skibskat 46, Kystskade 46, Havhest 46, Bålfugl 46, Kronegern 46, Kirkeugle 47 | 1× Large Tonic | 2820 |
 
 ### Arena 5: Valdemars Slot (folk)
 
-Zone Valdemars Slot, district 5 (wild levels 25–32). Badge: Castle badge. Needs badge 4.
+Zone Valdemars Slot, district 5 (wild levels 25–32). Badge: Castle badge. Open region (P28): any order; teaches Sealbreaker; juniors scale with the badges held.
 
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Castle Gardener Poul (`svb_arena5_junior`) | Markhare 29, Skibskat 30 | – | 3× Good Charm + 750 coins |
-| 2 | Castle Steward Ebba (`svb_leader_folk`) | Markhare 19 (Shoulder Shove, Stern Glare, Cobbler Kick, Cartwheel), Skibskat 31 (Stern Glare, Cobbler Kick, Gust Lance, Cartwheel), Aftenbakke 38 (Wisp Flicker, Cobbler Kick, Grave Chill, Blight Touch), Klabautermand 35 (Stern Glare, Cobbler Kick, Ripple Dash, Market Stampede) | 2× Large Tonic | 2× Revive Leaf + 2280 coins |
+| 2 | Castle Steward Ebba (`svb_leader_folk`) | Månehare 49, Klabautermand 50, Skibskat 49, Aftenbakke 49, Månehare 49, Marmæle 49 | 2× Large Tonic | 2× Revive Leaf + 3000 coins |
 
-Expected player team (balance sim): starter at 33, Kystskade 31, Hestemusling 31, Stimsild 31, Fyrvogter 32; items 2× Small Tonic, 2× Large Tonic.
+Leader by badges held (P28; the roster above at full strength, 0 with a coverage move):
+
+| Badges | Team | Items | Coins |
+|---|---|---|---|
+| 0 | Hareling 10, Skibsnisse 11 | 1× Large Tonic | 660 |
+| 1 | Hareling 16, Havnekat 16, Skibsnisse 17 | 2× Large Tonic | 1020 |
+| 2 | Markhare 21, Havnekat 21, Flagling 21, Markhare 21, Skibsnisse 22 | 2× Large Tonic | 1320 |
+| 3 | Markhare 29, Skibskat 29, Aftenbakke 29, Markhare 29, Skibsnisse 30 | 1× Large Tonic | 1800 |
+| 4 | Markhare 33, Skibskat 33, Aftenbakke 33, Markhare 33, Klabautermand 34 | 2× Small Tonic | 2040 |
+| 5 | Månehare 37, Skibskat 37, Aftenbakke 37, Månehare 37, Klabautermand 38 | 2× Small Tonic | 2280 |
+| 6 | Månehare 44, Skibskat 44, Aftenbakke 44, Månehare 44, Klabautermand 45 | – | 2700 |
+| 7 | Månehare 47, Skibskat 47, Aftenbakke 47, Månehare 47, Klabautermand 48 | – | 2880 |
 
 ### Arena 6: Egebjerg mill (stone)
 
-Zone Egebjerg, district 6 (wild levels 31–38). Badge: Mill badge. Needs badge 5.
+Zone Egebjerg, district 6 (wild levels 31–38). Badge: Mill badge. Open region (P28): any order; teaches Runereader; juniors scale with the badges held.
 
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Stonemason Lise (`svb_arena6_junior`) | Søpindsvin 34, Fyrvogter 35 | – | 2× Great Charm + 875 coins |
-| 2 | Miller Torben (`svb_leader_stone`) | Guldgubbe 32 (Hunker Down, Grave Chill, Cobble Toss, Hollow Wail), Hestemusling 41, Guldhøvding 40, Klintkonge 49 | 2× Large Tonic | 2× Revive Leaf + 2940 coins |
+| 2 | Miller Torben (`svb_leader_stone`) | Skibskat 49, Guldhøvding 50, Hestemusling 49, Søpindsvin 49, Ålekonge 49, Fyrtårn 49 | 2× Large Tonic | 2× Revive Leaf + 3000 coins |
 
-Expected player team (balance sim): starter at 38, Kystskade 36, Månehare 36, Skibskat 36, Kronegern 36; items 2× Small Tonic, 2× Large Tonic.
+Leader by badges held (P28; the roster above at full strength, 0 with a coverage move):
+
+| Badges | Team | Items | Coins |
+|---|---|---|---|
+| 0 | Havnekat 9, Blåmusling 9, Guldgubbe 10 | – | 600 |
+| 1 | Havnekat 14, Blåmusling 14, Søpindling 14, Guldgubbe 15 | 1× Large Tonic | 900 |
+| 2 | Havnekat 23, Blåmusling 23, Søpindling 23, Guldgubbe 24 | 2× Large Tonic | 1440 |
+| 3 | Skibskat 24, Blåmusling 24, Søpindling 24, Havål 24, Guldgubbe 25 | 2× Large Tonic | 1500 |
+| 4 | Skibskat 28, Hestemusling 28, Søpindling 28, Havål 28, Guldgubbe 29 | 2× Large Tonic | 1740 |
+| 5 | Skibskat 35, Hestemusling 35, Søpindsvin 35, Havål 35, Guldgubbe 36 | 1× Large Tonic | 2160 |
+| 6 | Skibskat 38, Hestemusling 38, Søpindsvin 38, Ålekonge 38, Guldhøvding 39 | 3× Large Tonic | 2340 |
+| 7 | Skibskat 39, Hestemusling 39, Søpindsvin 39, Ålekonge 39, Fyrtårn 39, Guldhøvding 40 | 3× Large Tonic | 2400 |
 
 ### Arena 7: Hvidkilde (grove)
 
-Zone Hvidkilde, district 7 (wild levels 37–44). Badge: Forest badge. Needs badge 6.
+Zone Hvidkilde, district 7 (wild levels 37–44). Badge: Forest badge. Open region (P28): any order; teaches Forager; juniors scale with the badges held.
 
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Hunter Anders (`svb_arena7_junior`) | Heksering 39, Kronegern 40 | – | 2× Great Charm + 1000 coins |
-| 2 | Head Forester Agnete (`svb_leader_grove`) | Kronegern 44 (Drowsy Pollen, Beech Lash, Gust Lance, Beech Crown), Heksering 39 (Drowsy Pollen, Beech Lash, Thorn Volley, Hollow Wail), Hyldemor 38 (Drowsy Pollen, Nettle Sting, Beech Lash, Hollow Wail), Klintkonge 45 (Sky Crackle, Rampart Slam, Market Stampede, Grit Spray), Kirkeugle 40 | 3× Large Tonic | 1× Revive Blossom + 2700 coins |
+| 2 | Head Forester Agnete (`svb_leader_grove`) | Månehare 49, Hyldemor 50, Kronegern 49, Heksering 49, Kronegern 49, Hyldemor 49 | 3× Large Tonic | 1× Revive Blossom + 3000 coins |
 
-Expected player team (balance sim): starter at 43, Kystskade 41, Hestemusling 41, Sildekonge 41, Kronegern 41, Aftenbakke 41; items 2× Small Tonic, 2× Large Tonic.
+Leader by badges held (P28; the roster above at full strength, 0 with a coverage move):
+
+| Badges | Team | Items | Coins |
+|---|---|---|---|
+| 0 | Hareling 10, Hyldeknop 11 | – | 660 |
+| 1 | Hareling 16, Hyldeknop 17 | 2× Small Tonic | 1020 |
+| 2 | Markhare 20, Bøgeegern 20, Hattesvamp 20, Hyldeknop 21 | – | 1260 |
+| 3 | Markhare 28, Bøgeegern 28, Hattesvamp 28, Bøgeegern 28, Hyldeknop 29 | 1× Large Tonic | 1740 |
+| 4 | Markhare 32, Kronegern 32, Hattesvamp 32, Kronegern 32, Hyldeknop 33 | 2× Small Tonic | 1980 |
+| 5 | Månehare 36, Kronegern 36, Heksering 36, Kronegern 36, Hyldemor 37 | – | 2220 |
+| 6 | Månehare 43, Kronegern 43, Heksering 43, Kronegern 43, Hyldemor 44 | 3× Large Tonic | 2640 |
+| 7 | Månehare 44, Kronegern 44, Heksering 44, Kronegern 44, Hyldemor 44, Hyldemor 45 | – | 2700 |
 
 ### Arena 8: Gudme (mixed)
 
-Zone Gudme, district 8 (wild levels 43–50). Badge: Gold badge. Needs badge 7.
+Zone Gudme, district 8 (wild levels 43–50). Badge: Gold badge. Open region (P28): any order; juniors scale with the badges held.
 
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Digger Rune (`svb_arena8_junior`) | Klabautermand 45, Ålekonge 46 | – | 3× Great Charm + 1150 coins |
-| 2 | Archaeologist Sigrun (`svb_leader_mixed`) | Tågefrue 42, Kirkeugle 50, Bålfugl 49, Sildekonge 41, Vejrhane 48 | 3× Large Tonic | 1× Revive Blossom + 3000 coins |
+| 2 | Archaeologist Sigrun (`svb_leader_mixed`) | Tågefrue 49, Kirkeugle 50, Bålfugl 49, Sildekonge 49, Aftenbakke 49, Guldhøvding 49 | 3× Large Tonic | 1× Revive Blossom + 3000 coins |
 
-Expected player team (balance sim): starter at 46, Månehare 44, Skibskat 44, Sildekonge 44, Kronegern 44, Aftenbakke 44; items 2× Small Tonic, 2× Large Tonic.
+Leader by badges held (P28; the roster above at full strength, 0 with a coverage move):
+
+| Badges | Team | Items | Coins |
+|---|---|---|---|
+| 0 | Tågeling 12, Askeling 12, Uglunge 13 | 2× Small Tonic | 780 |
+| 1 | Tågeling 16, Askeling 16, Sildeling 16, Uglunge 17 | 1× Large Tonic | 1020 |
+| 2 | Tågeling 25, Askeling 25, Stimsild 25, Uglunge 26 | – | 1560 |
+| 3 | Tågeling 28, Bålfugl 28, Stimsild 28, Aftenbakke 28, Kirkeugle 29 | 2× Small Tonic | 1740 |
+| 4 | Tågefrue 32, Bålfugl 32, Stimsild 32, Aftenbakke 32, Kirkeugle 33 | 2× Small Tonic | 1980 |
+| 5 | Tågefrue 38, Bålfugl 38, Sildekonge 38, Aftenbakke 38, Kirkeugle 39 | 1× Large Tonic | 2340 |
+| 6 | Tågefrue 43, Bålfugl 43, Sildekonge 43, Aftenbakke 43, Guldhøvding 43, Kirkeugle 44 | 2× Small Tonic | 2640 |
+| 7 | Tågefrue 45, Bålfugl 45, Sildekonge 45, Aftenbakke 45, Guldhøvding 45, Kirkeugle 46 | 2× Large Tonic | 2760 |
 
 ## Route trainers
 
-Ordered by route. Routes open the zones at both ends when walked (P22).
+Ordered by route. Walking a route turns up coins and items; a finished route has more creatures (P28).
 
 ### Route 1: Svendborg centre – Christiansminde (main, 2.4 km)
 

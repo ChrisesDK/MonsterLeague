@@ -104,13 +104,16 @@ describe('ferry islands (P27)', () => {
   const island = Object.values(svb.zones).find((z) => z.opensOnArrival)!;
   const s = switchCampaign(playing(), 'svendborg');
 
-  it('an island opens on arrival, other zones do not', () => {
+  it('an island opens on arrival, other zones do not (a closed region)', () => {
+    // P28: Svendborg is open (nothing to open); this is the rule for regions that are not
+    const svb = { ...regions.svendborg, open: false };
     const a = arriveInZone(s, island.id, svb);
     expect(a.zones).toContain(island.id);
     expect(arriveInZone(a, island.id, svb)).toBe(a);
     const town = Object.values(svb.zones).find((z) => !z.opensOnArrival && !z.start)!;
     expect(arriveInZone(s, town.id, svb)).toBe(s);
     expect(arriveInZone(s, null, svb)).toBe(s);
+    expect(arriveInZone(s, island.id, regions.svendborg)).toBe(s);
   });
 
   it('ferry crossings are never walking routes or frontier routes', () => {

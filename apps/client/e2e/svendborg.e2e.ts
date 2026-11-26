@@ -215,14 +215,12 @@ test('Svendborg: walk in from Odense, own starters, arenas 1–8, a ferry island
   }
   expect((await devSave(page)).badges).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
 
-  // ---- a ferry island opens on arrival ----------------------------------------------------
+  // ---- P28: Svendborg is open, so a ferry island needs no opening on arrival --------------
   const skaroe = zones.find((z) => z.id === 'svb_skaroe')!;
-  expect((await devSave(page)).zones).not.toContain('svb_skaroe');
+  const zonesBefore = (await devSave(page)).zones;
   await teleport(page, { lat: skaroe.lat, lng: skaroe.lng });
-  // (a teleport reads as a very fast move; progress is noted once the player stands still)
-  await expect
-    .poll(async () => (await devSave(page)).zones, { timeout: 45_000 })
-    .toContain('svb_skaroe');
+  await page.waitForTimeout(3000);
+  expect((await devSave(page)).zones).toEqual(zonesBefore);
 
   // ---- back to Odense: its campaign is as it was ------------------------------------------
   await teleport(page, ODENSE);

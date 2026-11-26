@@ -1962,3 +1962,13 @@ length, position resolution and spawn tables>`.
   1.2 km get extra spawns from `computeSpawns` with `densityScale` 0.5, the seed
   `<save seed>|routes` and the id tag `route` (new optional inputs; shared spawns are
   unchanged, so no `SPAWN_ALGORITHM` bump). Worked out on the phone, nothing sent.
+- **D195. Svendborg open** (owner: after Odense deployed; GDD v1.25). Same rules as Odense
+  (D191–D194). Arena abilities: spirit 1 Nightseer, water 3 Angler, storm 4 Homing, folk 5
+  Sealbreaker, stone 6 Runereader, grove 7 Forager. Rosters avoid the starter lines and open
+  with a folk creature (Skibskat or Markhare lines) where themed; the mixed leader's
+  Fyrtårn was swapped for Aftenbakke (its evolution at 38 made a 1-level cliff from ~75 % to
+  ~20 % at 5 badges) and the storm leader's first two members know Thorn Volley (the stone
+  starter beat it 100 %). Balanced teams: Sildeling, Blåmusling, Strandskade (water, stone,
+  storm) plus Havnekat and Hareling lines. All 128 balance tests (both regions) pass. Known
+  swings for the walk test: at 1 badge the stone starter wins 90–100 % against the fire,
+  folk and spirit leaders.

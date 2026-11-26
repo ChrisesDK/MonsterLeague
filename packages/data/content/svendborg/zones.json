@@ -2,6 +2,7 @@
   "region": "svendborg",
   "starters": ["svb_saelkalv", "svb_kridtling", "svb_ternling"],
   "tutorial": "svb_havnekat",
+  "open": true,
   "districts": [
     {
       "id": 1,
