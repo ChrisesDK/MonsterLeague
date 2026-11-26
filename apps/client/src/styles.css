@@ -1516,13 +1516,6 @@ html[data-theme='night'] .arena-field {
   border-color: var(--accent);
   color: var(--accent-ink);
 }
-/* Zoomed out (Town Map): only arenas; route numbers and rest stops would crowd the map.
-   Destinations show from zoom 11, trainers (over a hundred) only zoomed in (D165). */
-.town-map.far .tm-marker.small,
-.town-map.veryfar .tm-marker.dest,
-.town-map:not(.near) .tm-marker.cat-trainers {
-  visibility: hidden;
-}
 .tm-marker.dest {
   width: 40px;
   height: 40px;
@@ -1530,6 +1523,8 @@ html[data-theme='night'] .arena-field {
 /* The filter hides whole kinds of icon (D165). */
 .town-map.hide-arenas .cat-arenas,
 .town-map.hide-routes .cat-routes,
+.town-map.hide-routes .cat-routeLabels,
+.town-map.hide-routeLabels .cat-routeLabels,
 .town-map.hide-trainers .cat-trainers,
 .town-map.hide-restStops .cat-restStops,
 .town-map.hide-markets .cat-markets,
@@ -1557,6 +1552,10 @@ html[data-theme='night'] .arena-field {
   font-size: var(--fs-sm);
   cursor: pointer;
 }
+.town-map-filter .filter-row.disabled {
+  opacity: 0.45;
+  cursor: default;
+}
 
 /* ---------- Fyn map (P22) ---------- */
 .fyn-badges {
@@ -1576,25 +1575,6 @@ html[data-theme='night'] .arena-field {
 }
 .fyn-badges img.locked {
   filter: grayscale(1) opacity(0.5);
-}
-.town-map-visit {
-  position: absolute;
-  top: calc(var(--sp-3) + env(safe-area-inset-top) + 64px);
-  left: var(--sp-3);
-  right: var(--sp-3);
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: var(--sp-2);
-  padding: var(--sp-2) var(--sp-3);
-  border-radius: var(--r-md);
-  background: var(--hud);
-  color: var(--ink-2);
-  font-size: var(--fs-sm);
-}
-.town-map-visit p {
-  flex: 1;
-  margin: 0;
 }
 .fyn-hint {
   position: absolute;

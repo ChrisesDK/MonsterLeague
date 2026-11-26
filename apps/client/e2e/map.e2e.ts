@@ -510,8 +510,7 @@ test('Fyn map: the regions of Fyn, Odense and Svendborg open; badges grey until 
   await page.getByTestId('townmap-fyn').click();
   await page.getByTestId('fyn-badges-svendborg').click();
   await expect(page.getByTestId('fyn-map')).toHaveCount(0);
-  await expect(page.getByTestId('townmap-visit')).toHaveAttribute('data-region', 'svendborg');
-  await expect(page.getByTestId('townmap-visit')).toContainText('Svendborg');
+  await expect(page.getByTestId('town-map')).toHaveAttribute('data-region', 'svendborg');
   await page.waitForFunction(() => '__omlTownMap' in window);
   const centre = await page.evaluate(() =>
     (
@@ -524,8 +523,9 @@ test('Fyn map: the regions of Fyn, Odense and Svendborg open; badges grey until 
   await page.getByTestId('tm-arena-1').click();
   await expect(page.getByTestId('townmap-card')).toContainText('Frederiksø');
   expect(await dev(page, 'save').then((x) => (x as { region: string }).region)).toBe('odense');
-  await page.getByTestId('townmap-home').click();
-  await expect(page.getByTestId('townmap-visit')).toHaveCount(0);
+  await page.getByTestId('townmap-fyn').click();
+  await page.getByTestId('fyn-badges-odense').click();
+  await expect(page.getByTestId('town-map')).toHaveAttribute('data-region', 'odense');
   await expect(page.getByTestId('tm-arena-1')).toHaveClass(/won/);
   await expect(page.getByTestId('tm-player')).toHaveCount(1);
   // the close button also returns to the Town Map, which closes to the game view
@@ -620,13 +620,42 @@ test('Town Map (D165): destinations, markets and trainers as stamps; the filter 
   await expect(page.getByTestId('townmap-filter-menu')).toBeVisible();
   await page.locator('[data-testid=filter-trainers] input').uncheck();
   await expect(page.getByTestId('town-map')).toHaveClass(/hide-trainers/);
+  // every icon shows at every zoom (owner request): only the filter hides kinds
+  const zoomTo = (z: number) =>
+    page.evaluate((zz) => {
+      (
+        window as unknown as { __omlTownMap: { jumpTo: (o: { zoom: number }) => void } }
+      ).__omlTownMap.jumpTo({ zoom: zz });
+    }, z);
+  await zoomTo(10.3);
+  await expect(page.locator('[data-testid^=tm-rest-]').first()).toBeVisible();
+  await expect(page.locator('[data-testid^=tm-route-]').first()).toBeVisible();
+  await zoomTo(13);
+  const vis = (layer: string) =>
+    page.evaluate(
+      (l) =>
+        (
+          window as unknown as {
+            __omlTownMap: { getLayoutProperty: (l: string, p: string) => string };
+          }
+        ).__omlTownMap.getLayoutProperty(l, 'visibility'),
+      layer,
+    );
+  // route labels (numbers and names) have their own switch, under routes
+  await page.locator('[data-testid=filter-routeLabels] input').uncheck();
+  await expect(page.getByTestId('town-map')).toHaveClass(/hide-routeLabels/);
+  await expect(page.locator('[data-testid^=tm-route-]').first()).toBeHidden();
+  expect(await vis('route-labels')).toBe('none');
+  expect(await vis('routes')).toBe('visible');
+  await page.locator('[data-testid=filter-routeLabels] input').check();
+  await expect(page.locator('[data-testid^=tm-route-]').first()).toBeVisible();
+  // hiding the routes hides their labels too and greys out the labels switch
   await page.locator('[data-testid=filter-routes] input').uncheck();
-  const vis = await page.evaluate(() =>
-    (
-      window as unknown as { __omlTownMap: { getLayoutProperty: (l: string, p: string) => string } }
-    ).__omlTownMap.getLayoutProperty('routes', 'visibility'),
-  );
-  expect(vis).toBe('none');
+  expect(await vis('routes')).toBe('none');
+  expect(await vis('route-labels')).toBe('none');
+  await expect(page.locator('[data-testid^=tm-route-]').first()).toBeHidden();
+  await expect(page.getByTestId('filter-routeLabels')).toHaveClass(/disabled/);
+  await expect(page.locator('[data-testid=filter-routeLabels] input')).toBeDisabled();
   await page.getByTestId('townmap-close').click();
   await page.getByTestId('townmap-button').click();
   await expect(page.getByTestId('town-map')).toHaveClass(/hide-trainers/);

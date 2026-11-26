@@ -31,7 +31,8 @@ import { paperStyle, type Palette } from './style';
  * the overview of all regions on Fyn (FynMap); back closes that first. From the Fyn map the
  * player can also open another playable region's Town Map to plan a trip there (owner
  * request): it shows that region's own progress (nothing yet before the first visit) and
- * changes nothing; play there starts by walking there.
+ * changes nothing; play there starts by walking there. Every icon shows at every zoom; only
+ * the filter hides kinds (owner request).
  */
 type Selected =
   | { kind: 'arena'; arena: number }
@@ -45,6 +46,7 @@ type Selected =
 export const LAYERS = [
   'arenas',
   'routes',
+  'routeLabels',
   'trainers',
   'restStops',
   'markets',
@@ -75,11 +77,6 @@ export function regionBounds(region: RegionId): [[number, number], [number, numb
   ];
 }
 const TOWN = { minZoom: 10.3, maxZoom: 16, zoom: 13 };
-/** Below this zoom only arenas show (route numbers and rest stops would crowd the map). */
-const FAR_ZOOM = 11.8;
-/** Destinations show from this zoom; trainers (there are over a hundred) from NEAR_ZOOM. */
-const DEST_ZOOM = 11;
-const NEAR_ZOOM = 13;
 
 function appBase(): string {
   return new URL(import.meta.env.BASE_URL, window.location.href).href;
@@ -157,8 +154,6 @@ export function TownMap({
         palette={palette}
         onClose={onClose}
         onFyn={() => setFyn(true)}
-        onHome={() => setView(save.region)}
-        homeName={t(`municipality.${save.region}.name`)}
       />
       {fyn && (
         <FynMap
@@ -187,8 +182,6 @@ function RegionTownMap({
   palette,
   onClose,
   onFyn,
-  onHome,
-  homeName,
 }: {
   t: Translate;
   save: SaveGame;
@@ -200,14 +193,10 @@ function RegionTownMap({
   palette: Palette;
   onClose: () => void;
   onFyn: () => void;
-  onHome: () => void;
-  homeName: string;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MlMap | null>(null);
   const [ready, setReady] = useState(false);
-  const [far, setFar] = useState(false);
-  const [zoomClass, setZoomClass] = useState('');
   const [hidden, setHidden] = useState<LayerId[]>(loadHidden);
   const [filterOpen, setFilterOpen] = useState(false);
   const [selected, setSelected] = useState<Selected | null>(null);
@@ -241,13 +230,6 @@ function RegionTownMap({
         new maplibregl.Marker({ element: el, anchor }).setLngLat([p.lng, p.lat]).addTo(map),
       );
 
-    const onZoom = () => {
-      const z = map.getZoom();
-      setFar(z < FAR_ZOOM);
-      setZoomClass(`${z < DEST_ZOOM ? ' veryfar' : ''}${z >= NEAR_ZOOM ? ' near' : ''}`);
-    };
-    map.on('zoom', onZoom);
-    onZoom();
     map.on('load', () => {
       addWorldLayers(map, palette, {
         region: save.region,
@@ -318,7 +300,7 @@ function RegionTownMap({
       const p = routeProgress(save, r);
       const el = markerElement(
         'button',
-        `tm-marker small route cat-routes ${r.kind}${p.done ? ' done' : ''}`,
+        `tm-marker small route cat-routeLabels ${r.kind}${p.done ? ' done' : ''}`,
         `<span class="tm-body">${r.number}</span>`,
       );
       el.dataset.testid = `tm-route-${r.id}`;
@@ -366,7 +348,8 @@ function RegionTownMap({
     setRouteProgress(map, save);
   }, [ready, region, save, t, dex]);
 
-  // The filter (D165): hidden layers are remembered; route lines follow the routes toggle.
+  // The filter (D165): hidden layers are remembered; route lines follow the routes toggle,
+  // route labels (numbers and names) need both toggles on.
   useEffect(() => {
     try {
       localStorage.setItem(FILTER_KEY, JSON.stringify(hidden));
@@ -375,9 +358,14 @@ function RegionTownMap({
     }
     const map = mapRef.current;
     if (!map || !ready) return;
-    for (const id of ['routes', 'routes-walked', 'route-labels'])
-      if (map.getLayer(id))
-        map.setLayoutProperty(id, 'visibility', hidden.includes('routes') ? 'none' : 'visible');
+    const routesOff = hidden.includes('routes');
+    const labelsOff = routesOff || hidden.includes('routeLabels');
+    for (const [id, off] of [
+      ['routes', routesOff],
+      ['routes-walked', routesOff],
+      ['route-labels', labelsOff],
+    ] as const)
+      if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', off ? 'none' : 'visible');
   }, [hidden, ready]);
   const toggle = (id: LayerId) =>
     setHidden((h) => (h.includes(id) ? h.filter((x) => x !== id) : [...h, id]));
@@ -493,8 +481,9 @@ function RegionTownMap({
 
   return (
     <section
-      className={`town-map${far ? ' far' : ''}${zoomClass}${hidden.map((h) => ` hide-${h}`).join('')}`}
+      className={`town-map${hidden.map((h) => ` hide-${h}`).join('')}`}
       data-testid="town-map"
+      data-region={save.region}
       aria-label={t('townMap.title')}
     >
       <div ref={ref} className="map" />
@@ -536,25 +525,26 @@ function RegionTownMap({
           role="group"
           aria-label={t('townMap.filter')}
         >
-          {LAYERS.map((id) => (
-            <label key={id} className="filter-row" data-testid={`filter-${id}`}>
-              <input
-                type="checkbox"
-                role="switch"
-                checked={!hidden.includes(id)}
-                onChange={() => toggle(id)}
-              />
-              <span>{t(`townMap.layer.${id}`)}</span>
-            </label>
-          ))}
-        </div>
-      )}
-      {!home && (
-        <div className="town-map-visit" data-testid="townmap-visit" data-region={save.region}>
-          <p>{t('townMap.visiting', { region: t(`municipality.${save.region}.name`) })}</p>
-          <Button variant="ghost" data-testid="townmap-home" onClick={onHome}>
-            {t('townMap.backHome', { region: homeName })}
-          </Button>
+          {LAYERS.map((id) => {
+            // route labels go with the routes: greyed out while the routes are hidden
+            const off = id === 'routeLabels' && hidden.includes('routes');
+            return (
+              <label
+                key={id}
+                className={`filter-row${off ? ' disabled' : ''}`}
+                data-testid={`filter-${id}`}
+              >
+                <input
+                  type="checkbox"
+                  role="switch"
+                  disabled={off}
+                  checked={!hidden.includes(id)}
+                  onChange={() => toggle(id)}
+                />
+                <span>{t(`townMap.layer.${id}`)}</span>
+              </label>
+            );
+          })}
         </div>
       )}
       {card}

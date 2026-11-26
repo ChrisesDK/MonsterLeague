@@ -1840,3 +1840,10 @@ length, position resolution and spawn tables>`.
   the Town Map. The play map lists the places a press acts on (`data-reach`, empty while
   moving fast); the e2e helpers wait for it and press once (before, a card slower than
   400 ms on CI made them press a rest stop twice: "already healthy").
+- **D184. Town Map icons at every zoom; route labels filter** (owner request, GDD v1.22).
+  The zoom rules that hid route numbers, rest stops, markets and trainers (and destinations
+  far out) are gone: icons hide only by the filter. Text labels drawn by the map (zone names,
+  route names along the line) keep their zoom limits. The filter gains "Route labels" under
+  "Routes": it hides the route number tags and the route-name layer; hiding routes hides
+  them too, and its switch is then disabled and greyed out (no extra text). The banner on
+  another region's Town Map (D183) is gone; the Fyn map and the back gesture lead back.
