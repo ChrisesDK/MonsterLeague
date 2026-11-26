@@ -26,12 +26,13 @@
       "team": [
         {
           "speciesId": "svb_flagling",
-          "level": 13
+          "level": 15,
+          "moves": ["wisp_flicker", "blight_touch"]
         },
         {
           "speciesId": "svb_taageling",
           "level": 11,
-          "moves": ["wisp_flicker", "moonless_stare", "boulder_roll"]
+          "moves": ["wisp_flicker", "boulder_roll"]
         }
       ],
       "items": {
@@ -76,7 +77,7 @@
         },
         {
           "speciesId": "svb_soepindling",
-          "level": 16,
+          "level": 15,
           "moves": ["prickle_charge", "hunker_down", "grit_spray", "cobbler_kick"]
         },
         {
@@ -120,19 +121,21 @@
       "team": [
         {
           "speciesId": "svb_brunfiskling",
-          "level": 17
+          "level": 13
         },
         {
           "speciesId": "svb_havfoel",
-          "level": 22
+          "level": 23
         },
         {
           "speciesId": "svb_aal",
-          "level": 26
+          "level": 26,
+          "moves": ["sea_fog", "cobbler_kick", "brook_spout", "ripple_dash"]
         },
         {
           "speciesId": "svb_sundsael",
-          "level": 24
+          "level": 22,
+          "moves": ["shoulder_shove", "sea_fog", "cobble_toss", "rinse_and_mend"]
         }
       ],
       "items": {
@@ -172,19 +175,21 @@
       "team": [
         {
           "speciesId": "svb_havfoel",
-          "level": 30
+          "level": 24,
+          "moves": ["sea_fog", "brook_spout", "gust_lance", "rinse_and_mend"]
         },
         {
           "speciesId": "svb_kirkeugle",
-          "level": 31
+          "level": 31,
+          "moves": ["squall_slap", "gust_lance", "grave_chill", "sky_crackle"]
         },
         {
           "speciesId": "svb_havterne",
-          "level": 31
+          "level": 33
         },
         {
           "speciesId": "svb_kirkeugle",
-          "level": 30
+          "level": 29
         }
       ],
       "items": {
@@ -224,20 +229,23 @@
       "team": [
         {
           "speciesId": "svb_markhare",
-          "level": 28,
-          "moves": ["boulder_roll", "stern_glare", "cobbler_kick", "cartwheel"]
+          "level": 23,
+          "moves": ["shoulder_shove", "stern_glare", "cobbler_kick", "cartwheel"]
         },
         {
           "speciesId": "svb_skibskat",
-          "level": 33
+          "level": 29,
+          "moves": ["stern_glare", "cobbler_kick", "gust_lance", "cartwheel"]
         },
         {
           "speciesId": "svb_aftenbakke",
-          "level": 34
+          "level": 34,
+          "moves": ["wisp_flicker", "cobbler_kick", "grave_chill", "blight_touch"]
         },
         {
           "speciesId": "svb_klabautermand",
-          "level": 35
+          "level": 35,
+          "moves": ["stern_glare", "cobbler_kick", "ripple_dash", "market_stampede"]
         }
       ],
       "items": {
@@ -277,19 +285,20 @@
       "team": [
         {
           "speciesId": "svb_guldgubbe",
-          "level": 35
+          "level": 38,
+          "moves": ["hunker_down", "grave_chill", "cobble_toss", "hollow_wail"]
         },
         {
           "speciesId": "svb_hestemusling",
-          "level": 37
+          "level": 43
         },
         {
           "speciesId": "svb_guldhoevding",
-          "level": 41
+          "level": 44
         },
         {
           "speciesId": "svb_klintkonge",
-          "level": 46
+          "level": 49
         }
       ],
       "items": {
@@ -329,24 +338,27 @@
       "team": [
         {
           "speciesId": "svb_kronegern",
-          "level": 44
+          "level": 47,
+          "moves": ["drowsy_pollen", "beech_lash", "gust_lance", "beech_crown"]
         },
         {
           "speciesId": "svb_heksering",
-          "level": 38
+          "level": 39,
+          "moves": ["drowsy_pollen", "beech_lash", "thorn_volley", "hollow_wail"]
         },
         {
           "speciesId": "svb_hyldemor",
-          "level": 38
+          "level": 39,
+          "moves": ["drowsy_pollen", "nettle_sting", "beech_lash", "hollow_wail"]
         },
         {
           "speciesId": "svb_klintkonge",
-          "level": 42,
-          "moves": ["sky_crackle", "rampart_slam", "market_stampede", "rune_slab"]
+          "level": 45,
+          "moves": ["sky_crackle", "rampart_slam", "market_stampede", "grit_spray"]
         },
         {
           "speciesId": "svb_kirkeugle",
-          "level": 41
+          "level": 40
         }
       ],
       "items": {
@@ -386,23 +398,23 @@
       "team": [
         {
           "speciesId": "svb_taagefrue",
-          "level": 45
+          "level": 42
         },
         {
           "speciesId": "svb_kirkeugle",
-          "level": 45
+          "level": 50
         },
         {
           "speciesId": "svb_baalfugl",
-          "level": 48
+          "level": 49
         },
         {
           "speciesId": "svb_sildekonge",
-          "level": 45
+          "level": 41
         },
         {
           "speciesId": "svb_vejrhane",
-          "level": 47
+          "level": 48
         }
       ],
       "items": {

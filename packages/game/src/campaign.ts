@@ -36,6 +36,7 @@ export function newCampaign(onboarding: OnboardingStep): Campaign {
     defeatedTrainers: [],
     seen: {},
     caught: {},
+    glimmerSeen: [],
     lastRestock: {},
     usedSpawns: {},
     devAbilities: [],
@@ -44,6 +45,15 @@ export function newCampaign(onboarding: OnboardingStep): Campaign {
     journal: emptyJournal(),
     faintedSince: {},
   };
+}
+
+/**
+ * The save as if `region` were played, to look at (the Town Map, badges and field guide of
+ * another region): its parked campaign, or a new one before the first visit. Never saved.
+ */
+export function campaignView(save: SaveGame, region: RegionId): SaveGame {
+  if (region === save.region) return save;
+  return { ...save, ...(save.campaigns[region] ?? newCampaign(save.onboarding)), region };
 }
 
 /** A region change waits until the battle and its choices (learn a move, evolve) are done. */

@@ -6,7 +6,7 @@ import {
   arenaReady,
   distanceM,
   isZoneOpen,
-  newCampaign,
+  campaignView,
   nextRouteToward,
   routeProgress,
   type LatLng,
@@ -16,6 +16,7 @@ import type { Region } from '@oml/spawn';
 import { makeT, type Translate } from '../i18n';
 import { formatM, routePercent } from '../game/goalText';
 import { loadRegion } from '../game/region';
+import { BadgesScreen } from '../game/Screens';
 import { useBackHandler } from '../ui/backStack';
 import { Button } from '../ui/components';
 import { FynMap } from './FynMap';
@@ -121,11 +122,13 @@ export function TownMap({
 }) {
   const [view, setView] = useState<RegionId>(save.region);
   const [fyn, setFyn] = useState(false);
+  const [badges, setBadges] = useState(false);
   const [viewRegion, setViewRegion] = useState<Region | null>(null);
   const home = view === save.region;
   // back closes the Fyn map first, then goes from a looked-at region back to the own one
   useBackHandler(!home, () => setView(save.region));
   useBackHandler(fyn, () => setFyn(false));
+  useBackHandler(badges, () => setBadges(false));
   useEffect(() => {
     if (home) return;
     let live = true;
@@ -137,9 +140,7 @@ export function TownMap({
   }, [view, home]);
   // Another region's map reads that region's parked campaign (a new one before the first
   // visit), as a view only: nothing here is saved.
-  const viewSave: SaveGame = home
-    ? save
-    : { ...save, ...(save.campaigns[view] ?? newCampaign(save.onboarding)), region: view };
+  const viewSave = campaignView(save, view);
   const tr = home ? t : makeT(save.settings.language, view);
   return (
     <>
@@ -154,6 +155,7 @@ export function TownMap({
         palette={palette}
         onClose={onClose}
         onFyn={() => setFyn(true)}
+        onBadges={() => setBadges(true)}
       />
       {fyn && (
         <FynMap
@@ -167,6 +169,12 @@ export function TownMap({
             setFyn(false);
           }}
         />
+      )}
+      {badges && (
+        // the badges of the region the map shows (owner request)
+        <div className="screen-overlay">
+          <BadgesScreen t={t} save={save} initialRegion={view} onBack={() => setBadges(false)} />
+        </div>
       )}
     </>
   );
@@ -182,6 +190,7 @@ function RegionTownMap({
   palette,
   onClose,
   onFyn,
+  onBadges,
 }: {
   t: Translate;
   save: SaveGame;
@@ -193,6 +202,7 @@ function RegionTownMap({
   palette: Palette;
   onClose: () => void;
   onFyn: () => void;
+  onBadges: () => void;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MlMap | null>(null);
@@ -497,6 +507,17 @@ function RegionTownMap({
           aria-label={t('townMap.filter')}
           aria-expanded={filterOpen}
           onClick={() => setFilterOpen((o) => !o)}
+        />
+        <Button
+          round
+          variant="ghost"
+          icon="badge"
+          data-testid="townmap-badges"
+          aria-label={t('menu.badges')}
+          onClick={() => {
+            setSelected(null);
+            onBadges();
+          }}
         />
         <Button
           variant="ghost"

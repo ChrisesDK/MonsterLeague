@@ -53,6 +53,8 @@ export interface OmlDev {
   grantAbility: (id: string) => void;
   teach: (id: string, uid?: string) => void;
   addCreature: (speciesId: string, level: number) => void;
+  /** Makes the lead a Glimmer creature and notes its species as seen in that form. */
+  makeGlimmer: () => void;
   /** Adds a fake spawn to the map (dev only; lets tests run without the spawn service). */
   injectSpawn: (s: {
     speciesId: string;
@@ -196,7 +198,10 @@ export function GameApp({ t: appT, locale, onLocale, devTools, welcome = false }
       setTeamLevel: (level) =>
         update((s) =>
           all(s, (c) => ({
-            ...createCreature(c.speciesId, level, c.uid, regions[s.region]),
+            ...createCreature(c.speciesId, level, c.uid, regions[s.region], {
+              ...(c.ivs ? { ivs: c.ivs } : {}),
+              ...(c.shiny ? { shiny: true } : {}),
+            }),
             ...(c.fieldAbility ? { fieldAbility: c.fieldAbility } : {}),
           })),
         ),
@@ -216,6 +221,18 @@ export function GameApp({ t: appT, locale, onLocale, devTools, welcome = false }
             );
           if (!target) return s;
           return teachFieldAbility(s, target.uid, id, target.moves.length >= 4 ? 0 : null);
+        }),
+      makeGlimmer: () =>
+        update((s) => {
+          const lead = s.team[0];
+          if (!lead) return s;
+          return {
+            ...s,
+            team: [{ ...lead, shiny: true }, ...s.team.slice(1)],
+            glimmerSeen: s.glimmerSeen.includes(lead.speciesId)
+              ? s.glimmerSeen
+              : [...s.glimmerSeen, lead.speciesId],
+          };
         }),
       addCreature: (speciesId, level) =>
         update((s) => {

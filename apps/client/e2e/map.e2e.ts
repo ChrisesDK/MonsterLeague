@@ -522,6 +522,11 @@ test('Fyn map: the regions of Fyn, Odense and Svendborg open; badges grey until 
   await expect(page.getByTestId('tm-player')).toHaveCount(0);
   await page.getByTestId('tm-arena-1').click();
   await expect(page.getByTestId('townmap-card')).toContainText('Frederiksø');
+  // the top bar's badges button opens the badges of the region the map shows
+  await page.getByTestId('townmap-badges').click();
+  await expect(page.locator('.badge-grid')).toHaveAttribute('data-region', 'svendborg');
+  await page.getByTestId('screen-back').click();
+  await expect(page.getByTestId('screen-badges')).toHaveCount(0);
   expect(await dev(page, 'save').then((x) => (x as { region: string }).region)).toBe('odense');
   await page.getByTestId('townmap-fyn').click();
   await page.getByTestId('fyn-badges-odense').click();

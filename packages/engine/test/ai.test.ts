@@ -10,7 +10,7 @@ import {
 import { battle, dex, mk, move, seeds, turn } from './helpers';
 
 describe('wild AI', () => {
-  it('picks a random legal move, deterministically per state', () => {
+  it('picks a random useful move, deterministically per state (no heal at full HP)', () => {
     const s = battle(
       [mk('torvdue', 10)],
       [mk('mosbille', 10, ['t_strike', 't_wait', 't_heal'])],
@@ -41,7 +41,29 @@ describe('wild AI', () => {
         ),
       ),
     );
-    expect(picks.size).toBe(3);
+    expect(picks.size).toBe(2);
+    expect(picks.has(JSON.stringify(move(2)))).toBe(false);
+  });
+
+  it('heals with a move it knows when low on HP, about half of the time', () => {
+    const picks = seeds(100, (seed) => {
+      const wild = mk('mosbille', 10, ['t_strike', 't_heal']);
+      wild.hp = 2;
+      return chooseAiAction(battle([mk('torvdue', 10)], [wild], 'wild', seed), 1, 'wild', dex);
+    });
+    const heals = picks.filter((a) => a.type === 'move' && a.index === 1).length;
+    expect(heals).toBeGreaterThan(55);
+    expect(heals).toBeLessThan(95);
+  });
+
+  it('does not lower a stat that is already down by 2', () => {
+    const s = battle([mk('torvdue', 10)], [mk('mosbille', 10, ['t_strike', 't_spd_down'])], 'wild');
+    const low: BattleState = {
+      ...s,
+      sides: [{ ...s.sides[0], stages: { ...s.sides[0].stages, spd: -2 } }, s.sides[1]],
+    };
+    for (const seed of [1, 2, 3, 4, 5, 6, 7, 8])
+      expect(chooseAiAction({ ...low, turn: seed }, 1, 'wild', dex)).toEqual(move(0));
   });
 
   it('does not consume battle randomness', () => {
@@ -99,6 +121,27 @@ describe('leader AI', () => {
       'leader',
     );
     expect(chooseAiAction(s, 1, 'leader', dex)).toEqual({ type: 'switch', index: 1 });
+  });
+
+  it('heals with a heal move below half HP', () => {
+    const active = mk('grimaelling', 14, ['brook_spout', 't_heal']);
+    active.hp = 10;
+    const s = battle([mk('torvdue', 14)], { team: [active], ai: 'leader' }, 'leader');
+    expect(chooseAiAction(s, 1, 'leader', dex)).toEqual(move(1));
+  });
+
+  it("lowers the target's stats while healthy, once", () => {
+    const s = battle(
+      [mk('torvdue', 14)],
+      { team: [mk('grimaelling', 14, ['brook_spout', 't_spd_down'])], ai: 'leader' },
+      'leader',
+    );
+    expect(chooseAiAction(s, 1, 'leader', dex)).toEqual(move(1));
+    const lowered: BattleState = {
+      ...s,
+      sides: [{ ...s.sides[0], stages: { ...s.sides[0].stages, spd: -1 } }, s.sides[1]],
+    };
+    expect(chooseAiAction(lowered, 1, 'leader', dex)).toEqual(move(0));
   });
 
   it('otherwise attacks with the best move', () => {

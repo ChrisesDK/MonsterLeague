@@ -19,12 +19,36 @@ export const LEADER_HEAL_THRESHOLD = 0.3;
 export const LEADER_MAX_HEALS = 2;
 export const SETUP_HP_THRESHOLD = 0.7;
 export const TRAINER_SETUP_CHANCE = 0.5;
+/** Heal moves are used below this share of HP (trainers, leaders and wild creatures). */
+export const HEAL_MOVE_THRESHOLD = 0.5;
+/** Moves that lower the target's stats are used above this share of HP. */
+export const LOWER_HP_THRESHOLD = 0.5;
+/** A wild creature low on HP uses a heal move it knows this often. */
+export const WILD_HEAL_CHANCE = 0.5;
+export const WILD_HEAL_THRESHOLD = 0.35;
+
+type MoveData = ReturnType<typeof getMove>;
+/** A move that only heals (no damage, no stat change). */
+const isHealMove = (m: MoveData) =>
+  m.power === 0 &&
+  m.effects.some((e) => e.kind === 'heal') &&
+  !m.effects.some((e) => e.kind === 'stat');
+/** The stats a no-damage move lowers on the target. */
+const lowers = (m: MoveData) =>
+  m.power !== 0
+    ? []
+    : m.effects.flatMap((e) =>
+        e.kind === 'stat' && e.target === 'target' && e.stages < 0 ? [e] : [],
+      );
 
 /**
  * Set-up rule (leaders always, trainers 50% of the time):
- * 1. a stat-boost move, if HP > 70%, none of the stats it raises is boosted yet, and the
+ * 1. a heal move, if HP is below 50%;
+ * 2. a stat-boost move, if HP > 70%, none of the stats it raises is boosted yet, and the
  *    opponent cannot KO us next turn (its best expected damage is below our HP);
- * 2. otherwise a status-inflicting move, if the target has no status.
+ * 3. a move that lowers the target's stats, if HP > 50% and none of those stats is lowered
+ *    yet;
+ * 4. otherwise a status-inflicting move, if the target has no status.
  */
 export function setupAction(
   state: BattleState,
@@ -41,7 +65,12 @@ export function setupAction(
     a.type === 'move' ? [{ action: a, move: getMove(active.moves[a.index]!.moveId, dex) }] : [],
   );
 
-  const healthy = active.hp / getMaxHp(active, dex) > SETUP_HP_THRESHOLD;
+  const hpShare = active.hp / getMaxHp(active, dex);
+  if (hpShare < HEAL_MOVE_THRESHOLD) {
+    const heal = candidates.find(({ move }) => isHealMove(move));
+    if (heal) return heal.action;
+  }
+  const healthy = hpShare > SETUP_HP_THRESHOLD;
   if (healthy) {
     const threat = Math.max(
       0,
@@ -59,6 +88,15 @@ export function setupAction(
       });
       if (boost) return boost.action;
     }
+  }
+
+  if (hpShare > LOWER_HP_THRESHOLD) {
+    const oppStages = state.sides[oppSide].stages;
+    const lower = candidates.find(({ move }) => {
+      const l = lowers(move);
+      return l.length > 0 && l.every((e) => oppStages[e.stat] >= 0);
+    });
+    if (lower) return lower.action;
   }
 
   if (opponent.status === null) {
@@ -167,6 +205,44 @@ export function chooseReplacement(state: BattleState, side: SideIndex, dex: Dex 
   return best;
 }
 
+/**
+ * Wild creatures pick a move at random, but not one that would do nothing (a heal at more
+ * than half HP, lowering a stat that is already down by 2, raising one already up by 2), and
+ * a wild creature low on HP heals with a move it knows half of the time.
+ */
+function wildAction(
+  state: BattleState,
+  side: SideIndex,
+  moves: Action[],
+  rng: Rng,
+  dex: Dex,
+): Action {
+  const active = getActive(state, side);
+  if (active.moves.every((m) => m.pp <= 0)) return rng.pick(moves);
+  const hpShare = active.hp / getMaxHp(active, dex);
+  const own = state.sides[side].stages;
+  const opp = state.sides[side === 0 ? 1 : 0].stages;
+  const withMove = moves.flatMap((a) =>
+    a.type === 'move' ? [{ a, m: getMove(active.moves[a.index]!.moveId, dex) }] : [],
+  );
+  const heals = withMove.filter(({ m }) => isHealMove(m));
+  if (hpShare < WILD_HEAL_THRESHOLD && heals.length > 0 && rng.next() < WILD_HEAL_CHANCE)
+    return heals[0]!.a;
+  const useful = withMove.filter(({ m }) => {
+    if (isHealMove(m)) return hpShare <= HEAL_MOVE_THRESHOLD;
+    if (m.power !== 0) return true;
+    const l = lowers(m);
+    if (l.length > 0) return l.some((e) => opp[e.stat] > -2);
+    const raises = m.effects.flatMap((e) =>
+      e.kind === 'stat' && e.target === 'self' && e.stages > 0 ? [e] : [],
+    );
+    if (raises.length > 0 && !m.effects.some((e) => e.kind !== 'stat'))
+      return raises.some((e) => own[e.stat] < 2);
+    return true;
+  });
+  return rng.pick(useful.length > 0 ? useful.map((x) => x.a) : moves);
+}
+
 export function chooseAiAction(
   state: BattleState,
   side: SideIndex,
@@ -184,7 +260,7 @@ export function chooseAiAction(
   const rng = aiRng(state, side);
   const moves = legal.filter((a) => a.type === 'move');
 
-  if (tier === 'wild') return rng.pick(moves);
+  if (tier === 'wild') return wildAction(state, side, moves, rng, dex);
 
   if (tier === 'trainer') {
     if (rng.next() < TRAINER_RANDOM_CHANCE) return rng.pick(moves);

@@ -176,7 +176,8 @@
 
 ## Open questions (before/during M2)
 
-- The AI never uses heal moves or target-lowering stat moves.
+- ~~The AI never uses heal moves or target-lowering stat moves.~~ Done (D186, GDD v1.23):
+  trainers, leaders and wild creatures use them; leaders re-tuned.
 - Leader fights take 30–42 turns (median). Fine for a leader, but too long for wild
   battles outdoors?
 - District order jumps from the harbour (5, north) to Fruens Bøge (6, south): 4.8 km walk.

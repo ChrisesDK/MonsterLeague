@@ -537,7 +537,15 @@ function Combatant({
     <div className={`combatant side-${side}`}>
       <div className="plate">
         <div className="plate-head">
-          <strong>{creatureName(view, t)}</strong>
+          <strong>
+            {creatureName(view, t)}
+            {view.shiny && (
+              <span className="shiny-mark inline" data-testid="name-glimmer" title={t('ui.shiny')}>
+                {' '}
+                ✦
+              </span>
+            )}
+          </strong>
           <span>
             {view.status && <span className="badge">{t(`status.short.${view.status}`)}</span>}
             <span className="muted">
@@ -563,11 +571,17 @@ function Combatant({
       </div>
       <div
         key={`${view.uid}-${anim && anim.uid === view.uid ? anim.n : 0}`}
-        className={`sprite art ${animCls} ${view.fainted ? 'fainted' : ''} ${view.caught ? 'caught' : ''}`}
+        className={`sprite art ${animCls} ${view.fainted ? 'fainted' : ''} ${view.caught ? 'caught' : ''}${view.shiny ? ' shiny' : ''}`}
+        data-shiny={view.shiny ? 'true' : undefined}
         role="img"
         aria-label={t(`species.${view.speciesId}.name`)}
       >
         <img src={spriteUrl(view.speciesId)} alt="" draggable={false} />
+        {view.shiny && (
+          <span className="shiny-mark" title={t('ui.shiny')}>
+            ✦
+          </span>
+        )}
         <span className="type-tag">
           {species.types.map((ty) => (
             <span key={ty} style={{ background: dex.typeColors[ty] }}>

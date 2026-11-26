@@ -11,6 +11,7 @@ import type {
   BattleResult,
   BattleState,
   CreatureInstance,
+  Ivs,
   Side,
   SideIndex,
   StageStat,
@@ -53,7 +54,7 @@ export function getMove(moveId: string, dex: Dex = content): Move {
 }
 
 export function getStats(creature: CreatureInstance, dex: Dex = content): Stats {
-  return calcStats(getSpecies(creature.speciesId, dex).baseStats, creature.level);
+  return calcStats(getSpecies(creature.speciesId, dex).baseStats, creature.level, creature.ivs);
 }
 
 export function getMaxHp(creature: CreatureInstance, dex: Dex = content): number {
@@ -93,6 +94,8 @@ function hasUsable(side: Side): boolean {
 export interface CreateCreatureOptions {
   moves?: string[];
   nickname?: string;
+  ivs?: Ivs;
+  shiny?: boolean;
 }
 
 /** Creates a fresh creature at full HP knowing the last 4 learnset moves up to its level. */
@@ -118,12 +121,14 @@ export function createCreature(
     speciesId,
     level,
     xp: xpForLevel(level),
-    hp: calcStats(species.baseStats, level).hp,
+    hp: calcStats(species.baseStats, level, options.ivs).hp,
     status: null,
     statusTurns: 0,
     moves: moveIds.map((id) => ({ moveId: id, pp: getMove(id, dex).pp })),
   };
   if (options.nickname) creature.nickname = options.nickname;
+  if (options.ivs) creature.ivs = options.ivs;
+  if (options.shiny) creature.shiny = true;
   return creature;
 }
 

@@ -63,18 +63,55 @@ test('feedback, version, save export and import, home hints in the field guide',
   expect(copied).not.toMatch(/\d{2}\.\d{4,}/); // no coordinates
   await page.getByTestId('screen-back').click();
 
+  // a Glimmer lead: a sparkle after its name; its Glimmer form opens in the field guide
+  await dev(page, 'makeGlimmer');
+  await page.getByTestId('menu-team').click();
+  await expect(page.locator('.creature-row').first()).toContainText('✦');
+  await page.getByTestId('screen-back').click();
+  await page.getByTestId('menu-guide').click();
+  await page.getByTestId('guide-gnistkat').click();
+  await expect(page.getByTestId('guide-form-glimmer')).toBeEnabled();
+  await page.getByTestId('guide-form-glimmer').click();
+  await expect(page.getByTestId('guide-entry-img')).toHaveClass(/shiny/);
+  await page.screenshot({ path: test.info().outputPath('glimmer-entry.png') });
+  await page.getByTestId('screen-back').click();
+  await page.getByTestId('screen-back').click();
+
   // the field guide: one numbered list per region, each creature once; Mosling's entry
   // names its main home, and the Svendborg tab lists Svendborg's own creatures
   await page.getByTestId('menu-guide').click();
-  await expect(page.getByTestId('guide-mosling')).toContainText('Kirkendrup Skov');
+  // the list is short (number, picture, name, state); a press opens the entry with where
+  // to find it (owner request), one line per place ("Every district: …")
+  await expect(page.getByTestId('guide-mosling')).not.toContainText('Kirkendrup Skov');
+  await page.getByTestId('guide-mosling').click();
+  await expect(page.getByTestId('guide-entry-mosling')).toBeVisible();
+  await expect(page.getByTestId('screen-guide-entry')).toContainText('Kirkendrup Skov');
+  // the Glimmer form is greyed out until one is met; previous and next step through the list
+  await expect(page.getByTestId('guide-form-glimmer')).toBeDisabled();
+  const title = await page.locator('[data-testid=screen-guide-entry] h1').textContent();
+  await page.getByTestId('guide-next').click();
+  await expect(page.locator('[data-testid=screen-guide-entry] h1')).not.toHaveText(title ?? '');
+  await page.getByTestId('guide-prev').click();
+  await expect(page.locator('[data-testid=screen-guide-entry] h1')).toHaveText(title ?? '');
+  await page.getByTestId('screen-back').click();
+  await expect(page.getByTestId('screen-guide')).toBeVisible();
   await expect(page.getByTestId('guide-gnistkat')).toContainText('#001');
   await expect(page.locator('[data-testid^=guide-]').filter({ hasText: /^#/ })).toHaveCount(55);
   await expect(page.locator('[data-testid=guide-mosling]')).toHaveCount(1);
   await page.getByTestId('guide-tab-svendborg').click();
   await expect(page.getByTestId('guide-svb_saelkalv')).toContainText('#001');
-  await expect(page.getByTestId('guide-svb_svampling')).toContainText('Svinehaverne');
+  await page.getByTestId('guide-svb_svampling').click();
+  await expect(page.getByTestId('screen-guide-entry')).toContainText('Svinehaverne');
+  await page.getByTestId('screen-back').click();
   await expect(page.getByTestId('guide-totals')).toContainText('0');
   await expect(page.getByTestId('guide-gnistkat')).toHaveCount(0);
+  await page.getByTestId('screen-back').click();
+
+  // badges and progress, one tab per region
+  await page.getByTestId('menu-badges').click();
+  await page.getByTestId('badges-tab-svendborg').click();
+  await expect(page.locator('.badge-grid')).toHaveAttribute('data-region', 'svendborg');
+  await expect(page.locator('.badge-slot.earned')).toHaveCount(0);
   await page.getByTestId('screen-back').click();
 
   // version, export, then import the exported file back

@@ -5,6 +5,8 @@ export {
   calcStat,
   calcStats,
   clampStage,
+  AVERAGE_IVS,
+  IV_MAX,
   stageMultiplier,
   MAX_LEVEL,
   MAX_STAGE,

@@ -48,7 +48,7 @@
       "team": [
         {
           "speciesId": "rendsnude",
-          "level": 9
+          "level": 8
         },
         {
           "speciesId": "loftnisse",
@@ -72,12 +72,12 @@
       "team": [
         {
           "speciesId": "grimaelling",
-          "level": 19,
+          "level": 15,
           "moves": ["brook_spout", "rinse_and_mend", "sea_fog", "shoulder_shove"]
         },
         {
           "speciesId": "kulingmaage",
-          "level": 20,
+          "level": 9,
           "moves": ["squall_slap", "sky_crackle", "gale_step", "nimble_jab"]
         },
         {
@@ -221,12 +221,12 @@
         },
         {
           "speciesId": "kulingmaage",
-          "level": 13
+          "level": 14
         },
         {
           "speciesId": "brokrabbe",
           "level": 15,
-          "moves": ["cobble_toss", "grit_spray", "sky_crackle", "hunker_down"]
+          "moves": ["cobble_toss", "grit_spray", "sky_crackle", "shoulder_shove"]
         }
       ],
       "items": {},
@@ -3008,15 +3008,15 @@
       "team": [
         {
           "speciesId": "mostrold",
-          "level": 29
-        },
-        {
-          "speciesId": "skovbille",
           "level": 30
         },
         {
+          "speciesId": "skovbille",
+          "level": 29
+        },
+        {
           "speciesId": "ellepige",
-          "level": 31
+          "level": 32
         },
         {
           "speciesId": "boegevaette",
@@ -3060,19 +3060,23 @@
       "team": [
         {
           "speciesId": "lygtemand",
-          "level": 33
+          "level": 36,
+          "moves": ["moonless_stare", "grave_chill", "hollow_wail", "ember_hop"]
         },
         {
           "speciesId": "mosekone",
-          "level": 33
+          "level": 36,
+          "moves": ["moonless_stare", "grave_chill", "hollow_wail", "thorn_volley"]
         },
         {
           "speciesId": "noekkeling",
-          "level": 34
+          "level": 30,
+          "moves": ["brook_spout", "grave_chill", "rinse_and_mend", "harbour_wave"]
         },
         {
           "speciesId": "gaardnisse",
-          "level": 35
+          "level": 35,
+          "moves": ["shoulder_shove", "cobbler_kick", "grave_chill", "market_stampede"]
         }
       ],
       "items": {
@@ -3112,19 +3116,19 @@
       "team": [
         {
           "speciesId": "gloedoegle",
-          "level": 35
+          "level": 30
         },
         {
           "speciesId": "lygtemand",
-          "level": 37
+          "level": 26
         },
         {
           "speciesId": "essedrage",
-          "level": 36
+          "level": 37
         },
         {
           "speciesId": "brandloeve",
-          "level": 39
+          "level": 40
         }
       ],
       "items": {
@@ -3164,23 +3168,23 @@
       "team": [
         {
           "speciesId": "kongesvane",
-          "level": 40
+          "level": 34
         },
         {
           "speciesId": "eghjort",
-          "level": 42
+          "level": 44
         },
         {
           "speciesId": "lygtemand",
-          "level": 40
+          "level": 44
         },
         {
           "speciesId": "tordenravn",
-          "level": 43
+          "level": 32
         },
         {
           "speciesId": "essedrage",
-          "level": 42
+          "level": 45
         }
       ],
       "items": {
@@ -3219,23 +3223,27 @@
       "team": [
         {
           "speciesId": "stormmaage",
-          "level": 49
+          "level": 48,
+          "moves": ["gale_step", "cobbler_kick", "sky_crackle", "squall_slap"]
         },
         {
           "speciesId": "tordenravn",
-          "level": 49
+          "level": 48,
+          "moves": ["gale_step", "grave_chill", "hollow_wail", "thunder_squall"]
         },
         {
           "speciesId": "rokkevinge",
-          "level": 48
+          "level": 45,
+          "moves": ["sea_fog", "rinse_and_mend", "sky_crackle", "brook_spout"]
         },
         {
           "speciesId": "vinddue",
-          "level": 49
+          "level": 49,
+          "moves": ["stern_glare", "gust_lance", "market_stampede", "shoulder_shove"]
         },
         {
           "speciesId": "essedrage",
-          "level": 49
+          "level": 50
         }
       ],
       "items": {

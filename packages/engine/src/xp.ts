@@ -1,5 +1,5 @@
 import type { Dex } from '@oml/data';
-import { calcHp, MAX_LEVEL } from './stats';
+import { AVERAGE_IVS, calcHp, MAX_LEVEL } from './stats';
 import type { BattleEvent, CreatureInstance, SideIndex } from './types';
 
 import { autoMoveset, MAX_MOVES } from './moves';
@@ -57,9 +57,9 @@ export function gainXp(
 
   const target = levelForXp(creature.xp);
   while (creature.level < target) {
-    const oldMax = calcHp(species.baseStats.hp, creature.level);
+    const oldMax = calcHp(species.baseStats.hp, creature.level, (creature.ivs ?? AVERAGE_IVS).hp);
     creature.level += 1;
-    const newMax = calcHp(species.baseStats.hp, creature.level);
+    const newMax = calcHp(species.baseStats.hp, creature.level, (creature.ivs ?? AVERAGE_IVS).hp);
     if (creature.hp > 0) creature.hp = Math.min(newMax, creature.hp + (newMax - oldMax));
     events.push({
       type: 'level_up',

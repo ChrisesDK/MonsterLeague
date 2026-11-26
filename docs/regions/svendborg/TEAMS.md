@@ -13,7 +13,7 @@ Zone Svendborg centre, district 1 (wild levels 3–8). Badge: Lantern badge. Nee
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Ferryman Ole (`svb_arena1_junior`) | Havnekat 8, Sildeling 9 | – | 2× Basic Charm + 225 coins |
-| 2 | Harbour Master Karl (`svb_leader_spirit`) | Flagling 13, Tågeling 11 (Wisp Flicker, Moonless Stare, Boulder Roll) | 2× Small Tonic | 1× Revive Leaf + 780 coins |
+| 2 | Harbour Master Karl (`svb_leader_spirit`) | Flagling 15 (Wisp Flicker, Blight Touch), Tågeling 11 (Wisp Flicker, Boulder Roll) | 2× Small Tonic | 1× Revive Leaf + 900 coins |
 
 Expected player team (balance sim): starter at 10, Havnekat 9, Egernling 10; items 2× Small Tonic.
 
@@ -24,7 +24,7 @@ Zone Christiansminde, district 2 (wild levels 8–14). Badge: Bonfire badge. Nee
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Lifeguard Mikkel (`svb_arena2_junior`) | Askeling 11, Hareling 12 | – | 3× Basic Charm + 300 coins |
-| 2 | Bonfire Keeper Sanne (`svb_leader_fire`) | Askeling 13 (Hearth Spark, Stoke Up, Sky Crackle), Søpindling 16 (Prickle Charge, Hunker Down, Grit Spray, Cobbler Kick), Fyrling 17 (Cobble Toss, Stoke Up, Cobbler Kick, Ember Hop) | – | 1× Revive Leaf + 1020 coins |
+| 2 | Bonfire Keeper Sanne (`svb_leader_fire`) | Askeling 13 (Hearth Spark, Stoke Up, Sky Crackle), Søpindling 15 (Prickle Charge, Hunker Down, Grit Spray, Cobbler Kick), Fyrling 17 (Cobble Toss, Stoke Up, Cobbler Kick, Ember Hop) | – | 1× Revive Leaf + 1020 coins |
 
 Expected player team (balance sim): starter at 15, Sildeling 13, Bøgeegern 14, Havnekat 14; items 2× Small Tonic, 1× Large Tonic.
 
@@ -35,7 +35,7 @@ Zone Thurø, district 3 (wild levels 13–20). Badge: Island badge. Needs badge 
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Sailor Freja (`svb_arena3_junior`) | Sildeling 16, Blåmusling 17 | – | 2× Good Charm + 425 coins |
-| 2 | Shipwright Hanne (`svb_leader_water`) | Brunfiskling 17, Havføl 22, Havål 26, Sundsæl 24 | 2× Large Tonic | 1× Revive Leaf + 1560 coins |
+| 2 | Shipwright Hanne (`svb_leader_water`) | Brunfiskling 13, Havføl 23, Havål 26 (Sea Fog, Cobbler Kick, Brook Spout, Ripple Dash), Sundsæl 22 (Shoulder Shove, Sea Fog, Cobble Toss, Rinse and Mend) | 2× Large Tonic | 1× Revive Leaf + 1560 coins |
 
 Expected player team (balance sim): starter at 22, Strandskade 21, Blåmusling 21, Bøgeegern 22, Havnekat 21; items 2× Small Tonic, 2× Large Tonic.
 
@@ -46,7 +46,7 @@ Zone Troense, district 4 (wild levels 19–26). Badge: Skipper badge. Needs badg
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Mate Ida (`svb_arena4_junior`) | Strandskade 23, Askeling 24 | – | 3× Good Charm + 600 coins |
-| 2 | Skipper Jens (`svb_leader_storm`) | Havføl 30, Kirkeugle 31, Havterne 31, Kirkeugle 30 | 2× Large Tonic | 1× Revive Leaf + 1860 coins |
+| 2 | Skipper Jens (`svb_leader_storm`) | Havføl 24 (Sea Fog, Brook Spout, Gust Lance, Rinse and Mend), Kirkeugle 31 (Squall Slap, Gust Lance, Grave Chill, Sky Crackle), Havterne 33, Kirkeugle 29 | 2× Large Tonic | 1× Revive Leaf + 1980 coins |
 
 Expected player team (balance sim): starter at 28, Strandskade 26, Hestemusling 26, Stimsild 26, Fyrvogter 27; items 2× Small Tonic, 1× Large Tonic.
 
@@ -57,7 +57,7 @@ Zone Valdemars Slot, district 5 (wild levels 25–32). Badge: Castle badge. Need
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Castle Gardener Poul (`svb_arena5_junior`) | Markhare 29, Skibskat 30 | – | 3× Good Charm + 750 coins |
-| 2 | Castle Steward Ebba (`svb_leader_folk`) | Markhare 28 (Boulder Roll, Stern Glare, Cobbler Kick, Cartwheel), Skibskat 33, Aftenbakke 34, Klabautermand 35 | 2× Large Tonic | 2× Revive Leaf + 2100 coins |
+| 2 | Castle Steward Ebba (`svb_leader_folk`) | Markhare 23 (Shoulder Shove, Stern Glare, Cobbler Kick, Cartwheel), Skibskat 29 (Stern Glare, Cobbler Kick, Gust Lance, Cartwheel), Aftenbakke 34 (Wisp Flicker, Cobbler Kick, Grave Chill, Blight Touch), Klabautermand 35 (Stern Glare, Cobbler Kick, Ripple Dash, Market Stampede) | 2× Large Tonic | 2× Revive Leaf + 2100 coins |
 
 Expected player team (balance sim): starter at 33, Kystskade 31, Hestemusling 31, Stimsild 31, Fyrvogter 32; items 2× Small Tonic, 2× Large Tonic.
 
@@ -68,7 +68,7 @@ Zone Egebjerg, district 6 (wild levels 31–38). Badge: Mill badge. Needs badge 
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Stonemason Lise (`svb_arena6_junior`) | Søpindsvin 34, Fyrvogter 35 | – | 2× Great Charm + 875 coins |
-| 2 | Miller Torben (`svb_leader_stone`) | Guldgubbe 35, Hestemusling 37, Guldhøvding 41, Klintkonge 46 | 2× Large Tonic | 2× Revive Leaf + 2760 coins |
+| 2 | Miller Torben (`svb_leader_stone`) | Guldgubbe 38 (Hunker Down, Grave Chill, Cobble Toss, Hollow Wail), Hestemusling 43, Guldhøvding 44, Klintkonge 49 | 2× Large Tonic | 2× Revive Leaf + 2940 coins |
 
 Expected player team (balance sim): starter at 38, Kystskade 36, Månehare 36, Skibskat 36, Kronegern 36; items 2× Small Tonic, 2× Large Tonic.
 
@@ -79,7 +79,7 @@ Zone Hvidkilde, district 7 (wild levels 37–44). Badge: Forest badge. Needs bad
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Hunter Anders (`svb_arena7_junior`) | Heksering 39, Kronegern 40 | – | 2× Great Charm + 1000 coins |
-| 2 | Head Forester Agnete (`svb_leader_grove`) | Kronegern 44, Heksering 38, Hyldemor 38, Klintkonge 42 (Sky Crackle, Rampart Slam, Market Stampede, Rune Slab), Kirkeugle 41 | 3× Large Tonic | 1× Revive Blossom + 2640 coins |
+| 2 | Head Forester Agnete (`svb_leader_grove`) | Kronegern 47 (Drowsy Pollen, Beech Lash, Gust Lance, Beech Crown), Heksering 39 (Drowsy Pollen, Beech Lash, Thorn Volley, Hollow Wail), Hyldemor 39 (Drowsy Pollen, Nettle Sting, Beech Lash, Hollow Wail), Klintkonge 45 (Sky Crackle, Rampart Slam, Market Stampede, Grit Spray), Kirkeugle 40 | 3× Large Tonic | 1× Revive Blossom + 2820 coins |
 
 Expected player team (balance sim): starter at 43, Kystskade 41, Hestemusling 41, Sildekonge 41, Kronegern 41, Aftenbakke 41; items 2× Small Tonic, 2× Large Tonic.
 
@@ -90,7 +90,7 @@ Zone Gudme, district 8 (wild levels 43–50). Badge: Gold badge. Needs badge 7.
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Digger Rune (`svb_arena8_junior`) | Klabautermand 45, Ålekonge 46 | – | 3× Great Charm + 1150 coins |
-| 2 | Archaeologist Sigrun (`svb_leader_mixed`) | Tågefrue 45, Kirkeugle 45, Bålfugl 48, Sildekonge 45, Vejrhane 47 | 3× Large Tonic | 1× Revive Blossom + 2880 coins |
+| 2 | Archaeologist Sigrun (`svb_leader_mixed`) | Tågefrue 42, Kirkeugle 50, Bålfugl 49, Sildekonge 41, Vejrhane 48 | 3× Large Tonic | 1× Revive Blossom + 3000 coins |
 
 Expected player team (balance sim): starter at 46, Månehare 44, Skibskat 44, Sildekonge 44, Kronegern 44, Aftenbakke 44; items 2× Small Tonic, 2× Large Tonic.
 

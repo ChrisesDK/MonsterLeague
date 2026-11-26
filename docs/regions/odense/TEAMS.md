@@ -13,7 +13,7 @@ Zone Centrum, district 1 (wild levels 3–8). Badge: Kongens Have badge. Needs b
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Gardener Jens (`arena1_junior`) | Mosbille 8, Torvdue 9 | – | 2× Basic Charm + 225 coins |
-| 2 | Market Leader Søren (`leader_folk`) | Rendsnude 9, Loftnisse 10 | 2× Small Tonic | 1× Revive Leaf + 600 coins |
+| 2 | Market Leader Søren (`leader_folk`) | Rendsnude 8, Loftnisse 10 | 2× Small Tonic | 1× Revive Leaf + 600 coins |
 
 Expected player team (balance sim): starter at 10, Torvdue 9, Mosbille 10; items 2× Small Tonic.
 
@@ -24,7 +24,7 @@ Zone Næsbyhoved castle mound, district 2 (wild levels 8–14). Badge: Castle Mo
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Bell-ringer Poul (`arena2_junior`) | Brokrabbe 11, Torvdue 12 | – | 3× Basic Charm + 300 coins |
-| 2 | Stonemason Dorthe (`leader_stone`) | Kampetrold 14 (Cobble Toss, Squall Slap, Cobbler Kick, Hunker Down), Kulingmåge 13, Brokrabbe 15 (Cobble Toss, Grit Spray, Sky Crackle, Hunker Down) | – | 1× Revive Leaf + 900 coins |
+| 2 | Stonemason Dorthe (`leader_stone`) | Kampetrold 14 (Cobble Toss, Squall Slap, Cobbler Kick, Hunker Down), Kulingmåge 14, Brokrabbe 15 (Cobble Toss, Grit Spray, Sky Crackle, Shoulder Shove) | – | 1× Revive Leaf + 900 coins |
 
 Expected player team (balance sim): starter at 15, Grimælling 13, Mosbille 14, Kulingmåge 14; items 2× Small Tonic, 1× Large Tonic.
 
@@ -35,7 +35,7 @@ Zone Stige Ø, district 3 (wild levels 13–20). Badge: Fjord badge. Needs badge
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Fisher Karen (`arena3_junior`) | Grimælling 16, Rokkeling 17 | – | 2× Good Charm + 425 coins |
-| 2 | Harbour Leader Ingrid (`leader_water`) | Grimælling 19 (Brook Spout, Rinse and Mend, Sea Fog, Shoulder Shove), Kulingmåge 20 (Squall Slap, Sky Crackle, Gale Step, Nimble Jab), Strømodder 22 (Harbour Wave, Kiln Blast, Rinse and Mend, Cobble Toss), Strømodder 21 (Harbour Wave, Squall Slap, Rinse and Mend, Cobble Toss) | 2× Large Tonic | 1× Revive Leaf + 1320 coins |
+| 2 | Harbour Leader Ingrid (`leader_water`) | Grimælling 15 (Brook Spout, Rinse and Mend, Sea Fog, Shoulder Shove), Kulingmåge 9 (Squall Slap, Sky Crackle, Gale Step, Nimble Jab), Strømodder 22 (Harbour Wave, Kiln Blast, Rinse and Mend, Cobble Toss), Strømodder 21 (Harbour Wave, Squall Slap, Rinse and Mend, Cobble Toss) | 2× Large Tonic | 1× Revive Leaf + 1320 coins |
 
 Expected player team (balance sim): starter at 22, Kulingmåge 21, Brokrabbe 21, Mosbille 22, Torvdue 21; items 2× Small Tonic, 2× Large Tonic.
 
@@ -46,7 +46,7 @@ Zone H.C. Andersen Skoven, district 4 (wild levels 19–26). Badge: Fairy-tale F
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Scout Mads (`arena4_junior`) | Skovbille 23, Mikkelræv 24 | – | 3× Good Charm + 600 coins |
-| 2 | Forester Asger (`leader_grove`) | Mostrold 29, Skovbille 30, Ellepige 31, Bøgevætte 32 | 2× Large Tonic | 1× Revive Leaf + 1920 coins |
+| 2 | Forester Asger (`leader_grove`) | Mostrold 30, Skovbille 29, Ellepige 32, Bøgevætte 32 | 2× Large Tonic | 1× Revive Leaf + 1920 coins |
 
 Expected player team (balance sim): starter at 28, Kulingmåge 26, Brokrabbe 26, Svaneunge 26, Glødøgle 27; items 2× Small Tonic, 1× Large Tonic.
 
@@ -57,7 +57,7 @@ Zone Hollufgård, district 5 (wild levels 25–32). Badge: Sculpture badge. Need
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Miller Ane (`arena5_junior`) | Lygtemand 29, Mosekone 30 | – | 3× Good Charm + 750 coins |
-| 2 | Sculptor Mette (`leader_spirit`) | Lygtemand 33, Mosekone 33, Nøkkeling 34, Gårdnisse 35 | 2× Large Tonic | 2× Revive Leaf + 2100 coins |
+| 2 | Sculptor Mette (`leader_spirit`) | Lygtemand 36 (Moonless Stare, Grave Chill, Hollow Wail, Ember Hop), Mosekone 36 (Moonless Stare, Grave Chill, Hollow Wail, Thorn Volley), Nøkkeling 30 (Brook Spout, Grave Chill, Rinse and Mend, Harbour Wave), Gårdnisse 35 (Shoulder Shove, Cobbler Kick, Grave Chill, Market Stampede) | 2× Large Tonic | 2× Revive Leaf + 2160 coins |
 
 Expected player team (balance sim): starter at 33, Stormmåge 31, Kæmpekrabbe 31, Svaneunge 31, Glødøgle 32; items 2× Small Tonic, 2× Large Tonic.
 
@@ -68,7 +68,7 @@ Zone Den Fynske Landsby, district 6 (wild levels 31–38). Badge: Village badge.
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Baker Lars (`arena6_junior`) | Glødøgle 34, Flintbjørn 35 | – | 2× Great Charm + 875 coins |
-| 2 | Smith Niels (`leader_fire`) | Glødøgle 35, Lygtemand 37, Essedrage 36, Brandløve 39 | 2× Large Tonic | 2× Revive Leaf + 2340 coins |
+| 2 | Smith Niels (`leader_fire`) | Glødøgle 30, Lygtemand 26, Essedrage 37, Brandløve 40 | 2× Large Tonic | 2× Revive Leaf + 2400 coins |
 
 Expected player team (balance sim): starter at 38, Stormmåge 36, Vinddue 36, Mikkelræv 36, Eghjort 36; items 2× Small Tonic, 2× Large Tonic.
 
@@ -79,7 +79,7 @@ Zone Odense Zoo, district 7 (wild levels 37–44). Badge: Zoo badge. Needs badge
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Guide Yasmin (`arena7_junior`) | Mikkelræv 39, Rokkevinge 40 | – | 2× Great Charm + 1000 coins |
-| 2 | Keeper Fatima (`leader_mixed`) | Kongesvane 40, Eghjort 42, Lygtemand 40, Tordenravn 43, Essedrage 42 | 3× Large Tonic | 1× Revive Blossom + 2580 coins |
+| 2 | Keeper Fatima (`leader_mixed`) | Kongesvane 34, Eghjort 44, Lygtemand 44, Tordenravn 32, Essedrage 45 | 3× Large Tonic | 1× Revive Blossom + 2700 coins |
 
 Expected player team (balance sim): starter at 43, Stormmåge 41, Kæmpekrabbe 41, Kongesvane 41, Eghjort 41, Lygtemand 41; items 2× Small Tonic, 2× Large Tonic.
 
@@ -90,7 +90,7 @@ Zone Tusindårsskoven, district 8 (wild levels 43–50). Badge: Hilltop badge. N
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
 | 1 | Runner Freja (`arena8_junior`) | Tordenravn 45, Stormmåge 46 | – | 3× Great Charm + 1150 coins |
-| 2 | Weatherwatcher Bo (`leader_storm`) | Stormmåge 49, Tordenravn 49, Rokkevinge 48, Vinddue 49, Essedrage 49 | 3× Large Tonic | 1× Revive Blossom + 2940 coins |
+| 2 | Weatherwatcher Bo (`leader_storm`) | Stormmåge 48 (Gale Step, Cobbler Kick, Sky Crackle, Squall Slap), Tordenravn 48 (Gale Step, Grave Chill, Hollow Wail, Thunder Squall), Rokkevinge 45 (Sea Fog, Rinse and Mend, Sky Crackle, Brook Spout), Vinddue 49 (Stern Glare, Gust Lance, Market Stampede, Shoulder Shove), Essedrage 50 | 3× Large Tonic | 1× Revive Blossom + 3000 coins |
 
 Expected player team (balance sim): starter at 46, Vinddue 44, Rottekonge 44, Kongesvane 44, Mikkelræv 44, Lygtemand 44; items 2× Small Tonic, 2× Large Tonic.
 

@@ -12,6 +12,13 @@ export interface MoveSlot {
   pp: number;
 }
 
+/** Individual values (owner request): 0–15 each, fixed for a creature's life. */
+export interface Ivs {
+  hp: number;
+  atk: number;
+  def: number;
+}
+
 export interface CreatureInstance {
   uid: string;
   speciesId: string;
@@ -25,6 +32,10 @@ export interface CreatureInstance {
   nickname?: string;
   /** Field ability taught to this creature (GDD: it takes one of the 4 move slots). */
   fieldAbility?: string;
+  /** Individual values; missing (trainers, older creatures) means the average, 7 each. */
+  ivs?: Ivs;
+  /** A rare colour variant (looks only). */
+  shiny?: boolean;
 }
 
 export interface Stats {

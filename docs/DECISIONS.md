@@ -1847,3 +1847,52 @@ length, position resolution and spawn tables>`.
   "Routes": it hides the route number tags and the route-name layer; hiding routes hides
   them too, and its switch is then disabled and greyed out (no extra text). The banner on
   another region's Town Map (D183) is gone; the Fyn map and the back gesture lead back.
+- **D185. Badges per region; the field guide's entry page** (owner request, GDD v1.23).
+  `campaignView(save, region)` (packages/game) is the save as if that region were played,
+  for looking only: the Town Map of another region, the badges screen and the field guide
+  use it. The badges screen has region tabs (shared `RegionTabs` with the field guide) and
+  opens on a given region from the Town Map's new badges button (rendered by the Town Map
+  over itself; back closes it). The field guide list shows number, picture, name and
+  seen/caught; a press opens the entry (types once seen, and where to find it). Hints for
+  the same place, time and field ability in several districts merge into one line with the
+  districts as runs ("Districts 1–3, 6"; all of the region's districts: "Every district").
+- **D186. Heal and stat-lowering moves in the AI** (owner request, GDD v1.23). The set-up
+  rule (leaders always, trainers half the time) gains two steps: a heal-only move below 50 %
+  HP (before boosting), and a no-damage move that lowers the target's stats above 50 % HP
+  when none of those stats is lowered yet (after boosting). Moves that heal and boost
+  (Hunker Down) count as boosts. Wild creatures pick among moves that do something (no heal
+  above half HP, no lowering a stat at −2 or raising one at +2; a mixed move always counts)
+  and heal with a known heal move half the time below 35 % HP; the extra random number is
+  only drawn when that heal is possible. The sim's player side uses the trainer tier, so
+  it heals and lowers too. Leaders were re-tuned for both regions (with IVs, D187) by a search over
+  member levels and moves the species knows by that level (throwaway scripts, not
+  committed); see BALANCE.md and TEAMS.md. Svendborg arena 1's spirit leader lost Moonless
+  Stare (Speed −2 took the storm starter's one edge, its speed). Svendborg arena 5's folk
+  leader ends about 4 points outside its bands (inside the guard's 5-point slack; the sim
+  is seeded, so the result is stable): to revisit with the next roster change.
+- **D187. Individual values** (owner request, GDD v1.23). `CreatureInstance.ivs` (HP,
+  Attack, Defence, 0–15) enters the stat formula as in the GDD; a creature without `ivs`
+  counts as 7 each (`AVERAGE_IVS`): trainers' creatures, the sim's player teams and every
+  creature saved before v1.23, so no save migration is needed (the fields are optional in
+  the save schema). Wild creatures get `wildTraits(playerSeed, spawnId)` (packages/game,
+  a hash of the player seed and spawn id into the engine's RNG), so the same spawn always
+  has the same IVs for a player and a different player gets other ones; starters and the
+  tutorial creature use `givenIvs(seed, key)`. Evolution and level-ups keep the IVs. The UI
+  calls them "strengths" (Styrker), not a franchise term.
+- **D188. Glimmer creatures** (owner request, GDD v1.23). `wildTraits` also decides
+  `shiny` (1 in `SHINY_RATE` = 256): about 7 creatures per km and ~60 km per campaign give
+  ~400 creatures, so about 4 in 5 players meet one (1 in 512 would leave half without).
+  Player-facing name "Glimmer" (da and en), not the franchise word. The look is a CSS
+  colour turn (hue 150°) and a gold sparkle on the battle sprite and in the team, so no new
+  art is needed. It is revealed only when the battle begins (owner): map markers and the
+  Nearby strip always show the normal form. The night battle
+  background's decorative moon sat right behind the opponent's sprite and showed around it
+  as a beige circle; it was removed.
+- **D189. Glimmer forms in the field guide; save v12** (owner request, GDD v1.23). The
+  campaign gains `glimmerSeen` (species ids met as a Glimmer creature; a campaign key, so
+  each region has its own). `startWildBattle` adds the species when the wild creature is
+  Glimmer. Save v12: the v11→v12 migration adds an empty list to the save and to every
+  parked campaign (no Glimmer creature existed before). The entry page has a Normal /
+  Glimmer switch (Glimmer disabled until seen) and previous / next buttons through the
+  region's numbered list; a sparkle follows a Glimmer creature's name in battle, in team
+  and storage rows and in its page title.

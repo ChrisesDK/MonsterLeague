@@ -20,6 +20,7 @@ import {
   teachFieldAbility,
   addToBag,
   applyItem,
+  campaignView,
   isDistrictOpen,
   isZoneOpen,
   journal,
@@ -30,6 +31,7 @@ import {
 import { creatureName } from '../eventText';
 import { Button, ListRow, ProgressBar, Pill, Tabs } from '../ui/components';
 import { Icon, type IconName } from '../ui/icons';
+import { useBackHandler } from '../ui/backStack';
 import { goalProgress, goalTitle } from './goalText';
 import { makeT, type Translate } from '../i18n';
 import { deleteGame, exportGameFile, readGameFile, shareOrDownload, writeGame } from './store';
@@ -153,9 +155,12 @@ function CreatureRow({
 }) {
   return (
     <button className="btn list-btn creature-row" data-testid={testId} onClick={onClick}>
-      <img src={spriteUrl(c.speciesId)} alt="" />
+      <img src={spriteUrl(c.speciesId)} alt="" className={c.shiny ? 'shiny' : ''} />
       <span className="creature-row-main">
-        <strong>{creatureName(c, t)}</strong>
+        <strong>
+          {creatureName(c, t)}
+          {c.shiny && <span className="shiny-mark inline"> ✦</span>}
+        </strong>
         <span className="muted small">
           {t('ui.level')} {c.level}
           {c.fieldAbility ? ` · ${t(`fieldAbility.${c.fieldAbility}.name`)}` : ''}
@@ -303,10 +308,20 @@ function CreatureDetail({
     (id) => canTeach(save, c, id) !== 'wrongType',
   );
   return (
-    <Shell t={t} title={creatureName(c, t)} onBack={onBack} testId="screen-creature">
+    <Shell
+      t={t}
+      title={c.shiny ? `${creatureName(c, t)} ✦` : creatureName(c, t)}
+      onBack={onBack}
+      testId="screen-creature"
+    >
       <div className="detail-head">
-        <img src={spriteUrl(c.speciesId)} alt="" />
+        <img src={spriteUrl(c.speciesId)} alt="" className={c.shiny ? 'shiny' : ''} />
         <div>
+          {c.shiny && (
+            <p className="shiny-label" data-testid="detail-shiny">
+              ✦ {t('ui.shiny')}
+            </p>
+          )}
           <p>
             {species.types.map((ty) => t(`type.${ty}.name`)).join(' / ')} · {t('ui.level')}{' '}
             {c.level}
@@ -325,6 +340,11 @@ function CreatureDetail({
           </div>
         ))}
       </dl>
+      <p className="muted small" data-testid="detail-ivs">
+        {c.ivs
+          ? t('detail.ivs', { hp: c.ivs.hp, atk: c.ivs.atk, def: c.ivs.def })
+          : t('detail.ivsAverage')}
+      </p>
       <h2>{t('detail.moves')}</h2>
       <ul className="move-list">
         {c.moves.map((m) => (
@@ -663,18 +683,51 @@ function MarketScreen({
   );
 }
 
+/** "1–8", "2, 5" or "1–3, 6": districts as short runs. */
+export function districtRuns(ds: number[]): string {
+  const sorted = [...new Set(ds)].sort((a, b) => a - b);
+  const runs: string[] = [];
+  for (let i = 0; i < sorted.length;) {
+    let j = i;
+    while (j + 1 < sorted.length && sorted[j + 1] === sorted[j]! + 1) j++;
+    runs.push(j - i >= 2 ? `${sorted[i]}–${sorted[j]}` : sorted.slice(i, j + 1).join(', '));
+    i = j + 1;
+  }
+  return runs.join(', ');
+}
+
+/**
+ * Where to find a creature. The same place in several districts is one line ("Districts
+ * 1–8: …", owner request: a creature found everywhere listed eight lines).
+ */
 function hintText(t: Translate, speciesId: string, dex: Dex): string[] {
-  return guideHints(speciesId, dex).map((h) => {
+  const homes: string[] = [];
+  const byPlace = new Map<
+    string,
+    { districts: number[]; where: string; when: string; needs: string }
+  >();
+  const all = new Set(Object.values(dex.zones).map((z) => z.district)).size;
+  for (const h of guideHints(speciesId, dex)) {
     const where = h.biomes.map((b) => t(`biome.${b}.near`)).join(t('guide.or'));
     const when = h.time === 'night' ? t('guide.atNight') : h.time === 'day' ? t('guide.byDay') : '';
     const needs = h.requires ? ` (${t(`fieldAbility.${h.requires}.name`)})` : '';
     // D173: a destination creature names its home(s), so players know where to travel
     if (h.zones.length > 0) {
       const place = h.zones.map((z) => t(`zone.${z}.name`)).join(t('guide.or'));
-      return t(h.mainHome ? 'guide.homeMain' : 'guide.homeAlso', { place, when }) + needs;
+      homes.push(t(h.mainHome ? 'guide.homeMain' : 'guide.homeAlso', { place, when }) + needs);
+      continue;
     }
-    return t('guide.hint', { district: h.district, where, when }) + needs;
+    const key = `${where}|${when}|${needs}`;
+    const e = byPlace.get(key) ?? { districts: [], where, when, needs };
+    e.districts.push(h.district);
+    byPlace.set(key, e);
+  }
+  const lines = [...byPlace.values()].map((e) => {
+    const n = new Set(e.districts).size;
+    const key = n >= all ? 'guide.hintAll' : n > 1 ? 'guide.hintMany' : 'guide.hint';
+    return t(key, { district: districtRuns(e.districts), where: e.where, when: e.when }) + e.needs;
   });
+  return [...homes, ...lines];
 }
 
 /**
@@ -774,67 +827,139 @@ function FeedbackScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onB
  */
 function GuideScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBack: () => void }) {
   const [region, setRegion] = useState<RegionId>(save.region);
-  const tabs = PLAYABLE_MUNICIPALITIES as readonly RegionId[];
+  // a pressed entry opens its page: where to find it (owner request: the list stays short)
+  const [open, setOpen] = useState<string | null>(null);
+  const [glimmer, setGlimmer] = useState(false);
+  const openEntry = (id: string | null) => {
+    setOpen(id);
+    setGlimmer(false);
+  };
+  useBackHandler(open !== null, () => openEntry(null));
   const dex = regions[region];
   const tr = region === save.region ? t : makeT(save.settings.language, region);
   const progress =
     region === save.region
-      ? { seen: save.seen, caught: save.caught }
-      : (save.campaigns[region] ?? { seen: {}, caught: {} });
+      ? { seen: save.seen, caught: save.caught, glimmerSeen: save.glimmerSeen }
+      : (save.campaigns[region] ?? { seen: {}, caught: {}, glimmerSeen: [] });
   const species = Object.values(dex.species);
   const seenCount = species.filter((s) => progress.seen[s.id]?.length).length;
   const caughtCount = species.filter((s) => progress.caught[s.id]?.length).length;
+  const stateOf = (id: string) =>
+    progress.caught[id]?.length ? 'caught' : progress.seen[id]?.length ? 'seen' : 'unseen';
+  const number = (id: string) =>
+    `#${String(species.findIndex((s) => s.id === id) + 1).padStart(3, '0')}`;
+
+  if (open) {
+    const s = dex.species[open]!;
+    const state = stateOf(s.id);
+    const seen = state !== 'unseen';
+    const glimmerSeen = progress.glimmerSeen.includes(s.id);
+    const showGlimmer = glimmer && glimmerSeen;
+    const at = species.findIndex((x) => x.id === s.id);
+    const prev = species[at - 1];
+    const next = species[at + 1];
+    return (
+      <Shell
+        t={t}
+        title={`${number(s.id)} ${seen ? tr(`species.${s.id}.name`) : '???'}`}
+        onBack={() => openEntry(null)}
+        testId="screen-guide-entry"
+      >
+        <div className="guide-entry" data-testid={`guide-entry-${s.id}`} data-state={state}>
+          <div className="chip-row guide-forms" role="tablist">
+            <button
+              role="tab"
+              data-testid="guide-form-normal"
+              className={`btn choice${showGlimmer ? '' : ' on'}`}
+              aria-selected={!showGlimmer}
+              onClick={() => setGlimmer(false)}
+            >
+              {t('guide.formNormal')}
+            </button>
+            <button
+              role="tab"
+              data-testid="guide-form-glimmer"
+              className={`btn choice${showGlimmer ? ' on' : ''}`}
+              aria-selected={showGlimmer}
+              disabled={!glimmerSeen}
+              title={glimmerSeen ? undefined : t('guide.glimmerUnseen')}
+              onClick={() => setGlimmer(true)}
+            >
+              ✦ {t('ui.shiny')}
+            </button>
+          </div>
+          <span className="guide-entry-art">
+            <img
+              src={spriteUrl(s.id)}
+              alt=""
+              className={!seen ? 'unseen' : showGlimmer ? 'shiny' : ''}
+              data-testid="guide-entry-img"
+            />
+            {showGlimmer && <span className="shiny-mark">✦</span>}
+          </span>
+          <p>
+            <strong>{t(`guide.${state}`)}</strong>
+            {seen && <> · {s.types.map((ty) => t(`type.${ty}.name`)).join(' / ')}</>}
+          </p>
+        </div>
+        <h2 className="guide-where">{t('guide.where')}</h2>
+        {dex.starters.includes(s.id) && <p className="muted">{t('guide.starter')}</p>}
+        {hintText(tr, s.id, dex).map((h) => (
+          <p key={h} className="muted">
+            {h}
+          </p>
+        ))}
+        <nav className="guide-step">
+          <Button
+            icon="back"
+            variant="ghost"
+            data-testid="guide-prev"
+            disabled={!prev}
+            onClick={() => prev && openEntry(prev.id)}
+          >
+            {prev ? number(prev.id) : t('guide.prev')}
+          </Button>
+          <Button
+            variant="ghost"
+            data-testid="guide-next"
+            disabled={!next}
+            onClick={() => next && openEntry(next.id)}
+          >
+            {next ? number(next.id) : t('guide.next')}
+            <Icon name="chevron" />
+          </Button>
+        </nav>
+      </Shell>
+    );
+  }
+
   return (
     <Shell t={t} title={t('menu.guide')} onBack={onBack} testId="screen-guide">
-      {tabs.length > 1 && (
-        <div className="chip-row" role="tablist">
-          {tabs.map((r) => (
-            <button
-              key={r}
-              role="tab"
-              data-testid={`guide-tab-${r}`}
-              className={`btn choice${r === region ? ' on' : ''}`}
-              aria-selected={r === region}
-              onClick={() => setRegion(r)}
-            >
-              {t(`municipality.${r}.name`)}
-            </button>
-          ))}
-        </div>
-      )}
+      <RegionTabs t={t} region={region} onRegion={setRegion} testId="guide-tab" />
       <p className="muted small" data-testid="guide-totals">
         {t('guide.totals', { seen: seenCount, caught: caughtCount, all: species.length })}
       </p>
       <div className="list-panel guide-list">
         {species.map((s, i) => {
-          const caught = !!progress.caught[s.id]?.length;
-          const seen = caught || !!progress.seen[s.id]?.length;
-          const starter = dex.starters.includes(s.id);
-          // where to find it (also before it is seen: the guide is the player's to-do list)
-          const hints = hintText(tr, s.id, dex);
+          const state = stateOf(s.id);
+          const seen = state !== 'unseen';
           return (
-            <div
+            <button
+              type="button"
               key={s.id}
               className="guide-row-card"
               data-testid={`guide-${s.id}`}
-              data-state={caught ? 'caught' : seen ? 'seen' : 'unseen'}
+              data-state={state}
+              onClick={() => openEntry(s.id)}
             >
               <span className="guide-no">#{String(i + 1).padStart(3, '0')}</span>
               <img src={spriteUrl(s.id)} alt="" className={seen ? '' : 'unseen'} />
-              <div>
+              <span className="guide-name">
                 <strong>{seen ? tr(`species.${s.id}.name`) : '???'}</strong>
-                <span className="muted small">
-                  {' '}
-                  · {caught ? t('guide.caught') : seen ? t('guide.seen') : t('guide.unseen')}
-                </span>
-                {starter && <p className="muted small">{t('guide.starter')}</p>}
-                {hints.map((h) => (
-                  <p key={h} className="muted small">
-                    {h}
-                  </p>
-                ))}
-              </div>
-            </div>
+                <span className="muted small">{t(`guide.${state}`)}</span>
+              </span>
+              <Icon name="chevron" />
+            </button>
           );
         })}
       </div>
@@ -842,24 +967,75 @@ function GuideScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBack
   );
 }
 
-function BadgesScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBack: () => void }) {
-  const dex = useContext(RegionDex);
-  const next = [1, 2, 3, 4, 5, 6, 7, 8].find((a) => !save.badges.includes(a)) ?? null;
+/** One tab per playable region (field guide, badges); nothing while only one is playable. */
+function RegionTabs({
+  t,
+  region,
+  onRegion,
+  testId,
+}: {
+  t: Translate;
+  region: RegionId;
+  onRegion: (r: RegionId) => void;
+  testId: string;
+}) {
+  const tabs = PLAYABLE_MUNICIPALITIES as readonly RegionId[];
+  if (tabs.length < 2) return null;
+  return (
+    <div className="chip-row" role="tablist">
+      {tabs.map((r) => (
+        <button
+          key={r}
+          role="tab"
+          data-testid={`${testId}-${r}`}
+          className={`btn choice${r === region ? ' on' : ''}`}
+          aria-selected={r === region}
+          onClick={() => onRegion(r)}
+        >
+          {t(`municipality.${r}.name`)}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * Badges and progress, one tab per region (owner request): each region's own campaign
+ * (another region's is parked; nothing before the first visit). Also opened from the Town
+ * Map's top bar, on the region the map shows.
+ */
+export function BadgesScreen({
+  t,
+  save,
+  onBack,
+  initialRegion,
+}: {
+  t: Translate;
+  save: SaveGame;
+  onBack: () => void;
+  initialRegion?: RegionId;
+}) {
+  const [region, setRegion] = useState<RegionId>(initialRegion ?? save.region);
+  const dex = regions[region];
+  const view = campaignView(save, region);
+  const tr = region === save.region ? t : makeT(save.settings.language, region);
+  const next = [1, 2, 3, 4, 5, 6, 7, 8].find((a) => !view.badges.includes(a)) ?? null;
   const arenaPoi = Object.values(dex.pois).find((p) => p.kind === 'arena' && p.arena === next);
   return (
     <Shell t={t} title={t('menu.badges')} onBack={onBack} testId="screen-badges">
-      <div className="badge-grid">
+      <RegionTabs t={t} region={region} onRegion={setRegion} testId="badges-tab" />
+      <div className="badge-grid" data-region={region}>
         {[1, 2, 3, 4, 5, 6, 7, 8].map((a) => {
-          const earned = save.badges.includes(a);
+          const earned = view.badges.includes(a);
           return (
             <figure
               key={a}
               className={`badge-slot${earned ? ' earned' : ''}`}
               data-testid={`badge-${a}`}
             >
-              <img src={badgeUrl(a, earned, save.region)} alt="" />
+              <img src={badgeUrl(a, earned, region)} alt="" />
               <figcaption className="small">
-                {earned ? t(`badge.${a}.name`) : t('badges.empty', { n: a })}
+                {earned ? tr(`badge.${a}.name`) : t('badges.empty', { n: a })}
               </figcaption>
             </figure>
           );
@@ -869,18 +1045,18 @@ function BadgesScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBac
         {next === null
           ? t('badges.all')
           : arenaPoi
-            ? t('badges.next', { name: t(`poi.${arenaPoi.id}.name`) })
+            ? t('badges.next', { name: tr(`poi.${arenaPoi.id}.name`) })
             : t('badges.nextUnknown', { n: next })}
       </p>
       <p className="muted small">
-        {t('team.obedience', { level: obedienceLevel(save.badges) })} ·{' '}
+        {t('team.obedience', { level: obedienceLevel(view.badges) })} ·{' '}
         {t('badges.zones', {
-          n: Object.keys(dex.zones).filter((z) => isZoneOpen(save, z)).length,
+          n: Object.keys(dex.zones).filter((z) => isZoneOpen(view, z)).length,
           of: Object.keys(dex.zones).length,
         })}
       </p>
       <p className="muted small" data-testid="badges-trainers">
-        {t('badges.trainers', { n: save.defeatedTrainers.length })}
+        {t('badges.trainers', { n: view.defeatedTrainers.length })}
       </p>
     </Shell>
   );

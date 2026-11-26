@@ -14,6 +14,7 @@ import {
 } from '@oml/engine';
 import { payoutFor, type ActiveBattle, type PostBattleChoice, type SaveGame } from './save';
 import { noteRestStop } from './journal';
+import { givenIvs, wildTraits } from './traits';
 
 // ---------------------------------------------------------------------------
 // Badges, obedience, zones and districts
@@ -170,7 +171,9 @@ export function chooseStarter(
   if (!dex.starters.includes(speciesId))
     throw new Error(`${speciesId} is not a starter in ${dex.region}`);
   const [uid, next] = freshUid(save);
-  const creature = createCreature(speciesId, STARTER_LEVEL, uid, dex);
+  const creature = createCreature(speciesId, STARTER_LEVEL, uid, dex, {
+    ivs: givenIvs(save.seed, `starter:${dex.region}`),
+  });
   return {
     ...next,
     starter: speciesId,
@@ -280,7 +283,18 @@ export function startWildBattle(
       kind: 'wild',
       sides: [
         playerSideConfig(save),
-        { team: [createCreature(spawn.speciesId, spawn.level, 'w0', dex)], ai: 'wild' },
+        {
+          team: [
+            createCreature(
+              spawn.speciesId,
+              spawn.level,
+              'w0',
+              dex,
+              wildTraits(save.seed, spawn.id),
+            ),
+          ],
+          ai: 'wild',
+        },
       ],
     },
     seed,
@@ -298,6 +312,9 @@ export function startWildBattle(
     battle,
     usedSpawns: { ...save.usedSpawns, [spawn.id]: spawn.expiresAt },
     seen: markDistrict(save.seen, spawn.speciesId, spawn.district),
+    ...(state.sides[1].team[0]!.shiny && !save.glimmerSeen.includes(spawn.speciesId)
+      ? { glimmerSeen: [...save.glimmerSeen, spawn.speciesId] }
+      : {}),
   };
 }
 
@@ -317,7 +334,14 @@ export function startTutorialBattle(
       kind: 'wild',
       sides: [
         playerSideConfig(save),
-        { team: [createCreature(tutorialSpecies(dex), TUTORIAL_LEVEL, 'w0', tdex)], ai: 'wild' },
+        {
+          team: [
+            createCreature(tutorialSpecies(dex), TUTORIAL_LEVEL, 'w0', tdex, {
+              ivs: givenIvs(save.seed, `tutorial:${dex.region}`),
+            }),
+          ],
+          ai: 'wild',
+        },
       ],
     },
     seed,

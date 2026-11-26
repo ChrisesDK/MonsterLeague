@@ -16,11 +16,30 @@ describe('stats', () => {
   });
 
   it('calcStats combines all four', () => {
-    expect(calcStats({ hp: 70, atk: 80, def: 60, spd: 90 }, 12)).toEqual({
-      hp: 59,
-      atk: 24,
-      def: 19,
-      spd: 26,
+    expect(calcStats({ hp: 70, atk: 80, def: 60, spd: 90 }, 12, { hp: 0, atk: 0, def: 0 })).toEqual(
+      {
+        hp: 59,
+        atk: 24,
+        def: 19,
+        spd: 26,
+      },
+    );
+  });
+
+  it('IVs add to HP, Attack and Defence (average 7 when a creature has none)', () => {
+    const base = { hp: 70, atk: 80, def: 60, spd: 90 };
+    expect(calcStats(base, 12)).toEqual({ hp: 60, atk: 25, def: 20, spd: 26 });
+    expect(calcStats(base, 50, { hp: 15, atk: 15, def: 15 })).toEqual({
+      hp: 230,
+      atk: 92,
+      def: 72,
+      spd: 95,
+    });
+    expect(calcStats(base, 50, { hp: 0, atk: 0, def: 0 })).toEqual({
+      hp: 215,
+      atk: 85,
+      def: 65,
+      spd: 95,
     });
   });
 

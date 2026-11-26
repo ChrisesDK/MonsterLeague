@@ -16,7 +16,7 @@ import { z } from 'zod';
  * and swapped in when the player enters that region (`switchCampaign`). The seed, the uid
  * counter and the settings are shared.
  */
-export const SAVE_VERSION = 11;
+export const SAVE_VERSION = 12;
 
 export type OnboardingStep = 'safety' | 'location' | 'starter' | 'tutorial' | 'done';
 
@@ -69,6 +69,7 @@ export const CAMPAIGN_KEYS = [
   'defeatedTrainers',
   'seen',
   'caught',
+  'glimmerSeen',
   'lastRestock',
   'usedSpawns',
   'devAbilities',
@@ -104,6 +105,8 @@ export interface SaveGame {
   /** species id → districts it was seen / caught in (field guide). */
   seen: Record<string, number[]>;
   caught: Record<string, number[]>;
+  /** Species seen as a Glimmer creature (v12, D188): the field guide shows that form. */
+  glimmerSeen: string[];
   /** Rest-stop POI id → device time (unix seconds) of the last restock. */
   lastRestock: Record<string, number>;
   /** Spawn id → expiry (unix seconds). Pruned when expired. */
@@ -150,6 +153,7 @@ export function newSave(seed: string, language: Settings['language'] = 'da'): Sa
     defeatedTrainers: [],
     seen: {},
     caught: {},
+    glimmerSeen: [],
     lastRestock: {},
     usedSpawns: {},
     devAbilities: [],
@@ -177,6 +181,15 @@ const Creature = z
     moves: z.array(z.object({ moveId: z.string(), pp: z.number().int().min(0) })).max(4),
     nickname: z.string().optional(),
     fieldAbility: z.string().optional(),
+    ivs: z
+      .object({
+        hp: z.number().int().min(0).max(15),
+        atk: z.number().int().min(0).max(15),
+        def: z.number().int().min(0).max(15),
+      })
+      .strict()
+      .optional(),
+    shiny: z.boolean().optional(),
   })
   .strict();
 
@@ -215,6 +228,7 @@ const campaignShape = {
   defeatedTrainers: z.array(z.string()),
   seen: Districts,
   caught: Districts,
+  glimmerSeen: z.array(z.string()),
   lastRestock: z.record(z.number()),
   usedSpawns: z.record(z.number()),
   devAbilities: z.array(z.string()),
@@ -425,6 +439,17 @@ migrations[9] = (old) => {
 
 /** v10 → v11 (P27): campaigns per region. Everything so far was played in Odense. */
 migrations[10] = (old) => ({ ...old, version: 11, region: 'odense', campaigns: {} });
+// v12 (D188): Glimmer forms seen, per campaign (the parked ones too); none before.
+migrations[11] = (old) => ({
+  ...old,
+  version: 12,
+  glimmerSeen: [],
+  campaigns: Object.fromEntries(
+    Object.entries((old.campaigns ?? {}) as Record<string, Record<string, unknown>>).map(
+      ([r, c]) => [r, { ...c, glimmerSeen: [] }],
+    ),
+  ),
+});
 
 /** Skilling paid for beating a trainer (D165): highest level × 25, leaders × 60. */
 export function payoutFor(t: { tier: 'trainer' | 'leader'; team: { level: number }[] }): number {

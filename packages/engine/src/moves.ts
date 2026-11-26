@@ -1,5 +1,5 @@
 import { content, type Dex, type Move } from '@oml/data';
-import { calcHp } from './stats';
+import { AVERAGE_IVS, calcHp } from './stats';
 import type { CreatureInstance } from './types';
 
 export const MAX_MOVES = 4;
@@ -97,8 +97,8 @@ export function evolveCreature(creature: CreatureInstance, dex: Dex = content): 
   if (!canEvolve(creature, dex)) throw new Error(`${creature.speciesId} cannot evolve yet`);
   const from = dex.species[creature.speciesId]!;
   const to = dex.species[from.evolution!.into]!;
-  const oldMax = calcHp(from.baseStats.hp, creature.level);
-  const newMax = calcHp(to.baseStats.hp, creature.level);
+  const oldMax = calcHp(from.baseStats.hp, creature.level, (creature.ivs ?? AVERAGE_IVS).hp);
+  const newMax = calcHp(to.baseStats.hp, creature.level, (creature.ivs ?? AVERAGE_IVS).hp);
   const hp = creature.hp > 0 ? Math.max(1, Math.min(newMax, creature.hp + newMax - oldMax)) : 0;
   return { ...creature, speciesId: to.id, hp, moves: creature.moves.map((m) => ({ ...m })) };
 }

@@ -1,6 +1,6 @@
 # Odense Monster League — Game Design Document
 
-Version 1.22 · Nov 26, 2026 · maintained in the repository (see Change log)
+Version 1.23 · Nov 26, 2026 · maintained in the repository (see Change log)
 
 ## Overview
 
@@ -169,7 +169,7 @@ Type chart (attacker down, defender across; 2 = super effective, ½ = not very e
 
 The only immunities are Folk ↔ Spirit. Changes since v1.0: Storm → Stone went from 0 to ½ (M1.5), and Storm → Grove went from ½ to 2 (v1.1), so Grove has two weaknesses (Fire, Storm). Whether Grove is still the strongest defensive type is tracked in docs/BALANCE.md; as of M1.6, Bøgevætte still wins the most 1v1s (accepted proposal P6).
 
-**Stats:** HP, Attack, Defence, Speed. Each species has base stats with a total of 240–400. Stat at level L = floor(base × 2 × L / 100) + 5. HP = floor(base × 3 × L / 100) + 2L + 10 (raised in M1.5 so battles last long enough to make decisions). There are no individual values or natures in v1. Stat stages run from −6 to +6, ×1.5 per stage up and ÷1.5 per stage down.
+**Stats:** HP, Attack, Defence, Speed. Each species has base stats with a total of 240–400. Stat at level L = floor((base × 2 + IV) × L / 100) + 5. HP = floor((base × 3 + 2 × IV) × L / 100) + 2L + 10 (raised in M1.5 so battles last long enough to make decisions). **Individual values (v1.23):** every creature has its own IVs for HP, Attack and Defence, 0–15 each (shown as "strengths"); Speed has none. A wild creature's IVs are fixed per player and spawn (the same spawn always gives the same creature), a starter's and the tutorial creature's come from the player seed, and trainers' creatures and creatures from before v1.23 count as average (7). There are no natures. **Glimmer creatures (v1.23):** 1 in 256 wild creatures is a Glimmer, a rare colour variant with a gold sparkle, revealed only when the battle begins (the map and the Nearby strip show the normal form); looks only; a sparkle follows a Glimmer creature's name in battle, on the team and on its page. With about 7 creatures per km and some 60 km walked in a campaign, about 4 in 5 players meet at least one (Glimmer is fixed per player and spawn like the IVs). Stat stages run from −6 to +6, ×1.5 per stage up and ÷1.5 per stage down.
 
 **Roster (v1.13): 55 creatures in 23 evolution lines, each line two or three stages.** Every line has a **rarity**, which decides how often it spawns:
 
@@ -212,11 +212,11 @@ L = attacker level, P = move power, A = attacker Attack, D = defender Defence, S
 
 | Tier | Used by | Behaviour |
 | --- | --- | --- |
-| Wild | Wild creatures | Random legal move |
+| Wild | Wild creatures | Random move, but never one that would do nothing (a heal above half HP, lowering a stat already down 2, raising one already up 2); below 35% HP it heals with a heal move it knows half of the time (v1.23) |
 | Trainer | Route trainers | Highest expected damage, 20% random move; applies the set-up rule 50% of the time |
 | Leader | Arena leaders | Expected damage, type-aware switching, up to 2 healing items below 30% HP, and always the set-up rule |
 
-**Set-up rule:** use a stat-boost move if own HP > 70%, the stat is not boosted yet, and the opponent cannot KO next turn; use a status move if the target has no status. The AI does not use heal moves or opponent-stat-lowering moves in v1 (tested in M1.5: it made fights longer and pushed arenas off target). Individual leaders may get one of these as a signature tactic later. AI randomness uses a separate stream derived from the battle state, so AI choices are repeatable and do not consume the battle's random numbers.
+**Set-up rule:** use a heal move if own HP < 50% (v1.23); use a stat-boost move if own HP > 70%, the stat is not boosted yet, and the opponent cannot KO next turn; use a move that lowers the target's stats if own HP > 50% and none of those stats is lowered yet (v1.23); use a status move if the target has no status. (Heal and stat-lowering moves were left out in M1.5 because they made fights longer; the owner brought them back in v1.23 and the leaders were re-tuned to the targets.) AI randomness uses a separate stream derived from the battle state, so AI choices are repeatable and do not consume the battle's random numbers.
 
 **Battle log:** the engine emits a list of events (`move_used`, `damage`, `effectiveness`, `status`, `faint`, `switch`, `catch_attempt`...). The UI only animates events and never calculates results itself.
 
@@ -360,12 +360,12 @@ Locked layers are shown on the map (rustling trees, rings on water, a stone glyp
 | Map | Main screen while walking | Player figure + 40 m battle ring, region, district and zone borders, routes with their walked part, wild areas, POI stamps, Journal card, Nearby strip, menu button |
 | Battle | Turn-based fight | Both creatures with HP bars and status; 2×2 move grid in the bottom third; Switch / Bag / Run row; event text line |
 | Team | View and order up to 6 creatures | Cards with HP, level, types; tap for details, moves, field ability |
-| Creature detail | Stats and moves | Stats, types, XP bar, moves with type/power/PP, evolution hint |
+| Creature detail | Stats and moves | Stats, types, XP bar, strengths (IVs) and Glimmer (v1.23), moves with type/power/PP, evolution hint |
 | Storage | Creatures beyond 6 | Grid, swap into team |
 | Bag | Items | Grouped list with the skilling balance, use from map or battle |
 | Market | Buy and sell (v1.12) | Opened at a market on the map; Buy and Sell tabs, prices, the balance; back returns to the map |
-| Field guide | Collection | One tab per region (v1.20), each a numbered list of all its creatures (#001 …), every creature once; seen or caught anywhere in the region counts; hints where to find each ("found near water at night", a destination creature's home); other regions' tabs show their own campaign |
-| Badges and progress | Campaign | 8 badge slots, next arena and its distance |
+| Field guide | Collection | One tab per region (v1.20), each a numbered list of all its creatures (#001 …), every creature once; seen or caught anywhere in the region counts; other regions' tabs show their own campaign. The list shows only number, picture, name and seen/caught (v1.23); pressing an entry opens its page with types and where to find it ("Every district: found in town streets", a destination creature's home; the same place in several districts is one line), a Normal / Glimmer switch (Glimmer greyed out until one of that species was met) and buttons for the previous and next entry |
+| Badges and progress | Campaign | 8 badge slots, next arena and its distance; one tab per region (v1.23), also opened from the Town Map's top bar on the region the map shows |
 | Settings | Safety and comfort | Sound, Vibration (its own switch), reduce motion, battle speed, text size and language (dropdowns), 3D buildings, "How far you can see" (0.8–1.4 km), Battle playtest, data export/delete, safety reminder; the last line is the credits ("Developed by Christian Bröchner Rasmussen with Claude") |
 
 Added in v1.9–v1.11: the **map heads-up display** (Journal card, Nearby strip, compass, menu), the **Town Map** with the **Fyn map**, and the **Journal** screen (see Game feel). The badges screen shows how many zones are open.
@@ -604,6 +604,7 @@ M1.7 (done, 148 tests): field abilities are data in `field-abilities.json`; a fr
 
 | Version | Date | Changes |
 | --- | --- | --- |
+| 1.23 | 2026-11-26 | Individual values (HP, Attack, Defence, 0–15) and Glimmer creatures (1 in 256, colours only); the AI uses heal moves and stat-lowering moves (leaders re-tuned); the field guide list is minimal and an entry opens its page; badges per region, also from the Town Map |
 | 1.22 | 2026-11-26 | Town Map: every icon shows at every zoom (only the filter hides kinds); route labels get their own filter switch under routes; another region's Town Map has no "you're not here" note |
 | 1.21 | 2026-11-26 | The Fyn map opens another playable region's Town Map to look at and plan a trip (its own progress, changes nothing; play still starts by walking there) |
 | 1.20 | 2026-11-26 | The field guide becomes one numbered list per region (tabs by region, each creature once, seen or caught anywhere in the region counts); the Town Map shows arenas as arena stamps (badges stay on the Fyn map and the Badges screen) |

@@ -12,6 +12,7 @@ entry here then gets the status `accepted (GDD v1.x)` (or `rejected`, with a rea
 | P21  | Where the Revive Blossom (revive at full HP) comes from                                                                                                                         |
 | P24  | Leaderboards (for example longest distance walked) and a competitive scene for players with all 8 badges: what to show, and how it fits the privacy rules (no location history) |
 | P25  | Tourism content for visitors (later; the campaigns are made mainly for residents)                                                                                               |
+| P28  | An open region: every zone and arena open from the start, arenas in any order, difficulty from the number of badges (see the questions in P28)                                  |
 
 ## Template
 
@@ -489,3 +490,108 @@ entry here then gets the status `accepted (GDD v1.x)` (or `rejected`, with a rea
   update in one region is brought to another.
 - **Status:** accepted (GDD v1.17); creatures, trainers and campaigns per region still to
   build
+
+### P28. An open region: everything open from the start, difficulty by badges
+
+- **GDD sections:** World (zones, routes), Arenas, Creatures (spawn levels), Journal,
+  Onboarding, Data model
+- **Idea (owner, 2026-11-26, from watching testers):** testers live all over the region, but
+  the game sends everyone into the centre first (arena 1 in Kongens Have), then along a set
+  chain of routes and arenas. Some walked into town only to walk almost home again; some
+  live in the middle of a route and walked to its start first. Instead: every zone, route
+  and arena is open from the start, arenas can be won in any order, and arena teams (and
+  perhaps wild creatures) scale with the number of badges the player has. Playing "as
+  intended" is still rewarded (route trainers, more creatures on routes), and being
+  somewhere "too early" is never punished.
+
+**What the game does today (for comparison)**
+
+- The start zone is open; a route walked to 90 % opens the zones at both ends; rares,
+  field-ability layers, route trainers and arenas lock with their zone. Arena n also needs
+  badge n − 1. Common creatures already battle everywhere at the player's own level band;
+  rares use the district's band. Obedience and field abilities come from badges.
+- Route progress already counts wherever it is walked (every 25 m checkpoint within 30 m,
+  from either end or the middle). Testers walked to a route's start because the Journal
+  points to "the next checkpoint from the open end", and because the route's far zone was
+  locked until then.
+
+**Proposed: how an open region would work**
+
+1. **No locks.** Every zone is open from the start (rares, destinations, field-ability
+   layers, route trainers, rest stops, markets). The 90 % route rule no longer opens
+   anything. Ferry islands are simply open.
+2. **Arenas in any order, scaled by tier.** A challenge's _tier_ is the number of badges the
+   player holds when walking in: 0–7, so 8 team versions per arena (the last arena anyone
+   beats is always at tier 7). Each arena keeps its theme, leader, place and badge. Rather
+   than hand-writing 64 teams per region, each arena gets one themed roster (its lines,
+   slot by slot), and a per-region tier table says team size and level band per tier, for
+   example:
+
+   | Tier (badges held) | 0     | 1     | 2     | 3     | 4     | 5     | 6     | 7     |
+   | ------------------ | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- |
+   | Team size          | 2     | 3     | 3     | 4     | 4     | 4     | 5     | 5     |
+   | Leader levels      | 10–13 | 16–19 | 22–25 | 28–31 | 33–36 | 38–41 | 43–46 | 47–50 |
+
+   Species evolve by level as usual (a tier-0 water leader shows first stages, tier 7 final
+   ones), moves come from the learnsets, and the sim tunes the table so every arena hits
+   the win-rate targets at every tier (8 arenas × 8 tiers × 3 starters per region, run by
+   `balance.test.ts`). The player-team presets become one per tier instead of one per
+   arena. Juniors scale the same way. Badge rewards and coins grow with the tier.
+
+3. **Field abilities from a specific arena** instead of the n-th badge: the water arena
+   teaches Angler, the stone arena Runereader, and so on. That gives players a reason to
+   pick an arena ("I want Angler first") and keeps the abilities' themes.
+4. **Wild creatures scale with badges, not districts.** Commons keep the player's band.
+   Rares and destination creatures use a band from the badge count instead of the district
+   (a rare near home is never ten levels above the team). Districts keep their species mix
+   and biomes, just not difficulty. Obedience stays 15 + 5 per badge, level cap 50.
+5. **Route trainers scale too** (same tier idea, smaller teams), so a strong-looking
+   trainer next to someone's home is never a wall. Each keeps its route, name and line.
+6. **Rewards for walking routes** (so the routes still matter):
+   - more creatures on route corridors than on streets (today 1 per 200–400 m on routes
+     and 1 per 300–450 m on streets; proposal: routes 1 per 150–250 m), and slightly
+     better rare odds on routes;
+   - a finished route gives a **route stamp** (a collection, like the arena stamps) plus
+     coins or an item, and Journal goals such as "finish 3 routes" or "finish the route
+     nearest the X arena";
+   - route trainers stay on the routes, so walking them is how you meet trainers.
+7. **Exploring is rewarded, not required:** the first visit to a zone stamps it in a
+   **zone collection** (stored as zone ids only, exactly like today's opened zones, so no new
+   privacy cost); destinations stay the best place for rares and their homes.
+8. **Guidance without a fixed path.** After the tutorial the Journal suggests the _nearest_
+   arena not yet won (worked out on the phone each time, never stored), and the Town Map's
+   arena card shows its tier ("Leader at full strength for 3 badges"). The Journal's route
+   goals point to the nearest checkpoint, not to the route's start.
+
+**What gets simpler, and what we lose**
+
+- Simpler for players: start where you live, meet arenas in any order, no walking across
+  the region to unlock home, no dead ends.
+- Simpler content: one tier table per region instead of eight hand-tuned leaders; zones,
+  "needs zone", "needs badge" and route-unlock logic go away.
+- Lost: the sense of a journey across the region in a set order, and the story beats tied
+  to that order (leader lines that mention the previous arena, the district-by-district
+  climb). Some players may feel unsure where to go: the Journal suggestion (8) is there for
+  that. Type choice becomes a real decision: players can pick the arenas their team is
+  good against first; at the same tier every arena is equally hard on neutral terms.
+- Save: badges, team and the rest stay. Opened zones become the zone collection (the same
+  list), so existing saves keep their progress; a migration only renames the field.
+  Arena leaders already beaten stay beaten.
+
+**Questions for the owner**
+
+1. Scale arena teams by **badges held** (your proposal, predictable) or by the player's
+   team level (follows the player more closely, but can be gamed by keeping a low team)?
+   Recommended: badges.
+2. Should anything stay locked (for example the islands, or the last arena until 7
+   badges), or is everything open? Recommended: everything open.
+3. Field abilities from a specific arena (recommended) or from the n-th badge as now?
+4. Route rewards: route stamps plus coins, more creatures on routes, or all of it?
+5. Route trainers: scale with badges (recommended), or keep fixed levels and show a
+   difficulty on their card?
+6. Both regions? Under the update pipeline this is a shared rule change; Svendborg would
+   follow Odense unless you want to try it in one region first (for example Svendborg,
+   whose testers are fewer).
+7. The championship (still open) would then need all 8 badges, in any order.
+
+- **Status:** open (brainstorm; nothing built)

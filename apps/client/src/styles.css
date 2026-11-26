@@ -259,8 +259,13 @@
 .guide-row-card {
   display: flex;
   gap: var(--sp-3);
-  align-items: flex-start;
-  padding: var(--sp-3);
+  align-items: center;
+  width: 100%;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  padding: var(--sp-2) var(--sp-3);
   border-radius: var(--r-md);
   background: var(--card);
   border: 2px solid var(--line);
@@ -269,7 +274,6 @@
 .guide-no {
   flex: none;
   min-width: 3.2em;
-  padding-top: 18px;
   font-variant-numeric: tabular-nums;
   font-weight: 700;
   color: var(--muted);
@@ -282,8 +286,53 @@
 .guide-row-card img.unseen {
   filter: brightness(0) opacity(0.35);
 }
-.guide-row-card p {
-  margin: 2px 0 0;
+.guide-row-card img {
+  width: 48px;
+  height: 48px;
+}
+.guide-name {
+  flex: 1;
+  display: grid;
+}
+.guide-entry {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+}
+.guide-entry img {
+  width: 160px;
+  height: 160px;
+}
+.guide-entry-art {
+  position: relative;
+  display: block;
+  width: 160px;
+  height: 160px;
+}
+.guide-entry-art .shiny-mark {
+  top: 8px;
+  left: auto;
+  right: 0;
+}
+.guide-forms {
+  justify-content: center;
+}
+.guide-forms .btn:disabled {
+  opacity: 0.45;
+}
+.guide-step {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  margin-top: var(--sp-4);
+}
+.guide-entry img.unseen,
+.guide-row-card img.unseen {
+  filter: brightness(0) opacity(0.35);
+}
+.guide-where {
+  font-size: var(--fs-md);
+  margin: var(--sp-4) 0 var(--sp-2);
 }
 .badge-grid {
   display: grid;
@@ -489,7 +538,6 @@
 }
 html[data-theme='night'] .arena-field {
   background:
-    radial-gradient(circle at 82% 14%, #f6e9c2 0 2.5%, transparent 3%),
     radial-gradient(ellipse 40% 9% at 72% 34%, #2f4a3a 0 98%, transparent 100%),
     radial-gradient(ellipse 46% 10% at 30% 86%, #34523f 0 98%, transparent 100%),
     linear-gradient(180deg, #121828 0%, #1f2840 75%);
@@ -1948,4 +1996,45 @@ body {
 }
 .welcome-list li::marker {
   color: var(--accent);
+}
+
+/* Glimmer creatures (owner request): a rare colour variant, the sprite's colours turned and a
+   gold sparkle; looks only. Never on the map: it shows once the battle begins. */
+img.shiny,
+.sprite.shiny img {
+  filter: hue-rotate(150deg) saturate(1.35) brightness(1.05);
+}
+.sprite.art.shiny img {
+  filter: hue-rotate(150deg) saturate(1.35) brightness(1.05)
+    drop-shadow(0 6px 0 rgba(60, 40, 20, 0.22));
+}
+.shiny-mark {
+  position: absolute;
+  top: -4px;
+  left: -2px;
+  color: #e8b93a;
+  font-size: 1.4rem;
+  text-shadow: 0 0 6px rgba(255, 220, 120, 0.9);
+  animation: glimmer 1.6s ease-in-out infinite;
+  pointer-events: none;
+}
+.shiny-mark.inline {
+  position: static;
+  font-size: 1rem;
+}
+.shiny-label {
+  margin: 0;
+  color: #c4921c;
+  font-weight: 700;
+}
+@keyframes glimmer {
+  50% {
+    opacity: 0.45;
+    transform: scale(0.8);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shiny-mark {
+    animation: none;
+  }
 }

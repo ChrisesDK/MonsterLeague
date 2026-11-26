@@ -19,6 +19,7 @@ export interface CreatureView {
   status: Status | null;
   fainted: boolean;
   caught: boolean;
+  shiny: boolean;
 }
 
 export type BattleView = [CreatureView, CreatureView];
@@ -34,6 +35,7 @@ function toView(c: CreatureInstance, dex: Dex): CreatureView {
     status: c.status,
     fainted: c.hp <= 0,
     caught: false,
+    shiny: c.shiny === true,
   };
 }
 
