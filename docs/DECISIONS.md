@@ -1753,3 +1753,34 @@ length, position resolution and spawn tables>`.
   simplified to 25 m, never walked, so validation only checks that they start and end in
   their zones and lead to an island. The quay is in the start town (Frederiksø), where
   several routes meet. Map frame: the boundary's box plus 2 km.
+- **D180. Campaigns per region** (P27, GDD v1.18). Save v11: the save's progress fields
+  (`CAMPAIGN_KEYS`: onboarding, starter, team, storage, bag, badges, zones, coins, trainers,
+  field guide, restocks, used spawns, battle, pending choices, Journal, fainted clock) are
+  the campaign of `save.region`; the other regions' campaigns are parked in
+  `save.campaigns` (never the active one; validated). The seed, the uid counter and the
+  settings are shared. The v10 → v11 migration makes everything so far the Odense campaign.
+  `switchCampaign(save, region)` parks the current campaign and brings back the region's,
+  or starts a new one at the starter choice (the safety note and the location permission
+  belong to the app, so they are not asked again); it waits while a battle or a learn/evolve
+  choice is open (`canSwitchCampaign`), and the map simply asks again on the next fix. Every
+  game rule that takes a save now defaults to the save's own region's content
+  (`regions[save.region]`), so no call can mix regions by accident. Each region names its
+  starters and tutorial creature in its zones.json (`starters`, `tutorial`); validation
+  requires them for a playable region and keeps starters out of the wild.
+  **Which region:** the client tests the position against each playable region's boundary
+  (`regionAt`, apps/client/src/map/regionGeo.ts); a position up to 500 m off the land
+  still counts (the boundary follows the coast, so quays, piers and the harbour basin are
+  in), the nearest region wins, and out at sea or between regions nothing changes. Only the
+  playable regions take part (`PLAYABLE_MUNICIPALITIES`: Odense until Svendborg's creatures
+  exist). The map is built per region (`key={save.region}`: tiles `<region>.pmtiles`, the
+  map frame as max bounds, its own outlines, routes, POIs and region file); texts come from
+  `makeT(locale, region)` (shared UI plus the region's names); spawn requests name the
+  region, and a cached spawn list of another region is never used. The Worker serves every
+  region from its own region file and spawn tables (decoded on first use; bundle 599 KiB
+  gzipped). **Ferry islands:** ferry crossings are left out of the walking routes
+  (`walkingRoutes`: no progress bar, no frontier, not in the Journal's route count), and
+  `arriveInZone` opens an `opensOnArrival` zone when the player stands in it, with a
+  toast. The play view and the Town Map draw crossings as a loose dotted line; the Town
+  Map's route card says how a crossing works and an island's label says it opens on
+  landing. The Fyn map shows each playable region's own badges from its campaign; tapping
+  another playable region says to walk there. Feedback reports name the region.

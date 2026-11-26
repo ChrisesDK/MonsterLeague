@@ -1,4 +1,4 @@
-| Region README with map, CREATURES and TEAMS docs | per region | D169, D179 | ✅ | 🟡 (README and map; creatures and teams with the roster) || Markets at real shopping places, skilling | per region + shared | D165 | ✅ (9) | ✅ (6) || Rest stops at arenas, towns and destinations | per region | P22 | ✅ (24) | ✅ (24, incl. the three islands) || Destinations: denser, rarer spawns | per region (flag) + shared | D167 | ✅ | 🟡 (flag set on 20,499 cells; spawns with the roster) || Region border, district and zone edges | per region | D162 | ✅ | ✅ || Ferry crossings; islands open on arrival | per region + shared | D179 | — | 🟡 (3 crossings built; the arrival rule comes with campaigns) || Routes that open zones when walked; checkpoints in the save | per region + shared | P22, P23 | ✅ (50) | ✅ (45) || Region file: biomes, no-spawn areas | per region | D170 | ✅ | ✅ (34,555 cells, 1.3 % no-spawn) || Svendborg | R0.1 | Map built (P27): boundary, 44 zones, 45 routes + 3 ferry crossings, 24 rest stops, 6 markets; no creatures or trainers yet | v1.17 | b13968ca5e04 | 24 Nov 2026 build, 12.1 MB | Svendborg residents (after R1) |# Regions
+# Regions
 
 Every municipality on Fyn becomes its own region: a separate campaign with its own starters,
 creatures, arenas, badges, routes and progress, like separate games in one app (P27). This
@@ -34,11 +34,11 @@ if two regions overlap.
 
 ## Regions
 
-| Region                   | Level | State                                                                             | GDD   | Region data                         | Basemap                    | Testers                          |
-| ------------------------ | ----- | --------------------------------------------------------------------------------- | ----- | ----------------------------------- | -------------------------- | -------------------------------- |
-| Odense                   | R1.17 | Playable: whole campaign, arenas 1–8                                              | v1.17 | d67730978603                        | 24 Nov 2026 build, 16.2 MB | Odense residents (from Nov 2026) |
-| Svendborg                | R0.1  | Map being built (P27): boundary, zones, routes, ferries, places; no creatures yet | v1.17 | see `region/svendborg/version.json` | 24 Nov 2026 build          | Svendborg residents (after R1)   |
-| Other Fyn municipalities | —     | Shown on the Fyn map, not playable                                                | —     | —                                   | —                          | —                                |
+| Region                   | Level | State                                                                                                                                                   | GDD   | Region data                         | Basemap                    | Testers                          |
+| ------------------------ | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ----------------------------------- | -------------------------- | -------------------------------- |
+| Odense                   | R1.18 | Playable: whole campaign, arenas 1–8                                                                                                                    | v1.18 | d67730978603                        | 24 Nov 2026 build, 16.2 MB | Odense residents (from Nov 2026) |
+| Svendborg                | R0.2  | Map built (P27): boundary, 44 zones, 45 routes + 3 ferry crossings, 24 rest stops, 6 markets; campaign support in the app; no creatures or trainers yet | v1.18 | see `region/svendborg/version.json` | 24 Nov 2026 build, 12.1 MB | Svendborg residents (after R1)   |
+| Other Fyn municipalities | —     | Shown on the Fyn map, not playable                                                                                                                      | —     | —                                   | —                          | —                                |
 
 **Region level** `R<major>.<minor>`: the major number goes up when a region reaches a new
 playable stage (R0 being built, R1 playable for testers, R2 field-tested); the minor number
@@ -73,40 +73,41 @@ Statuses: `pending` · `apply` · `adapt` · `done` · `skip` · `n/a` (a note m
 | D178 Every badge its own design (outline, emblem, colour)                             | shared    | 2026-11-25 | done                             | done                          |
 | D179 Ferry crossings (dotted, over water) to islands that open on arrival             | svendborg | 2026-11-25 | n/a: Odense has no ferry islands | done                          |
 | D170 More no-spawn areas (golf, allotments, care homes, worship, prisons, campsites)  | odense    | 2026-11-25 | done                             | done: built in from the start |
+| D180 Campaigns per region (save v11, region from position, island arrival)            | shared    | 2026-11-26 | done                             | done                          |
 
 ## Features
 
 ✅ done · 🟡 partly · ⬜ not yet · — not applicable
 
-| Feature                                                                        | Kind                       | Decision   | Odense                | Svendborg                                         |
-| ------------------------------------------------------------------------------ | -------------------------- | ---------- | --------------------- | ------------------------------------------------- |
-| Multi-region campaigns (separate saves, start a campaign on entering a region) | shared                     | P27        | ⬜                    | ⬜                                                |
-| Region folders, id prefixes, separation checks                                 | shared                     | D177       | ✅                    | ✅                                                |
-| Boundary from OSM (`boundary` tool)                                            | per region                 | D177       | ✅                    | ✅ (12 pieces, 415 km²)                           |
-| Region file: biomes, no-spawn areas                                            | per region                 | D170       | ✅                    | 🟡 (after the map download)                       |
-| Zones in 8 districts, Town Map icons                                           | per region                 | P22        | ✅ (39)               | ✅ (44)                                           |
-| Routes that open zones when walked; checkpoints in the save                    | per region + shared        | P22, P23   | ✅ (50)               | 🟡 (45 defined, built after the download)         |
-| Ferry crossings; islands open on arrival                                       | per region + shared        | D179       | —                     | 🟡 (3 defined; arrival rule comes with campaigns) |
-| Region border, district and zone edges                                         | per region                 | D162       | ✅                    | 🟡                                                |
-| Map frame (even 2 km edge) and basemap                                         | per region                 | D172       | ✅                    | ✅                                                |
-| Fyn map: the region can be opened                                              | per region                 | P22        | ✅                    | ⬜                                                |
-| Badges, each its own design                                                    | per region                 | D178       | ✅                    | ✅                                                |
-| Starters: 3 lines × 3 stages, a type triangle                                  | per region                 | D167       | ✅ (Fire/Water/Grove) | ⬜ (Water → Stone → Storm)                        |
-| Roster: ≈ 20 wild lines with rarities                                          | per region                 | D167       | ✅ (20)               | ⬜ (after the map)                                |
-| Destinations: denser, rarer spawns                                             | per region (flag) + shared | D167       | ✅                    | 🟡 (with the region file)                         |
-| Destination creatures at 1–3 homes, one main home                              | per region                 | D171       | ✅ (7)                | ⬜                                                |
-| Field guide names the homes                                                    | shared                     | D173       | ✅                    | automatic with content                            |
-| Route trainers on every route (≈ 1 per 1.5 km)                                 | per region                 | D163, D168 | ✅ (105)              | ⬜ (with the roster)                              |
-| Arenas 1–8: junior + leader, POIs, badges, presets                             | per region                 | D168       | ✅                    | 🟡 (sites set; teams with the roster)             |
-| Balance inside the leader targets (sim guard)                                  | per region                 | D168       | ✅                    | ⬜                                                |
-| Rest stops at arenas, towns and destinations                                   | per region                 | P22        | ✅ (24)               | ⬜ (after the region file)                        |
-| Markets at real shopping places, skilling                                      | per region + shared        | D165       | ✅ (9)                | ⬜ (after the region file)                        |
-| Journal goals per district                                                     | per region                 | P18        | ✅                    | ⬜                                                |
-| Field abilities Forager, Angler, Runereader (spawn layers)                     | per region                 | P1         | ✅                    | ⬜                                                |
-| Field abilities Nightseer, Sealbreaker, Homing                                 | shared + per region        | —          | ⬜ (waiting for uses) | ⬜                                                |
-| POIs checked on site (`verified: true`)                                        | per region                 | —          | ⬜                    | ⬜                                                |
-| CREATURES and TEAMS docs                                                       | per region                 | D169       | ✅                    | ⬜ (with the roster)                              |
-| E2E: all arenas in order                                                       | per region                 | D168       | ✅                    | ⬜                                                |
-| Press-based POIs, Town Map stamps and filter                                   | shared                     | D165, D166 | ✅                    | automatic                                         |
-| Tester welcome, feedback, save import, version                                 | shared                     | D174–D176  | ✅                    | automatic                                         |
-| Championship after 8 badges, rematches                                         | per region                 | —          | ⬜                    | ⬜                                                |
+| Feature                                                                        | Kind                       | Decision   | Odense                | Svendborg                                                |
+| ------------------------------------------------------------------------------ | -------------------------- | ---------- | --------------------- | -------------------------------------------------------- |
+| Multi-region campaigns (separate saves, start a campaign on entering a region) | shared                     | P27, D180  | ✅                    | ✅ (switches in once playable)                           |
+| Region folders, id prefixes, separation checks                                 | shared                     | D177       | ✅                    | ✅                                                       |
+| Boundary from OSM (`boundary` tool)                                            | per region                 | D177       | ✅                    | ✅ (12 pieces, 415 km²)                                  |
+| Region file: biomes, no-spawn areas                                            | per region                 | D170       | ✅                    | ✅ (34,555 cells, 1.3 % no-spawn)                        |
+| Zones in 8 districts, Town Map icons                                           | per region                 | P22        | ✅ (39)               | ✅ (44)                                                  |
+| Routes that open zones when walked; checkpoints in the save                    | per region + shared        | P22, P23   | ✅ (50)               | ✅ (45)                                                  |
+| Ferry crossings; islands open on arrival                                       | per region + shared        | D179, D180 | —                     | ✅ (3)                                                   |
+| Region border, district and zone edges                                         | per region                 | D162       | ✅                    | ✅                                                       |
+| Map frame (even 2 km edge) and basemap                                         | per region                 | D172       | ✅                    | ✅                                                       |
+| Fyn map: the region can be opened                                              | per region                 | P22, D180  | ✅                    | ⬜ (when playable)                                       |
+| Badges, each its own design                                                    | per region                 | D178       | ✅                    | ✅                                                       |
+| Starters: 3 lines × 3 stages, a type triangle                                  | per region                 | D167       | ✅ (Fire/Water/Grove) | ⬜ (Water → Stone → Storm)                               |
+| Roster: ≈ 20 wild lines with rarities                                          | per region                 | D167       | ✅ (20)               | ⬜ (after the map)                                       |
+| Destinations: denser, rarer spawns                                             | per region (flag) + shared | D167       | ✅                    | 🟡 (flag set on 20,499 cells; spawns with the roster)    |
+| Destination creatures at 1–3 homes, one main home                              | per region                 | D171       | ✅ (7)                | ⬜                                                       |
+| Field guide names the homes                                                    | shared                     | D173       | ✅                    | automatic with content                                   |
+| Route trainers on every route (≈ 1 per 1.5 km)                                 | per region                 | D163, D168 | ✅ (105)              | ⬜ (with the roster)                                     |
+| Arenas 1–8: junior + leader, POIs, badges, presets                             | per region                 | D168       | ✅                    | 🟡 (sites set; teams with the roster)                    |
+| Balance inside the leader targets (sim guard)                                  | per region                 | D168       | ✅                    | ⬜                                                       |
+| Rest stops at arenas, towns and destinations                                   | per region                 | P22        | ✅ (24)               | ✅ (24, incl. the three islands)                         |
+| Markets at real shopping places, skilling                                      | per region + shared        | D165       | ✅ (9)                | ✅ (6)                                                   |
+| Journal goals per district                                                     | per region                 | P18        | ✅                    | ⬜                                                       |
+| Field abilities Forager, Angler, Runereader (spawn layers)                     | per region                 | P1         | ✅                    | ⬜                                                       |
+| Field abilities Nightseer, Sealbreaker, Homing                                 | shared + per region        | —          | ⬜ (waiting for uses) | ⬜                                                       |
+| POIs checked on site (`verified: true`)                                        | per region                 | —          | ⬜                    | ⬜                                                       |
+| Region README with map, CREATURES and TEAMS docs                               | per region                 | D169, D179 | ✅                    | 🟡 (README and map; creatures and teams with the roster) |
+| E2E: all arenas in order                                                       | per region                 | D168       | ✅                    | ⬜                                                       |
+| Press-based POIs, Town Map stamps and filter                                   | shared                     | D165, D166 | ✅                    | automatic                                                |
+| Tester welcome, feedback, save import, version                                 | shared                     | D174–D176  | ✅                    | automatic                                                |
+| Championship after 8 badges, rematches                                         | per region                 | —          | ⬜                    | ⬜                                                       |

@@ -59,6 +59,12 @@ region's level and features, and holds the **update queue**;
   says a region has 3 or more pending updates, **ask the owner** which to bring there (apply,
   adapt or skip); never bring an update to another region on your own.
 - Bump the region's level in REGIONS.md with each content change.
+- **Campaigns (D180).** The save's progress fields are the campaign of `save.region`; the
+  other regions' campaigns are parked in `save.campaigns` (`switchCampaign`). Game rules that
+  take a save default to `regions[save.region]`; in the client use `regions[save.region]`
+  (or `campaignDex(save)`) for anything campaign-related, never `content` (that is Odense
+  only). The play map is keyed by region; texts come from `makeT(locale, region)`. A region
+  joins the game when it is in `PLAYABLE_MUNICIPALITIES` (needs its starters and tutorial).
 
 ## Hard rules
 

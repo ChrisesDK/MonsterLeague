@@ -195,7 +195,7 @@
 - [x] Update pipeline: queue in REGIONS.md, `pnpm regions:status` asks the owner after 3 pending updates (D177)
 - [x] Every badge its own design, Odense redesigned, Svendborg's eight (D178)
 - [x] Svendborg map: boundary, region file, 44 zones, 45 routes, 3 ferry crossings, 24 rest stops, 6 markets, basemap, map frame, README with map (D179)
-- [ ] Campaigns per region (save v11, region from the phone's position, starter choice on entering a region, Town Map and Fyn map per region, islands open on arrival)
+- [x] Campaigns per region (save v11, region from the phone's position, starter choice on entering a region, Town Map and Fyn map per region, islands open on arrival) (D180)
 - [ ] Svendborg creatures: Water/Stone/Storm starters and about 20 wild lines (after the map, owner)
 - [ ] Svendborg trainers, arena leaders and juniors, balance, Journal goals, e2e
 - [ ] Owner checks Svendborg's places on site; Svendborg testers
