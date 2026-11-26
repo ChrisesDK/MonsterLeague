@@ -1095,6 +1095,8 @@ export function MapScreen({
    */
   const tapPoi = (poi: Poi) => {
     if (!position) return;
+    // GDD: nothing happens above 25 km/h (a press would act unseen: the card stays hidden)
+    if (fast) return setToast(t('map.tooFastPoi'));
     const d = distanceM(position, poi);
     if (d > poi.radius + POI_SLACK_M) {
       setToast(

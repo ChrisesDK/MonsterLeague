@@ -103,7 +103,7 @@ async function tapPoi(page: Page, poiId: string) {
   const acted = page.locator(
     `[data-testid=poi-card][data-poi=${poiId}], main.battle, [data-testid=screen-market]`,
   );
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 60; i++) {
     await page.getByTestId(`poi-stamp-${poiId}`).evaluate((e) => (e as HTMLElement).click());
     const ok = await acted
       .first()

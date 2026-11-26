@@ -157,6 +157,21 @@ function along(path: [number, number][], stepM = 15): { lat: number; lng: number
   return out;
 }
 
+/**
+ * Presses a POI stamp until `done` holds: right after a teleport the player counts as moving
+ * fast, and a press then only says so (nothing happens above 25 km/h).
+ */
+async function pressUntil(page: Page, poiId: string, done: () => Promise<boolean>) {
+  for (let i = 0; i < 60; i++) {
+    await page.getByTestId(`poi-stamp-${poiId}`).evaluate((e) => (e as HTMLElement).click());
+    for (let k = 0; k < 4; k++) {
+      if (await done()) return;
+      await page.waitForTimeout(100);
+    }
+  }
+  throw new Error(`pressing ${poiId} never worked`);
+}
+
 async function startDone(page: Page) {
   await page.addInitScript(() => localStorage.setItem('oml.locale', 'en'));
   // the tester welcome (D176) was seen on an earlier launch
@@ -514,19 +529,25 @@ test('POI stamps are pressable (owner): in reach a rest stop heals and a trainer
   const lise = pois.find((p) => p.id === 'trainer_lise')!;
   // far away: a tap says how far to walk
   await teleport(page, { lat: rest.lat + 0.004, lng: rest.lng });
-  await page.getByTestId('poi-stamp-rest_library').evaluate((e) => (e as HTMLElement).click());
-  await expect(page.locator('.map-toast')).toContainText('m away');
+  await pressUntil(page, 'rest_library', async () =>
+    (
+      (await page
+        .locator('.map-toast')
+        .textContent()
+        .catch(() => '')) ?? ''
+    ).includes('m away'),
+  );
   // 10 m outside the 40 m radius still counts (GPS slack), and the tap heals at once
   await dev(page, 'setTeamHp', 1);
   await teleport(page, { lat: rest.lat + 50 / 110_540, lng: rest.lng });
-  await page.getByTestId('poi-stamp-rest_library').evaluate((e) => (e as HTMLElement).click());
-  await expect
-    .poll(async () => ((await dev(page, 'save')) as { team: { hp: number }[] }).team[0]!.hp)
-    .toBeGreaterThan(1);
+  await pressUntil(
+    page,
+    'rest_library',
+    async () => ((await dev(page, 'save')) as { team: { hp: number }[] }).team[0]!.hp > 1,
+  );
   // a trainer in reach: the tap starts the battle
   await teleport(page, lise);
-  await page.getByTestId('poi-stamp-trainer_lise').evaluate((e) => (e as HTMLElement).click());
-  await expect(page.locator('main.battle')).toBeVisible();
+  await pressUntil(page, 'trainer_lise', () => page.locator('main.battle').isVisible());
 });
 
 test('Market (D165): buy with skilling, sell back for half; back returns to the map', async ({
@@ -545,8 +566,7 @@ test('Market (D165): buy with skilling, sell back for half; back returns to the 
   await teleport(page, market);
   // no card pops up by itself; pressing the market's stamp opens the market
   await expect(page.locator('[data-testid=poi-card]')).toHaveCount(0);
-  await page.getByTestId('poi-stamp-market_vestergade').evaluate((e) => (e as HTMLElement).click());
-  await expect(page.getByTestId('screen-market')).toBeVisible();
+  await pressUntil(page, 'market_vestergade', () => page.getByTestId('screen-market').isVisible());
   await expect(page.getByTestId('market-coins')).toContainText('300');
   // Good Charms wait for badge 2
   await expect(page.getByTestId('buy-good_charm')).toBeDisabled();

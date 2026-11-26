@@ -196,7 +196,7 @@ export function GameApp({ t: appT, locale, onLocale, devTools, welcome = false }
       setTeamLevel: (level) =>
         update((s) =>
           all(s, (c) => ({
-            ...createCreature(c.speciesId, level, c.uid),
+            ...createCreature(c.speciesId, level, c.uid, regions[s.region]),
             ...(c.fieldAbility ? { fieldAbility: c.fieldAbility } : {}),
           })),
         ),
@@ -219,7 +219,7 @@ export function GameApp({ t: appT, locale, onLocale, devTools, welcome = false }
         }),
       addCreature: (speciesId, level) =>
         update((s) => {
-          const c = createCreature(speciesId, level, `p${s.nextUid}`);
+          const c = createCreature(speciesId, level, `p${s.nextUid}`, regions[s.region]);
           const next = { ...s, nextUid: s.nextUid + 1 };
           return s.team.length < 6
             ? { ...next, team: [...s.team, c] }

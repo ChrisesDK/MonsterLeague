@@ -76,8 +76,7 @@ test("Svendborg's own map: its tiles, frame, zones and the dotted ferry crossing
   page,
 }) => {
   await startDone(page);
-  // stand in Svendborg's harbour first (Svendborg is not playable yet, so the map
-  // doesn't switch back to Odense there)
+  // stand in Svendborg's harbour first: the campaign switches there by itself
   await page.evaluate(() =>
     (
       window as unknown as { __omlSim: { teleport: (p: { lat: number; lng: number }) => void } }

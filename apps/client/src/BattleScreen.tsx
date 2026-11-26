@@ -155,7 +155,7 @@ export function BattleScreen({
 
   const replacing = inReplacementPhase(state) && state.sides[0].needsReplacement;
   const over = state.result !== 'ongoing';
-  const legal = over ? [] : getLegalActions(state, 0);
+  const legal = over ? [] : getLegalActions(state, 0, dex);
   const isLegal = (a: Action) => legal.some((l) => JSON.stringify(l) === JSON.stringify(a));
   const me = state.sides[0];
   const active = me.team[me.active]!;
@@ -177,7 +177,7 @@ export function BattleScreen({
     let v = viewFromState(prev, dex);
     for (const event of result.events) {
       if (!alive.current) return;
-      v = applyEvent(v, event, prev);
+      v = applyEvent(v, event, prev, dex);
       setView(v);
       const text = eventText(event, prev, t);
       if (text) setLog(text);
