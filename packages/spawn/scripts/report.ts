@@ -13,18 +13,22 @@
  * Deterministic (fixed seeds), so results are reproducible.
  */
 import { readFileSync } from 'node:fs';
-import { content, RegionFileSchema, type Biome } from '@oml/data';
+import { REGION_IDS, regions, RegionFileSchema, type Biome, type RegionId } from '@oml/data';
 import { Rng, seedRng } from '@oml/engine/rng';
 import { cellToLatLng, gridDisk, latLngToCell } from 'h3-js';
 import { computeSpawns, decodeRegion, windowOf, type RegionCell, type Spawn } from '../src/index';
 
+// P27: `--region <id>` (default Odense); every region has its own file and tables.
+const argAt = process.argv.indexOf('--region');
+const regionId = (argAt > 0 ? process.argv[argAt + 1] : 'odense') as RegionId;
+if (!REGION_IDS.includes(regionId)) throw new Error(`Unknown region ${regionId}`);
 const file = RegionFileSchema.parse(
   JSON.parse(
-    readFileSync(new URL('../../data/region/odense/region.json', import.meta.url), 'utf8'),
+    readFileSync(new URL(`../../data/region/${regionId}/region.json`, import.meta.url), 'utf8'),
   ),
 );
 const region = decodeRegion(file);
-const tables = content.spawns;
+const tables = regions[regionId].spawns;
 const districts = [...new Set(tables.map((t) => t.district))].sort((a, b) => a - b);
 const allCells = [...region.cells.values()].filter((c) => districts.includes(c.district));
 
@@ -277,7 +281,7 @@ function parkWalk(keep: (s: Spawn) => boolean): { mean: number; p10: number; p90
 
 const main = measure(allCells, (s) => s.requires === null);
 console.log(
-  `Spawn density report (districts ${districts.join(', ')}: ${main.cells} cells, ${(main.cells * 0.015047).toFixed(1)} km²)`,
+  `Spawn density report, ${regionId} (districts ${districts.join(', ')}: ${main.cells} cells, ${(main.cells * 0.015047).toFixed(1)} km²)`,
 );
 console.log(
   `${main.windows} windows over 3 days (day and night), ${(main.spawns / main.windows).toFixed(0)} battle-able spawns per window`,

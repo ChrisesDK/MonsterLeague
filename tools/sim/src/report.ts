@@ -12,8 +12,8 @@ import {
   parseSide,
   playerTeamSide,
   runSim,
-  STARTER_ALIASES,
-  STARTERS,
+  starterSpecies,
+  startersOf,
   type SideSpec,
   type Starter,
 } from './sim';
@@ -161,7 +161,7 @@ export function buildReport(opts: ReportOptions): ReportResult {
   for (const preset of presets) {
     const trainers = Object.values(dex.trainers).filter((t) => t.arena === preset.arena);
     for (const trainer of trainers) {
-      for (const starter of STARTERS) {
+      for (const starter of startersOf(dex)) {
         const a: SideSpec = playerTeamSide(preset.id, starter, dex);
         const b = parseSide(trainer.id, dex);
         const r = runSim({ a, b, n: opts.teamN, seed: opts.seed, dex });
@@ -247,7 +247,7 @@ export function buildReport(opts: ReportOptions): ReportResult {
         ? `${TARGETS[t.cls][0]}–${TARGETS[t.cls][1]}% ${t.ok ? '✅' : '❌'}`
         : '— (not a leader)';
     lines.push(
-      `| ${t.preset} / ${t.starter} (${STARTER_ALIASES[`starter_${t.starter}`]}) | ${t.trainer} | ${t.cls} | ${fmtPct(t.win)} | ${t.medianTurns} | ${target} |`,
+      `| ${t.preset} / ${t.starter} (${starterSpecies(dex, t.starter)}) | ${t.trainer} | ${t.cls} | ${fmtPct(t.win)} | ${t.medianTurns} | ${target} |`,
     );
   }
   lines.push('', '## Flags', '');

@@ -1,7 +1,7 @@
-import { content } from '@oml/data';
+import { REGION_IDS, regions } from '@oml/data';
 import { describe, expect, it } from 'vitest';
 import { classify, TARGETS } from '../src/report';
-import { parseSide, playerTeamSide, runSim, STARTERS } from '../src/sim';
+import { parseSide, playerTeamSide, runSim, startersOf } from '../src/sim';
 
 /**
  * Balance regression guard: each arena's expected player team must stay inside the leader
@@ -11,27 +11,32 @@ import { parseSide, playerTeamSide, runSim, STARTERS } from '../src/sim';
 const SLACK = 5;
 const N = 600;
 
-describe('leader balance targets', () => {
-  for (const preset of Object.values(content.playerTeams)) {
-    const leader = Object.values(content.trainers).find(
-      (t) => t.tier === 'leader' && t.arena === preset.arena,
-    )!;
-    for (const starter of STARTERS) {
-      const cls = classify(starter, leader.theme, content);
-      const [lo, hi] = TARGETS[cls];
-      it(`${preset.id}/${starter} vs ${leader.id} (${cls}) wins ${lo}–${hi}%`, () => {
-        const r = runSim({
-          a: playerTeamSide(preset.id, starter),
-          b: parseSide(leader.id),
-          n: N,
-          seed: 4242,
+describe.each(REGION_IDS.filter((r) => Object.keys(regions[r].playerTeams).length > 0))(
+  'leader balance targets (%s)',
+  (region) => {
+    const dex = regions[region];
+    for (const preset of Object.values(dex.playerTeams)) {
+      const leader = Object.values(dex.trainers).find(
+        (t) => t.tier === 'leader' && t.arena === preset.arena,
+      )!;
+      for (const starter of startersOf(dex)) {
+        const cls = classify(starter, leader.theme, dex);
+        const [lo, hi] = TARGETS[cls];
+        it(`${preset.id}/${starter} vs ${leader.id} (${cls}) wins ${lo}–${hi}%`, () => {
+          const r = runSim({
+            a: playerTeamSide(preset.id, starter, dex),
+            b: parseSide(leader.id, dex),
+            n: N,
+            seed: 4242,
+            dex,
+          });
+          expect(r.errors).toEqual([]);
+          const win = (100 * r.sides[0].wins) / r.turns.length;
+          expect(win).toBeGreaterThanOrEqual(lo - SLACK);
+          expect(win).toBeLessThanOrEqual(hi + SLACK);
+          expect(win).toBeGreaterThan(0);
         });
-        expect(r.errors).toEqual([]);
-        const win = (100 * r.sides[0].wins) / r.turns.length;
-        expect(win).toBeGreaterThanOrEqual(lo - SLACK);
-        expect(win).toBeLessThanOrEqual(hi + SLACK);
-        expect(win).toBeGreaterThan(0);
-      });
+      }
     }
-  }
-});
+  },
+);

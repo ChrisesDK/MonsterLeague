@@ -1,4 +1,4 @@
-import { content, type Dex } from '@oml/data';
+import { content, type Dex, type TypeId } from '@oml/data';
 import {
   chooseAiAction,
   createBattle,
@@ -57,7 +57,8 @@ export function parseSide(spec: string, dex: Dex = content, defaultLevel = 10): 
   }
   const members = spec.split(',').map((part) => {
     const [rawId = '', rawLevel] = part.trim().split(':');
-    const speciesId = STARTER_ALIASES[rawId] ?? rawId;
+    const speciesId =
+      (rawId.startsWith('starter_') ? starterSpecies(dex, rawId.slice(8)) : null) ?? rawId;
     if (!dex.species[speciesId]) throw new Error(`Unknown trainer or species "${rawId}"`);
     const level = rawLevel === undefined ? defaultLevel : Number(rawLevel);
     if (!Number.isInteger(level) || level < 1 || level > 100)
@@ -73,8 +74,20 @@ export function parseSide(spec: string, dex: Dex = content, defaultLevel = 10): 
   };
 }
 
+/** Odense's starters by type (the sim's default region). */
 export const STARTERS = ['fire', 'water', 'grove'] as const;
-export type Starter = (typeof STARTERS)[number];
+/** A starter is named by its type (P27: each region has its own three). */
+export type Starter = TypeId;
+
+/** A region's starter types, in the region's order (Odense: fire, water, grove). */
+export function startersOf(dex: Dex = content): Starter[] {
+  return dex.starters.map((id) => dex.species[id]!.types[0]!);
+}
+
+/** The region's starter species of a type (`starter_water` → aaodder in Odense). */
+export function starterSpecies(dex: Dex, type: string): string | null {
+  return dex.starters.find((id) => dex.species[id]?.types[0] === type) ?? null;
+}
 
 /**
  * The expected player team for an arena (a `playerTeams` preset) with the chosen starter.
@@ -83,8 +96,11 @@ export type Starter = (typeof STARTERS)[number];
 export function playerTeamSide(presetId: string, starter: string, dex: Dex = content): SideSpec {
   const preset = dex.playerTeams[presetId];
   if (!preset) throw new Error(`Unknown player team preset "${presetId}"`);
-  const baseId = STARTER_ALIASES[`starter_${starter}`];
-  if (!baseId) throw new Error(`Unknown starter "${starter}" (fire, water or grove)`);
+  const baseId = starterSpecies(dex, starter);
+  if (!baseId)
+    throw new Error(
+      `Unknown starter "${starter}" (${startersOf(dex).join(', ')} in ${dex.region})`,
+    );
   // A player's starter has evolved (once or twice) by the time it reaches each evolution level.
   let starterId = baseId;
   for (let evo = dex.species[starterId]?.evolution; evo && preset.starterLevel >= evo.level;) {

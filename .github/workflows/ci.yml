@@ -26,8 +26,10 @@ jobs:
         run: pnpm --filter @oml/client build && pnpm --filter @oml/client check:base
         env:
           VITE_BASE: /MonsterLeague/
-      - name: Spawn density targets (GDD)
+      - name: Spawn density targets (GDD), Odense
         run: pnpm spawn:report
+      - name: Spawn density targets (GDD), Svendborg
+        run: pnpm spawn:report --region svendborg
       - name: Spawn service bundles (Wrangler dry run, no account needed)
         run: pnpm --filter @oml/spawn-service exec wrangler deploy --dry-run --outdir dist
       - name: Sim smoke test
