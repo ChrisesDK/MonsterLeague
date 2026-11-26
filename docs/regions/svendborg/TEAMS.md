@@ -12,6 +12,10 @@ Zone Svendborg centre, district 1 (wild levels 3–8). Badge: Lantern badge. Nee
 
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
+| 1 | Ferryman Ole (`svb_arena1_junior`) | Havnekat 8, Sildeling 9 | – | 2× Basic Charm + 225 coins |
+| 2 | Harbour Master Karl (`svb_leader_spirit`) | Flagling 13, Tågeling 11 (Wisp Flicker, Moonless Stare, Boulder Roll) | 2× Small Tonic | 1× Revive Leaf + 780 coins |
+
+Expected player team (balance sim): starter at 10, Havnekat 9, Egernling 10; items 2× Small Tonic.
 
 ### Arena 2: Christiansminde (fire)
 
@@ -19,6 +23,10 @@ Zone Christiansminde, district 2 (wild levels 8–14). Badge: Bonfire badge. Nee
 
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
+| 1 | Lifeguard Mikkel (`svb_arena2_junior`) | Askeling 11, Hareling 12 | – | 3× Basic Charm + 300 coins |
+| 2 | Bonfire Keeper Sanne (`svb_leader_fire`) | Askeling 13 (Hearth Spark, Stoke Up, Sky Crackle), Søpindling 16 (Prickle Charge, Hunker Down, Grit Spray, Cobbler Kick), Fyrling 17 (Cobble Toss, Stoke Up, Cobbler Kick, Ember Hop) | – | 1× Revive Leaf + 1020 coins |
+
+Expected player team (balance sim): starter at 15, Sildeling 13, Bøgeegern 14, Havnekat 14; items 2× Small Tonic, 1× Large Tonic.
 
 ### Arena 3: Thurø (water)
 
@@ -26,6 +34,10 @@ Zone Thurø, district 3 (wild levels 13–20). Badge: Island badge. Needs badge 
 
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
+| 1 | Sailor Freja (`svb_arena3_junior`) | Sildeling 16, Blåmusling 17 | – | 2× Good Charm + 425 coins |
+| 2 | Shipwright Hanne (`svb_leader_water`) | Brunfiskling 17, Havføl 22, Havål 26, Sundsæl 24 | 2× Large Tonic | 1× Revive Leaf + 1560 coins |
+
+Expected player team (balance sim): starter at 22, Strandskade 21, Blåmusling 21, Bøgeegern 22, Havnekat 21; items 2× Small Tonic, 2× Large Tonic.
 
 ### Arena 4: Troense (storm)
 
@@ -33,6 +45,10 @@ Zone Troense, district 4 (wild levels 19–26). Badge: Skipper badge. Needs badg
 
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
+| 1 | Mate Ida (`svb_arena4_junior`) | Strandskade 23, Askeling 24 | – | 3× Good Charm + 600 coins |
+| 2 | Skipper Jens (`svb_leader_storm`) | Havføl 30, Kirkeugle 31, Havterne 31, Kirkeugle 30 | 2× Large Tonic | 1× Revive Leaf + 1860 coins |
+
+Expected player team (balance sim): starter at 28, Strandskade 26, Hestemusling 26, Stimsild 26, Fyrvogter 27; items 2× Small Tonic, 1× Large Tonic.
 
 ### Arena 5: Valdemars Slot (folk)
 
@@ -40,6 +56,10 @@ Zone Valdemars Slot, district 5 (wild levels 25–32). Badge: Castle badge. Need
 
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
+| 1 | Castle Gardener Poul (`svb_arena5_junior`) | Markhare 29, Skibskat 30 | – | 3× Good Charm + 750 coins |
+| 2 | Castle Steward Ebba (`svb_leader_folk`) | Markhare 28 (Boulder Roll, Stern Glare, Cobbler Kick, Cartwheel), Skibskat 33, Aftenbakke 34, Klabautermand 35 | 2× Large Tonic | 2× Revive Leaf + 2100 coins |
+
+Expected player team (balance sim): starter at 33, Kystskade 31, Hestemusling 31, Stimsild 31, Fyrvogter 32; items 2× Small Tonic, 2× Large Tonic.
 
 ### Arena 6: Egebjerg mill (stone)
 
@@ -47,6 +67,10 @@ Zone Egebjerg, district 6 (wild levels 31–38). Badge: Mill badge. Needs badge 
 
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
+| 1 | Stonemason Lise (`svb_arena6_junior`) | Søpindsvin 34, Fyrvogter 35 | – | 2× Great Charm + 875 coins |
+| 2 | Miller Torben (`svb_leader_stone`) | Guldgubbe 35, Hestemusling 37, Guldhøvding 41, Klintkonge 46 | 2× Large Tonic | 2× Revive Leaf + 2760 coins |
+
+Expected player team (balance sim): starter at 38, Kystskade 36, Månehare 36, Skibskat 36, Kronegern 36; items 2× Small Tonic, 2× Large Tonic.
 
 ### Arena 7: Hvidkilde (grove)
 
@@ -54,6 +78,10 @@ Zone Hvidkilde, district 7 (wild levels 37–44). Badge: Forest badge. Needs bad
 
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
+| 1 | Hunter Anders (`svb_arena7_junior`) | Heksering 39, Kronegern 40 | – | 2× Great Charm + 1000 coins |
+| 2 | Head Forester Agnete (`svb_leader_grove`) | Kronegern 44, Heksering 38, Hyldemor 38, Klintkonge 42 (Sky Crackle, Rampart Slam, Market Stampede, Rune Slab), Kirkeugle 41 | 3× Large Tonic | 1× Revive Blossom + 2640 coins |
+
+Expected player team (balance sim): starter at 43, Kystskade 41, Hestemusling 41, Sildekonge 41, Kronegern 41, Aftenbakke 41; items 2× Small Tonic, 2× Large Tonic.
 
 ### Arena 8: Gudme (mixed)
 
@@ -61,6 +89,10 @@ Zone Gudme, district 8 (wild levels 43–50). Badge: Gold badge. Needs badge 7.
 
 | Order | Trainer | Team | Items | Reward |
 |---|---|---|---|---|
+| 1 | Digger Rune (`svb_arena8_junior`) | Klabautermand 45, Ålekonge 46 | – | 3× Great Charm + 1150 coins |
+| 2 | Archaeologist Sigrun (`svb_leader_mixed`) | Tågefrue 45, Kirkeugle 45, Bålfugl 48, Sildekonge 45, Vejrhane 47 | 3× Large Tonic | 1× Revive Blossom + 2880 coins |
+
+Expected player team (balance sim): starter at 46, Månehare 44, Skibskat 44, Sildekonge 44, Kronegern 44, Aftenbakke 44; items 2× Small Tonic, 2× Large Tonic.
 
 ## Route trainers
 
@@ -70,226 +102,328 @@ Ordered by route. Routes open the zones at both ends when walked (P22).
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Dock worker Carl (`svb_route1_a`) | Sildeling 5, Askeling 7 | 2× Small Tonic + 175 coins |
+| Beachgoer Sebastian (`svb_route1_b`) | Havnekat 10, Egernling 12 | 3× Basic Charm + 300 coins |
 
 ### Route 2: Christiansminde – Thurø (main, 2.5 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Beachgoer Tove (`svb_route2_a`) | Egernling 11, Uglunge 11 | 3× Basic Charm + 275 coins |
+| Boatbuilder Maja (`svb_route2_b`) | Uglunge 15, Blåmusling 17, Havføl 18 | 1× Large Tonic + 450 coins |
 
 ### Route 3: Svendborg centre – Vindeby and Bregninge woods (main, 4.4 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Dock worker Frederik (`svb_route3_a`) | Askeling 5, Sildeling 5 | 2× Small Tonic + 125 coins |
+| Hiker Bjørn (`svb_route3_b`) | Havnekat 5, Strandskade 6 | 2× Small Tonic + 150 coins |
+| Beekeeper Dorte (`svb_route3_c`) | Uglunge 23, Søpindling 25, Havføl 25 | 2× Good Charm + 625 coins |
 
 ### Route 4: Vindeby and Bregninge woods – Troense (main, 2.8 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Forest warden Asta (`svb_route4_a`) | Brunfiskling 22, Markhare 25, Skibsnisse 25 | 2× Good Charm + 625 coins |
+| Deckhand Christian (`svb_route4_b`) | Hattesvamp 23, Tågeling 24, Hyldeknop 25 | 2× Good Charm + 625 coins |
 
 ### Route 5: Troense – Valdemars Slot (main, 1.8 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Castle guide Olivia (`svb_route5_a`) | Tågeling 26, Bøgeegern 27, Guldgubbe 29 | 2× Large Tonic + 725 coins |
 
 ### Route 6: Valdemars Slot – Bregninge (main, 4.3 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Castle guide Laura (`svb_route6_a`) | Skibskat 29, Kirkeugle 29, Markhare 31 | 2× Large Tonic + 775 coins |
+| Hiker Pernille (`svb_route6_b`) | Stimsild 28, Tågeling 29, Brunfisk 30 | 2× Large Tonic + 750 coins |
+| Bike courier Nora (`svb_route6_c`) | Blåmusling 22, Markhare 24, Søpindling 24 | 2× Good Charm + 600 coins |
 
 ### Route 7: Bregninge – Sankt Jørgens and Kogtved (main, 4.3 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Librarian Karla (`svb_route7_a`) | Markhare 21, Stimsild 22, Skibsnisse 25 | 2× Good Charm + 625 coins |
+| Dog walker Nanna (`svb_route7_b`) | Flagling 22, Skibskat 24, Tågeling 25 | 2× Good Charm + 625 coins |
+| Apple picker Carl (`svb_route7_c`) | Søpindling 7, Tågeling 7 | 2× Small Tonic + 175 coins |
 
 ### Route 8: Sankt Jørgens and Kogtved – Skovsbo and Rantzausminde (main, 2.8 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Dog walker Ditte (`svb_route8_a`) | Havnekat 4, Søpindling 6 | 2× Small Tonic + 150 coins |
+| Hiker Merete (`svb_route8_b`) | Bålfugl 40, Sildekonge 41, Fyrtårn 41, Heksering 43 | 2× Great Charm + 1075 coins |
 
 ### Route 9: Skovsbo and Rantzausminde – Hvidkilde (main, 5.9 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Dog walker Erik (`svb_route9_a`) | Månehare 42, Tågefrue 42, Klabautermand 42, Kronegern 42 | 2× Great Charm + 1050 coins |
+| Beekeeper Malthe (`svb_route9_b`) | Kystskade 39, Månehare 39, Kirkeugle 39, Hyldemor 41 | 2× Great Charm + 1025 coins |
+| Estate gardener Gry (`svb_route9_c`) | Heksering 38, Ålekonge 39, Hyldemor 40, Kirkeugle 42 | 2× Great Charm + 1050 coins |
 
 ### Route 10: Hvidkilde – Egebjerg (main, 4.2 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Estate gardener Viggo (`svb_route10_a`) | Heksering 39, Ålekonge 40, Hyldemor 40, Søpindsvin 40 | 2× Great Charm + 1000 coins |
+| Estate gardener Malthe (`svb_route10_b`) | Ålekonge 39, Skibskat 41, Klabautermand 42, Bålfugl 42 | 2× Great Charm + 1050 coins |
+| Miller's apprentice Christian (`svb_route10_c`) | Markhare 32, Kronegern 32, Klabautermand 36 | 1× Revive Leaf + 900 coins |
 
 ### Route 11: Egebjerg – Kirkeby (main, 3.4 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Dog walker Vibeke (`svb_route11_a`) | Kronegern 33, Hestemusling 35, Heksering 37 | 1× Revive Leaf + 925 coins |
+| Busker Lauritz (`svb_route11_b`) | Kirkeugle 33, Brunfisk 34, Havføl 35 | 1× Revive Leaf + 875 coins |
 
 ### Route 12: Kirkeby – Alminden and Højbjerg (main, 3.6 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Ice-cream server Nanna (`svb_route12_a`) | Søpindsvin 32, Bålfugl 33, Guldgubbe 35 | 1× Revive Leaf + 875 coins |
+| Apple picker Inger (`svb_route12_b`) | Brunfisk 35, Bålfugl 35, Sildekonge 36 | 1× Revive Leaf + 900 coins |
 
 ### Route 13: Alminden and Højbjerg – Gudbjerg woods (main, 7.9 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Scout Nora (`svb_route13_a`) | Fyrvogter 32, Markhare 33, Bålfugl 33 | 1× Revive Leaf + 825 coins |
+| Dog walker Hjalte (`svb_route13_b`) | Havål 32, Hestemusling 34, Havføl 36 | 1× Revive Leaf + 900 coins |
+| Forest warden Elias (`svb_route13_c`) | Hestemusling 45, Kystskade 47, Søpindsvin 47, Fyrtårn 48 | 2× Revive Leaf + 1200 coins |
 
 ### Route 14: Gudbjerg woods – Gudme (main, 5.0 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Apple picker Egon (`svb_route14_a`) | Heksering 44, Ålekonge 44, Hyldemor 49, Kirkeugle 49 | 2× Revive Leaf + 1225 coins |
+| Metal detectorist Egon (`svb_route14_b`) | Brunfisk 45, Bålfugl 46, Klabautermand 48, Guldhøvding 49 | 2× Revive Leaf + 1225 coins |
+| Metal detectorist Cecilie (`svb_route14_c`) | Månehare 45, Tågefrue 46, Klabautermand 48, Kronegern 49 | 2× Revive Leaf + 1225 coins |
 
 ### Route 15: Svendborg centre – Tved (alt, 3.7 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Dock worker Magnus (`svb_route15_a`) | Blåmusling 4, Flagling 5 | 2× Small Tonic + 125 coins |
+| Ice-cream server Frederik (`svb_route15_b`) | Tågeling 6, Egernling 7 | 2× Small Tonic + 175 coins |
 
 ### Route 16: Tved – The town woods (alt, 1.9 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Busker Gustav (`svb_route16_a`) | Tågeling 4, Brunfiskling 6 | 2× Small Tonic + 150 coins |
 
 ### Route 17: The town woods – Gammel Hestehave woods (alt, 2.6 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Scout Agnes (`svb_route17_a`) | Flagling 4, Svampling 7 | 2× Small Tonic + 175 coins |
+| Scout Henrik (`svb_route17_b`) | Hareling 11, Egernling 11 | 3× Basic Charm + 275 coins |
 
 ### Route 18: Gammel Hestehave woods – Christiansminde (alt, 1.4 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Beachgoer Maja (`svb_route18_a`) | Uglunge 9, Egernling 12 | 3× Basic Charm + 300 coins |
 
 ### Route 19: Svendborg centre – Sankt Jørgens and Kogtved (alt, 1.9 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Hiker Dorte (`svb_route19_a`) | Havnekat 4, Blåmusling 7 | 2× Small Tonic + 175 coins |
 
 ### Route 20: Sankt Jørgens and Kogtved – Vindeby and Bregninge woods (alt, 3.1 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Apple picker Alma (`svb_route20_a`) | Egernling 4, Uglunge 6 | 2× Small Tonic + 150 coins |
+| Dog walker Sebastian (`svb_route20_b`) | Uglunge 20, Flagling 21, Havføl 25 | 2× Good Charm + 625 coins |
 
 ### Route 21: Vindeby and Bregninge woods – Vindebyøre beach (explore, 1.2 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Kayaker Rikke (`svb_route21_a`) | Hattesvamp 20, Stimsild 22, Hyldeknop 24 | 2× Good Charm + 600 coins |
 
 ### Route 22: Gammel Hestehave woods – Skårup (alt, 5.0 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Forest warden Viggo (`svb_route22_a`) | Strandskade 9, Hareling 12 | 3× Basic Charm + 300 coins |
+| Forest warden Ejner (`svb_route22_b`) | Tågeling 4, Brunfiskling 5 | 2× Small Tonic + 125 coins |
+| Busker Freya (`svb_route22_c`) | Fyrling 10, Uglunge 13 | 3× Basic Charm + 325 coins |
 
 ### Route 23: Skårup – Hovgård woods (alt, 1.8 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Dog walker Conrad (`svb_route23_a`) | Sildeling 10, Tågeling 13 | 3× Basic Charm + 325 coins |
 
 ### Route 24: Hovgård woods – Oure and Vejstrup (alt, 5.4 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Bike courier Hjalte (`svb_route24_a`) | Flagling 10, Uglunge 13 | 3× Basic Charm + 325 coins |
+| Librarian Sebastian (`svb_route24_b`) | Askeling 11, Blåmusling 12 | 3× Basic Charm + 300 coins |
+| Apple picker Holger (`svb_route24_c`) | Kronegern 44, Hestemusling 44, Heksering 47, Brunfisk 48 | 2× Revive Leaf + 1200 coins |
 
 ### Route 25: Oure and Vejstrup – Gudme (alt, 4.6 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Apple picker Dagmar (`svb_route25_a`) | Søpindsvin 46, Bålfugl 46, Guldhøvding 46, Sildekonge 47 | 2× Revive Leaf + 1175 coins |
+| Beekeeper Vera (`svb_route25_b`) | Kronegern 46, Kystskade 46, Heksering 47, Skibskat 47 | 2× Revive Leaf + 1175 coins |
+| Metal detectorist Ib (`svb_route25_c`) | Bålfugl 44, Søpindsvin 47, Fyrtårn 48, Kystskade 49 | 2× Revive Leaf + 1225 coins |
 
 ### Route 26: Thurø – Smørmose woods (explore, 2.5 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Boatbuilder Ingrid (`svb_route26_a`) | Ålling 15, Flagling 19, Skibsnisse 19 | 1× Large Tonic + 475 coins |
+| Scout Jakob (`svb_route26_b`) | Svampling 14, Tågeling 16, Hyldeknop 19 | 1× Large Tonic + 475 coins |
 
 ### Route 27: Skårup – Åbyskov and Bøgeskov (explore, 4.5 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Busker Malthe (`svb_route27_a`) | Uglunge 11, Søpindling 13 | 3× Basic Charm + 325 coins |
+| Apple picker Vera (`svb_route27_b`) | Bøgeegern 19, Havnekat 19, Svampling 19 | 1× Large Tonic + 475 coins |
+| Apple picker Bodil (`svb_route27_c`) | Askeling 14, Søpindling 17, Fyrling 17 | 1× Large Tonic + 425 coins |
 
 ### Route 28: Tved – Hovgård woods (alt, 4.6 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Ice-cream server Troels (`svb_route28_a`) | Fyrling 4, Havnekat 7 | 2× Small Tonic + 175 coins |
+| Hiker Egon (`svb_route28_b`) | Svampling 6, Askeling 7 | 2× Small Tonic + 175 coins |
+| Dog walker Cecilie (`svb_route28_c`) | Strandskade 10, Søpindling 10 | 3× Basic Charm + 250 coins |
 
 ### Route 29: Valdemars Slot – The Kohave woods (explore, 2.9 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Castle guide Anna (`svb_route29_a`) | Uglunge 26, Aftenbakke 27, Havføl 29 | 2× Large Tonic + 725 coins |
+| Forest warden Signe (`svb_route29_b`) | Hestemusling 26, Markhare 26, Søpindling 30 | 2× Large Tonic + 750 coins |
 
 ### Route 30: Bregninge – Lundby and Landet (explore, 3.3 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Ice-cream server Jakob (`svb_route30_a`) | Søpindling 20, Bøgeegern 21, Guldgubbe 22 | 2× Good Charm + 550 coins |
+| Beekeeper Hanne (`svb_route30_b`) | Brunfiskling 26, Skibskat 27, Stimsild 28 | 2× Large Tonic + 700 coins |
 
 ### Route 31: Lundby and Landet – Bjerreby and Tvede woods (explore, 3.0 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Forest warden Otto (`svb_route31_a`) | Hestemusling 29, Kirkeugle 30, Søpindling 31 | 2× Large Tonic + 775 coins |
+| Beekeeper Ib (`svb_route31_b`) | Uglunge 27, Brunfisk 31, Havføl 31 | 2× Large Tonic + 775 coins |
 
 ### Route 32: Lundby and Landet – Vårø and Skovballe woods (explore, 5.8 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Hiker Nanna (`svb_route32_a`) | Markhare 27, Bøgeegern 31, Skibsnisse 31 | 2× Large Tonic + 775 coins |
+| Hiker Flemming (`svb_route32_b`) | Aftenbakke 27, Søpindling 28, Guldgubbe 29 | 2× Large Tonic + 725 coins |
+| Forest warden Karla (`svb_route32_c`) | Søpindling 28, Stimsild 30, Guldgubbe 31 | 2× Large Tonic + 775 coins |
 
 ### Route 33: Lundby and Landet – Vejlen marsh (explore, 5.1 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Scout Svend (`svb_route33_a`) | Bøgeegern 29, Søpindling 29, Hattesvamp 31 | 2× Large Tonic + 775 coins |
+| Apple picker Pia (`svb_route33_b`) | Kirkeugle 30, Hestemusling 31, Havføl 31 | 2× Large Tonic + 775 coins |
+| Fisher Isak (`svb_route33_c`) | Skibskat 27, Aftenbakke 30, Markhare 31 | 2× Large Tonic + 775 coins |
 
 ### Route 34: Egebjerg – Svinehaverne woods (explore, 3.4 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Miller's apprentice Alma (`svb_route34_a`) | Markhare 32, Kronegern 37, Klabautermand 37 | 1× Revive Leaf + 925 coins |
+| Dog walker Pernille (`svb_route34_b`) | Kystskade 34, Aftenbakke 37, Kirkeugle 37 | 1× Revive Leaf + 925 coins |
 
 ### Route 35: Hvidkilde – Kirkeby woods (explore, 4.3 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Estate gardener Frida (`svb_route35_a`) | Kronegern 38, Søpindsvin 40, Heksering 40, Skibskat 41 | 2× Great Charm + 1025 coins |
+| Estate gardener Gustav (`svb_route35_b`) | Søpindsvin 39, Hestemusling 39, Guldhøvding 40, Sildekonge 41 | 2× Great Charm + 1025 coins |
+| Scout Mikkel (`svb_route35_c`) | Aftenbakke 32, Hattesvamp 33, Hyldeknop 35 | 1× Revive Leaf + 875 coins |
 
 ### Route 36: Hvidkilde – Ollerup lake (explore, 3.7 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Estate gardener Merete (`svb_route36_a`) | Tågefrue 38, Søpindsvin 40, Hyldemor 41, Hestemusling 43 | 2× Great Charm + 1075 coins |
+| Fisher Grethe (`svb_route36_b`) | Kystskade 38, Skibskat 38, Kirkeugle 41, Ålekonge 43 | 2× Great Charm + 1075 coins |
 
 ### Route 37: Ollerup lake – Vester Skerninge (explore, 3.3 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Winter swimmer Sofie (`svb_route37_a`) | Brunfisk 38, Heksering 39, Sildekonge 40, Hyldemor 43 | 2× Great Charm + 1075 coins |
+| Busker Tobias (`svb_route37_b`) | Søpindsvin 40, Hestemusling 40, Guldhøvding 41, Kronegern 41 | 2× Great Charm + 1025 coins |
 
 ### Route 38: Vester Skerninge – Ulbølle (explore, 2.4 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Librarian Freya (`svb_route38_a`) | Månehare 39, Kronegern 42, Klabautermand 43, Hestemusling 43 | 2× Great Charm + 1075 coins |
+| Beekeeper Svend (`svb_route38_b`) | Kystskade 39, Månehare 42, Kirkeugle 43, Hyldemor 43 | 2× Great Charm + 1075 coins |
 
 ### Route 39: Skovsbo and Rantzausminde – Lehnskov (explore, 5.0 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Beekeeper Rikke (`svb_route39_a`) | Kystskade 38, Heksering 41, Kirkeugle 41, Ålekonge 42 | 2× Great Charm + 1050 coins |
+| Hiker Gitte (`svb_route39_b`) | Tågefrue 40, Kystskade 40, Hyldemor 40, Hestemusling 43 | 2× Great Charm + 1075 coins |
+| Forest warden Villads (`svb_route39_c`) | Fyrtårn 39, Ålekonge 41, Bålfugl 42, Aftenbakke 43 | 2× Great Charm + 1075 coins |
 
 ### Route 40: Kirkeby – Stenstrup (explore, 3.0 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Busker Anna (`svb_route40_a`) | Aftenbakke 35, Månehare 36, Hyldemor 37 | 1× Revive Leaf + 925 coins |
+| Ice-cream server Pia (`svb_route40_b`) | Markhare 32, Fyrvogter 33, Klabautermand 34 | 1× Revive Leaf + 850 coins |
 
 ### Route 41: Gudme – Tangeskov and Broholm (explore, 4.4 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Metal detectorist Kirsten (`svb_route41_a`) | Heksering 47, Ålekonge 47, Hyldemor 47, Guldhøvding 49 | 2× Revive Leaf + 1225 coins |
+| Apple picker Gitte (`svb_route41_b`) | Fyrtårn 44, Brunfisk 48, Bålfugl 48, Kirkeugle 49 | 2× Revive Leaf + 1225 coins |
+| Apple picker Tilde (`svb_route41_c`) | Tågefrue 44, Aftenbakke 45, Hyldemor 46, Fyrtårn 49 | 2× Revive Leaf + 1225 coins |
 
 ### Route 42: Tangeskov and Broholm – Lundeborg (explore, 2.2 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Hiker Birgit (`svb_route42_a`) | Kystskade 44, Kirkeugle 44, Havhest 47, Hyldemor 48 | 2× Revive Leaf + 1200 coins |
 
 ### Route 43: Gudme – Hesselager (explore, 3.4 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Metal detectorist Conrad (`svb_route43_a`) | Ålekonge 46, Sildekonge 47, Brunfisk 47, Heksering 48 | 2× Revive Leaf + 1200 coins |
+| Ice-cream server Esben (`svb_route43_b`) | Fyrtårn 47, Søpindsvin 48, Bålfugl 49, Heksering 49 | 2× Revive Leaf + 1225 coins |
 
 ### Route 44: Hesselager – Klintholm chalk pits (explore, 5.9 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Bike courier Tobias (`svb_route44_a`) | Skibskat 44, Hestemusling 46, Månehare 48, Guldhøvding 49 | 2× Revive Leaf + 1225 coins |
+| Winter swimmer Inger (`svb_route44_b`) | Bålfugl 45, Kystskade 45, Fyrtårn 47, Klabautermand 47 | 2× Revive Leaf + 1175 coins |
+| Kayaker Sigrid (`svb_route44_c`) | Kronegern 44, Kirkeugle 45, Heksering 46, Hyldemor 47 | 2× Revive Leaf + 1175 coins |
 
 ### Route 45: Oure and Vejstrup – Elsehoved beach (explore, 4.3 km)
 
 | Trainer | Team | Reward |
 |---|---|---|
+| Beekeeper Inger (`svb_route45_a`) | Månehare 44, Bålfugl 45, Klabautermand 46, Brunfisk 47 | 2× Revive Leaf + 1175 coins |
+| Apple picker Tobias (`svb_route45_b`) | Kystskade 45, Søpindsvin 46, Kirkeugle 46, Aftenbakke 48 | 2× Revive Leaf + 1200 coins |
+| Birdwatcher Ida (`svb_route45_c`) | Heksering 44, Tågefrue 48, Hyldemor 48, Hestemusling 48 | 2× Revive Leaf + 1200 coins |
 
 ### Route 46: Svendborg centre – Skarø (ferry, 11.1 km)
 

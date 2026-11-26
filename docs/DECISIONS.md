@@ -1784,3 +1784,31 @@ length, position resolution and spawn tables>`.
   Map's route card says how a crossing works and an island's label says it opens on
   landing. The Fyn map shows each playable region's own badges from its campaign; tapping
   another playable region says to walk there. Feedback reports name the region.
+- **D181. Svendborg playable** (owner request, P27, GDD v1.19). Content made with the
+  same rules as Odense's (D163, D167, D168, D171): 55 species (`svb_` ids, Danish names in
+  both languages), stats from the same role formulas and learnsets from the shared moves;
+  spawn tables with rarity weights, a featured uncommon per district, rares per district
+  and seven destination creatures at 1–3 homes. Home weights were tuned so the main home
+  (highest weight, what the field guide names) is also where the creature is commonest
+  (66–100 %), with chances there like Odense's (very rare 3.2 %, rares 8.5–11.5 %).
+  Density report for Svendborg: all GDD targets met (destinations 1 per 98 m, wild 141 m,
+  routes 308 m, streets 322 m, rare share 2.6×, 30-minute walk 19.1); CI now gates both
+  regions. **Starter triangle:** the first draft broke it (Klintkonge as Stone/Grove beat
+  Water too, and Storm had no strong Storm move before 28): Klintkonge is Stone/Folk,
+  Ternling and Havterne learn Gust Lance at 18, and Kridtling starts with Grit Spray
+  (Cobble Toss at 9, 290 stats) so Stone is not ahead early. **Arena POIs** sit on the
+  nearest valid land spot to each site (zone, no-spawn, hazards, 80 m radius, 120 m from
+  rest stops); the arena site moves with it. **Route trainers:** 102 on the 45 walking
+  routes (none on ferry crossings), themed teams of the region's first stages evolved to
+  their level. **Leaders** were tuned with a search over levels, members of the arena's
+  type and one off-type move, scored like the balance guard (`tools/sim/test/balance.test.ts`,
+  now run for every region with player-team presets); all 24 leader/starter pairs pass.
+  The sim takes `--region` (starters named by type: `starter_water`, `starter_stone`,
+  `starter_storm`), `pnpm sim:report --region svendborg` writes
+  docs/regions/svendborg/BALANCE.md, and `pnpm spawn:report --region svendborg` checks the
+  density. Sprites are drawn for every region's species (`allSpeciesIds`), and the
+  franchise-term test reads every region. The e2e test `svendborg.e2e.ts` walks in from an
+  Odense campaign, picks a Svendborg starter, plays arenas 1–8, beats a route trainer, shops,
+  lands on Skarø (it opens) and walks back to an unchanged Odense campaign. It found three
+  places that still read Odense's content in a Svendborg battle (legal actions, event
+  playback, dev hooks), now fixed.

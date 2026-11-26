@@ -1,6 +1,6 @@
 # Odense Monster League — Game Design Document
 
-Version 1.18 · Nov 26, 2026 · maintained in the repository (see Change log)
+Version 1.19 · Nov 26, 2026 · maintained in the repository (see Change log)
 
 ## Overview
 
@@ -71,7 +71,7 @@ Version 1.18 · Nov 26, 2026 · maintained in the repository (see Change log)
 
 **Town Map.** A full-screen overview of the region in the same paper style: the region border (solid yellow, with a pale wash outside the region), district and zone borders (dotted; each edge drawn once, never on top of another line), closed zones lightly dimmed with how to open them, arenas with badge state, every route with its number and walked part, rest stops, the player's position and the Journal's current target. It is held on the region (it can't be dragged out of it), and its map ends in an even frame 2 km around the region, plain beyond (v1.15). It zooms from the whole municipality, where only the arenas show, down to the streets. Arenas are badges; everything else is a stamp: trainers (ticked when beaten; shown when zoomed in), rest stops, markets and the **destinations**, one stamp per zone that says what it is (forest, meadow and field, lake and water, town), so players can see what a route leads to. Tapping a place shows its straight-line distance, its zone and what it needs (a destination: what it is, which routes lead there and which route to walk next); no turn-by-turn directions. A **filter** button (a funnel) in the top bar, next to the Fyn button, opens a short menu of switches to show or hide arenas, routes, trainers, rest stops, markets and destinations; the choice is remembered on the phone.
 
-**Fyn map.** A "Fyn" button on the Town Map opens a map of Fyn's municipalities, each a region: in the same paper style, held on Fyn with a small zoom range, showing each region's 8 arena badges (grey until won). It is for choosing a region: today only Odense can be opened (back to its Town Map, also handy for planning a trip from elsewhere); the others say "coming later". Back closes the Fyn map first, then the Town Map.
+**Fyn map.** A "Fyn" button on the Town Map opens a map of Fyn's municipalities, each a region: in the same paper style, held on Fyn with a small zoom range, showing each region's 8 arena badges (grey until won). It is for choosing a region: the region being played opens its Town Map, another playable region (Odense and Svendborg since v1.19) says to walk there to play its campaign, and the others say "coming later". Back closes the Fyn map first, then the Town Map.
 
 **Journal (quest log).**
 
@@ -123,7 +123,18 @@ Rules:
 
 **How the game follows the player (v1.18).** The campaign being played is the region the player stands in: inside its land, or up to 500 m off its coast (quays, piers, the harbour). Out at sea or between regions nothing changes. The switch waits until a battle and its choices (learn a move, evolve) are done. Arriving in a region for the first time shows a short welcome and that region's three starters; the safety note and the location question are not asked again. Coming back to a region brings its campaign back exactly as it was. The Town Map, the play map, the Journal, the field guide, the bag and the badges always show the campaign's own region; the Fyn map shows each region's badges. Only regions whose creatures and arenas are built can be played. The type chart, battle rules, moves, items and the app are shared. Regions are built with the recipe in docs/REGION-RECIPE.md and tracked in docs/REGIONS.md, including an update queue: an update made in one region is offered to the others, and the owner decides for each region whether it comes as it is, adapted, or not at all (P27).
 
-**Svendborg (the second region, being built).** 415 km² in twelve pieces: the mainland, Tåsinge (by the Svendborgsund bridge), Thurø (by causeway), the ferry islands Skarø, Hjortø and Drejø, and islets. 44 zones in 8 districts with the same level bands as Odense. Starters form a coastal triangle, **Water → Stone → Storm → Water**, three stages each. Its creatures are its own: clearly different from Odense's, but in the same spirit (folklore and local names, the same rarities and destination homes).
+**Svendborg (the second region, playable since v1.19).** 415 km² in twelve pieces: the mainland, Tåsinge (by the Svendborgsund bridge), Thurø (by causeway), the ferry islands Skarø, Hjortø and Drejø, and islets. 44 zones in 8 districts with the same level bands as Odense. Starters form a coastal triangle, **Water → Stone → Storm → Water**, three stages each: Sælkalv → Sundsæl → Havmand (Water, then Water/Spirit), Kridtling → Kridtgrævling → Klintkonge (Stone, then Stone/Folk) and Ternling → Havterne → Vejrhane (Storm, then Storm/Folk). Like Odense's, each starter learns one move of another type early (Water: Cobble Toss, Stone: Squall Slap, Storm: Brook Spout). Its creatures are its own: clearly different from Odense's, but in the same spirit (coast, islands and folklore, the same rarities and destination homes). The moves, items and field abilities are shared.
+
+**Svendborg's roster: 55 creatures in 23 lines** (the same build as Odense's: 3 starter lines and 20 wild lines, 6 of them with three stages). The tutorial creature is Havnekat.
+
+| Rarity | Lines | Notes |
+| --- | --- | --- |
+| Common | 6 (Havnekat, Sildeling, Egernling, Hareling, Blåmusling, Svampling) | Svampling only in destinations (main home Svinehaverne) |
+| Uncommon | 9 (Strandskade, Ålling, Flagling, Fyrling, Søpindling, Askeling, Brunfiskling, Tågeling, Uglunge) | Brunfiskling (Vindebyøre beach), Tågeling (Vejlen marsh) and Uglunge (Tangeskov, at night) only in destinations; Flagling at night |
+| Rare | 4 (Skibsnisse, Guldgubbe, Havføl, Hyldeknop) | Skibsnisse in districts 1–4, Guldgubbe in 5–8; Havføl (Vindebyøre beach, also with Angler) and Hyldeknop (Bjerreby woods) only in destinations |
+| Very rare | 1 (Mareling → Marmæle) | Only at Klintholm chalk pits |
+
+Each district features one uncommon at double weight, and the field-ability layers match Odense's (Runereader: Skibsnisse and Forager: Egernling in district 1; Angler: Havføl at its main home). The arena leaders: Havnefoged Karl (Spirit), Bålmester Sanne (Fire), Skibsbygger Hanne (Water), Skipper Jens (Storm), Slotsforvalter Ebba (Folk), Møller Torben (Stone), Skovrider Agnete (Grove) and Arkæolog Sigrun (mixed), each with a junior; every walking route has route trainers (about one per 1.5 km). docs/regions/svendborg/ lists every creature, team and balance result.
 
 | # | Arena site | Theme | Badge (da / en) |
 | --- | --- | --- | --- |
@@ -593,6 +604,7 @@ M1.7 (done, 148 tests): field abilities are data in `field-abilities.json`; a fr
 
 | Version | Date | Changes |
 | --- | --- | --- |
+| 1.19 | 2026-11-26 | Svendborg is playable: its own roster of 55 creatures (Water/Stone/Storm starters, 20 wild lines with the same rarity mix as Odense's, seven destination creatures at their homes), spawn tables, Journal goals, eight leaders and juniors, 102 route trainers; its leaders meet the same win-rate targets |
 | 1.18 | 2026-11-26 | Campaigns per region in the game: the campaign follows the region the player walks in (up to 500 m off its coast), switching after any battle; a new region starts at its own starter choice and the other campaigns wait unchanged; ferry crossings are sailed, not walked, and an island opens when the player lands there |
 | 1.17 | 2026-11-25 | Regions: one campaign per municipality, with an update queue between regions (P27); Svendborg designed: Water/Stone/Storm starters, eight arenas and badges, ferry islands that open on arrival with dotted crossings, its own creatures; every badge its own design |
 | 1.16 | 2026-11-25 | Tester features: a one-time welcome (what to try, add to home screen, export, feedback), Feedback in the menu (share sheet, never a location), save import, the field guide names destination creatures' homes; first launch goes straight into the map game |

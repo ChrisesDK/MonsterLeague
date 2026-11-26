@@ -582,7 +582,7 @@ function regionReadme(dex: Dex): DocFile[] {
     '| Zone | id | Kind | District | Notes |',
     '| --- | --- | --- | --- | --- |',
     ...Object.values(dex.zones)
-      .sort((a, b) => a.district - b.district || a.id.localeCompare(b.id))
+      .sort((a, b) => a.district - b.district || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
       .map(
         (z) =>
           `| ${zoneName(z.id)} | \`${z.id}\` | ${z.kind}${z.icon ? ` (${z.icon})` : ''} | ${z.district} | ${[z.start ? 'start' : '', z.arena ? `arena ${z.arena}` : '', z.opensOnArrival ? 'ferry island: opens on arrival' : ''].filter(Boolean).join(', ')} |`,

@@ -43,8 +43,8 @@ is M5; don't build any of it before then. See [docs/PLAN.md](docs/PLAN.md) and
 
 ## Regions (P27)
 
-Each Fyn municipality is its own region and campaign: Odense (playable) and Svendborg (being
-built). **[docs/REGIONS.md](docs/REGIONS.md)** says where each region's files live, each
+Each Fyn municipality is its own region and campaign: Odense and Svendborg (both playable
+since GDD v1.19, D181). **[docs/REGIONS.md](docs/REGIONS.md)** says where each region's files live, each
 region's level and features, and holds the **update queue**;
 **[docs/REGION-RECIPE.md](docs/REGION-RECIPE.md)** says how a region is built.
 
@@ -127,7 +127,7 @@ apps/spawn-service Cloudflare Worker: GET /v1/spawns for one res-7 cell (secret 
 apps/client       Vite + React PWA: map game (#/; src/game = save store, onboarding,
                   screens, Journal; src/map = play view, Town Map; src/ui = design system), playtest (#/playtest), dev battle page (#/dev), GPS simulator
                   + dev hooks (#/dev/map), biome debug (#/dev/biomes); src/map/FynMap.tsx =
-                  the Fyn map (regions; only Odense opens); e2e/ = Playwright
+                  the Fyn map (regions; Odense and Svendborg play); e2e/ = Playwright
 ```
 
 - Workspace packages are consumed **as TypeScript source** (`exports` → `src/index.ts`);
@@ -186,6 +186,8 @@ pnpm validate      # content JSON vs Zod schemas + cross-references + i18n keys
 pnpm sim --a starter_fire:12 --b leader_water --n 10000
 pnpm sim --player-team arena2 --starter grove --b leader_water   # expected player team
 pnpm sim:report    # regenerates docs/BALANCE.md (~15 s); run after any content/rule change
+                   # (--region svendborg writes docs/regions/svendborg/BALANCE.md; pnpm sim also takes
+                   # --region, with starter_water/starter_stone/starter_storm there)
 pnpm dev           # client dev server (http://localhost:5173; #/dev = developer battle page)
 pnpm gate2:report <folder>   # Gate 2 summary from exported playtest .json/.csv files
 pnpm gate3:report <folder>   # Gate 3 summary from exported walk sessions
@@ -194,7 +196,7 @@ pnpm routes:build  # rebuild routes.odense.json from the OSM foot network (then 
 pnpm region:build  # rebuild region.odense.json, its version file and the zone/district outlines
                    # (Overpass tiles cached in tools/region-builder/cache; fetch: pnpm --filter @oml/region-builder fetch)
 pnpm --filter @oml/region-builder basemap [YYYYMMDD]   # re-extract the basemap tiles for the municipality
-pnpm spawn:report  # spawn density per km walked vs GDD targets (CI gate, ~7 min)
+pnpm spawn:report  # spawn density per km walked vs GDD targets (CI gate, ~7 min; --region svendborg)
 pnpm regions:status  # region update queue: says when to ask the owner (docs/REGIONS.md)
 pnpm docs:content  # regenerate docs/regions/<region>/ (CREATURES.md, TEAMS.md, spawn maps)
                    # after any species, spawn, trainer or POI change (a test checks it)
@@ -212,7 +214,7 @@ its output, bump `SPAWN_ALGORITHM` in `packages/spawn/src/version.ts` (the golde
 says so).
 
 Balance: leader targets (neutral 40–60%, advantage 75–90%, disadvantage 15–30%) are guarded
-by `tools/sim/test/balance.test.ts`. If a content change breaks them, re-tune with
+by `tools/sim/test/balance.test.ts` for every region. If a content change breaks them, re-tune with
 `pnpm sim:report` and record the change in docs/DECISIONS.md.
 
 ## Working conventions

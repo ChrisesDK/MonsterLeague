@@ -196,6 +196,6 @@
 - [x] Every badge its own design, Odense redesigned, Svendborg's eight (D178)
 - [x] Svendborg map: boundary, region file, 44 zones, 45 routes, 3 ferry crossings, 24 rest stops, 6 markets, basemap, map frame, README with map (D179)
 - [x] Campaigns per region (save v11, region from the phone's position, starter choice on entering a region, Town Map and Fyn map per region, islands open on arrival) (D180)
-- [ ] Svendborg creatures: Water/Stone/Storm starters and about 20 wild lines (after the map, owner)
-- [ ] Svendborg trainers, arena leaders and juniors, balance, Journal goals, e2e
+- [x] Svendborg creatures: Water/Stone/Storm starters and 20 wild lines, spawns, destination homes (D181)
+- [x] Svendborg trainers, arena leaders and juniors, balance, Journal goals, e2e; Svendborg playable (D181)
 - [ ] Owner checks Svendborg's places on site; Svendborg testers
