@@ -567,7 +567,6 @@
   "trainer.reward": "Du fik {n}× {item}.",
   "trainer.refuseZone": "\"Gå en rute hertil først, så kæmper vi i {zone}.\"",
   "trainer.coins": "Du fik {n} skilling.",
-  "townMap.arenaTier": "Følger dine mærker: {n} af 8",
   "townMap.routeFinds": "gå den for skilling og ting, du finder undervejs",
   "townMap.routeBonus": "flere vilde væsner på den nu",
   "map.routeFind": "Fundet på rute {n}: {what}",
@@ -613,5 +612,11 @@
   "onboarding.location.how": "Tjek, at placering er slået til på telefonen, og at denne side må bruge den (browseren spørger, eller se sidens indstillinger ved adressen). Prøv så igen.",
   "onboarding.location.howIos": "På iPhone: Indstillinger → Anonymitet og sikkerhed → Lokalitetstjenester: slå dem til, og vælg \"Når appen er i brug\" under Safari-websteder. Hvis Safari spurgte før, og du sagde nej: tryk på \"aA\" ved adressen → Indstillinger for websted → Lokalitet → Tillad. Prøv så igen.",
   "onboarding.location.retry": "Prøv igen",
-  "townMap.leader": "Leder"
+  "townMap.challenge": "Udfordring",
+  "townMap.arenaSteps": "Besejr juniortræneren, så lederen",
+  "welcome.try.arenas": "Vind de otte arenaer i den rækkefølge, du vil. Hver leder stiller med et stærkere hold for hvert mærke, du allerede har.",
+  "arena.tier.none": "Du har ingen mærker endnu, så lederen stiller med sit letteste hold.",
+  "arena.tier.one": "Du har 1 mærke, så lederen stiller med et stærkere hold.",
+  "arena.tier.some": "Du har {n} mærker, så lederen stiller med et stærkere hold.",
+  "arena.tier.max": "Du har {n} mærker, så lederen stiller med sit stærkeste hold."
 }

@@ -567,7 +567,6 @@
   "trainer.reward": "You got {n}× {item}.",
   "trainer.refuseZone": "\"Walk a route here first, then we can battle in {zone}.\"",
   "trainer.coins": "You got {n} skilling.",
-  "townMap.arenaTier": "Matches your badges: {n} of 8",
   "townMap.routeFinds": "walk it for coins and items found along the way",
   "townMap.routeBonus": "more wild creatures on it now",
   "map.routeFind": "Found while walking route {n}: {what}",
@@ -613,5 +612,11 @@
   "onboarding.location.how": "Check that location is turned on for your phone, and that this site may use it (the browser asks, or see the site settings next to the address). Then try again.",
   "onboarding.location.howIos": "On iPhone: Settings → Privacy & Security → Location Services: turn it on, and under Safari Websites choose \"While Using the App\". If Safari asked before and you said no, tap \"aA\" next to the address → Website Settings → Location → Allow. Then try again.",
   "onboarding.location.retry": "Try again",
-  "townMap.leader": "Leader"
+  "townMap.challenge": "Challenge",
+  "townMap.arenaSteps": "Beat the junior trainer, then the leader",
+  "welcome.try.arenas": "Win the eight arenas in any order. Each leader brings a stronger team for every badge you already have.",
+  "arena.tier.none": "You have no badges yet, so the leader brings their lightest team.",
+  "arena.tier.one": "You have 1 badge, so the leader brings a stronger team.",
+  "arena.tier.some": "You have {n} badges, so the leader brings a stronger team.",
+  "arena.tier.max": "You have {n} badges, so the leader brings their strongest team."
 }

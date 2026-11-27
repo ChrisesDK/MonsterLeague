@@ -428,7 +428,9 @@ test('Town Map: zones, arenas and routes; a card tells what a place needs (P22)'
   await expect(page.getByTestId('tm-target')).toHaveCount(1);
   // P28: Odense is open: arena 2 takes a challenge now, at the strength for 0 badges
   await page.getByTestId('tm-arena-2').evaluate((e) => (e as HTMLElement).click());
-  await expect(page.getByTestId('townmap-needs')).toContainText('Matches your badges: 0 of 8');
+  await expect(page.getByTestId('townmap-needs')).toHaveText(
+    'Beat the junior trainer, then the leader',
+  );
   await expect(page.getByTestId('townmap-distance')).toContainText('straight line');
   await page.getByTestId('tm-route-route1').evaluate((e) => (e as HTMLElement).click());
   await expect(page.getByTestId('townmap-card')).toContainText('Route 1');

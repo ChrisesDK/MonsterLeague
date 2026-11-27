@@ -4,7 +4,6 @@ import { stampUrl } from '@oml/art';
 import { MAP_FRAMES, regions, type RegionId } from '@oml/data';
 import {
   arenaReady,
-  challengeTier,
   distanceM,
   isZoneOpen,
   campaignView,
@@ -412,12 +411,12 @@ function RegionTownMap({
       icon = stampUrl('arena', save.badges.includes(site.arena));
       zone = site.zone;
       distance = away(site);
-      // open region (owner): no "needs" for an arena, just that its leader follows your badges
-      if (dex.open && !save.badges.includes(site.arena)) needsLabel = t('townMap.leader');
+      // open region (owner): no "needs" for an arena (the scaling is told at the arena itself)
+      if (dex.open && !save.badges.includes(site.arena)) needsLabel = t('townMap.challenge');
       needs = save.badges.includes(site.arena)
         ? t('townMap.badgeEarned', { badge: t(`badge.${site.arena}.name`) })
         : dex.open
-          ? t('townMap.arenaTier', { n: challengeTier(save.badges) })
+          ? t('townMap.arenaSteps')
           : !isZoneOpen(save, site.zone)
             ? t('townMap.needsZone', { zone: t(`zone.${site.zone}.name`) })
             : !arenaReady(save, site.arena)

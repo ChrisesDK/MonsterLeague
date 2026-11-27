@@ -1978,7 +1978,7 @@ length, position resolution and spawn tables>`.
     in open regions. `routeNetwork` draws each shared route segment once (keys rounded to 6
     decimals; main, alt, explore in that order; each route's remaining segments joined into
     as few lines as possible), so shared stretches keep their dashes.
-  - Fyn map: playable regions a light park tint plus their routes as faint lines (ferries
+  - Fyn map: playable regions keep their park green (owner, after trying a light tint) with their routes as faint lines (ferries
     dotted, a separate layer: MapLibre's dash patterns aren't data-driven).
   - Map credits: explicit colours (MapLibre's own sheet set dark text in both themes); the
     "i" button inverted at night. Night itself stays at the real sunset (owner): 16:00 in
@@ -2029,7 +2029,10 @@ length, position resolution and spawn tables>`.
   projected every frame; its faint fill stays a ground layer.
 - **D199. Small UI follow-ups** (owner, GDD v1.27). The Town Map filter is a `Sheet` (title,
   close, back gesture) like the badges; the tool button no longer toggles. An open-region
-  arena card uses the label "Leader" with "Matches your badges: n of 8". The Fyn hint is just
+  arena card says "Challenge: beat the junior trainer, then the leader" (owner: the same
+  scaling line on all 8 cards confused); the scaling is told on the welcome screen and by
+  the battle's guide line on a leader battle's first turn (`tierLine`: none / 1 / n / 7
+  badges), also on the arena's card when the leader is next. The Fyn hint is just
   "Tap a region to look at it." The field guide's fixed previous / next bar is centred and
   at most 520 px wide, the width of the menu column.
   The bag's creature picker stays open after an item until the player closes it (owner:

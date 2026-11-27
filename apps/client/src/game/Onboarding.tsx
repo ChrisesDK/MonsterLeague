@@ -51,6 +51,7 @@ export function WelcomeScreen({ t, onContinue }: { t: Translate; onContinue: () 
       <ul className="welcome-list">
         <li>{t('welcome.try.walk')}</li>
         <li>{t('welcome.try.travel')}</li>
+        <li>{t('welcome.try.arenas')}</li>
         <li>{t('welcome.try.journal')}</li>
       </ul>
       <h2>{t('welcome.keepTitle')}</h2>

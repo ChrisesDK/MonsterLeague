@@ -113,7 +113,8 @@ function fynStyle(
         type: 'fill',
         source: 'fyn',
         filter: ['in', ['get', 'id'], ['literal', PLAYABLE_MUNICIPALITIES]],
-        paint: { 'fill-color': p.park, 'fill-opacity': 0.28 },
+        // the playable regions' green as before (owner), with their routes on top
+        paint: { 'fill-color': p.park },
       },
       {
         id: 'sketch',

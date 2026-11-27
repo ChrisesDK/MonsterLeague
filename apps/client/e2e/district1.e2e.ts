@@ -330,6 +330,9 @@ test('onboarding to badge 2 (districts 1 and 2, open wildlife), with reloads', a
   for (let attempt = 0; attempt < 4; attempt++) {
     card = await tapPoi(page, 'rest_library');
     card = await tapPoi(page, 'arena1'); // then the leader
+    // P28: the leader battle opens by saying what the team is for this player (owner)
+    if (attempt === 0)
+      await expect(page.getByTestId('battle-guide')).toContainText('no badges yet');
     await fight(page);
     if ((await devSave(page)).badges.includes(1)) break;
     await page.locator('[data-testid=result-card] .btn').click();
@@ -383,6 +386,8 @@ test('onboarding to badge 2 (districts 1 and 2, open wildlife), with reloads', a
   for (let attempt = 0; attempt < 4; attempt++) {
     card = await tapPoi(page, 'rest_naesbyhoved');
     card = await tapPoi(page, 'arena2'); // then the leader
+    if (attempt === 0)
+      await expect(page.getByTestId('battle-guide')).toContainText('You have 1 badge');
     await fight(page, { move: 'Beech Lash' });
     if ((await devSave(page)).badges.includes(2)) break;
     await page.locator('[data-testid=result-card] .btn').click();

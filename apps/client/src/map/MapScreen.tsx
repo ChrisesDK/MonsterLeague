@@ -37,6 +37,8 @@ import {
   type BattleOutcome,
   type LatLng,
   type SaveGame,
+  challengeTier,
+  MAX_TIER,
 } from '@oml/game';
 import {
   pauseTimer,
@@ -208,6 +210,20 @@ interface Seen {
 const FAST_MODAL_DELAY_MS = 15_000;
 /** Walking this long in a row ends a journey: the next fast ride shows the modal again. */
 const JOURNEY_END_MS = 10 * 60_000;
+
+/** What a leader's team is for this player, by the badges held (P28, owner). */
+function tierLine(badges: readonly number[], t: Translate): string {
+  const n = challengeTier(badges);
+  const key =
+    n === 0
+      ? 'arena.tier.none'
+      : n === 1
+        ? 'arena.tier.one'
+        : n >= MAX_TIER
+          ? 'arena.tier.max'
+          : 'arena.tier.some';
+  return t(key, { n });
+}
 
 export function MapScreen({
   t,
@@ -1273,6 +1289,8 @@ export function MapScreen({
       body = `${who}: “${t(`trainer.${st.trainerId}.intro`)}”`;
       if (here.kind === 'arena')
         body = `${t(isLeader ? 'arena.leaderNext' : 'arena.juniorFirst')} ${body}`;
+      // P28 (owner): at the arena, what the leader's strength means for this player now
+      if (isLeader && regions[saveRef.current.region].open) body += ` ${tierLine(save.badges, t)}`;
       action = (
         <Button variant="primary" data-testid="poi-action" onClick={() => fightPoi(here)}>
           {t('trainer.battle')}
@@ -1475,6 +1493,12 @@ export function MapScreen({
   // ---- render -----------------------------------------------------------------------------
   if (inBattle && save.battle) {
     const isTutorial = save.battle.kind === 'tutorial';
+    // P28 (owner): a leader battle starts by saying how strong the leader's team is for you
+    const leaderStart =
+      save.battle.kind === 'trainer' &&
+      regions[save.region].open &&
+      regions[save.region].trainers[save.battle.trainerId]?.tier === 'leader' &&
+      save.battle.state.turn === 0;
     return (
       <BattleScreen
         key={save.battle.kind === 'wild' ? save.battle.spawnId : save.battle.kind}
@@ -1486,7 +1510,13 @@ export function MapScreen({
         onSave={() => undefined}
         onTurn={onTurn}
         askChoices={false}
-        guide={isTutorial ? t('tutorial.battleGuide') : undefined}
+        guide={
+          isTutorial
+            ? t('tutorial.battleGuide')
+            : leaderStart
+              ? tierLine(save.badges, t)
+              : undefined
+        }
         onExit={exitBattle}
         endLabel={t('ui.continue')}
       />
