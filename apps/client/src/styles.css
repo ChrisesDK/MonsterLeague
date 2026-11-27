@@ -1278,24 +1278,30 @@ html[data-theme='night'] .arena-field {
   display: block;
   transition: transform var(--dur) var(--ease-out);
 }
-.map-banner {
-  align-self: flex-start;
-  display: flex;
-  gap: var(--sp-2);
-  align-items: center;
-  padding: var(--sp-2) var(--sp-3);
+/* passing messages on the game view (owner): above the satchel, like the place cards */
+.map-msg {
+  align-self: center;
+  max-width: min(100%, 420px);
+  padding: var(--sp-2) var(--sp-4);
   border-radius: var(--r-md);
-  background: var(--ink);
-  color: var(--paper);
-  font-size: var(--fs-xs);
+  background: var(--card);
+  border: 2px solid var(--line-strong);
+  box-shadow: var(--shadow-2);
+  color: var(--ink);
+  font-size: var(--fs-sm);
   font-weight: 700;
-  line-height: 1.3;
-  box-shadow: var(--shadow-1);
-  max-width: 330px;
+  line-height: 1.35;
+  text-align: center;
+  animation: sheet-in var(--dur-slow) var(--ease-out);
 }
 .map-toast {
-  max-width: 360px;
   pointer-events: none;
+}
+/* a lasting state (no signal, saved creatures, location off): quieter than a message */
+.map-banner {
+  border-style: dashed;
+  color: var(--ink-2);
+  box-shadow: var(--shadow-1);
 }
 .hud-bottom {
   position: absolute;

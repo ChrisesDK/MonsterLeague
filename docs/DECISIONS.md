@@ -2095,3 +2095,10 @@ length, position resolution and spawn tables>`.
     in a mode the actionable cards are lit and the rest dimmed; storing ends by itself when
     one creature is left, taking out when storage is empty; with a full team a stored
     creature is marked and the next team tap swaps them.
+- **D202. Game-view messages at the bottom** (owner, GDD v1.30). The toast (tap results,
+  route finds, zone and island notes) and the status banner (no service, location off, no
+  signal, saved creatures) moved from the top-left stack into the bottom stack above the
+  place / result cards and the Nearby strip, as `.map-msg` cards (the banner dashed and
+  quieter, since it lasts). The top keeps the goal card, compass and Town Map buttons (the
+  always-visible ones) and the small status icons; the too-fast window stays a centred
+  modal (owner's earlier request).

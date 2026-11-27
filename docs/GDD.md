@@ -1,6 +1,6 @@
 # Odense Monster League — Game Design Document
 
-Version 1.29 · Nov 27, 2026 · maintained in the repository (see Change log)
+Version 1.30 · Nov 27, 2026 · maintained in the repository (see Change log)
 
 ## Overview
 
@@ -622,6 +622,7 @@ M1.7 (done, 148 tests): field abilities are data in `field-abilities.json`; a fr
 
 | Version | Date | Changes |
 | --- | --- | --- |
+| 1.30 | 2026-11-27 | Every passing message on the game view (walk closer, finds, too wild, no signal, saved creatures, location off) sits above the satchel with the place and result cards, in one card style; the top of the screen keeps only the always-visible buttons, for looking around. Storage: two mode buttons, two columns |
 | 1.29 | 2026-11-27 | Both field guides show the same: the Normal / Glimmer switch, types as coloured labels with seen / caught on a line below, no stats, and (only once seen) the heat map with labels for what it can't show ("Found at", or "Found at night at" / "Found by day at", on its own line with the home destinations below; field-ability layers); an evolved form's map is its first stage's ("Found as …"); no written paragraphs; previous / next say so instead of numbers. Odense's border loses two spikes from the v1.26 coast step (it no longer grows along land borders) |
 | 1.28 | 2026-11-27 | Town Map: a pocket field guide (Guide), stamps and icons in the filter, stamps stacked by importance; one-finger zoom (tap, then tap-and-hold and drag); maps recover after the app was in the background; bag text left-aligned |
 | 1.27 | 2026-11-27 | Town Map filter in a sheet like the badges; leader scaling told on the welcome screen and when a leader battle starts, not on every arena card; the Fyn map hint no longer lists the playable regions; the field guide's previous / next stay in the menus' column on wide screens |

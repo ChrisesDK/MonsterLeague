@@ -54,7 +54,7 @@ import type { Translate } from '../i18n';
 import { districtAt, levelBands, loadRegion, zoneAt } from '../game/region';
 import { regionAt } from './regionGeo';
 import { formatM, goalTitle } from '../game/goalText';
-import { Button, Modal, Toast } from '../ui/components';
+import { Button, Modal } from '../ui/components';
 import { buzz } from '../ui/feedback';
 import { Icon } from '../ui/icons';
 import {
@@ -1605,19 +1605,7 @@ export function MapScreen({
         data-reach={fast ? '' : inReach.map((p) => p.id).join(' ')}
       />
       <div className="hud-top">
-        <div className="hud-left">
-          {card}
-          {banner && (
-            <div className="map-banner" role="status">
-              {banner}
-            </div>
-          )}
-          {toast && (
-            <div className="map-toast">
-              <Toast>{toast}</Toast>
-            </div>
-          )}
-        </div>
+        <div className="hud-left">{card}</div>
         <div className="hud-right">
           <button
             type="button"
@@ -1691,7 +1679,19 @@ export function MapScreen({
           onTeleportMode={(on) => (teleportMode.current = on)}
         />
       )}
+      {/* owner: every passing message sits here, above the satchel, in one card style, so
+          the top of the screen stays free for looking around */}
       <div className="hud-bottom">
+        {banner && (
+          <div className="map-msg map-banner" role="status" data-testid="map-banner">
+            {banner}
+          </div>
+        )}
+        {toast && (
+          <div className="map-msg map-toast" role="status" data-testid="map-toast">
+            {toast}
+          </div>
+        )}
         {result && (
           <div className="poi-card result-card" data-testid="result-card" role="status">
             <div>
