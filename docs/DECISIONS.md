@@ -2032,3 +2032,6 @@ length, position resolution and spawn tables>`.
   arena card uses the label "Leader" with "Matches your badges: n of 8". The Fyn hint is just
   "Tap a region to look at it." The field guide's fixed previous / next bar is centred and
   at most 520 px wide, the width of the menu column.
+  The bag's creature picker stays open after an item until the player closes it (owner:
+  it closed itself after 1.4 s); the chosen card's HP bar slides to the new value in 0.35 s,
+  and the picker shows how many of the item are left (cards grey out at none).

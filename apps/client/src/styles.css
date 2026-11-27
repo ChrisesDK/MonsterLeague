@@ -217,6 +217,12 @@
   opacity: 0.45;
   cursor: default;
 }
+/* the HP bar slides quickly to its new value after an item (owner) */
+.creature-card .hpfill {
+  transition:
+    width 0.35s ease-out,
+    background-color 0.35s;
+}
 .creature-card.given {
   opacity: 1;
   border-color: var(--leaf);

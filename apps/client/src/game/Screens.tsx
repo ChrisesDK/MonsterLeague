@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useContext, useState, type ReactNode } from 'react';
 import { badgeUrl, spriteUrl } from '@oml/art';
 import {
   content,
@@ -621,16 +621,11 @@ function BagScreen({
 }) {
   const dex = useContext(RegionDex);
   const [using, setUsing] = useState<string | null>(null);
-  /** The creature just given an item: its HP bar fills up, then the picker closes. */
+  /**
+   * The creature just given an item: its HP bar slides to the new value. The picker stays
+   * open until the player closes it (owner), so another one can be used right away.
+   */
   const [given, setGiven] = useState<string | null>(null);
-  useEffect(() => {
-    if (!given) return;
-    const id = setTimeout(() => {
-      setGiven(null);
-      setUsing(null);
-    }, 1400);
-    return () => clearTimeout(id);
-  }, [given]);
   const items = Object.entries(save.bag).filter(([, n]) => n > 0);
   const targets = [...save.team, ...save.storage];
   return (
@@ -666,7 +661,10 @@ function BagScreen({
       {using && (
         <div className="modal" role="dialog" aria-modal="true">
           <div className="modal-card">
-            <h2>{t('bag.useOn', { item: t(`item.${using}.name`) })}</h2>
+            <h2>
+              {t('bag.useOn', { item: t(`item.${using}.name`) })}{' '}
+              <span className="muted">×{save.bag[using] ?? 0}</span>
+            </h2>
             {/* owner: sprites in two columns; using an item shows the HP going up, no notice */}
             <div className="creature-grid">
               {targets.map((c) => (
@@ -674,7 +672,7 @@ function BagScreen({
                   key={c.uid}
                   className={`creature-card${given === c.uid ? ' given' : ''}`}
                   data-testid={`use-on-${c.uid}`}
-                  disabled={given !== null || !canUseItem(c, using, dex)}
+                  disabled={(save.bag[using] ?? 0) <= 0 || !canUseItem(c, using, dex)}
                   onClick={() => {
                     update((s) => applyItem(s, using, c.uid));
                     setGiven(c.uid);
@@ -686,7 +684,14 @@ function BagScreen({
                 </button>
               ))}
             </div>
-            <button className="btn" disabled={given !== null} onClick={() => setUsing(null)}>
+            <button
+              className="btn"
+              data-testid="bag-picker-close"
+              onClick={() => {
+                setUsing(null);
+                setGiven(null);
+              }}
+            >
               {t('ui.back')}
             </button>
           </div>

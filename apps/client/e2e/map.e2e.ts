@@ -1109,6 +1109,11 @@ test('Settings → Test items gives a Revive Blossom; the bag uses it to revive 
   // revived (the exact full-HP amount is checked by the game's unit test)
   expect(after).toBeGreaterThan(1);
   expect((await dev()).bag.revive_blossom ?? 0).toBe(0);
+  // the picker stays open until the player closes it (owner); its HP bar shows the new HP
+  await page.waitForTimeout(2000);
+  await expect(page.getByTestId(`use-on-${uid}`)).toHaveClass(/given/);
+  await page.getByTestId('bag-picker-close').click();
+  await expect(page.getByTestId(`use-on-${uid}`)).toHaveCount(0);
 });
 
 test('the loading screen shows when the map game opens from the battle test (a new map and GPS search)', async ({
