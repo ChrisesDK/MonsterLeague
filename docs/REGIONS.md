@@ -86,6 +86,7 @@ Statuses: `pending` · `apply` · `adapt` · `done` · `skip` · `n/a` (a note m
 | D191–D194 Open region (P28): no locks, scaled leaders and trainers, route finds and bonus   | odense    | 2026-11-26 | done                                                          | done (D195)                   |
 | D196 UI round: Town Map tools, Goals by distance, bag, detail, camera, too-fast, install    | shared    | 2026-11-27 | done                                                          | done                          |
 | D197 The coast: unclaimed coastal land and 200 m of sea in the outline                      | shared    | 2026-11-27 | done                                                          | done                          |
+| D203 Two-hour creatures (spawn algorithm 7); storage, team order and battle menus           | shared    | 2026-11-28 | done                                                          | done                          |
 
 ## Features
 

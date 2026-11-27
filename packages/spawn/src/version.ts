@@ -5,6 +5,7 @@ import {
   DESTINATION_RARE_BOOST,
   MAX_SPAWNS_PER_CELL,
   POSITION_RES,
+  SPAWN_LIFE_WINDOWS,
   ROUTE_FACTOR,
   STREET_FACTOR,
   WILD_FACTOR,
@@ -17,7 +18,7 @@ import {
  * The golden test in test/version.test.ts fails until this is bumped and the golden
  * fingerprint is updated, so code changes can't slip through unversioned.
  */
-export const SPAWN_ALGORITHM = 6;
+export const SPAWN_ALGORITHM = 7;
 
 /**
  * Version of the spawn rules: algorithm number + tunable numbers + spawn tables. The spawn
@@ -35,6 +36,7 @@ export function spawnRulesVersion(spawnTables: readonly SpawnEntry[]): string {
     destinationRareBoost: DESTINATION_RARE_BOOST,
     maxPerCell: MAX_SPAWNS_PER_CELL,
     window: WINDOW_SECONDS,
+    lifeWindows: SPAWN_LIFE_WINDOWS,
     positionRes: POSITION_RES,
     tables: spawnTables,
   });

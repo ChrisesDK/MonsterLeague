@@ -7,6 +7,13 @@ import { isNight } from './sun';
 /** GDD: time is cut into 15-minute windows. */
 export const WINDOW_SECONDS = 900;
 export const MAX_SPAWNS_PER_CELL = 3;
+/**
+ * How many windows a spawn lives (owner: creatures vanished too fast, all at once at the end
+ * of a 15-minute window). Each window makes 1/SPAWN_LIFE_WINDOWS of the density and each
+ * spawn lives SPAWN_LIFE_WINDOWS windows (2 hours), so as many creatures are about as
+ * before, but at a window's end only about one in eight goes and one in eight comes.
+ */
+export const SPAWN_LIFE_WINDOWS = 8;
 /** Spawn positions snap to a res-12 child centre of the res-10 cell (deterministic jitter). */
 export const POSITION_RES = 12;
 
@@ -215,6 +222,50 @@ export function computeSpawns({
         expiresAt: windowEnd(window),
       });
     }
+  }
+  return out;
+}
+
+export interface AliveSpawnsInput {
+  region: Region;
+  spawnTables: readonly SpawnEntry[];
+  /** The window seed of each generation window (`window - SPAWN_LIFE_WINDOWS + 1` … `window`). */
+  seedFor: (window: number) => string;
+  window: number;
+  cellIds: Iterable<string>;
+  /** As in computeSpawns (P28: a player's own extra spawns on finished routes). */
+  densityScale?: number;
+  idTag?: string;
+}
+
+/**
+ * The spawns alive in `window`: those made in each of the last SPAWN_LIFE_WINDOWS windows,
+ * each window with 1/SPAWN_LIFE_WINDOWS of the density, each spawn ending when its own
+ * life ends (`expiresAt`). Ids, positions and creatures stay the same for the whole life.
+ */
+export function computeAliveSpawns({
+  region,
+  spawnTables,
+  seedFor,
+  window,
+  cellIds,
+  densityScale = 1,
+  idTag,
+}: AliveSpawnsInput): Spawn[] {
+  const cells = [...cellIds];
+  const out: Spawn[] = [];
+  for (let k = SPAWN_LIFE_WINDOWS - 1; k >= 0; k--) {
+    const born = window - k;
+    for (const s of computeSpawns({
+      region,
+      spawnTables,
+      seed: seedFor(born),
+      window: born,
+      cellIds: cells,
+      densityScale: densityScale / SPAWN_LIFE_WINDOWS,
+      ...(idTag ? { idTag } : {}),
+    }))
+      out.push({ ...s, expiresAt: windowEnd(born + SPAWN_LIFE_WINDOWS - 1) });
   }
   return out;
 }

@@ -58,6 +58,9 @@ interface Anim {
 }
 
 const TEXT_MS = 750;
+/** The HP bar's slide (CSS .hpfill, 0.45 s) and the pause after it before the picker closes. */
+const HP_SLIDE_MS = 450;
+const AFTER_ITEM_MS = 500;
 const SILENT_MS = 220;
 /** Fast speed: about half the delays (and half-length animations via CSS). */
 const FAST_FACTOR = 0.5;
@@ -129,6 +132,15 @@ export function BattleScreen({
   const alive = useRef(true);
   const skip = useRef(false);
   const animCounter = useRef(0);
+  /**
+   * Owner: menus close when the player is done with them, not when the turn has played. The
+   * creature an item is used on (its card's HP slides, then the picker closes), its HP as
+   * shown while the turn plays, and the creature just sent in (its moves show at once).
+   */
+  const itemTarget = useRef<string | null>(null);
+  const [itemTargetUid, setItemTargetUid] = useState<string | null>(null);
+  const [hpShown, setHpShown] = useState<Record<string, number>>({});
+  const [sentIn, setSentIn] = useState<string | null>(null);
   /** Catch / level-up celebration over the stage (M2d feedback). */
   const [burst, setBurst] = useState<{ kind: 'catch' | 'levelUp'; n: number } | null>(null);
 
@@ -191,6 +203,21 @@ export function BattleScreen({
         buzz('levelUp');
       }
       if (!skip.current) await wait(text ? textMs : silentMs);
+      // an item on one of the player's creatures: its HP slides, a short pause, the picker
+      // closes and the moves show (greyed out while the turn plays on)
+      const target = itemTarget.current;
+      if (
+        target &&
+        'uid' in event &&
+        event.uid === target &&
+        (event.type === 'heal' || event.type === 'status_cured')
+      ) {
+        if (event.type === 'heal') setHpShown((h) => ({ ...h, [target]: event.hp }));
+        await wait((HP_SLIDE_MS + AFTER_ITEM_MS) * factor);
+        itemTarget.current = null;
+        setItemTargetUid(null);
+        setPanel('main');
+      }
     }
     if (!alive.current) return;
     const final = viewFromState(result.state, dex);
@@ -204,19 +231,36 @@ export function BattleScreen({
     if (result.state.result === 'ongoing') onSave(result.state);
     setPanel('main');
     setPendingItem(null);
+    itemTarget.current = null;
+    setItemTargetUid(null);
+    setHpShown({});
+    setSentIn(null);
     setBusy(false);
   }
 
   function submit(action: Action) {
     if (busy || over || !isLegal(action)) return;
     onAction?.(action, state);
+    // the picker closes when the player is done with it (owner)
+    if (action.type === 'switch') {
+      setSentIn(state.sides[0].team[action.index]!.uid);
+      setPanel('main');
+    } else if (action.type === 'catch' || action.type === 'run' || action.type === 'move')
+      setPanel('main');
+    else if (action.type === 'item') {
+      const uid = state.sides[0].team[action.target]!.uid;
+      itemTarget.current = uid;
+      setItemTargetUid(uid);
+    }
     const tier = state.sides[1].ai ?? 'wild';
     const result = resolveTurn(state, [action, chooseAiAction(state, 1, tier, dex)], dex);
     void play(state, result);
   }
 
+  // the creature just sent in shows its moves at once (owner), greyed out while the turn plays
+  const shown = (sentIn && me.team.find((c) => c.uid === sentIn)) || active;
   const movesPanel = () => {
-    const outOfPp = active.moves.every((m) => m.pp <= 0);
+    const outOfPp = shown.moves.every((m) => m.pp <= 0);
     if (outOfPp) {
       return (
         <div className="move-grid">
@@ -231,16 +275,16 @@ export function BattleScreen({
       );
     }
     return (
-      <div className="move-grid">
+      <div className="move-grid" data-shown={shown.uid}>
         {[0, 1, 2, 3].map((i) => {
-          const slot = active.moves[i];
+          const slot = shown.moves[i];
           if (!slot) return <div key={i} className="move-btn empty" aria-hidden />;
           return (
             <MoveButton
               key={i}
               moveId={slot.moveId}
               pp={{ pp: slot.pp, max: getMove(slot.moveId).pp }}
-              disabled={busy || !isLegal({ type: 'move', index: i })}
+              disabled={busy || sentIn !== null || !isLegal({ type: 'move', index: i })}
               t={t}
               onClick={() => submit({ type: 'move', index: i })}
             />
@@ -257,23 +301,42 @@ export function BattleScreen({
   ) => (
     <div className="list-panel">
       {title && <p className="panel-title">{title}</p>}
-      {me.team.map((c, i) => (
-        <button
-          key={c.uid}
-          className="btn list-btn"
-          disabled={busy || !enabled(i)}
-          onClick={() => onPick(i)}
-        >
-          <span>
-            {creatureName(c, t)} · {t('ui.level')} {c.level}
-            {c.status && <span className="badge">{t(`status.short.${c.status}`)}</span>}
-          </span>
-          <span className="muted">
-            {c.hp}/{getMaxHp(c, dex)}
-          </span>
-        </button>
-      ))}
-      {!replacing && (
+      {/* owner: sprites, two to a row; the HP bar slides when an item is used */}
+      <div className="battle-team">
+        {me.team.map((c, i) => {
+          const max = getMaxHp(c, dex);
+          const hp = hpShown[c.uid] ?? c.hp;
+          const pct = Math.max(0, Math.min(100, (100 * hp) / max));
+          return (
+            <button
+              key={c.uid}
+              className={`creature-card battle-pick${itemTargetUid === c.uid ? ' given' : ''}`}
+              data-testid={`pick-${c.uid}`}
+              disabled={busy || !enabled(i)}
+              onClick={() => onPick(i)}
+            >
+              <img src={spriteUrl(c.speciesId)} alt="" className={c.shiny ? 'shiny' : ''} />
+              <strong>
+                {creatureName(c, t)}
+                {c.status && <span className="badge">{t(`status.short.${c.status}`)}</span>}
+              </strong>
+              <span className="muted small">
+                {t('ui.level')} {c.level}
+              </span>
+              <span className="hpbar">
+                <span
+                  className={`hpfill ${pct > 50 ? 'ok' : pct > 20 ? 'warn' : 'low'}`}
+                  style={{ width: `${pct}%` }}
+                />
+              </span>
+              <span className="small" data-testid={`pick-hp-${c.uid}`}>
+                {hp}/{max}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+      {!replacing && !busy && (
         <button className="btn" onClick={() => setPanel('main')}>
           {t('ui.back')}
         </button>

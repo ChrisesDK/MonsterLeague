@@ -80,7 +80,7 @@ async function fight(page: Page): Promise<string> {
       return text;
     }
     if ((await battle.getAttribute('data-replacing')) === 'true') {
-      await page.locator('.list-panel .list-btn:not(:disabled)').first().click();
+      await page.locator('.battle-pick:not(:disabled)').first().click();
       continue;
     }
     let picked = false;

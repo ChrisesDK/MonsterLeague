@@ -172,7 +172,12 @@ describe('P28: walking routes pays off', () => {
     for (const cp of cps) save = noteRoutesWithFinds(save, cp).save;
     const extra = windows.flatMap((w) => routeBonusSpawns(save, region, w, mid));
     expect(extra.length).toBeGreaterThan(0);
-    expect(new Set(extra.map((s) => s.id)).size).toBe(extra.length);
+    // unique within a window (a creature lives several windows, so it repeats across them)
+    for (const w of windows) {
+      const one = routeBonusSpawns(save, region, w, mid);
+      expect(new Set(one.map((s) => s.id)).size).toBe(one.length);
+      for (const s of one) expect(s.id.length).toBeGreaterThan(0);
+    }
     const other = windows.flatMap((w) => routeBonusSpawns({ ...save, seed: 'x' }, region, w, mid));
     expect(other.map((s) => s.id)).not.toEqual(extra.map((s) => s.id));
   });

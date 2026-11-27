@@ -2617,3 +2617,51 @@ img.shiny,
   border-color: var(--gold);
   background: color-mix(in srgb, var(--gold) 14%, var(--card));
 }
+
+/* team order: the ≡ handle in a card's corner (owner) */
+.creature-card {
+  position: relative;
+}
+.drag-handle {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-sm);
+  color: var(--ink-2);
+  touch-action: none;
+  cursor: grab;
+}
+.creature-card.dragging {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-3);
+  transform: scale(1.03);
+}
+.mini-types {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 3px;
+}
+.type-chip.mini {
+  padding: 0 8px;
+  font-size: var(--fs-xs);
+}
+
+/* battle: pick a creature by its sprite, two to a row (owner) */
+.battle-team {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-2);
+}
+.battle-pick img {
+  width: 48px;
+  height: 48px;
+}
+.battle-pick .hpbar {
+  display: block;
+  margin-top: 2px;
+}

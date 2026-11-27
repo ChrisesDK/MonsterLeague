@@ -947,6 +947,31 @@ test('one hand: tap, then tap and hold and drag zooms (down in, up out) and turn
   await page.waitForTimeout(300);
   const after = await cam();
   expect(after.zoom).toBeLessThan(zoomedIn.zoom - 0.3);
+  // sideways turns the same way as a normal drag low on the screen (owner)
+  const turn = (a: number, b: number) => ((((b - a) % 360) + 540) % 360) - 180;
+  const b0 = (await cam()).bearing;
+  await touch('touchStart', [300, 620]);
+  for (let i = 1; i <= 10; i++) {
+    await touch('touchMove', [300 - i * 15, 620]);
+    await page.waitForTimeout(16);
+  }
+  await touch('touchEnd', null);
+  await page.waitForTimeout(400);
+  const dragTurn = turn(b0, (await cam()).bearing);
+  await page.waitForTimeout(500);
+  const b1 = (await cam()).bearing;
+  await touch('touchStart', [300, 500]);
+  await touch('touchEnd', null);
+  await page.waitForTimeout(80);
+  await touch('touchStart', [300, 500]);
+  for (let i = 1; i <= 10; i++) {
+    await touch('touchMove', [300 - i * 15, 500]);
+    await page.waitForTimeout(16);
+  }
+  await touch('touchEnd', null);
+  await page.waitForTimeout(300);
+  const oneTurn = turn(b1, (await cam()).bearing);
+  expect(Math.sign(oneTurn)).toBe(Math.sign(dragTurn));
   expect(Math.abs(((after.bearing - zoomedIn.bearing + 540) % 360) - 180)).toBeGreaterThan(10);
 });
 
@@ -1468,36 +1493,109 @@ test('a creature page explains one move at a time; storage is where creatures go
   await expect(page.getByRole('button', { name: 'Move to storage' })).toHaveCount(0);
   await page.getByTestId('screen-back').click();
   await page.getByTestId('screen-back').click();
-  // the Storage menu (owner): two mode buttons; in a mode, a tap moves the creature
+  // the Storage menu (owner): a tap asks, then says what happened
   await page.getByTestId('menu-storage').click();
   type S = { team: { uid: string }[]; storage: { uid: string }[] };
   const uid = ((await dev(page, 'save')) as S).team[1]!.uid;
-  await expect(page.getByTestId('storage-mode-take')).toBeDisabled(); // nothing stored yet
-  await page.getByTestId('storage-mode-store').click();
-  await expect(page.getByTestId('storage-hint')).toContainText('put them in storage');
+  await expect(page.getByTestId('mini-types').first()).toBeVisible();
   await page.getByTestId(`storage-team-${uid}`).click();
+  await expect(page.getByTestId('storage-modal')).toContainText('Put Torvdue in storage?');
+  await page.getByTestId('storage-yes').click();
+  await expect(page.getByTestId('storage-modal')).toContainText('was put in storage');
+  await page.getByTestId('storage-ok').click();
   await expect(page.getByTestId(`storage-box-${uid}`)).toBeVisible();
-  expect(((await dev(page, 'save')) as S).storage[0]!.uid).toBe(uid);
-  // the last creature on the team can't be stored: the mode ended by itself
-  await expect(page.getByTestId('storage-mode-store')).toBeDisabled();
-  await page.getByTestId('storage-mode-take').click();
+  // the last one on the team can't be stored
+  const lead = ((await dev(page, 'save')) as S).team[0]!.uid;
+  await page.getByTestId(`storage-team-${lead}`).click();
+  await expect(page.getByTestId('storage-modal')).toContainText('only creature');
+  await page.getByTestId('storage-ok').click();
+  // the creature's page from the window; back returns to Storage (owner bug)
   await page.getByTestId(`storage-box-${uid}`).click();
-  await expect(page.getByTestId(`storage-team-${uid}`)).toBeVisible();
-  // a full team: taking out asks which team creature swaps places
-  for (const sp of ['mosbille', 'grimaelling', 'rendsnude', 'kulingmaage'])
-    await dev(page, 'addCreature', sp, 5);
-  await page.getByTestId('storage-mode-store').click();
+  await page.getByTestId('storage-view').click();
+  await expect(page.getByTestId('screen-creature')).toBeVisible();
+  await page.getByTestId('screen-back').click();
+  await expect(page.getByTestId('screen-storage')).toBeVisible();
+  // taking out with room on the team
+  await page.getByTestId(`storage-box-${uid}`).click();
+  await page.getByTestId('storage-yes').click();
+  await expect(page.getByTestId('storage-modal')).toContainText('was taken out');
+  await page.getByTestId('storage-ok').click();
+  // a full team: taking out asks who swaps places
   await page.getByTestId(`storage-team-${uid}`).click();
-  await page.getByTestId('storage-done').click();
-  await dev(page, 'addCreature', 'brokrabbe', 5);
+  await page.getByTestId('storage-yes').click();
+  await page.getByTestId('storage-ok').click();
+  for (const sp of ['mosbille', 'grimaelling', 'rendsnude', 'kulingmaage', 'brokrabbe'])
+    await dev(page, 'addCreature', sp, 5);
   expect(((await dev(page, 'save')) as S).team).toHaveLength(6);
-  await page.getByTestId('storage-mode-take').click();
-  await expect(page.getByTestId('storage-hint')).toContainText('team is full');
   await page.getByTestId(`storage-box-${uid}`).click();
-  await expect(page.getByTestId('storage-hint')).toContainText('swaps places');
-  const out = ((await dev(page, 'save')) as S).team[0]!.uid;
-  await page.getByTestId(`storage-team-${out}`).click();
+  await page.getByTestId('storage-yes').click();
+  await expect(page.getByTestId('storage-modal')).toContainText('team is full');
+  const out = ((await dev(page, 'save')) as S).team[1]!.uid;
+  await page.getByTestId(`swap-with-${out}`).click();
+  await expect(page.getByTestId('storage-modal')).toContainText('swapped places');
+  await page.getByTestId('storage-ok').click();
   const after = (await dev(page, 'save')) as S;
   expect(after.team.map((c) => c.uid)).toContain(uid);
   expect(after.storage.map((c) => c.uid)).toContain(out);
+  // drag to reorder (owner): hold the first card's handle and drop it on the third
+  const order0 = after.team.map((c) => c.uid);
+  const grip = page.getByTestId('drag-0').first();
+  const target = page.locator('[data-reorder="2"]').first();
+  const g = (await grip.boundingBox())!;
+  const t2 = (await target.boundingBox())!;
+  await page.mouse.move(g.x + g.width / 2, g.y + g.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(t2.x + t2.width / 2, t2.y + t2.height / 2, { steps: 12 });
+  await page.mouse.up();
+  const order1 = ((await dev(page, 'save')) as S).team.map((c) => c.uid);
+  expect(order1[2]).toBe(order0[0]);
+  expect(order1).toHaveLength(order0.length);
+});
+
+test('battle menus close when the player is done: an item shows the HP rising, a swap shows the new moves', async ({
+  page,
+}) => {
+  await startDone(page);
+  await teleport(page, KONGENS_HAVE);
+  await page.waitForTimeout(2500);
+  await dev(page, 'addCreature', 'torvdue', 10);
+  await dev(page, 'setTeamHp', 6);
+  await dev(page, 'injectSpawn', {
+    speciesId: 'mosbille',
+    district: 1,
+    levelRoll: 0.5,
+    lat: KONGENS_HAVE.lat + 0.0001,
+    lng: KONGENS_HAVE.lng,
+  });
+  await page
+    .locator('.spawn-marker[data-kind=ok]')
+    .first()
+    .evaluate((e) => (e as HTMLElement).click());
+  const battle = page.locator('main.battle');
+  await expect(battle).toBeVisible();
+  await expect(battle).toHaveAttribute('data-busy', 'false', { timeout: 20_000 });
+  type T = { team: { uid: string; hp: number }[] };
+  const team = ((await dev(page, 'save')) as T).team;
+  // a tonic: pick the creature by its sprite card; its HP rises, then the picker closes and
+  // the moves show while the turn still plays
+  await page.locator('.action-row .btn').nth(1).click();
+  await page.locator('.list-panel .list-btn[data-item=small_tonic]').click();
+  await expect(page.locator('.battle-pick')).toHaveCount(team.length);
+  const lead = team[0]!.uid;
+  const before = Number((await page.getByTestId(`pick-hp-${lead}`).textContent())!.split('/')[0]);
+  await page.getByTestId(`pick-${lead}`).click();
+  await expect
+    .poll(async () =>
+      Number((await page.getByTestId(`pick-hp-${lead}`).textContent())!.split('/')[0]),
+    )
+    .toBeGreaterThan(before);
+  await expect(page.locator('.move-grid')).toBeVisible({ timeout: 3000 });
+  await expect(battle).toHaveAttribute('data-busy', 'true');
+  await expect(battle).toHaveAttribute('data-busy', 'false', { timeout: 20_000 });
+  // a swap: the switch panel closes at once and the new creature's moves show
+  await page.locator('.action-row .btn').nth(0).click();
+  const second = team[1]!.uid;
+  await page.getByTestId(`pick-${second}`).click();
+  await expect(page.locator('.move-grid')).toHaveAttribute('data-shown', second);
+  await expect(battle).toHaveAttribute('data-busy', 'true');
 });

@@ -90,7 +90,7 @@ async function fight(page: Page, opts: { charm?: boolean; move?: string } = {}):
       return text;
     }
     if ((await battle.getAttribute('data-replacing')) === 'true') {
-      await page.locator('.list-panel .list-btn:not(:disabled)').first().click();
+      await page.locator('.battle-pick:not(:disabled)').first().click();
       continue;
     }
     if (opts.charm && i > 0) {

@@ -24,7 +24,7 @@ import {
   type SideGoal,
   type TypeId,
 } from '@oml/data';
-import { computeSpawns, hash32, type Region, type Spawn } from '@oml/spawn';
+import { computeAliveSpawns, hash32, type Region, type Spawn } from '@oml/spawn';
 import { cellToLatLng, latLngToCell } from 'h3-js';
 import { isDistrictOpen, isZoneOpen } from './rules';
 import type { JournalProgress, SaveGame } from './save';
@@ -581,10 +581,10 @@ export function routeBonusSpawns(
     }
   }
   if (cells.size === 0) return [];
-  return computeSpawns({
+  return computeAliveSpawns({
     region,
     spawnTables: dex.spawns,
-    seed: `${save.seed}|routes`,
+    seedFor: (w) => `${save.seed}|routes|${w}`,
     window,
     cellIds: [...cells].sort(),
     densityScale: ROUTE_BONUS,

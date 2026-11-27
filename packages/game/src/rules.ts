@@ -774,6 +774,16 @@ export function swapWithStorage(save: SaveGame, teamUid: string, storageUid: str
   };
 }
 
+/** Moves the team creature at `from` to `to` (owner: drag to reorder; the first leads). */
+export function moveInTeam(save: SaveGame, from: number, to: number): SaveGame {
+  const n = save.team.length;
+  if (from === to || from < 0 || to < 0 || from >= n || to >= n) return save;
+  const team = [...save.team];
+  const [c] = team.splice(from, 1);
+  team.splice(to, 0, c!);
+  return { ...save, team };
+}
+
 /** Moves a team creature to the front (it leads the next battle). */
 export function setLead(save: SaveGame, uid: string): SaveGame {
   const c = save.team.find((x) => x.uid === uid);

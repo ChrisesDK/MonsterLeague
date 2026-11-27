@@ -2102,3 +2102,27 @@ length, position resolution and spawn tables>`.
   quieter, since it lasts). The top keeps the goal card, compass and Town Map buttons (the
   always-visible ones) and the small status icons; the too-fast window stays a centred
   modal (owner's earlier request).
+- **D203. Two-hour creatures, and menus that close when the player is done** (owner, GDD
+  v1.31).
+  - Spawns: `computeAliveSpawns` returns what is alive in a window: the spawns made in each
+    of the last `SPAWN_LIFE_WINDOWS` (8) windows, each window at 1/8 of the density, each
+    ending `windowEnd(born + 7)`; ids and positions stay the same for the whole life. The
+    service computes the 8 window seeds and serves that list (API unchanged); the route
+    bonus spawns use it too. `SPAWN_ALGORITHM` 7 (golden updated); the expected number of
+    creatures at a time is unchanged, so `spawn:report` (per-window generation) still
+    measures density. GPS: the last good fix is kept 90 s (`GPS_GRACE_MS`), which is why
+    10 s with GPS off changed nothing.
+  - The 40 m ring's dashes: `pathLength="96"` with `1.2 0.8` = always 48 dashes (they
+    scaled in screen pixels before, so their number changed with zoom and one rolled in).
+  - One-finger zoom: sideways now turns the same way as a normal drag low on the screen.
+  - Storage: a tap asks (`Modal`): put in / take out / (full team) pick who swaps, then
+    says what happened; "See the creature" opens its page as `creature:<uid>@storage`, and
+    back returns to Storage (it went to the Team). Cards show types instead of HP.
+  - Team order: `moveInTeam(save, from, to)`; a ≡ handle (pointer capture, live reorder
+    while dragging over another card's `data-reorder`) on Team and Storage cards; the
+    creature page's "put first" button is gone.
+  - Battle: the switch / item pickers are sprite cards with HP bars. A switch closes the
+    picker at once and the moves of the creature sent in show (greyed out while the turn
+    plays); a charm closes the bag at once; an item on a creature keeps the picker until its
+    heal (or cure) event, slides the card's HP (450 ms) and holds 500 ms (both halved at
+    fast speed), then closes to the greyed moves while the opponent acts.

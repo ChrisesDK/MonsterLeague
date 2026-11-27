@@ -154,3 +154,22 @@ export function HabitatChips({
     </div>
   );
 }
+
+/** A creature's types as small coloured labels (owner: on the storage cards). */
+export function MiniTypes({ speciesId, dex, t }: { speciesId: string; dex: Dex; t: Translate }) {
+  const s = dex.species[speciesId];
+  if (!s) return null;
+  return (
+    <span className="mini-types" data-testid="mini-types">
+      {s.types.map((ty) => (
+        <span
+          key={ty}
+          className="type-chip mini"
+          style={{ '--type-color': dex.typeColors[ty] } as CSSProperties}
+        >
+          {t(`type.${ty}.name`)}
+        </span>
+      ))}
+    </span>
+  );
+}

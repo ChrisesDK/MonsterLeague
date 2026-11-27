@@ -4,7 +4,7 @@ import { latLngToCell } from 'h3-js';
 import { describe, expect, it } from 'vitest';
 import {
   SPAWN_ALGORITHM,
-  computeSpawns,
+  computeAliveSpawns,
   decodeRegion,
   hash32,
   spawnRulesVersion,
@@ -28,6 +28,7 @@ const GOLDEN: Record<number, string> = {
   4: 'eb2dcbec',
   5: 'a896d968',
   6: 'a896d968', // D171 only adds zone-restricted entries: unchanged for these tables
+  7: '742bb0ab', // 2-hour lives: 8 windows of 1/8 density each
 };
 
 describe('spawn rules version', () => {
@@ -71,11 +72,12 @@ describe('spawn rules version', () => {
   it('golden spawn output matches the current SPAWN_ALGORITHM', () => {
     const out = [];
     for (let w = 0; w < 200; w += 7) {
+      // v7: what the service serves, the spawns alive in a window (2-hour lives)
       out.push(
-        computeSpawns({
+        computeAliveSpawns({
           region,
           spawnTables: tables,
-          seed: 'golden',
+          seedFor: (g) => `golden|${g}`,
           window: 1_994_600 + w,
           cellIds: [a, b],
         }),

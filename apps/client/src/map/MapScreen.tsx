@@ -659,7 +659,9 @@ export function MapScreen({
     // owner: the 40 m ring's outline is drawn here too, so 3D buildings never hide it (as a
     // map layer it lay under them); its faint fill stays on the ground
     scanSvg.innerHTML =
-      '<path class="range" fill="none" stroke-width="2" stroke-opacity="0.75" stroke-dasharray="7 5" />' +
+      // owner: always the same 48 dashes, whatever the zoom (pathLength fixes the pattern to the
+      // circle, so dashes grow and shrink with it instead of rolling in at one point)
+      '<path class="range" fill="none" stroke-width="2" stroke-opacity="0.75" pathLength="96" stroke-dasharray="1.2 0.8" />' +
       '<path class="scan" fill="none" stroke-width="2.5" />';
     map.getCanvas().after(scanSvg);
     scanRef.current = scanSvg.querySelector('path.scan');

@@ -1,6 +1,6 @@
 # Odense Monster League — Game Design Document
 
-Version 1.30 · Nov 27, 2026 · maintained in the repository (see Change log)
+Version 1.31 · Nov 28, 2026 · maintained in the repository (see Change log)
 
 ## Overview
 
@@ -294,7 +294,7 @@ A charm is used up even when the catch fails. Catching is only possible in wild 
 
 **Spawn service (server):**
 
-1. Time is cut into 15-minute windows (window = floor(unix seconds / 900)).
+1. Time is cut into 15-minute windows (window = floor(unix seconds / 900)). **A creature lives 2 hours (v1.31, owner: they vanished too fast, all at once):** each window makes an eighth of the creatures and each lives 8 windows, so as many stand about as before, but at a window's end only about one in eight goes and one in eight comes. There is no timer on the map.
 2. The seed for a window is HMAC-SHA256(server secret, region + window). The secret never leaves the server, so nobody can predict future spawns.
 3. For each cell, the shared `spawn` package rolls how many creatures appear (density from the cell's biome mix, 0 in `noSpawn` cells), which species (district spawn table weighted by biome shares, day/night, and the field ability a spawn requires) whether it is common or rare, and a level roll between 0 and 1. The phone turns the roll into a level: the player's own band for common species, the district band for rare ones. Each spawn table entry is marked common or rare. The same pure code runs in the server and in the tests.
 4. The client asks for **one coarse cell** (H3 resolution 7, about 5 km²) and the current window, and gets the spawn list for that whole area. The server never receives the player's exact position, and it does not log requests.
@@ -622,6 +622,7 @@ M1.7 (done, 148 tests): field abilities are data in `field-abilities.json`; a fr
 
 | Version | Date | Changes |
 | --- | --- | --- |
+| 1.31 | 2026-11-28 | Creatures live 2 hours, changing an eighth at a time; the 40 m ring always has the same dashes; one-finger turning goes the right way; Storage asks on a tap (put in / take out / swap) and keeps types on its cards; the team is reordered by dragging (Team and Storage), no "put first" button; battle: creatures picked by sprite, an item shows the HP rising then the picker closes, a swap closes the picker and shows the new moves at once |
 | 1.30 | 2026-11-27 | Every passing message on the game view (walk closer, finds, too wild, no signal, saved creatures, location off) sits above the satchel with the place and result cards, in one card style; the top of the screen keeps only the always-visible buttons, for looking around. Storage: two mode buttons, two columns |
 | 1.29 | 2026-11-27 | Both field guides show the same: the Normal / Glimmer switch, types as coloured labels with seen / caught on a line below, no stats, and (only once seen) the heat map with labels for what it can't show ("Found at", or "Found at night at" / "Found by day at", on its own line with the home destinations below; field-ability layers); an evolved form's map is its first stage's ("Found as …"); no written paragraphs; previous / next say so instead of numbers. Odense's border loses two spikes from the v1.26 coast step (it no longer grows along land borders) |
 | 1.28 | 2026-11-27 | Town Map: a pocket field guide (Guide), stamps and icons in the filter, stamps stacked by importance; one-finger zoom (tap, then tap-and-hold and drag); maps recover after the app was in the background; bag text left-aligned |

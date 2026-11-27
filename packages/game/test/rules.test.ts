@@ -21,6 +21,7 @@ import {
   arenaReady,
   isDistrictOpen,
   isZoneOpen,
+  moveInTeam,
   moveToStorage,
   moveToTeam,
   newSave,
@@ -462,5 +463,21 @@ describe('field abilities', () => {
     expect(
       canTeach({ ...newSave(SEED), badges: [2] }, createCreature('torvdue', 5, 'z'), 'forager'),
     ).not.toBe('locked');
+  });
+});
+
+describe('team order (owner: drag to reorder)', () => {
+  it('moves a creature from one place to another, keeping the rest in order', () => {
+    let save: SaveGame = { ...chooseStarter(newSave(SEED), 'gnistkat'), onboarding: 'done' };
+    save = {
+      ...save,
+      team: [...save.team, createCreature('torvdue', 5, 'a'), createCreature('mosbille', 5, 'b')],
+    };
+    const ids = (s: SaveGame) => s.team.map((c) => c.uid);
+    const first = ids(save)[0]!;
+    expect(ids(moveInTeam(save, 0, 2))).toEqual(['a', 'b', first]);
+    expect(ids(moveInTeam(save, 2, 0))).toEqual(['b', first, 'a']);
+    expect(moveInTeam(save, 1, 1)).toBe(save);
+    expect(moveInTeam(save, 0, 9)).toBe(save);
   });
 });

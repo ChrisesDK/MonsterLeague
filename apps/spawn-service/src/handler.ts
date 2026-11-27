@@ -2,7 +2,8 @@ import { REGION_IDS, regions, type RegionFile, type RegionId } from '@oml/data';
 import odenseJson from '@oml/data/region/odense/region.json';
 import svendborgJson from '@oml/data/region/svendborg/region.json';
 import {
-  computeSpawns,
+  computeAliveSpawns,
+  SPAWN_LIFE_WINDOWS,
   decodeRegion,
   spawnRulesVersion,
   windowEnd,
@@ -133,11 +134,14 @@ export async function handle(request: Request, env: Env, nowSeconds: number): Pr
   }
 
   if (!env.SPAWN_SECRET) return json(500, { error: 'spawn service not configured' }, cors);
-  const seed = await windowSeed(env.SPAWN_SECRET, region.id, window);
-  const spawns = computeSpawns({
+  // the spawns alive in this window were made in the last SPAWN_LIFE_WINDOWS windows
+  const seeds = new Map<number, string>();
+  for (let k = 0; k < SPAWN_LIFE_WINDOWS; k++)
+    seeds.set(window - k, await windowSeed(env.SPAWN_SECRET, region.id, window - k));
+  const spawns = computeAliveSpawns({
     region,
     spawnTables: regions[region.id as RegionId].spawns,
-    seed,
+    seedFor: (w) => seeds.get(w)!,
     window,
     cellIds,
   });

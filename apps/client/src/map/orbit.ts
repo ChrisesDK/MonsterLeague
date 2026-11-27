@@ -164,7 +164,8 @@ export function attachOrbit(map: MlMap): () => void {
     if (zooming) {
       moved += Math.hypot(p.x - zooming.x, p.y - zooming.y);
       map.setZoom(oneFingerZoom(map.getZoom(), p.y - zooming.y));
-      map.setBearing(map.getBearing() - (p.x - zooming.x) * ONE_FINGER_DEG_PER_PX);
+      // the same way round as a normal drag (owner: right to left turns counter-clockwise)
+      map.setBearing(map.getBearing() + (p.x - zooming.x) * ONE_FINGER_DEG_PER_PX);
       zooming = { x: p.x, y: p.y };
       return;
     }

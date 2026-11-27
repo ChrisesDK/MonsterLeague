@@ -334,3 +334,31 @@ describe('sun times for Odense', () => {
     expect(isNight(Date.UTC(2026, 5, 21) / 1000, 89, 0)).toBe(false);
   });
 });
+
+describe('2-hour lives (owner: creatures vanished too fast, all at once)', () => {
+  it('a spawn lives SPAWN_LIFE_WINDOWS windows and keeps its id; only some change per window', async () => {
+    const { computeAliveSpawns, SPAWN_LIFE_WINDOWS } = await import('../src/index');
+    const cells = d12;
+    const at = (w: number) =>
+      computeAliveSpawns({
+        region,
+        spawnTables: tables,
+        seedFor: (g) => `s${g}`,
+        window: w,
+        cellIds: cells,
+      });
+    const w0 = NOON;
+    const now = at(w0);
+    const next = at(w0 + 1);
+    expect(now.length).toBeGreaterThan(0);
+    for (const s of now) {
+      expect(s.expiresAt).toBe(windowEnd(s.window + SPAWN_LIFE_WINDOWS - 1));
+      expect(s.window).toBeGreaterThan(w0 - SPAWN_LIFE_WINDOWS);
+    }
+    // the next window keeps every spawn that hasn't ended, unchanged
+    const kept = now.filter((s) => s.window > w0 - SPAWN_LIFE_WINDOWS + 1);
+    const ids = new Set(next.map((s) => s.id));
+    for (const s of kept) expect(ids.has(s.id)).toBe(true);
+    expect(kept.length).toBeGreaterThan(now.length / 2);
+  });
+});
