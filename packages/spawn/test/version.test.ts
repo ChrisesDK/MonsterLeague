@@ -28,7 +28,7 @@ const GOLDEN: Record<number, string> = {
   4: 'eb2dcbec',
   5: 'a896d968',
   6: 'a896d968', // D171 only adds zone-restricted entries: unchanged for these tables
-  7: '742bb0ab', // 2-hour lives: 8 windows of 1/8 density each
+  7: '2ac07e33', // 1-hour lives: 4 windows of 1/4 density each
 };
 
 describe('spawn rules version', () => {
@@ -72,7 +72,7 @@ describe('spawn rules version', () => {
   it('golden spawn output matches the current SPAWN_ALGORITHM', () => {
     const out = [];
     for (let w = 0; w < 200; w += 7) {
-      // v7: what the service serves, the spawns alive in a window (2-hour lives)
+      // v7: what the service serves, the spawns alive in a window (1-hour lives)
       out.push(
         computeAliveSpawns({
           region,

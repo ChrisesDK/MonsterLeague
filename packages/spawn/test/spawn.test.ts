@@ -335,7 +335,7 @@ describe('sun times for Odense', () => {
   });
 });
 
-describe('2-hour lives (owner: creatures vanished too fast, all at once)', () => {
+describe('1-hour lives (owner: creatures vanished too fast, all at once)', () => {
   it('a spawn lives SPAWN_LIFE_WINDOWS windows and keeps its id; only some change per window', async () => {
     const { computeAliveSpawns, SPAWN_LIFE_WINDOWS } = await import('../src/index');
     const cells = d12;

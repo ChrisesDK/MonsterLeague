@@ -2102,16 +2102,23 @@ length, position resolution and spawn tables>`.
   quieter, since it lasts). The top keeps the goal card, compass and Town Map buttons (the
   always-visible ones) and the small status icons; the too-fast window stays a centred
   modal (owner's earlier request).
-- **D203. Two-hour creatures, and menus that close when the player is done** (owner, GDD
+- **D203. One-hour creatures with a personal hold, and menus that close when the player is done** (owner, GDD
   v1.31).
   - Spawns: `computeAliveSpawns` returns what is alive in a window: the spawns made in each
-    of the last `SPAWN_LIFE_WINDOWS` (8) windows, each window at 1/8 of the density, each
-    ending `windowEnd(born + 7)`; ids and positions stay the same for the whole life. The
-    service computes the 8 window seeds and serves that list (API unchanged); the route
+    of the last `SPAWN_LIFE_WINDOWS` (4) windows, each window at 1/4 of the density, each
+    ending `windowEnd(born + 3)` (2 hours was tried first; too slow to refresh at home); ids and positions stay the same for the whole life. The
+    service computes the 4 window seeds and serves that list (API unchanged); the route
     bonus spawns use it too. `SPAWN_ALGORITHM` 7 (golden updated); the expected number of
     creatures at a time is unchanged, so `spawn:report` (per-window generation) still
     measures density. GPS: the last good fix is kept 90 s (`GPS_GRACE_MS`), which is why
     10 s with GPS off changed nothing.
+  - Personal hold (`apps/client/src/map/holds.ts`, owner): a spawn within `SHOW_RADIUS_M`
+    (200 m, the farthest a creature is drawn) is held `HOLD_SECONDS` (30 min) from then;
+    released beyond `RELEASE_M` (400 m, owner: walked well out of view), when the hold ends, or in another region; at most
+    `MAX_HOLDS` (10), the newest kept. Held spawns are merged into the map's list with
+    `expiresAt` at least the hold's end (so the used-spawn bookkeeping lasts too); used ones
+    drop out as before. Kept in memory and IndexedDB (`oml-holds`, creature data like the
+    cached spawn lists), never in the save, never sent.
   - The 40 m ring's dashes: `pathLength="96"` with `1.2 0.8` = always 48 dashes (they
     scaled in screen pixels before, so their number changed with zoom and one rolled in).
   - One-finger zoom: sideways now turns the same way as a normal drag low on the screen.

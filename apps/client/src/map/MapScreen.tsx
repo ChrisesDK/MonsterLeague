@@ -92,6 +92,7 @@ import { markerElement, PLAYER_SVG, STAR_SVG, START, addAttribution, regionStart
 import { addSkyWall } from './skyWall';
 import { ringPath, scanPhase, scanRing } from './scanRing';
 import { ensureTiles, resetTiles } from './tiles';
+import { useHeldSpawns } from './holds';
 import { LoadingScreen } from './LoadingScreen';
 import { TownMap } from './TownMap';
 import { useSpawns } from './useSpawns';
@@ -398,10 +399,12 @@ export function MapScreen({
       { lat, lng },
     );
   }, [region, nearCell, routesWalked, service.window]);
-  const spawns = useMemo(
+  const shared = useMemo(
     () => [...service.spawns, ...bonus, ...(devSpawns ?? [])],
     [service.spawns, bonus, devSpawns],
   );
+  // owner: a creature that has appeared on the map waits for the player a while (holds.ts)
+  const spawns = useHeldSpawns(shared, position, save.region);
 
   // ---- Journal progress (districts reached, route checkpoints, wild metres) --------------
   // Districts and checkpoints are noted on every fix (no change → nothing is saved); wild

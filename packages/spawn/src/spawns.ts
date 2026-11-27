@@ -9,11 +9,13 @@ export const WINDOW_SECONDS = 900;
 export const MAX_SPAWNS_PER_CELL = 3;
 /**
  * How many windows a spawn lives (owner: creatures vanished too fast, all at once at the end
- * of a 15-minute window). Each window makes 1/SPAWN_LIFE_WINDOWS of the density and each
- * spawn lives SPAWN_LIFE_WINDOWS windows (2 hours), so as many creatures are about as
- * before, but at a window's end only about one in eight goes and one in eight comes.
+ * of a 15-minute window; 2 hours then felt too slow at home). Each window makes
+ * 1/SPAWN_LIFE_WINDOWS of the density and each spawn lives SPAWN_LIFE_WINDOWS windows
+ * (1 hour), so as many creatures are about as before, but at a window's end only about a
+ * quarter goes and a quarter comes. On top, the phone holds a creature the player has seen
+ * for a while (apps/client map/holds.ts).
  */
-export const SPAWN_LIFE_WINDOWS = 8;
+export const SPAWN_LIFE_WINDOWS = 4;
 /** Spawn positions snap to a res-12 child centre of the res-10 cell (deterministic jitter). */
 export const POSITION_RES = 12;
 
