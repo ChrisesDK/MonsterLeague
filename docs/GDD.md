@@ -39,6 +39,8 @@ Version 1.26 · Nov 27, 2026 · maintained in the repository (see Change log)
 
 **First 15 minutes (onboarding):** choose one of three starter creatures wherever the player opens the game; a personal tutorial creature (visible only to that player, not a shared spawn) appears 100–200 m away on a spawnable spot for a guided first battle and catch; then the map points the way to Centrum (the start zone), its nearest rest stop and first trainer. The player should have fought three battles and seen the arena marker before minute 15.
 
+**Location first (v1.26, owner):** after "Allow" the game waits for a position before the starter choice, so a player in Svendborg gets Svendborg's starters; with location off or not allowed it says so (with the iPhone settings path) and offers "Try again". Outside every playable region the default region is used.
+
 **Onboarding details (accepted P13):** starters begin at level 5; the starting bag holds 5 Basic Charms and 2 Small Tonics; the tutorial creature is level 3 and easy to catch. The tutorial only ends with a catch: if the creature gets away or wins, the team is healed, up to 3 charms are given back, and a new tutorial creature appears.
 
 ## Game feel: a mainline game, served like a walking game
@@ -620,7 +622,7 @@ M1.7 (done, 148 tests): field abilities are data in `field-abilities.json`; a fr
 
 | Version | Date | Changes |
 | --- | --- | --- |
-| 1.26 | 2026-11-27 | UI round (owner): Town Map tool bar and badges sheet, no zone lines in open regions, shared route stretches drawn once, Fyn map sketch, Goals (renamed Journal) by distance, badges in the order won, bag icons and sprite grid, strengths as bars and a move explainer, one way out of the menu, camera framing, the too-fast modal, an install button; the coast 200 m out to sea. Night stays at the real sunset (owner) |
+| 1.26 | 2026-11-27 | Onboarding waits for a real position before the starter choice (the region where you stand gives the starters; with location off or not allowed it explains how to turn it on, iPhone steps included, and offers to try again); the 40 m ring's outline is drawn above the 3D buildings. UI round (owner): Town Map tool bar and badges sheet, no zone lines in open regions, shared route stretches drawn once, Fyn map sketch, Goals (renamed Journal) by distance, badges in the order won, bag icons and sprite grid, strengths as bars and a move explainer, one way out of the menu, camera framing, the too-fast modal, an install button; the coast 200 m out to sea. Night stays at the real sunset (owner) |
 | 1.25 | 2026-11-26 | Open regions (P28; Odense first): no locks, arenas in any order with leaders scaled by the badges held (rosters that grow, coverage moves, tuned per tier), trainers and rare creatures scaled too, field abilities from their arenas, route finds and more creatures on finished routes, the Journal suggests the nearest arena; the starter alone never wins an arena |
 | 1.24 | 2026-11-26 | Leaders use heal moves and stat-lowering moves half of the time instead of every time (owner: a chance, so a leader never heals turn after turn); Odense arena 3 and Svendborg arenas 5–7 re-tuned |
 | 1.23 | 2026-11-26 | Individual values (HP, Attack, Defence, 0–15) and Glimmer creatures (1 in 256, colours only); the AI uses heal moves and stat-lowering moves (leaders re-tuned); the field guide list is minimal and an entry opens its page; badges per region, also from the Town Map |

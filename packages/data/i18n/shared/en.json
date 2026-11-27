@@ -606,5 +606,11 @@
   "install.help": "Installed, the game opens full screen from your home screen, like an app.",
   "install.ios": "Tap the Share button (the square with an arrow), then \"Add to Home Screen\".",
   "install.manual": "Open the browser menu (⋮ or ⋯) and choose \"Install app\" or \"Add to Home screen\".",
-  "install.done": "The game is installed as an app."
+  "install.done": "The game is installed as an app.",
+  "onboarding.location.finding": "Finding your position…",
+  "onboarding.location.denied": "The game isn't allowed to use your location.",
+  "onboarding.location.unavailable": "Your position can't be found.",
+  "onboarding.location.how": "Check that location is turned on for your phone, and that this site may use it (the browser asks, or see the site settings next to the address). Then try again.",
+  "onboarding.location.howIos": "On iPhone: Settings → Privacy & Security → Location Services: turn it on, and under Safari Websites choose \"While Using the App\". If Safari asked before and you said no, tap \"aA\" next to the address → Website Settings → Location → Allow. Then try again.",
+  "onboarding.location.retry": "Try again"
 }

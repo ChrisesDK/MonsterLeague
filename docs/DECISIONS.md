@@ -2018,3 +2018,12 @@ length, position resolution and spawn tables>`.
   cell, which the map data calls water. Both region files rebuilt (Worker redeployed by CI);
   Svendborg's route 31 now runs along shore cells that are in the region, its wild share
   updated to 0.14.
+- **D198. Location before the starter; the range ring above buildings** (owner, GDD v1.26).
+  `LocationScreen` asks `getCurrentPosition` (high accuracy, 20 s) and goes on only with a
+  position: `regionAt` (the playable regions, 500 m slack) sets the new save's region before
+  the starter screen (a new save has no other campaign, so only `region` changes; outside
+  every region it stays the default). Denied (code 1) or no fix: a warning with how to turn
+  it on (iPhone: Location Services and Safari Websites, or "aA" → Website Settings) and
+  "Try again". The position is used once and never stored. The 40 m ring's dashed outline
+  moved from a map line layer (under the 3D buildings) to the scan SVG above the canvas,
+  projected every frame; its faint fill stays a ground layer.

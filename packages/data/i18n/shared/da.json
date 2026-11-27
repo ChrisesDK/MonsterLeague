@@ -606,5 +606,11 @@
   "install.help": "Installeret åbner spillet i fuld skærm fra din hjemmeskærm, ligesom en app.",
   "install.ios": "Tryk på Del-knappen (firkanten med en pil), og vælg så \"Føj til hjemmeskærm\".",
   "install.manual": "Åbn browserens menu (⋮ eller ⋯), og vælg \"Installer app\" eller \"Føj til startskærm\".",
-  "install.done": "Spillet er installeret som app."
+  "install.done": "Spillet er installeret som app.",
+  "onboarding.location.finding": "Finder din position…",
+  "onboarding.location.denied": "Spillet har ikke lov til at bruge din position.",
+  "onboarding.location.unavailable": "Din position kan ikke findes.",
+  "onboarding.location.how": "Tjek, at placering er slået til på telefonen, og at denne side må bruge den (browseren spørger, eller se sidens indstillinger ved adressen). Prøv så igen.",
+  "onboarding.location.howIos": "På iPhone: Indstillinger → Anonymitet og sikkerhed → Lokalitetstjenester: slå dem til, og vælg \"Når appen er i brug\" under Safari-websteder. Hvis Safari spurgte før, og du sagde nej: tryk på \"aA\" ved adressen → Indstillinger for websted → Lokalitet → Tillad. Prøv så igen.",
+  "onboarding.location.retry": "Prøv igen"
 }

@@ -1363,9 +1363,12 @@ test('a steady player: GPS drift under 3 m is ignored, the figure holds still wh
   // let go: it glides on to the new fix
   await expect.poll(async () => metres(await centre(), c1), { timeout: 5000 }).toBeGreaterThan(19);
   // the scan: a path that changes as it sweeps
-  const d = () => page.locator('.scan-ring path').getAttribute('d');
+  const d = () => page.locator('.scan-ring path.scan').getAttribute('d');
   await expect.poll(async () => ((await d()) ?? '').length).toBeGreaterThan(20);
   const d1 = await d();
   await page.waitForTimeout(300);
   expect(await d()).not.toBe(d1);
+  // the 40 m ring's outline is drawn above the map canvas, so 3D buildings never hide it
+  const range = await page.locator('.scan-ring path.range').getAttribute('d');
+  expect((range ?? '').length).toBeGreaterThan(20);
 });

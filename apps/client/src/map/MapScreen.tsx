@@ -288,6 +288,8 @@ export function MapScreen({
   const scanRef = useRef<SVGPathElement | null>(null);
   /** Whether the scan should run (not while loading or in a battle, not with reduce motion). */
   const scanOn = useRef(false);
+  /** The 40 m ring's outline, above the 3D buildings. */
+  const rangeRef = useRef<SVGPathElement | null>(null);
   /** Where the player figure is drawn (glides towards `fixTarget`). */
   const drawnAt = useRef<LatLng | null>(null);
   const fixTarget = useRef<LatLng | null>(null);
@@ -551,17 +553,6 @@ export function MapScreen({
         source: 'player',
         paint: { 'fill-color': paletteRef.current.accuracy, 'fill-opacity': 0.1 },
       });
-      map.addLayer({
-        id: 'player-range-line',
-        type: 'line',
-        source: 'player',
-        paint: {
-          'line-color': paletteRef.current.accuracy,
-          'line-width': 2,
-          'line-opacity': 0.6,
-          'line-dasharray': [3, 2],
-        },
-      });
       addBuildings3d(map, paletteRef.current, saveRef.current.settings.buildings3d);
       setFogPalette(map, paletteRef.current);
       // the sky wall: the edge of the world and the sky (with the stars at night); last, so
@@ -618,9 +609,14 @@ export function MapScreen({
     const scanSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     scanSvg.setAttribute('class', 'scan-ring');
     scanSvg.setAttribute('aria-hidden', 'true');
-    scanSvg.innerHTML = '<path fill="none" stroke-width="2.5" />';
+    // owner: the 40 m ring's outline is drawn here too, so 3D buildings never hide it (as a
+    // map layer it lay under them); its faint fill stays on the ground
+    scanSvg.innerHTML =
+      '<path class="range" fill="none" stroke-width="2" stroke-opacity="0.75" stroke-dasharray="7 5" />' +
+      '<path class="scan" fill="none" stroke-width="2.5" />';
     map.getCanvas().after(scanSvg);
-    scanRef.current = scanSvg.querySelector('path');
+    scanRef.current = scanSvg.querySelector('path.scan');
+    rangeRef.current = scanSvg.querySelector('path.range');
 
     // The player: a standing figure (owner: no heading cone; the compass was often off).
     const figure = markerElement('div', 'player-marker', PLAYER_SVG);
@@ -796,6 +792,13 @@ export function MapScreen({
           scan.setAttribute('stroke', paletteRef.current.accuracy);
           scan.setAttribute('stroke-opacity', opacity.toFixed(3));
         }
+      }
+      // the range ring's outline, projected every frame (the camera turns and tilts)
+      const range = rangeRef.current;
+      if (range) {
+        const ring = circle(next, BATTLE_RADIUS_M).geometry.coordinates[0]!;
+        range.setAttribute('d', ringPath(ring.map(([lng, lat]) => map.project([lng!, lat!]))));
+        range.setAttribute('stroke', paletteRef.current.accuracy);
       }
       // The battle range (40 m) around the player (owner: not the GPS accuracy). Only when
       // the ring really moves: re-sending it every frame kept the map from ever going idle

@@ -2251,3 +2251,12 @@ img.shiny,
 .credits {
   white-space: pre-line;
 }
+
+/* location problems on the onboarding (owner) */
+.notice.warn {
+  border-color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 12%, var(--card));
+}
+.notice.warn p {
+  margin: 0 0 var(--sp-1);
+}

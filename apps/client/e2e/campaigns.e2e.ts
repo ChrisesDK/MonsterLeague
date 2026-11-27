@@ -117,3 +117,30 @@ test("Svendborg's own map: its tiles, frame, zones and the dotted ferry crossing
   await page.getByTestId('tm-route-svb_route46').evaluate((e) => (e as HTMLElement).click());
   await expect(page.getByTestId('town-map')).toContainText('Ferry crossing');
 });
+
+test.describe('location before the starter (owner: an iPhone tester had location off)', () => {
+  test.use({ permissions: [] });
+  test('waits for a position, explains a refusal, then gives the starters of where you are', async ({
+    page,
+    context,
+  }) => {
+    await page.addInitScript(() => localStorage.setItem('oml.locale', 'en'));
+    await page.addInitScript(() => localStorage.setItem('oml.welcome.v1', '1'));
+    await page.goto('#/dev/map');
+    await page.getByTestId('onboarding-safety').waitFor();
+    await page.getByTestId('onboarding-next').click();
+    // location not allowed: the game says so and stays on this step
+    await page.getByTestId('onboarding-next').click();
+    await expect(page.getByTestId('location-problem')).toBeVisible();
+    await expect(page.getByTestId('onboarding-location')).toHaveAttribute('data-state', 'denied');
+    await expect(page.getByTestId('onboarding-starter')).toHaveCount(0);
+    await expect(page.getByTestId('onboarding-next')).toHaveText('Try again');
+    // allowed, standing in Svendborg: Svendborg's starters
+    await context.grantPermissions(['geolocation']);
+    await context.setGeolocation({ latitude: 55.0598, longitude: 10.6068 });
+    await page.getByTestId('onboarding-next').click();
+    await page.getByTestId('onboarding-starter').waitFor();
+    await expect(page.getByTestId('starter-svb_kridtling')).toBeVisible();
+    expect((await save(page)).region).toBe('svendborg');
+  });
+});

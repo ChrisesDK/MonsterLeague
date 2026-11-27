@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { regions, type RegionId } from '@oml/data';
+import { PLAYABLE_MUNICIPALITIES, regions, type RegionId } from '@oml/data';
 import { createCreature } from '@oml/engine';
 import { latLngToCell } from 'h3-js';
 import {
@@ -16,6 +16,7 @@ import {
 import { recordGate3, type Gate3Event, type Gate3Session } from '@oml/playtest';
 import { makeT, type Locale, type Translate } from '../i18n';
 import { MapScreen } from '../map/MapScreen';
+import { regionAt } from '../map/regionGeo';
 import { START } from '../map/markers';
 import { useNight } from '../ui/night';
 import { SimLocation } from '../map/location';
@@ -359,7 +360,17 @@ export function GameApp({ t: appT, locale, onLocale, devTools, welcome = false }
   }
   if (save.onboarding === 'location') {
     return (
-      <LocationScreen t={t} onAllow={() => update((s) => ({ ...s, onboarding: 'starter' }))}>
+      <LocationScreen
+        t={t}
+        onLocated={(p) =>
+          update((s) => {
+            // the region the player stands in decides the starters (a new save has no other
+            // campaign yet, so only the region changes); outside every region: as before
+            const r = regionAt(p, PLAYABLE_MUNICIPALITIES as readonly RegionId[]);
+            return { ...s, region: r ?? s.region, onboarding: 'starter' };
+          })
+        }
+      >
         {devSkip}
       </LocationScreen>
     );

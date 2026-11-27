@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
+import { isIos } from '../ui/install';
 import { InstallButton } from '../ui/InstallButton';
 import { spriteUrl } from '@oml/art';
 import type { Dex } from '@oml/data';
@@ -103,38 +104,73 @@ export function SafetyScreen({
   );
 }
 
+/**
+ * Where the player is decides the region and its starters (owner: an iPhone tester with
+ * location off got Odense's starters in Svendborg). After "Allow" the game waits for a real
+ * position before the starter choice; when location is off or not allowed for the site, it
+ * says how to turn it on and offers to try again. Outside every playable region the player
+ * starts in the default region, as before.
+ */
 export function LocationScreen({
   t,
-  onAllow,
+  onLocated,
   children,
 }: {
   t: Translate;
-  onAllow: () => void;
+  /** The player's position was found (only used here to pick the region; never stored). */
+  onLocated: (p: { lat: number; lng: number }) => void;
   children?: ReactNode;
 }) {
-  const allow = () => {
-    // Ask for permission now (the map subscribes afterwards); go on either way, the map
-    // explains what to do if it was denied.
+  const [state, setState] = useState<'ask' | 'finding' | 'denied' | 'unavailable'>('ask');
+  const locate = () => {
+    if (!navigator.geolocation) return setState('unavailable');
+    setState('finding');
     try {
-      navigator.geolocation?.getCurrentPosition(
-        () => undefined,
-        () => undefined,
-        { enableHighAccuracy: true, timeout: 10_000 },
+      navigator.geolocation.getCurrentPosition(
+        (pos) => onLocated({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        (err) => setState(err.code === 1 ? 'denied' : 'unavailable'),
+        { enableHighAccuracy: true, timeout: 20_000, maximumAge: 60_000 },
       );
     } catch {
-      // not supported
+      setState('unavailable');
     }
-    onAllow();
   };
+  const problem = state === 'denied' || state === 'unavailable';
   return (
-    <main className="setup onboarding" data-testid="onboarding-location">
+    <main className="setup onboarding" data-testid="onboarding-location" data-state={state}>
       <header className="setup-header">
         <h1>{t('map.explain.title')}</h1>
         <p>{t('map.explain.body')}</p>
       </header>
       <p className="notice">{t('onboarding.location.save')}</p>
-      <button className="btn primary wide" data-testid="onboarding-next" onClick={allow}>
-        {t('map.explain.allow')}
+      {state === 'finding' && (
+        <p className="notice" role="status" data-testid="location-finding">
+          {t('onboarding.location.finding')}
+        </p>
+      )}
+      {problem && (
+        <div className="notice warn" role="alert" data-testid="location-problem">
+          <p>
+            <strong>
+              {t(
+                state === 'denied'
+                  ? 'onboarding.location.denied'
+                  : 'onboarding.location.unavailable',
+              )}
+            </strong>
+          </p>
+          <p className="small">
+            {t(isIos() ? 'onboarding.location.howIos' : 'onboarding.location.how')}
+          </p>
+        </div>
+      )}
+      <button
+        className="btn primary wide"
+        data-testid="onboarding-next"
+        disabled={state === 'finding'}
+        onClick={locate}
+      >
+        {t(problem ? 'onboarding.location.retry' : 'map.explain.allow')}
       </button>
       {children}
     </main>
