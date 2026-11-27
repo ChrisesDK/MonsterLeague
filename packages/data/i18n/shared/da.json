@@ -635,5 +635,10 @@
   "storage.team": "På holdet",
   "storage.stored": "I opbevaring",
   "storage.checkIn": "Sæt i opbevaring",
-  "storage.checkOut": "Tag ud"
+  "storage.checkOut": "Tag ud",
+  "storage.hintStore": "Tryk på væsner på holdet for at sætte dem i opbevaring.",
+  "storage.hintTake": "Tryk på væsner i opbevaring for at tage dem ud.",
+  "storage.hintTakeFull": "Holdet er fuldt: tryk på et væsen i opbevaring for at bytte det ind.",
+  "storage.hintSwap": "Tryk nu på det væsen på holdet, det skal bytte plads med.",
+  "storage.done": "Færdig"
 }

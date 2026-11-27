@@ -2576,3 +2576,38 @@ img.shiny,
   font-size: var(--fs-md);
   margin: var(--sp-3) 0 var(--sp-2);
 }
+
+/* storage: two mode buttons, a one-line hint, the lists two to a row (owner) */
+.storage-modes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-2);
+}
+.storage-hint {
+  min-height: 2.8em;
+  margin: var(--sp-2) 0 0;
+  color: var(--ink-2);
+  font-weight: 700;
+}
+.link-btn {
+  margin-left: var(--sp-2);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.creature-card.lit {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.creature-card.dim {
+  opacity: 0.45;
+}
+.creature-card.picked {
+  border-color: var(--gold);
+  background: color-mix(in srgb, var(--gold) 14%, var(--card));
+}

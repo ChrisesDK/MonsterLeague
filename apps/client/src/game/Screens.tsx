@@ -13,6 +13,7 @@ import {
   calcStat,
   getStats,
   IV_MAX,
+  MAX_TEAM_SIZE,
   xpForLevel,
   type CreatureInstance,
 } from '@oml/engine';
@@ -547,6 +548,13 @@ function CreatureDetail({
   );
 }
 
+/**
+ * Storage (owner): the team and the stored creatures, two to a row. Two buttons at the top
+ * start storing or taking out; in a mode only the creatures you can act on are lit, a line
+ * says what to tap, and it lasts until the button (or Done) is pressed again, so several can
+ * be moved in a row. Taking out with a full team asks which team creature swaps places.
+ * Outside a mode a creature opens its page.
+ */
 function StorageScreen({
   t,
   save,
@@ -560,69 +568,113 @@ function StorageScreen({
   onBack: () => void;
   onScreen: (s: ScreenId) => void;
 }) {
-  const [swap, setSwap] = useState<string | null>(null);
-  // owner: creatures go in and out of storage only here (not from a creature's page)
+  const [mode, setMode] = useState<'store' | 'take' | null>(null);
+  /** Taking out with a full team: the stored creature that waits for a team place. */
+  const [swapIn, setSwapIn] = useState<string | null>(null);
+  const full = save.team.length >= MAX_TEAM_SIZE;
+  const toggle = (m: 'store' | 'take') => {
+    setSwapIn(null);
+    setMode((cur) => (cur === m ? null : m));
+  };
+  const hint =
+    mode === 'store'
+      ? t('storage.hintStore')
+      : mode === 'take'
+        ? swapIn
+          ? t('storage.hintSwap')
+          : full
+            ? t('storage.hintTakeFull')
+            : t('storage.hintTake')
+        : null;
+  const teamPickable = (mode === 'store' && save.team.length > 1) || swapIn !== null;
+  const onTeam = (uid: string) => {
+    if (swapIn) {
+      update((s) => swapWithStorage(s, uid, swapIn));
+      setSwapIn(null);
+    } else if (mode === 'store') {
+      if (save.team.length > 1) update((s) => moveToStorage(s, uid));
+      if (save.team.length - 1 <= 1) setMode(null);
+    } else onScreen(`creature:${uid}`);
+  };
+  const onStored = (uid: string) => {
+    if (mode !== 'take') return onScreen(`creature:${uid}`);
+    if (full) setSwapIn((cur) => (cur === uid ? null : uid));
+    else {
+      update((s) => moveToTeam(s, uid));
+      if (save.storage.length - 1 <= 0) setMode(null);
+    }
+  };
+  const card = (c: CreatureInstance, where: 'team' | 'box') => {
+    const lit = where === 'team' ? teamPickable : mode === 'take' && !swapIn;
+    const picked = c.uid === swapIn;
+    return (
+      <button
+        key={c.uid}
+        type="button"
+        className={`creature-card${mode ? (lit || picked ? ' lit' : ' dim') : ''}${picked ? ' picked' : ''}`}
+        data-testid={`storage-${where}-${c.uid}`}
+        onClick={() => (where === 'team' ? onTeam(c.uid) : onStored(c.uid))}
+      >
+        <img src={spriteUrl(c.speciesId)} alt="" className={c.shiny ? 'shiny' : ''} />
+        <strong>
+          {creatureName(c, t)}
+          {c.shiny && <span className="shiny-mark inline"> ✦</span>}
+        </strong>
+        <span className="muted small">
+          {t('ui.level')} {c.level}
+        </span>
+        <HpLine c={c} t={t} />
+      </button>
+    );
+  };
   return (
     <Shell t={t} title={t('menu.storage')} onBack={onBack} testId="screen-storage">
+      <div className="storage-modes">
+        <button
+          type="button"
+          className={`btn${mode === 'store' ? ' primary' : ''}`}
+          data-testid="storage-mode-store"
+          aria-pressed={mode === 'store'}
+          disabled={save.team.length <= 1 && mode !== 'store'}
+          onClick={() => toggle('store')}
+        >
+          {t('storage.checkIn')}
+        </button>
+        <button
+          type="button"
+          className={`btn${mode === 'take' ? ' primary' : ''}`}
+          data-testid="storage-mode-take"
+          aria-pressed={mode === 'take'}
+          disabled={save.storage.length === 0 && mode !== 'take'}
+          onClick={() => toggle('take')}
+        >
+          {t('storage.checkOut')}
+        </button>
+      </div>
+      {/* one line, always the same height, so the lists never jump */}
+      <p className="storage-hint small" data-testid="storage-hint" aria-live="polite">
+        {hint ?? ' '}
+        {mode && (
+          <button
+            type="button"
+            className="link-btn"
+            data-testid="storage-done"
+            onClick={() => {
+              setMode(null);
+              setSwapIn(null);
+            }}
+          >
+            {t('storage.done')}
+          </button>
+        )}
+      </p>
       <h2 className="storage-head">{t('storage.team')}</h2>
-      <div className="storage-grid">
-        {save.team.map((c) => (
-          <div key={c.uid} className="storage-cell">
-            <CreatureRow c={c} t={t} onClick={() => onScreen(`creature:${c.uid}`)} />
-            <button
-              className="btn small-btn"
-              data-testid={`check-in-${c.uid}`}
-              disabled={save.team.length <= 1}
-              onClick={() => update((s) => moveToStorage(s, c.uid))}
-            >
-              {t('storage.checkIn')}
-            </button>
-          </div>
-        ))}
-      </div>
+      <div className="creature-grid">{save.team.map((c) => card(c, 'team'))}</div>
       <h2 className="storage-head">{t('storage.stored')}</h2>
-      {save.storage.length === 0 && <p className="muted">{t('storage.empty')}</p>}
-      <div className="storage-grid">
-        {save.storage.map((c) => (
-          <div key={c.uid} className="storage-cell">
-            <CreatureRow c={c} t={t} onClick={() => onScreen(`creature:${c.uid}`)} />
-            {save.team.length < 6 ? (
-              <button
-                className="btn small-btn"
-                data-testid={`check-out-${c.uid}`}
-                onClick={() => update((s) => moveToTeam(s, c.uid))}
-              >
-                {t('storage.checkOut')}
-              </button>
-            ) : (
-              <button className="btn small-btn" onClick={() => setSwap(c.uid)}>
-                {t('storage.swap')}
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
-      {swap && (
-        <div className="modal" role="dialog" aria-modal="true">
-          <div className="modal-card">
-            <h2>{t('storage.swapWith')}</h2>
-            {save.team.map((c) => (
-              <button
-                key={c.uid}
-                className="btn list-btn"
-                onClick={() => {
-                  update((s) => swapWithStorage(s, c.uid, swap));
-                  setSwap(null);
-                }}
-              >
-                {creatureName(c, t)} · {t('ui.level')} {c.level}
-              </button>
-            ))}
-            <button className="btn" onClick={() => setSwap(null)}>
-              {t('ui.back')}
-            </button>
-          </div>
-        </div>
+      {save.storage.length === 0 ? (
+        <p className="muted">{t('storage.empty')}</p>
+      ) : (
+        <div className="creature-grid">{save.storage.map((c) => card(c, 'box'))}</div>
       )}
     </Shell>
   );

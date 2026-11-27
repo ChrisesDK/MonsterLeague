@@ -1468,12 +1468,36 @@ test('a creature page explains one move at a time; storage is where creatures go
   await expect(page.getByRole('button', { name: 'Move to storage' })).toHaveCount(0);
   await page.getByTestId('screen-back').click();
   await page.getByTestId('screen-back').click();
-  // the Storage menu: put one in, take it out again
+  // the Storage menu (owner): two mode buttons; in a mode, a tap moves the creature
   await page.getByTestId('menu-storage').click();
-  const uid = ((await dev(page, 'save')) as { team: { uid: string }[] }).team[1]!.uid;
-  await page.getByTestId(`check-in-${uid}`).click();
-  await expect(page.getByTestId(`check-out-${uid}`)).toBeVisible();
-  expect(((await dev(page, 'save')) as { storage: { uid: string }[] }).storage[0]!.uid).toBe(uid);
-  await page.getByTestId(`check-out-${uid}`).click();
-  await expect(page.getByTestId(`check-in-${uid}`)).toBeVisible();
+  type S = { team: { uid: string }[]; storage: { uid: string }[] };
+  const uid = ((await dev(page, 'save')) as S).team[1]!.uid;
+  await expect(page.getByTestId('storage-mode-take')).toBeDisabled(); // nothing stored yet
+  await page.getByTestId('storage-mode-store').click();
+  await expect(page.getByTestId('storage-hint')).toContainText('put them in storage');
+  await page.getByTestId(`storage-team-${uid}`).click();
+  await expect(page.getByTestId(`storage-box-${uid}`)).toBeVisible();
+  expect(((await dev(page, 'save')) as S).storage[0]!.uid).toBe(uid);
+  // the last creature on the team can't be stored: the mode ended by itself
+  await expect(page.getByTestId('storage-mode-store')).toBeDisabled();
+  await page.getByTestId('storage-mode-take').click();
+  await page.getByTestId(`storage-box-${uid}`).click();
+  await expect(page.getByTestId(`storage-team-${uid}`)).toBeVisible();
+  // a full team: taking out asks which team creature swaps places
+  for (const sp of ['mosbille', 'grimaelling', 'rendsnude', 'kulingmaage'])
+    await dev(page, 'addCreature', sp, 5);
+  await page.getByTestId('storage-mode-store').click();
+  await page.getByTestId(`storage-team-${uid}`).click();
+  await page.getByTestId('storage-done').click();
+  await dev(page, 'addCreature', 'brokrabbe', 5);
+  expect(((await dev(page, 'save')) as S).team).toHaveLength(6);
+  await page.getByTestId('storage-mode-take').click();
+  await expect(page.getByTestId('storage-hint')).toContainText('team is full');
+  await page.getByTestId(`storage-box-${uid}`).click();
+  await expect(page.getByTestId('storage-hint')).toContainText('swaps places');
+  const out = ((await dev(page, 'save')) as S).team[0]!.uid;
+  await page.getByTestId(`storage-team-${out}`).click();
+  const after = (await dev(page, 'save')) as S;
+  expect(after.team.map((c) => c.uid)).toContain(uid);
+  expect(after.storage.map((c) => c.uid)).toContain(out);
 });

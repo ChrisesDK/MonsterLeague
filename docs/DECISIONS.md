@@ -2089,3 +2089,9 @@ length, position resolution and spawn tables>`.
     (`moveFacts`), so no text appears in the page and moves the rest. The creature page has
     no storage buttons; the Storage menu lists the team ("Put in storage", not for the last
     one) and the stored creatures ("Take out", or swap when the team is full).
+  - Storage, third round (owner: a button under every creature was too much): two mode
+    buttons on top (store / take out, disabled when there's nothing to do), a one-line hint
+    of fixed height (so the lists never jump) with "Done", both lists as two-column cards;
+    in a mode the actionable cards are lit and the rest dimmed; storing ends by itself when
+    one creature is left, taking out when storage is empty; with a full team a stored
+    creature is marked and the next team tap swaps them.

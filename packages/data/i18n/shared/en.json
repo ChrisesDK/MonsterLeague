@@ -635,5 +635,10 @@
   "storage.team": "On the team",
   "storage.stored": "In storage",
   "storage.checkIn": "Put in storage",
-  "storage.checkOut": "Take out"
+  "storage.checkOut": "Take out",
+  "storage.hintStore": "Tap creatures on the team to put them in storage.",
+  "storage.hintTake": "Tap creatures in storage to take them out.",
+  "storage.hintTakeFull": "The team is full: tap a creature in storage to swap it in.",
+  "storage.hintSwap": "Now tap the team creature it swaps places with.",
+  "storage.done": "Done"
 }
