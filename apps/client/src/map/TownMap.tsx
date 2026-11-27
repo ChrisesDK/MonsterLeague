@@ -224,6 +224,7 @@ function RegionTownMap({
   const [ready, setReady] = useState(false);
   const [hidden, setHidden] = useState<LayerId[]>(loadHidden);
   const [filterOpen, setFilterOpen] = useState(false);
+  useBackHandler(filterOpen, () => setFilterOpen(false));
   const [selected, setSelected] = useState<Selected | null>(null);
   // P27: the Town Map is the campaign's own region
   const dex = regions[save.region];
@@ -411,6 +412,8 @@ function RegionTownMap({
       icon = stampUrl('arena', save.badges.includes(site.arena));
       zone = site.zone;
       distance = away(site);
+      // open region (owner): no "needs" for an arena, just that its leader follows your badges
+      if (dex.open && !save.badges.includes(site.arena)) needsLabel = t('townMap.leader');
       needs = save.badges.includes(site.arena)
         ? t('townMap.badgeEarned', { badge: t(`badge.${site.arena}.name`) })
         : dex.open
@@ -533,10 +536,12 @@ function RegionTownMap({
       <nav className="town-map-tools" aria-label={t('townMap.title')}>
         <button
           type="button"
-          className={`tm-tool${filterOpen ? ' on' : ''}`}
+          className="tm-tool"
           data-testid="townmap-filter"
-          aria-expanded={filterOpen}
-          onClick={() => setFilterOpen((o) => !o)}
+          onClick={() => {
+            setSelected(null);
+            setFilterOpen(true);
+          }}
         >
           <Icon name="filter" />
           <span>{t('townMap.tool.filter')}</span>
@@ -569,32 +574,37 @@ function RegionTownMap({
         </button>
       </nav>
       {filterOpen && (
-        <div
-          className="town-map-filter"
-          data-testid="townmap-filter-menu"
-          role="group"
-          aria-label={t('townMap.filter')}
-        >
-          {LAYERS.map((id) => {
-            // route labels go with the routes: greyed out while the routes are hidden
-            const off = id === 'routeLabels' && hidden.includes('routes');
-            return (
-              <label
-                key={id}
-                className={`filter-row${off ? ' disabled' : ''}`}
-                data-testid={`filter-${id}`}
-              >
-                <input
-                  type="checkbox"
-                  role="switch"
-                  disabled={off}
-                  checked={!hidden.includes(id)}
-                  onChange={() => toggle(id)}
-                />
-                <span>{t(`townMap.layer.${id}`)}</span>
-              </label>
-            );
-          })}
+        // a sheet like the badges (owner)
+        <div className="filter-sheet">
+          <Sheet
+            title={t('townMap.filter')}
+            closeLabel={t('townMap.close')}
+            onClose={() => setFilterOpen(false)}
+            testId="townmap-filter-menu"
+          >
+            <div className="town-map-filter" role="group" aria-label={t('townMap.filter')}>
+              {LAYERS.map((id) => {
+                // route labels go with the routes: greyed out while the routes are hidden
+                const off = id === 'routeLabels' && hidden.includes('routes');
+                return (
+                  <label
+                    key={id}
+                    className={`filter-row${off ? ' disabled' : ''}`}
+                    data-testid={`filter-${id}`}
+                  >
+                    <input
+                      type="checkbox"
+                      role="switch"
+                      disabled={off}
+                      checked={!hidden.includes(id)}
+                      onChange={() => toggle(id)}
+                    />
+                    <span>{t(`townMap.layer.${id}`)}</span>
+                  </label>
+                );
+              })}
+            </div>
+          </Sheet>
         </div>
       )}
       {card}

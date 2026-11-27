@@ -383,8 +383,11 @@
 }
 .guide-step {
   position: fixed;
-  left: 0;
-  right: 0;
+  /* within the menus' narrow column on wide screens (owner) */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 520px;
   bottom: 0;
   z-index: 4;
   display: flex;
@@ -1729,17 +1732,9 @@ html[data-theme='night'] .maplibregl-ctrl-attrib-button {
   display: none;
 }
 .town-map-filter {
-  position: absolute;
-  bottom: calc(var(--sp-3) + 76px + env(safe-area-inset-bottom));
-  left: var(--sp-3);
-  z-index: 3;
   display: grid;
   gap: var(--sp-1);
-  padding: var(--sp-2) var(--sp-3);
-  border-radius: var(--r-md);
-  background: var(--hud);
-  border: 2px solid var(--line-strong);
-  box-shadow: var(--shadow-2);
+  padding: 0 var(--sp-4) var(--sp-4);
 }
 .town-map-filter .filter-row {
   display: flex;

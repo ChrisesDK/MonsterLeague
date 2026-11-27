@@ -2027,3 +2027,8 @@ length, position resolution and spawn tables>`.
   "Try again". The position is used once and never stored. The 40 m ring's dashed outline
   moved from a map line layer (under the 3D buildings) to the scan SVG above the canvas,
   projected every frame; its faint fill stays a ground layer.
+- **D199. Small UI follow-ups** (owner, GDD v1.27). The Town Map filter is a `Sheet` (title,
+  close, back gesture) like the badges; the tool button no longer toggles. An open-region
+  arena card uses the label "Leader" with "Matches your badges: n of 8". The Fyn hint is just
+  "Tap a region to look at it." The field guide's fixed previous / next bar is centred and
+  at most 520 px wide, the width of the menu column.

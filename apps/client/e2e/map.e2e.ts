@@ -428,7 +428,7 @@ test('Town Map: zones, arenas and routes; a card tells what a place needs (P22)'
   await expect(page.getByTestId('tm-target')).toHaveCount(1);
   // P28: Odense is open: arena 2 takes a challenge now, at the strength for 0 badges
   await page.getByTestId('tm-arena-2').evaluate((e) => (e as HTMLElement).click());
-  await expect(page.getByTestId('townmap-needs')).toContainText('0 of 8 badges');
+  await expect(page.getByTestId('townmap-needs')).toContainText('Matches your badges: 0 of 8');
   await expect(page.getByTestId('townmap-distance')).toContainText('straight line');
   await page.getByTestId('tm-route-route1').evaluate((e) => (e as HTMLElement).click());
   await expect(page.getByTestId('townmap-card')).toContainText('Route 1');
@@ -458,7 +458,7 @@ test('Fyn map: the regions of Fyn, Odense and Svendborg open; badges grey until 
   await page.getByTestId('townmap-fyn').click();
   await expect(page.getByTestId('fyn-map')).toBeVisible();
   await page.waitForFunction(() => '__omlFynMap' in window);
-  await expect(page.getByTestId('fyn-hint')).toContainText('Odense');
+  await expect(page.getByTestId('fyn-hint')).toHaveText('Tap a region to look at it.');
   const badges = page.locator('[data-testid=fyn-badges-odense] img');
   await expect(badges).toHaveCount(8);
   await expect(page.locator('[data-testid=fyn-badges-odense] img.locked')).toHaveCount(7);
@@ -626,7 +626,7 @@ test('Town Map (D165): destinations, markets and trainers as stamps; the filter 
   await expect(page.locator('[data-testid^=tm-trainer-]').first()).toBeAttached();
   await page.getByTestId('tm-zone-munkemose').evaluate((e) => (e as HTMLElement).click());
   await expect(page.getByTestId('townmap-needs')).toContainText('Lake');
-  // the filter: one button in the top bar, a short menu of switches
+  // the filter: a button in the tool bar opens a sheet of switches, like the badges
   await page.getByTestId('townmap-filter').click();
   await expect(page.getByTestId('townmap-filter-menu')).toBeVisible();
   await page.locator('[data-testid=filter-trainers] input').uncheck();
@@ -667,6 +667,8 @@ test('Town Map (D165): destinations, markets and trainers as stamps; the filter 
   await expect(page.locator('[data-testid^=tm-route-]').first()).toBeHidden();
   await expect(page.getByTestId('filter-routeLabels')).toHaveClass(/disabled/);
   await expect(page.locator('[data-testid=filter-routeLabels] input')).toBeDisabled();
+  await page.getByTestId('townmap-filter-menu').getByRole('button', { name: 'Close' }).click();
+  await expect(page.getByTestId('townmap-filter-menu')).toHaveCount(0);
   await page.getByTestId('townmap-close').click();
   await page.getByTestId('townmap-button').click();
   await expect(page.getByTestId('town-map')).toHaveClass(/hide-trainers/);

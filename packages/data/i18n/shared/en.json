@@ -476,7 +476,7 @@
   "fynMap.later": "Coming later",
   "fynMap.laterCard": "This region comes in a later update.",
   "fynMap.open": "Open {region}",
-  "fynMap.hint": "Tap a region to look at it. Odense and Svendborg can be played.",
+  "fynMap.hint": "Tap a region to look at it.",
   "badges.zones": "{n} of {of} zones open",
   "item.medium_tonic.name": "Medium Tonic",
   "item.medium_tonic.desc": "Restores 40 HP.",
@@ -567,7 +567,7 @@
   "trainer.reward": "You got {n}× {item}.",
   "trainer.refuseZone": "\"Walk a route here first, then we can battle in {zone}.\"",
   "trainer.coins": "You got {n} skilling.",
-  "townMap.arenaTier": "Open: the leader matches a player with {n} of 8 badges, as many as you hold",
+  "townMap.arenaTier": "Matches your badges: {n} of 8",
   "townMap.routeFinds": "walk it for coins and items found along the way",
   "townMap.routeBonus": "more wild creatures on it now",
   "map.routeFind": "Found while walking route {n}: {what}",
@@ -612,5 +612,6 @@
   "onboarding.location.unavailable": "Your position can't be found.",
   "onboarding.location.how": "Check that location is turned on for your phone, and that this site may use it (the browser asks, or see the site settings next to the address). Then try again.",
   "onboarding.location.howIos": "On iPhone: Settings → Privacy & Security → Location Services: turn it on, and under Safari Websites choose \"While Using the App\". If Safari asked before and you said no, tap \"aA\" next to the address → Website Settings → Location → Allow. Then try again.",
-  "onboarding.location.retry": "Try again"
+  "onboarding.location.retry": "Try again",
+  "townMap.leader": "Leader"
 }
