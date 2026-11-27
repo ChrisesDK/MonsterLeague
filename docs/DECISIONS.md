@@ -2059,3 +2059,27 @@ length, position resolution and spawn tables>`.
     map then reloads its basemap source, or is built again if its WebGL context was lost.
   - Bag rows: the text starts at the left (`.list-btn`'s space-between pushed a short name
     to the right).
+- **D201. One field guide page, and the coast off land borders** (owner, GDD v1.29).
+  - `speciesBits.tsx`: `FormSwitch`, `TypeChips` (types in `typeColors`, then seen /
+    caught), `BaseStats` (bars against 140; the highest base stat is 136) and `HabitatChips`
+    (from `guideHints` of the first stage: up to three home destinations, night or day only
+    / more at night, needs or more with a field ability). The satchel field guide and the
+    pocket guide both use them; the written hints (`hintText`) are gone, so neither has more.
+    The map and labels show only for creatures seen (owner's question; recommended: finding
+    a new creature stays a discovery, and the pocket guide already left unseen ones out).
+  - `SpawnHeatMap` draws an evolved form from its line's first stage (only first stages
+    spawn; every evolved form showed "Not found in the wild" before) with "Found as …";
+    starter lines still say "Not found in the wild". The pocket view's map is 300 × 150 and
+    its stats two to a row, so it fits above the buttons.
+  - The v1.26 coast step left two spikes on Odense's land border (Skovsby–Ravnemark, Ny
+    Skelhuse): the Fyn map's municipality outlines don't match the border exactly, so the
+    200 m band and the "unclaimed land" pass made slivers along land borders. Now land is
+    taken in only with water within 400 m, and the sea band keeps 250 m from the neighbours
+    (unioned back with the region's own land). Odense's outline has no sharp turns again
+    (448 points, as before the coast step) and grew 3.5 km² along the fjord; Lundeborg's
+    harbour stays in Svendborg. A dev hook `see` marks a species seen (tests).
+  - Follow-ups (owner): the creature detail shows one set of values, Attack / Defence /
+    Speed as bars with the number, drawn against `calcStat(140, level, IV_MAX)` (the most
+    any creature has at that level); the strengths (IVs) are no longer listed on their own.
+    The field guides show no stats (`BaseStats` removed); seen / caught is a plain line under
+    the type labels; the homes read "Lives at" once, then the place names.

@@ -13,6 +13,8 @@ import type { Translate } from '../i18n';
 import { Button } from '../ui/components';
 import { Icon } from '../ui/icons';
 import { SpawnHeatMap } from './SpawnHeatMap';
+import { FormSwitch, HabitatChips, TypeChips } from './speciesBits';
+import { baseForm } from '@oml/game';
 
 export function PocketGuide({
   t,
@@ -24,7 +26,7 @@ export function PocketGuide({
   /** The region's own texts (creature names). */
   tr: Translate;
   /** The campaign of the region shown (its seen and caught lists). */
-  save: Pick<SaveGame, 'seen' | 'caught'>;
+  save: Pick<SaveGame, 'seen' | 'caught' | 'glimmerSeen'>;
   region: RegionId;
 }) {
   const dex = regions[region];
@@ -33,6 +35,11 @@ export function PocketGuide({
     `#${String(all.findIndex((s) => s.id === id) + 1).padStart(3, '0')}`;
   const seen = all.filter((s) => save.seen[s.id]?.length || save.caught[s.id]?.length);
   const [open, setOpen] = useState<string | null>(null);
+  const [glimmer, setGlimmer] = useState(false);
+  const openEntry = (id: string | null) => {
+    setOpen(id);
+    setGlimmer(false);
+  };
   const at = open ? seen.findIndex((s) => s.id === open) : -1;
   const s = at >= 0 ? seen[at]! : null;
 
@@ -40,8 +47,10 @@ export function PocketGuide({
     const prev = seen[at - 1];
     const next = seen[at + 1];
     const caught = !!save.caught[s.id]?.length;
+    const glimmerSeen = save.glimmerSeen.includes(s.id);
+    const showGlimmer = glimmer && glimmerSeen;
     return (
-      <div className="pocket-guide" data-testid="pocket-entry" data-species={s.id}>
+      <div className="pocket-guide pocket-entry" data-testid="pocket-entry" data-species={s.id}>
         <div className="pocket-head">
           <Button
             round
@@ -49,44 +58,48 @@ export function PocketGuide({
             icon="back"
             data-testid="pocket-list"
             aria-label={t('ui.back')}
-            onClick={() => setOpen(null)}
+            onClick={() => openEntry(null)}
           />
           <strong>
             {number(s.id)} {tr(`species.${s.id}.name`)}
           </strong>
         </div>
-        <div className="pocket-art">
-          <img src={spriteUrl(s.id)} alt="" />
-          <p>
-            {s.types.map((ty) => t(`type.${ty}.name`)).join(' / ')}
-            <br />
-            <span className="muted">{t(caught ? 'guide.caught' : 'guide.seen')}</span>
-          </p>
+        <FormSwitch t={t} glimmer={showGlimmer} seen={glimmerSeen} onGlimmer={setGlimmer} />
+        <span className="guide-entry-art pocket-art">
+          <img src={spriteUrl(s.id)} alt="" className={showGlimmer ? 'shiny' : ''} />
+          {showGlimmer && <span className="shiny-mark">✦</span>}
+        </span>
+        <TypeChips s={s} dex={dex} t={t} state={caught ? 'caught' : 'seen'} />
+        {/* the map close to the bottom, just above the buttons (owner) */}
+        <div className="pocket-map">
+          <SpawnHeatMap
+            regionId={region}
+            speciesId={s.id}
+            dex={dex}
+            label={t('guide.where')}
+            emptyLabel={t('guide.notWild')}
+            foundAs={(b) => t('guide.foundAs', { name: tr(`species.${b}.name`) })}
+            size={[300, 150]}
+          />
+          <HabitatChips speciesId={baseForm(s.id, dex)} dex={dex} t={t} tr={tr} />
         </div>
-        <SpawnHeatMap
-          regionId={region}
-          speciesId={s.id}
-          dex={dex}
-          label={t('guide.where')}
-          emptyLabel={t('guide.notWild')}
-        />
         <nav className="pocket-step">
           <Button
             icon="back"
             variant="ghost"
             data-testid="pocket-prev"
             disabled={!prev}
-            onClick={() => prev && setOpen(prev.id)}
+            onClick={() => prev && openEntry(prev.id)}
           >
-            {prev ? number(prev.id) : t('guide.prev')}
+            {t('guide.prev')}
           </Button>
           <Button
             variant="ghost"
             data-testid="pocket-next"
             disabled={!next}
-            onClick={() => next && setOpen(next.id)}
+            onClick={() => next && openEntry(next.id)}
           >
-            {next ? number(next.id) : t('guide.next')}
+            {t('guide.next')}
             <Icon name="chevron" />
           </Button>
         </nav>
@@ -106,7 +119,7 @@ export function PocketGuide({
               type="button"
               className="pocket-card"
               data-testid={`pocket-${x.id}`}
-              onClick={() => setOpen(x.id)}
+              onClick={() => openEntry(x.id)}
             >
               <img src={spriteUrl(x.id)} alt="" />
               <span className="small muted">{number(x.id)}</span>

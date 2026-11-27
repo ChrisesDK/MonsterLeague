@@ -85,7 +85,18 @@ test('feedback, version, save export and import, home hints in the field guide',
   await expect(page.getByTestId('guide-mosling')).not.toContainText('Kirkendrup Skov');
   await page.getByTestId('guide-mosling').click();
   await expect(page.getByTestId('guide-entry-mosling')).toBeVisible();
-  await expect(page.getByTestId('screen-guide-entry')).toContainText('Kirkendrup Skov');
+  // not seen yet: no map of where it lives (owner: found by exploring)
+  await expect(page.getByTestId('guide-heat-map')).toHaveCount(0);
+  await page.getByTestId('screen-back').click();
+  await dev(page, 'see', 'mosling');
+  await page.getByTestId('guide-mosling').click();
+  // seen: the same as the pocket guide: types, stats, the map, and its home as a label
+  await expect(page.getByTestId('type-chips')).toContainText('Grove');
+  // no stats in the field guide (owner); "Lives at" once, then the places
+  await expect(page.getByTestId('base-stats')).toHaveCount(0);
+  await expect(page.getByTestId('habitat-chips')).toContainText('Lives at');
+  await expect(page.getByTestId('habitat-chips')).toContainText('Kirkendrup Skov');
+  await expect(page.getByTestId('state-chip')).toHaveText('seen');
   // the Glimmer form is greyed out until one is met; previous and next step through the list
   await expect(page.getByTestId('guide-form-glimmer')).toBeDisabled();
   const title = await page.locator('[data-testid=screen-guide-entry] h1').textContent();
@@ -106,7 +117,9 @@ test('feedback, version, save export and import, home hints in the field guide',
   await page.getByTestId('guide-tab-svendborg').click();
   await expect(page.getByTestId('guide-svb_saelkalv')).toContainText('#001');
   await page.getByTestId('guide-svb_svampling').click();
-  await expect(page.getByTestId('screen-guide-entry')).toContainText('Svinehaverne');
+  // Svendborg's own creature, not seen in that campaign: no map yet
+  await expect(page.getByTestId('screen-guide-entry')).toContainText('not seen yet');
+  await expect(page.getByTestId('guide-heat-map')).toHaveCount(0);
   await page.getByTestId('screen-back').click();
   await expect(page.getByTestId('guide-totals')).toContainText('0');
   await expect(page.getByTestId('guide-gnistkat')).toHaveCount(0);
@@ -139,8 +152,10 @@ test('feedback, version, save export and import, home hints in the field guide',
   await page.waitForFunction(() => '__omlDev' in window);
   await page.waitForFunction(
     () =>
-      (window as unknown as { __omlDev: { save: () => { coins: number } | null } }).__omlDev.save()
-        ?.coins !== undefined,
+      // the hook is briefly gone while the app reloads the imported save: wait, don't throw
+      (
+        window as unknown as { __omlDev?: { save: () => { coins: number } | null } }
+      ).__omlDev?.save()?.coins !== undefined,
   );
   const coins = await page.evaluate(
     () =>

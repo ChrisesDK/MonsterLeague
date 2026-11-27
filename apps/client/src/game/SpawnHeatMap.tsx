@@ -9,10 +9,11 @@ import type { Dex, RegionId } from '@oml/data';
 import { cellDensity, entryWeight, type Region } from '@oml/spawn';
 import { cellToLatLng } from 'h3-js';
 import { regionGeo } from '../map/regionGeo';
+import { baseForm } from '@oml/game';
 import { loadRegion } from './region';
 
-const W = 320;
-const H = 200;
+const W0 = 320;
+const H0 = 200;
 
 export function spawnHeat(region: Region, speciesId: string, dex: Dex): Map<string, number> {
   const byDistrict = new Map<number, Dex['spawns']>();
@@ -44,6 +45,8 @@ export function SpawnHeatMap({
   dex,
   label,
   emptyLabel,
+  foundAs,
+  size,
 }: {
   regionId: RegionId;
   speciesId: string;
@@ -51,7 +54,13 @@ export function SpawnHeatMap({
   label: string;
   /** Said over the map when the creature lives nowhere in the wild. */
   emptyLabel: string;
+  /** Under the map for an evolved form: "Found as <first stage>". */
+  foundAs?: (baseId: string) => string;
+  /** Canvas size in CSS pixels (the pocket guide's is smaller). */
+  size?: [number, number];
 }) {
+  const [W, H] = size ?? [W0, H0];
+  const base = baseForm(speciesId, dex);
   const ref = useRef<HTMLCanvasElement | null>(null);
   const [region, setRegion] = useState<Region | null>(null);
   /** No wild home (a starter): the map says so instead of staying blank. */
@@ -109,7 +118,8 @@ export function SpawnHeatMap({
       ctx.stroke();
     }
 
-    const heat = spawnHeat(region, speciesId, dex);
+    // only first stages live in the wild: an evolved form is found as its line's first one
+    const heat = spawnHeat(region, baseForm(speciesId, dex), dex);
     const max = Math.max(0, ...heat.values());
     setEmpty(max <= 0);
     if (max <= 0) return;
@@ -121,7 +131,7 @@ export function SpawnHeatMap({
       ctx.fillRect(x(lng) - size / 2, y(lat) - size / 2, size, size);
     }
     ctx.globalAlpha = 1;
-  }, [region, regionId, speciesId, dex]);
+  }, [region, regionId, speciesId, dex, W, H]);
 
   return (
     <div className="heat-wrap">
@@ -137,6 +147,11 @@ export function SpawnHeatMap({
       {empty && (
         <p className="heat-empty small" data-testid="heat-empty">
           {emptyLabel}
+        </p>
+      )}
+      {!empty && base !== speciesId && foundAs && (
+        <p className="heat-found-as small muted" data-testid="heat-found-as">
+          {foundAs(base)}
         </p>
       )}
     </div>

@@ -9,8 +9,8 @@ import {
   type RegionId,
 } from '@oml/data';
 import {
-  AVERAGE_IVS,
   getMaxHp,
+  calcStat,
   getStats,
   IV_MAX,
   xpForLevel,
@@ -25,7 +25,6 @@ import {
   sellPrice,
   fieldAbilitiesUnlocked,
   forgetFieldAbility,
-  guideHints,
   moveToStorage,
   moveToTeam,
   obedienceLevel,
@@ -42,6 +41,7 @@ import {
   type Goal,
   type SaveGame,
   distanceM,
+  baseForm,
   type LatLng,
 } from '@oml/game';
 import { creatureName } from '../eventText';
@@ -50,6 +50,7 @@ import { Icon, type IconName } from '../ui/icons';
 import { ItemIcon } from '../ui/itemIcons';
 import { InstallButton } from '../ui/InstallButton';
 import { SpawnHeatMap } from './SpawnHeatMap';
+import { FormSwitch, HabitatChips, TypeChips } from './speciesBits';
 import { useBackHandler } from '../ui/backStack';
 import { goalProgress, goalTitle } from './goalText';
 import { makeT, type Translate } from '../i18n';
@@ -135,6 +136,9 @@ function Shell({
 }
 
 /** What a move does, in words, from its data (owner: a button explains the moves). */
+/** The highest base stat any creature has: the stat bars are drawn against it. */
+const STAT_TOP = 140;
+
 export function moveInfo(m: Move, t: Translate): string {
   const parts: string[] = [];
   parts.push(m.power > 0 ? t('moveInfo.power', { power: m.power }) : t('moveInfo.noDamage'));
@@ -409,29 +413,17 @@ function CreatureDetail({
         </div>
       </div>
       {/* HP is beside the sprite already (owner) */}
-      <dl className="stat-grid">
-        {(['atk', 'def', 'spd'] as const).map((k) => (
-          <div key={k}>
-            <dt>{t(`stat.${k}`)}</dt>
-            <dd>{stats[k]}</dd>
-          </div>
-        ))}
-      </dl>
-      {/* owner: the strengths as bars, each out of its maximum */}
-      <section className="iv-block" data-testid="detail-ivs">
-        <p className="panel-title small">
-          {t('detail.ivsTitle')}
-          {!c.ivs && ` · ${t('detail.ivsAverage')}`}
-        </p>
-        {(['hp', 'atk', 'def'] as const).map((k) => {
-          const v = (c.ivs ?? AVERAGE_IVS)[k];
+      {/* owner: one set of values, as bars: the creature's own stats (its strengths are in
+          them), each against the most any creature can have at its level */}
+      <section className="iv-block" data-testid="detail-stats">
+        {(['atk', 'def', 'spd'] as const).map((k) => {
+          const v = stats[k];
+          const most = calcStat(STAT_TOP, c.level, IV_MAX);
           return (
-            <div key={k} className="iv-row" data-testid={`iv-${k}`}>
+            <div key={k} className="iv-row" data-testid={`stat-${k}`}>
               <span>{t(`stat.${k}`)}</span>
-              <ProgressBar value={v} max={IV_MAX} tone="gold" label={t(`stat.${k}`)} />
-              <span className="small">
-                {v}/{IV_MAX}
-              </span>
+              <ProgressBar value={v} max={most} tone="gold" label={t(`stat.${k}`)} />
+              <span className="small">{v}</span>
             </div>
           );
         })}
@@ -820,40 +812,6 @@ export function districtRuns(ds: number[]): string {
 }
 
 /**
- * Where to find a creature. The same place in several districts is one line ("Districts
- * 1–8: …", owner request: a creature found everywhere listed eight lines).
- */
-function hintText(t: Translate, speciesId: string, dex: Dex): string[] {
-  const homes: string[] = [];
-  const byPlace = new Map<
-    string,
-    { districts: number[]; where: string; when: string; needs: string }
-  >();
-  const all = new Set(Object.values(dex.zones).map((z) => z.district)).size;
-  for (const h of guideHints(speciesId, dex)) {
-    const where = h.biomes.map((b) => t(`biome.${b}.near`)).join(t('guide.or'));
-    const when = h.time === 'night' ? t('guide.atNight') : h.time === 'day' ? t('guide.byDay') : '';
-    const needs = h.requires ? ` (${t(`fieldAbility.${h.requires}.name`)})` : '';
-    // D173: a destination creature names its home(s), so players know where to travel
-    if (h.zones.length > 0) {
-      const place = h.zones.map((z) => t(`zone.${z}.name`)).join(t('guide.or'));
-      homes.push(t(h.mainHome ? 'guide.homeMain' : 'guide.homeAlso', { place, when }) + needs);
-      continue;
-    }
-    const key = `${where}|${when}|${needs}`;
-    const e = byPlace.get(key) ?? { districts: [], where, when, needs };
-    e.districts.push(h.district);
-    byPlace.set(key, e);
-  }
-  const lines = [...byPlace.values()].map((e) => {
-    const n = new Set(e.districts).size;
-    const key = n >= all ? 'guide.hintAll' : n > 1 ? 'guide.hintMany' : 'guide.hint';
-    return t(key, { district: districtRuns(e.districts), where: e.where, when: e.when }) + e.needs;
-  });
-  return [...homes, ...lines];
-}
-
-/**
  * D175: feedback for testers. The text and a short game summary (version, badges, team
  * levels, counts; never a position or the current zone) go out through the phone's share
  * sheet, or are copied when the phone can't share.
@@ -989,28 +947,7 @@ function GuideScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBack
         testId="screen-guide-entry"
       >
         <div className="guide-entry" data-testid={`guide-entry-${s.id}`} data-state={state}>
-          <div className="chip-row guide-forms" role="tablist">
-            <button
-              role="tab"
-              data-testid="guide-form-normal"
-              className={`btn choice${showGlimmer ? '' : ' on'}`}
-              aria-selected={!showGlimmer}
-              onClick={() => setGlimmer(false)}
-            >
-              {t('guide.formNormal')}
-            </button>
-            <button
-              role="tab"
-              data-testid="guide-form-glimmer"
-              className={`btn choice${showGlimmer ? ' on' : ''}`}
-              aria-selected={showGlimmer}
-              disabled={!glimmerSeen}
-              title={glimmerSeen ? undefined : t('guide.glimmerUnseen')}
-              onClick={() => setGlimmer(true)}
-            >
-              ✦ {t('ui.shiny')}
-            </button>
-          </div>
+          <FormSwitch t={t} glimmer={showGlimmer} seen={glimmerSeen} onGlimmer={setGlimmer} />
           <span className="guide-entry-art">
             <img
               src={spriteUrl(s.id)}
@@ -1020,28 +957,32 @@ function GuideScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBack
             />
             {showGlimmer && <span className="shiny-mark">✦</span>}
           </span>
-          <p>
-            <strong>{t(`guide.${state}`)}</strong>
-            {seen && <> · {s.types.map((ty) => t(`type.${ty}.name`)).join(' / ')}</>}
-          </p>
-        </div>
-        <h2 className="guide-where">{t('guide.where')}</h2>
-        {/* owner: a heat map and a fixed-height text box, so the page keeps its shape */}
-        <SpawnHeatMap
-          regionId={region}
-          speciesId={s.id}
-          dex={dex}
-          label={t('guide.where')}
-          emptyLabel={t('guide.notWild')}
-        />
-        <div className="guide-hints" data-testid="guide-hints">
-          {dex.starters.includes(s.id) && <p className="muted">{t('guide.starter')}</p>}
-          {hintText(tr, s.id, dex).map((h) => (
-            <p key={h} className="muted">
-              {h}
+          {/* owner: the types first, as coloured labels, then seen / caught */}
+          {state !== 'unseen' ? (
+            <>
+              <TypeChips s={s} dex={dex} t={t} state={state} />
+            </>
+          ) : (
+            <p>
+              <strong>{t(`guide.${state}`)}</strong>
             </p>
-          ))}
+          )}
         </div>
+        {/* owner: the same as the pocket guide; where it lives only once it was seen */}
+        {seen && (
+          <>
+            <h2 className="guide-where">{t('guide.where')}</h2>
+            <SpawnHeatMap
+              regionId={region}
+              speciesId={s.id}
+              dex={dex}
+              label={t('guide.where')}
+              emptyLabel={t('guide.notWild')}
+              foundAs={(b) => t('guide.foundAs', { name: tr(`species.${b}.name`) })}
+            />
+            <HabitatChips speciesId={baseForm(s.id, dex)} dex={dex} t={t} tr={tr} />
+          </>
+        )}
         {/* previous / next stay at the bottom of the screen (owner) */}
         <nav className="guide-step">
           <Button
@@ -1051,7 +992,7 @@ function GuideScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBack
             disabled={!prev}
             onClick={() => prev && openEntry(prev.id)}
           >
-            {prev ? number(prev.id) : t('guide.prev')}
+            {t('guide.prev')}
           </Button>
           <Button
             variant="ghost"
@@ -1059,7 +1000,7 @@ function GuideScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBack
             disabled={!next}
             onClick={() => next && openEntry(next.id)}
           >
-            {next ? number(next.id) : t('guide.next')}
+            {t('guide.next')}
             <Icon name="chevron" />
           </Button>
         </nav>

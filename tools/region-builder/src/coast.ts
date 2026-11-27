@@ -23,6 +23,14 @@ import type { Feature, MultiPolygon, Polygon, Position } from 'geojson';
 import { cellToLatLng, cellsToMultiPolygon, polygonToCells } from 'h3-js';
 
 export const LAND_FILL_M = 1000;
+/** Land is only taken in at the coast: water within this distance of it. */
+export const COAST_NEAR_M = 400;
+/**
+ * The sea band keeps this far from the neighbouring municipalities: their outlines (from the
+ * Fyn map) don't match the border exactly, and a band along a land border left thin spikes
+ * (owner: Skovsby–Ravnemark and Ny Skelhuse in Odense).
+ */
+export const NEIGHBOUR_CLEAR_M = 250;
 export const SEA_M = 200;
 /** How far out on the water a spawn may stand: within a player's reach of the shore. */
 export const SHORE_REACH_M = 40;
@@ -67,7 +75,7 @@ export function coastOutline(
       for (const cell of polygonToCells(poly, 11, true)) {
         const [lat, lng] = cellToLatLng(cell);
         const p = [lng, lat];
-        if (!isWater(p) && !inAny(claimed, p)) land.push(cell);
+        if (!isWater(p) && !inAny(claimed, p) && nearWater(p, isWater)) land.push(cell);
       }
   const landArea: Area[] = cellsToMultiPolygon(land, true).map((coordinates) => ({
     type: 'Feature',
@@ -82,10 +90,24 @@ export function coastOutline(
   // 2. out to sea, not into a neighbour
   const grown = buffer(withLand, SEA_M, { units: 'meters' })!;
   const neighbours = unionAll(others);
-  const out = neighbours
-    ? (difference(featureCollection([grown, neighbours])) as Area | null)
-    : grown;
-  return out ?? withLand;
+  const clear = neighbours ? buffer(neighbours, NEIGHBOUR_CLEAR_M, { units: 'meters' }) : null;
+  const band = clear ? (difference(featureCollection([grown, clear])) as Area | null) : grown;
+  // the band never takes away land of the region itself
+  return (band ? unionAll([withLand, band]) : null) ?? withLand;
+}
+
+/** Water within COAST_NEAR_M of a point (eight directions, two distances). */
+function nearWater(p: Position, isWater: (q: Position) => boolean): boolean {
+  const lat = p[1]!;
+  for (const m of [COAST_NEAR_M / 2, COAST_NEAR_M]) {
+    const dy = m / 110_540;
+    const dx = m / (111_320 * Math.cos((lat * Math.PI) / 180));
+    for (let k = 0; k < 8; k++) {
+      const a = (k * Math.PI) / 4;
+      if (isWater([p[0]! + Math.cos(a) * dx, lat + Math.sin(a) * dy])) return true;
+    }
+  }
+  return false;
 }
 
 /**

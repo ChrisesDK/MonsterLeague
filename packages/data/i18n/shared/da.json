@@ -622,5 +622,12 @@
   "townMap.tool.guide": "Håndbog",
   "townMap.guideOf": "Felthåndbog: {region}",
   "townMap.guideEmpty": "Ingen væsner set her endnu.",
-  "guide.notWild": "Findes ikke i naturen"
+  "guide.notWild": "Findes ikke i naturen",
+  "guide.foundAs": "Findes som {name}",
+  "guide.cond.night": "Kun om natten",
+  "guide.cond.day": "Kun om dagen",
+  "guide.cond.moreNight": "Flere om natten",
+  "guide.cond.needs": "Kræver {ability}",
+  "guide.cond.moreWith": "Flere med {ability}",
+  "guide.cond.livesAt": "Bor ved"
 }

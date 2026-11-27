@@ -1,6 +1,6 @@
 # Odense Monster League — Game Design Document
 
-Version 1.28 · Nov 27, 2026 · maintained in the repository (see Change log)
+Version 1.29 · Nov 27, 2026 · maintained in the repository (see Change log)
 
 ## Overview
 
@@ -378,7 +378,7 @@ Locked layers are shown on the map (rustling trees, rings on water, a stone glyp
 | Map | Main screen while walking | Player figure + 40 m battle ring, region, district and zone borders, routes with their walked part, wild areas, POI stamps, Journal card, Nearby strip, menu button |
 | Battle | Turn-based fight | Both creatures with HP bars and status; 2×2 move grid in the bottom third; Switch / Bag / Run row; event text line |
 | Team | View and order up to 6 creatures | Sprite cards in two columns (v1.26) with HP, level; tap for details, moves, field ability |
-| Creature detail | Stats and moves | Attack, Defence and Speed (HP is beside the sprite), types, XP bar, strengths (IVs) as three bars out of 15 (v1.26), Glimmer (v1.23), moves with type/PP and a ? button that explains each move (power, accuracy, effects), evolution hint |
+| Creature detail | Stats and moves | Attack, Defence and Speed as bars with their values, each against the most any creature has at its level (v1.29: one set of values; the strengths are in them; HP is beside the sprite), types, XP bar, Glimmer (v1.23), moves with type/PP and a ? button that explains each move (power, accuracy, effects), evolution hint |
 | Storage | Creatures beyond 6 | Grid, swap into team |
 | Bag | Items | Grouped list with the skilling balance and an icon per item (v1.26); using one opens the creatures as sprite cards in two columns, and the chosen one's HP bar slides up to its new value (no message); the picker stays open until the player closes it (v1.27) |
 | Market | Buy and sell (v1.12) | Opened at a market on the map; Buy and Sell tabs, prices, the balance; back returns to the map |
@@ -622,6 +622,7 @@ M1.7 (done, 148 tests): field abilities are data in `field-abilities.json`; a fr
 
 | Version | Date | Changes |
 | --- | --- | --- |
+| 1.29 | 2026-11-27 | Both field guides show the same: the Normal / Glimmer switch, types as coloured labels with seen / caught on a line below, no stats, and (only once seen) the heat map with labels for what it can't show ("Lives at" once, then the home destinations; night or day; field-ability layers); an evolved form's map is its first stage's ("Found as …"); no written paragraphs; previous / next say so instead of numbers. Odense's border loses two spikes from the v1.26 coast step (it no longer grows along land borders) |
 | 1.28 | 2026-11-27 | Town Map: a pocket field guide (Guide), stamps and icons in the filter, stamps stacked by importance; one-finger zoom (tap, then tap-and-hold and drag); maps recover after the app was in the background; bag text left-aligned |
 | 1.27 | 2026-11-27 | Town Map filter in a sheet like the badges; leader scaling told on the welcome screen and when a leader battle starts, not on every arena card; the Fyn map hint no longer lists the playable regions; the field guide's previous / next stay in the menus' column on wide screens |
 | 1.26 | 2026-11-27 | Onboarding waits for a real position before the starter choice (the region where you stand gives the starters; with location off or not allowed it explains how to turn it on, iPhone steps included, and offers to try again); the 40 m ring's outline is drawn above the 3D buildings. UI round (owner): Town Map tool bar and badges sheet, no zone lines in open regions, shared route stretches drawn once, Fyn map sketch, Goals (renamed Journal) by distance, badges in the order won, bag icons and sprite grid, strengths as bars and a move explainer, one way out of the menu, camera framing, the too-fast modal, an install button; the coast 200 m out to sea. Night stays at the real sunset (owner) |

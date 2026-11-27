@@ -2364,21 +2364,43 @@ img.shiny,
   align-items: center;
   gap: var(--sp-2);
 }
-.pocket-art {
-  display: flex;
-  align-items: center;
+/* the creature view: picture, labels and stats at the top, the map just above the buttons */
+.pocket-entry {
+  align-items: stretch;
+}
+.pocket-entry .guide-forms {
   justify-content: center;
-  gap: var(--sp-3);
 }
-.pocket-art img {
-  width: 96px;
-  height: 96px;
+.pocket-entry {
+  gap: var(--sp-1);
 }
-.pocket-art p {
-  margin: 0;
+.pocket-entry .pocket-art {
+  align-self: center;
+  width: 88px;
+  height: 88px;
+}
+.pocket-entry .pocket-art img {
+  width: 88px;
+  height: 88px;
+}
+.pocket-entry .guide-forms .btn {
+  min-height: 36px;
+  padding: 4px 14px;
+  font-size: var(--fs-sm);
+}
+/* the stats two to a row, so the map and buttons fit below */
+.pocket-entry .base-stats {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--sp-3);
+  max-width: none;
+}
+.pocket-entry .base-stat {
+  grid-template-columns: 4.6em 1fr;
+}
+.pocket-map {
+  margin-top: auto;
 }
 .pocket-step {
-  margin-top: auto;
   display: flex;
   justify-content: space-between;
   gap: var(--sp-2);
@@ -2401,4 +2423,107 @@ img.shiny,
 /* the stamps' stacking order stays inside the map (never above the bars and sheets) */
 .town-map > .map {
   isolation: isolate;
+}
+
+.heat-found-as {
+  margin: 2px 0 0;
+  text-align: center;
+}
+
+/* types as coloured labels, then seen / caught (owner) */
+.type-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-1);
+  margin: var(--sp-1) 0;
+}
+.type-chip {
+  padding: 2px 12px;
+  border-radius: var(--r-pill);
+  background: var(--type-color);
+  color: #fff;
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
+}
+.state-chip {
+  padding: 2px 12px;
+  border-radius: var(--r-pill);
+  border: 2px solid var(--line);
+  color: var(--ink-2);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+}
+.state-chip.caught {
+  border-color: var(--leaf);
+  color: var(--leaf);
+}
+/* base stats: what the species is like */
+.base-stats {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  max-width: 320px;
+  margin: var(--sp-1) auto;
+}
+.base-stat {
+  display: grid;
+  grid-template-columns: 5.5em 1fr;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  text-align: left;
+}
+.base-bar {
+  height: 8px;
+  border-radius: var(--r-pill);
+  background: var(--track);
+  overflow: hidden;
+}
+.base-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--fjord);
+}
+
+/* what the heat map can't show: home, night or day, field ability (owner) */
+.habitat-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-1);
+  margin: var(--sp-1) 0;
+}
+.habitat-chip {
+  padding: 2px 10px;
+  border-radius: var(--r-pill);
+  background: var(--card);
+  border: 2px solid var(--line);
+  color: var(--ink);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+/* seen / caught under the types, as plain text (owner) */
+.type-block {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+}
+.state-line {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+.state-line.caught {
+  color: var(--leaf);
+}
+.habitat-label {
+  align-self: center;
+  color: var(--ink-2);
+  font-size: var(--fs-xs);
+  font-weight: 700;
 }

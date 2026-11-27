@@ -55,6 +55,8 @@ export interface OmlDev {
   grantAbility: (id: string) => void;
   teach: (id: string, uid?: string) => void;
   addCreature: (speciesId: string, level: number) => void;
+  /** Marks a species as seen (field guide tests). */
+  see: (speciesId: string) => void;
   /** Makes the lead a Glimmer creature and notes its species as seen in that form. */
   makeGlimmer: () => void;
   /** Adds a fake spawn to the map (dev only; lets tests run without the spawn service). */
@@ -272,6 +274,11 @@ export function GameApp({ t: appT, locale, onLocale, devTools, welcome = false }
       },
       setFast: () => update((s) => ({ ...s, settings: { ...s.settings, speed: 'fast' } })),
       setBadges: (badges) => update((s) => ({ ...s, badges })),
+      see: (id) =>
+        update((s) => ({
+          ...s,
+          seen: { ...s.seen, [id]: [...new Set([...(s.seen[id] ?? []), 1])] },
+        })),
       addCoins: (n) => update((s) => ({ ...s, coins: s.coins + n })),
       openZones: (zones) =>
         update((s) => ({ ...s, zones: [...new Set([...s.zones, ...zones])].sort() })),

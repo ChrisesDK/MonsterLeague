@@ -622,5 +622,12 @@
   "townMap.tool.guide": "Guide",
   "townMap.guideOf": "Field guide: {region}",
   "townMap.guideEmpty": "No creatures seen here yet.",
-  "guide.notWild": "Not found in the wild"
+  "guide.notWild": "Not found in the wild",
+  "guide.foundAs": "Found as {name}",
+  "guide.cond.night": "Only at night",
+  "guide.cond.day": "Only by day",
+  "guide.cond.moreNight": "More at night",
+  "guide.cond.needs": "Needs {ability}",
+  "guide.cond.moreWith": "More with {ability}",
+  "guide.cond.livesAt": "Lives at"
 }
