@@ -43,14 +43,19 @@ export function SpawnHeatMap({
   speciesId,
   dex,
   label,
+  emptyLabel,
 }: {
   regionId: RegionId;
   speciesId: string;
   dex: Dex;
   label: string;
+  /** Said over the map when the creature lives nowhere in the wild. */
+  emptyLabel: string;
 }) {
   const ref = useRef<HTMLCanvasElement | null>(null);
   const [region, setRegion] = useState<Region | null>(null);
+  /** No wild home (a starter): the map says so instead of staying blank. */
+  const [empty, setEmpty] = useState(false);
   useEffect(() => {
     let live = true;
     void loadRegion(regionId).then((r) => live && setRegion(r));
@@ -106,6 +111,7 @@ export function SpawnHeatMap({
 
     const heat = spawnHeat(region, speciesId, dex);
     const max = Math.max(0, ...heat.values());
+    setEmpty(max <= 0);
     if (max <= 0) return;
     const size = Math.max(1.5, scale * 0.0012);
     ctx.fillStyle = hot;
@@ -118,14 +124,21 @@ export function SpawnHeatMap({
   }, [region, regionId, speciesId, dex]);
 
   return (
-    <canvas
-      ref={ref}
-      className="heat-map"
-      data-testid="guide-heat-map"
-      data-ready={region ? 'true' : 'false'}
-      role="img"
-      aria-label={label}
-      style={{ width: W, height: H }}
-    />
+    <div className="heat-wrap">
+      <canvas
+        ref={ref}
+        className="heat-map"
+        data-testid="guide-heat-map"
+        data-ready={region ? 'true' : 'false'}
+        role="img"
+        aria-label={label}
+        style={{ width: W, height: H }}
+      />
+      {empty && (
+        <p className="heat-empty small" data-testid="heat-empty">
+          {emptyLabel}
+        </p>
+      )}
+    </div>
   );
 }

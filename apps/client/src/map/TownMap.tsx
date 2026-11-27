@@ -17,6 +17,7 @@ import { makeT, type Translate } from '../i18n';
 import { formatM, routePercent } from '../game/goalText';
 import { loadRegion } from '../game/region';
 import { BadgeGrid } from '../game/Screens';
+import { PocketGuide } from '../game/PocketGuide';
 import { useBackHandler } from '../ui/backStack';
 import { Button, Sheet } from '../ui/components';
 import { Icon } from '../ui/icons';
@@ -24,6 +25,7 @@ import { FynMap } from './FynMap';
 import { addWorldLayers, setLockedZones, setRouteProgress, setWild, setZoneLabels } from './layers';
 import { markerElement, PLAYER_SVG, STAR_SVG, addAttribution, regionStart } from './markers';
 import { paperStyle, type Palette } from './style';
+import { ensureTiles } from './tiles';
 
 /**
  * Town Map (M2d, GDD "Town Map", P22): a flat overview of the region in the paper style.
@@ -104,6 +106,15 @@ function midpoint(path: [number, number][]): LatLng {
   return pts[0]!;
 }
 
+/** The stamp each filter row shows (owner: quicker to see which switch is which). */
+const FILTER_STAMP: Partial<Record<LayerId, string>> = {
+  arenas: stampUrl('arena'),
+  trainers: stampUrl('trainer'),
+  restStops: stampUrl('restStop'),
+  markets: stampUrl('market'),
+  destinations: stampUrl('forest'),
+};
+
 export function TownMap({
   t,
   save,
@@ -124,12 +135,14 @@ export function TownMap({
   const [view, setView] = useState<RegionId>(save.region);
   const [fyn, setFyn] = useState(false);
   const [badges, setBadges] = useState(false);
+  const [guide, setGuide] = useState(false);
   const [viewRegion, setViewRegion] = useState<Region | null>(null);
   const home = view === save.region;
   // back closes the Fyn map first, then goes from a looked-at region back to the own one
   useBackHandler(!home, () => setView(save.region));
   useBackHandler(fyn, () => setFyn(false));
   useBackHandler(badges, () => setBadges(false));
+  useBackHandler(guide, () => setGuide(false));
   useEffect(() => {
     if (home) return;
     let live = true;
@@ -157,6 +170,7 @@ export function TownMap({
         onClose={onClose}
         onFyn={() => setFyn(true)}
         onBadges={() => setBadges(true)}
+        onGuide={() => setGuide(true)}
       />
       {fyn && (
         <FynMap
@@ -170,6 +184,19 @@ export function TownMap({
             setFyn(false);
           }}
         />
+      )}
+      {guide && (
+        // a pocket field guide of the region the map shows (owner request)
+        <div className="guide-sheet">
+          <Sheet
+            title={t('townMap.guideOf', { region: t(`municipality.${view}.name`) })}
+            closeLabel={t('townMap.close')}
+            onClose={() => setGuide(false)}
+            testId="townmap-guide-sheet"
+          >
+            <PocketGuide key={view} t={t} tr={tr} save={viewSave} region={view} />
+          </Sheet>
+        </div>
       )}
       {badges && (
         // the badges of the region the map shows, in a sheet over the map (owner request)
@@ -205,6 +232,7 @@ function RegionTownMap({
   onClose,
   onFyn,
   onBadges,
+  onGuide,
 }: {
   t: Translate;
   save: SaveGame;
@@ -217,6 +245,8 @@ function RegionTownMap({
   onClose: () => void;
   onFyn: () => void;
   onBadges: () => void;
+  /** Opens the pocket field guide of the region shown (owner request). */
+  onGuide: () => void;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MlMap | null>(null);
@@ -232,6 +262,7 @@ function RegionTownMap({
     if (!ref.current) return;
     const base = appBase();
     const centre = (home && position) || regionStart(save.region);
+    ensureTiles();
     const map = new maplibregl.Map({
       container: ref.current,
       style: paperStyle(base, `${base}tiles/${save.region}.pmtiles`, palette),
@@ -561,6 +592,19 @@ function RegionTownMap({
         <button
           type="button"
           className="tm-tool"
+          data-testid="townmap-guide"
+          onClick={() => {
+            setSelected(null);
+            setFilterOpen(false);
+            onGuide();
+          }}
+        >
+          <Icon name="guide" />
+          <span>{t('townMap.tool.guide')}</span>
+        </button>
+        <button
+          type="button"
+          className="tm-tool"
           data-testid="townmap-fyn"
           onClick={() => {
             setSelected(null);
@@ -598,6 +642,15 @@ function RegionTownMap({
                       checked={!hidden.includes(id)}
                       onChange={() => toggle(id)}
                     />
+                    <span className="filter-icon" aria-hidden>
+                      {id === 'routes' ? (
+                        <Icon name="route" />
+                      ) : id === 'routeLabels' ? (
+                        <span className="filter-route-no">1</span>
+                      ) : (
+                        <img src={FILTER_STAMP[id]} alt="" />
+                      )}
+                    </span>
                     <span>{t(`townMap.layer.${id}`)}</span>
                   </label>
                 );

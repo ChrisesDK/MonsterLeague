@@ -91,6 +91,23 @@ export function fingersDown(map: MlMap): boolean {
   return (fingers.get(map)?.size ?? 0) > 0;
 }
 
+/**
+ * One-handed zoom (testers' request): tap, then tap again and hold within DOUBLE_TAP_MS and
+ * DOUBLE_TAP_PX, and drag: down zooms in, up zooms out (as in common map apps), sideways
+ * turns the view. Touch only.
+ */
+export const DOUBLE_TAP_MS = 320;
+export const DOUBLE_TAP_PX = 40;
+/** Pixels of vertical drag per zoom level. */
+export const ONE_FINGER_PX_PER_ZOOM = 160;
+/** Degrees per pixel of sideways drag while zooming with one finger. */
+export const ONE_FINGER_DEG_PER_PX = 0.35;
+
+/** The zoom after a one-finger zoom drag of `dyPx` (down = +, in) from `zoom`. */
+export function oneFingerZoom(zoom: number, dyPx: number): number {
+  return Math.max(ORBIT.minZoom, Math.min(ORBIT.maxZoom, zoom + dyPx / ONE_FINGER_PX_PER_ZOOM));
+}
+
 /** Wires the orbit gestures to a map. Returns a function that removes them. */
 export function attachOrbit(map: MlMap): () => void {
   map.dragPan.disable();
@@ -110,6 +127,10 @@ export function attachOrbit(map: MlMap): () => void {
   /** Recent rotation steps (event time, degrees) for the fling. */
   let samples: { t: number; delta: number }[] = [];
   let fling = 0;
+  /** The last tap (touch, no drag), for tap → tap-and-hold zoom. */
+  let lastTap: { x: number; y: number; t: number } | null = null;
+  /** While zooming with one finger: where the drag is now. */
+  let zooming: { x: number; y: number } | null = null;
   const local = (e: PointerEvent) => {
     const r = el.getBoundingClientRect();
     return { x: e.clientX - r.left, y: e.clientY - r.top, t: e.timeStamp };
@@ -120,16 +141,33 @@ export function attachOrbit(map: MlMap): () => void {
   };
   const down = (e: PointerEvent) => {
     stopFling();
-    pointers.set(e.pointerId, local(e));
-    last = pointers.size === 1 ? local(e) : null; // two fingers: pinch/twist (MapLibre)
+    const p = local(e);
+    pointers.set(e.pointerId, p);
+    last = pointers.size === 1 ? p : null; // two fingers: pinch/twist (MapLibre)
     moved = 0;
     samples = [];
+    zooming =
+      pointers.size === 1 &&
+      e.pointerType === 'touch' &&
+      lastTap &&
+      p.t - lastTap.t <= DOUBLE_TAP_MS &&
+      Math.hypot(p.x - lastTap.x, p.y - lastTap.y) <= DOUBLE_TAP_PX
+        ? { x: p.x, y: p.y }
+        : null;
+    lastTap = null;
   };
   const move = (e: PointerEvent) => {
     if (!pointers.has(e.pointerId)) return;
     pointers.set(e.pointerId, local(e));
     if (pointers.size !== 1 || !last) return;
     const p = local(e);
+    if (zooming) {
+      moved += Math.hypot(p.x - zooming.x, p.y - zooming.y);
+      map.setZoom(oneFingerZoom(map.getZoom(), p.y - zooming.y));
+      map.setBearing(map.getBearing() - (p.x - zooming.x) * ONE_FINGER_DEG_PER_PX);
+      zooming = { x: p.x, y: p.y };
+      return;
+    }
     moved += Math.hypot(p.x - last.x, p.y - last.y);
     if (moved < 6) return; // a tap, not a drag
     const c = map.project(map.getCenter());
@@ -142,7 +180,11 @@ export function attachOrbit(map: MlMap): () => void {
   const up = (e: PointerEvent) => {
     if (!pointers.has(e.pointerId)) return;
     pointers.delete(e.pointerId);
-    const wasDragging = last !== null && moved >= 6 && pointers.size === 0;
+    const wasDragging = last !== null && moved >= 6 && pointers.size === 0 && !zooming;
+    // a touch that didn't drag is a tap: the next one may start a one-finger zoom
+    if (last !== null && moved < 6 && !zooming && e.pointerType === 'touch') lastTap = local(e);
+    if (zooming) moved = Math.max(moved, 6); // the drag must not also tap what lies under it
+    zooming = null;
     last = null;
     const velocity = wasDragging ? flingVelocity(samples, e.timeStamp) : 0;
     if (Math.abs(velocity) < FLING_MIN_DEG_PER_MS) return;

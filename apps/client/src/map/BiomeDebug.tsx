@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { Protocol } from 'pmtiles';
+import { ensureTiles } from './tiles';
 import { BIOMES, type Biome } from '@oml/data';
 import districtsRaw from '@oml/data/content/odense/districts.geojson?raw';
 
@@ -21,8 +21,6 @@ export const BIOME_COLORS: Record<Biome, string> = {
   industrial: '#6b6b7b',
   historic: '#b04ab0',
 };
-
-let protocolAdded = false;
 
 /** Optional view in the hash: #/dev/biomes?lat=55.39&lng=10.38&z=16 */
 export function viewFromHash(hash: string): { center: [number, number]; zoom: number } {
@@ -47,10 +45,7 @@ export function BiomeDebug({ t }: { t: Translate }) {
 
   useEffect(() => {
     if (!ref.current) return;
-    if (!protocolAdded) {
-      maplibregl.addProtocol('pmtiles', new Protocol().tile);
-      protocolAdded = true;
-    }
+    ensureTiles();
     const base = new URL(import.meta.env.BASE_URL, window.location.href).href;
     const map = new maplibregl.Map({
       container: ref.current,

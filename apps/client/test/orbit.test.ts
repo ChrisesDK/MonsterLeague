@@ -6,6 +6,8 @@ import {
   flingVelocity,
   horizonForReach,
   lookAheadPadding,
+  oneFingerZoom,
+  ONE_FINGER_PX_PER_ZOOM,
   metresPerPx,
   ORBIT,
   pitchForZoom,
@@ -155,5 +157,14 @@ describe('look-ahead: the player sits lower on the screen when zoomed in', () =>
   it('stays above the open Nearby strip on a short screen', () => {
     const p = lookAheadPadding(ORBIT.maxZoom, 600);
     expect((600 + p.top - p.bottom) / 2).toBeLessThanOrEqual(600 - 220);
+  });
+});
+
+describe('one-finger zoom (testers: one hand)', () => {
+  it('down zooms in, up out, within the zoom range', () => {
+    expect(oneFingerZoom(17, ONE_FINGER_PX_PER_ZOOM)).toBeCloseTo(18);
+    expect(oneFingerZoom(17.5, -ONE_FINGER_PX_PER_ZOOM)).toBeCloseTo(16.5);
+    expect(oneFingerZoom(18, 1000)).toBe(ORBIT.maxZoom);
+    expect(oneFingerZoom(17, -1000)).toBe(ORBIT.minZoom);
   });
 });

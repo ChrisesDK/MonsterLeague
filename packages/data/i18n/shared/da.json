@@ -618,5 +618,9 @@
   "arena.tier.none": "Du har ingen mærker endnu, så lederen stiller med sit letteste hold.",
   "arena.tier.one": "Du har 1 mærke, så lederen stiller med et stærkere hold.",
   "arena.tier.some": "Du har {n} mærker, så lederen stiller med et stærkere hold.",
-  "arena.tier.max": "Du har {n} mærker, så lederen stiller med sit stærkeste hold."
+  "arena.tier.max": "Du har {n} mærker, så lederen stiller med sit stærkeste hold.",
+  "townMap.tool.guide": "Håndbog",
+  "townMap.guideOf": "Felthåndbog: {region}",
+  "townMap.guideEmpty": "Ingen væsner set her endnu.",
+  "guide.notWild": "Findes ikke i naturen"
 }

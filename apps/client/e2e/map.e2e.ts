@@ -437,6 +437,19 @@ test('Town Map: zones, arenas and routes; a card tells what a place needs (P22)'
   await expect(page.getByTestId('townmap-card')).toContainText('Leads to');
   await expect(page.getByTestId('townmap-needs')).toContainText(/\d+% walked of/);
   await expect(page.getByTestId('townmap-needs')).toContainText('coins and items');
+  // the pocket field guide (owner): only creatures seen, three to a row; one opens with its
+  // heat map, and back returns to the list
+  await page.getByTestId('townmap-guide').click();
+  const guide = page.getByTestId('townmap-guide-sheet');
+  await expect(guide.getByTestId('pocket-gnistkat')).toBeVisible();
+  await expect(guide.getByTestId('pocket-havodder')).toHaveCount(0);
+  await guide.getByTestId('pocket-gnistkat').click();
+  await expect(guide.getByTestId('pocket-entry')).toHaveAttribute('data-species', 'gnistkat');
+  await expect(guide.getByTestId('guide-heat-map')).toHaveAttribute('data-ready', 'true');
+  await guide.getByTestId('pocket-list').click();
+  await expect(guide.getByTestId('pocket-guide')).toBeVisible();
+  await guide.getByRole('button', { name: 'Close' }).click();
+  await expect(guide).toHaveCount(0);
   // the Town Map can't be dragged out of Odense Kommune
   const bounds = await page.evaluate(() =>
     (
@@ -882,6 +895,59 @@ test('a finger drag rotates like a mouse drag, and never reloads the page', asyn
   expect(await page.evaluate(() => (window as unknown as { __mark?: number }).__mark)).toBe(1);
   const turned = Math.abs((((await bearing()) - b0 + 540) % 360) - 180);
   expect(turned).toBeGreaterThan(25);
+});
+
+test('one hand: tap, then tap and hold and drag zooms (down in, up out) and turns sideways', async ({
+  page,
+  context,
+}) => {
+  await startDone(page);
+  await teleport(page, { lat: 55.3975, lng: 10.3905 });
+  await page.waitForTimeout(2500);
+  const cam = () =>
+    page.evaluate(() => {
+      const m = (
+        window as unknown as {
+          __omlMap: { getZoom: () => number; getBearing: () => number };
+        }
+      ).__omlMap;
+      return { zoom: m.getZoom(), bearing: m.getBearing() };
+    });
+  const cdp = await context.newCDPSession(page);
+  const touch = (type: string, pt: [number, number] | null) =>
+    cdp.send('Input.dispatchTouchEvent', {
+      type: type as 'touchStart',
+      touchPoints: pt ? [{ x: pt[0], y: pt[1], id: 1 }] : [],
+    });
+  const start = await cam();
+  // tap, then tap again and hold, drag down: zoom in
+  await touch('touchStart', [195, 300]);
+  await touch('touchEnd', null);
+  await page.waitForTimeout(80);
+  await touch('touchStart', [195, 300]);
+  for (let i = 1; i <= 10; i++) {
+    await touch('touchMove', [195, 300 + i * 10]);
+    await page.waitForTimeout(16);
+  }
+  await touch('touchEnd', null);
+  await page.waitForTimeout(300);
+  const zoomedIn = await cam();
+  expect(zoomedIn.zoom).toBeGreaterThan(start.zoom + 0.3);
+  // again, dragging up and sideways: zoom out and turn
+  await page.waitForTimeout(500);
+  await touch('touchStart', [195, 400]);
+  await touch('touchEnd', null);
+  await page.waitForTimeout(80);
+  await touch('touchStart', [195, 400]);
+  for (let i = 1; i <= 10; i++) {
+    await touch('touchMove', [195 + i * 8, 400 - i * 10]);
+    await page.waitForTimeout(16);
+  }
+  await touch('touchEnd', null);
+  await page.waitForTimeout(300);
+  const after = await cam();
+  expect(after.zoom).toBeLessThan(zoomedIn.zoom - 0.3);
+  expect(Math.abs(((after.bearing - zoomedIn.bearing + 540) % 360) - 180)).toBeGreaterThan(10);
 });
 
 test('opening and closing the menu keeps the map alive (no reload of position or buildings)', async ({

@@ -1027,7 +1027,13 @@ function GuideScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBack
         </div>
         <h2 className="guide-where">{t('guide.where')}</h2>
         {/* owner: a heat map and a fixed-height text box, so the page keeps its shape */}
-        <SpawnHeatMap regionId={region} speciesId={s.id} dex={dex} label={t('guide.where')} />
+        <SpawnHeatMap
+          regionId={region}
+          speciesId={s.id}
+          dex={dex}
+          label={t('guide.where')}
+          emptyLabel={t('guide.notWild')}
+        />
         <div className="guide-hints" data-testid="guide-hints">
           {dex.starters.includes(s.id) && <p className="muted">{t('guide.starter')}</p>}
           {hintText(tr, s.id, dex).map((h) => (

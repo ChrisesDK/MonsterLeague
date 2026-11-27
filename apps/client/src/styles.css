@@ -231,6 +231,8 @@
 .item-btn {
   display: flex;
   align-items: center;
+  /* icon and text from the left (owner: short names sat at the right edge) */
+  justify-content: flex-start;
   gap: var(--sp-3);
   text-align: left;
 }
@@ -238,8 +240,10 @@
   flex: none;
 }
 .item-text {
+  flex: 1;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 2px;
 }
 .creature-row-main {
@@ -1629,7 +1633,7 @@ html[data-theme='night'] .maplibregl-ctrl-attrib-button {
   bottom: calc(var(--sp-3) + env(safe-area-inset-bottom));
   z-index: 3;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--sp-1);
   padding: var(--sp-1);
   border-radius: var(--r-md);
@@ -2260,4 +2264,141 @@ img.shiny,
 }
 .notice.warn p {
   margin: 0 0 var(--sp-1);
+}
+
+/* Town Map stamps in order of importance (owner): the many trainers at the bottom, then
+   rest stops and markets, route numbers, destinations, and the arenas on top; the player and
+   the goal above all of them. MapLibre gives markers no stacking order of their own. */
+.town-map .maplibregl-marker.cat-trainers {
+  z-index: 1;
+}
+.town-map .maplibregl-marker.cat-restStops,
+.town-map .maplibregl-marker.cat-markets {
+  z-index: 2;
+}
+.town-map .maplibregl-marker.cat-routeLabels {
+  z-index: 3;
+}
+.town-map .maplibregl-marker.cat-destinations {
+  z-index: 4;
+}
+.town-map .maplibregl-marker.cat-arenas {
+  z-index: 5;
+}
+.town-map .maplibregl-marker.target-marker,
+.town-map .maplibregl-marker[data-testid='tm-player'] {
+  z-index: 6;
+}
+
+/* filter rows: the stamp or line each switch shows or hides (owner) */
+.filter-icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex: none;
+}
+.filter-icon img {
+  width: 32px;
+  height: 32px;
+}
+.filter-icon svg {
+  color: var(--accent);
+}
+.filter-route-no {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  background: var(--card);
+  color: var(--accent);
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+}
+
+/* ---------- pocket field guide on the Town Map (owner) ---------- */
+.guide-sheet .sheet {
+  /* one height for the list and a creature, so nothing jumps */
+  height: 78dvh;
+  display: flex;
+  flex-direction: column;
+}
+.pocket-guide {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  overflow-y: auto;
+  padding-top: var(--sp-2);
+}
+.pocket-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-2);
+}
+.pocket-card {
+  display: grid;
+  justify-items: center;
+  gap: 1px;
+  padding: var(--sp-1);
+  border-radius: var(--r-md);
+  border: 2px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+.pocket-card img {
+  width: 56px;
+  height: 56px;
+}
+.pocket-caught {
+  color: var(--leaf);
+}
+.pocket-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.pocket-art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-3);
+}
+.pocket-art img {
+  width: 96px;
+  height: 96px;
+}
+.pocket-art p {
+  margin: 0;
+}
+.pocket-step {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+
+.heat-wrap {
+  position: relative;
+  width: fit-content;
+  margin: 0 auto;
+}
+.heat-empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  color: var(--ink-2);
+  font-weight: 700;
+}
+/* the stamps' stacking order stays inside the map (never above the bars and sheets) */
+.town-map > .map {
+  isolation: isolate;
 }

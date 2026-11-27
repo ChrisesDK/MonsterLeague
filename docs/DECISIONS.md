@@ -2038,3 +2038,24 @@ length, position resolution and spawn tables>`.
   The bag's creature picker stays open after an item until the player closes it (owner:
   it closed itself after 1.4 s); the chosen card's HP bar slides to the new value in 0.35 s,
   and the picker shows how many of the item are left (cards grey out at none).
+- **D200. Pocket guide, stamp order, one-finger zoom, maps after the background** (owner,
+  GDD v1.28).
+  - `PocketGuide` in a `Sheet` (78dvh, the same for list and creature so nothing jumps):
+    seen or caught species of the shown region in the field guide's numbering, 3 columns;
+    a creature view with `SpawnHeatMap` (which now says "Not found in the wild" when the
+    species has no wild entry) and previous / next among the seen ones.
+  - Town Map stamps get z-index by category (trainers 1, rest stops and markets 2, route
+    numbers 3, destinations 4, arenas 5, player and goal 6); the map container is
+    `isolation: isolate` so stamps never rise above the bars and sheets.
+  - One-finger zoom in `attachOrbit`: a touch tap, then a second touch within 320 ms and
+    40 px starts it; vertical drag changes zoom by 1 per 160 px (down = in, as common map
+    apps do), sideways turns 0.35°/px; the pitch follows the zoom as before; the drag never
+    taps what lies under it.
+  - Blank maps after the background: pmtiles caches the file's header and directories as
+    promises and keeps a rejected one, so one failed read (no network while in the
+    background) broke every later map of that file until a restart. `map/tiles.ts` wraps the
+    protocol: a failed (not aborted) read replaces the Protocol, so the next read starts
+    over; `resetTiles` does the same when the app returns after 15 s or more, and the play
+    map then reloads its basemap source, or is built again if its WebGL context was lost.
+  - Bag rows: the text starts at the left (`.list-btn`'s space-between pushed a short name
+    to the right).

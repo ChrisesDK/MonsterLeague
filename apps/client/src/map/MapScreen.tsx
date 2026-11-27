@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useBackHandler } from '../ui/backStack';
 import maplibregl, { type GeoJSONSource, type Map as MlMap, type Marker } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { Protocol } from 'pmtiles';
 import { hintMarkerUrl, markerUrl, spriteUrl, stampUrl } from '@oml/art';
 import { MAP_FRAMES, PLAYABLE_MUNICIPALITIES, regions, type Poi, type RegionId } from '@oml/data';
 import type { BattleState, TurnResult } from '@oml/engine';
@@ -92,6 +91,7 @@ import { applyPalette, NIGHT, paperStyle, PAPER } from './style';
 import { markerElement, PLAYER_SVG, STAR_SVG, START, addAttribution, regionStart } from './markers';
 import { addSkyWall } from './skyWall';
 import { ringPath, scanPhase, scanRing } from './scanRing';
+import { ensureTiles, resetTiles } from './tiles';
 import { LoadingScreen } from './LoadingScreen';
 import { TownMap } from './TownMap';
 import { useSpawns } from './useSpawns';
@@ -158,7 +158,6 @@ interface Props {
 }
 
 export { START };
-let protocolAdded = false;
 /** Never keep the player waiting longer than this (GPS or tiles slow): show the map. */
 export const LOADING_MAX_MS = 20_000;
 
@@ -224,6 +223,9 @@ function tierLine(badges: readonly number[], t: Translate): string {
           : 'arena.tier.some';
   return t(key, { n });
 }
+
+/** Back after this long in the background: tile caches start over (see the effect). */
+const BACKGROUND_RESET_MS = 15_000;
 
 export function MapScreen({
   t,
@@ -474,6 +476,35 @@ export function MapScreen({
     setTutorialSpot(placeTutorial(position, region, Math.random));
   }, [tutorialActive, tutorialSpot, position, region]);
 
+  // ---- coming back to the app (owner bug: blank maps after the background) ---------------
+  // After a while in the background the tile caches start over and the basemap reloads; if
+  // the phone took the map's WebGL context away meanwhile, the map is built again.
+  const [mapEpoch, setMapEpoch] = useState(0);
+  const glLost = useRef(false);
+  useEffect(() => {
+    let hiddenAt = 0;
+    const onVis = () => {
+      if (document.hidden) {
+        hiddenAt = Date.now();
+        return;
+      }
+      if (!hiddenAt || Date.now() - hiddenAt < BACKGROUND_RESET_MS) return;
+      resetTiles();
+      const map = mapRef.current;
+      const gl = (map as unknown as { painter?: { context?: { gl?: WebGLRenderingContext } } })
+        ?.painter?.context?.gl;
+      if (glLost.current || gl?.isContextLost?.()) {
+        glLost.current = false;
+        setMapEpoch((n) => n + 1);
+        return;
+      }
+      const src = map?.getSource('protomaps') as { url?: string; setUrl?: (u: string) => void };
+      if (src?.url && src.setUrl) src.setUrl(src.url);
+    };
+    document.addEventListener('visibilitychange', onVis);
+    return () => document.removeEventListener('visibilitychange', onVis);
+  }, []);
+
   // ---- map setup ------------------------------------------------------------------------
   useEffect(() => {
     if (inBattle || !containerRef.current) return;
@@ -481,10 +512,7 @@ export function MapScreen({
     setTownBuilt(false);
     setLoadingTimedOut(false);
     setLoading(true);
-    if (!protocolAdded) {
-      maplibregl.addProtocol('pmtiles', new Protocol().tile);
-      protocolAdded = true;
-    }
+    ensureTiles();
     const base = appBase();
     const start = last ?? regionStart(saveRef.current.region);
     const [fw, fs, fe, fn] = MAP_FRAMES[saveRef.current.region]!;
@@ -595,6 +623,9 @@ export function MapScreen({
       if (teleportMode.current && sim) sim.teleport({ lat: e.lngLat.lat, lng: e.lngLat.lng });
     });
     mapRef.current = map;
+    // the phone may take the WebGL context away while the app is in the background
+    map.getCanvas().addEventListener('webglcontextlost', () => (glLost.current = true));
+    map.getCanvas().addEventListener('webglcontextrestored', () => (glLost.current = false));
     // Dev tools only: automated checks can move the camera.
     if (devTools) (window as unknown as { __omlMap?: MlMap }).__omlMap = map;
 
@@ -667,7 +698,7 @@ export function MapScreen({
     };
     // `last` and `t` are read once for the initial view and labels.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inBattle, sim]);
+  }, [inBattle, sim, mapEpoch]);
 
   // The 3D buildings setting can change while the map is open.
   const buildings3d = save.settings.buildings3d;
