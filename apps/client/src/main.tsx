@@ -4,6 +4,8 @@ import { App } from './App';
 import './ui/tokens.css';
 import './ui/components.css';
 import './styles.css';
+// listens for the browser's install offer from the start (it can come before React mounts)
+import './ui/install';
 
 /**
  * The phone's top bar (<meta name="theme-color">) is the menu's paper colour (owner: the

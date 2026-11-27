@@ -11,6 +11,7 @@ import {
   noteFainted,
   teachFieldAbility,
   type SaveGame,
+  type LatLng,
 } from '@oml/game';
 import { recordGate3, type Gate3Event, type Gate3Session } from '@oml/playtest';
 import { makeT, type Locale, type Translate } from '../i18n';
@@ -107,6 +108,11 @@ export function GameApp({ t: appT, locale, onLocale, devTools, welcome = false }
     else setScreen(null);
   });
   const [ceremony, setCeremony] = useState<number | null>(null);
+  // the player's last position for the Goals screen (memory only, never saved: privacy)
+  const positionRef = useRef<LatLng | null>(null);
+  const onPosition = useCallback((p: LatLng | null) => {
+    if (p) positionRef.current = p;
+  }, []);
   const [gate3, setGate3] = useState<Gate3Session | null>(loadGate3);
   const sim = useMemo(() => (devTools ? new SimLocation(START) : null), [devTools]);
   const [devSpawns, setDevSpawns] = useState<ApiSpawn[]>([]);
@@ -395,6 +401,7 @@ export function GameApp({ t: appT, locale, onLocale, devTools, welcome = false }
         onMenu={() => setScreen('menu')}
         onMarket={(id) => setScreen(`market:${id}`)}
         onJournal={() => setScreen('journal')}
+        onPosition={onPosition}
         night={night}
         onBadge={setCeremony}
         onGate3={gate3 && !gate3.endedAt ? onGate3 : undefined}
@@ -418,6 +425,7 @@ export function GameApp({ t: appT, locale, onLocale, devTools, welcome = false }
             devTools={devTools}
             gate3={<Gate3Panel t={t} session={gate3} onSession={setGate3} locale={locale} />}
             onClose={() => setScreen(null)}
+            position={positionRef.current}
           />
         </div>
       )}

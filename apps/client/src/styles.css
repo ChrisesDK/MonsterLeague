@@ -175,6 +175,67 @@
   height: 56px;
   flex: none;
 }
+/* Owner: creatures as cards in two columns (team, item picker), sprite on top. */
+.creature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+.creature-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+  padding: var(--sp-2);
+  border-radius: var(--r-md);
+  border: 2px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+.creature-card img {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto;
+}
+.creature-card .creature-row-main {
+  align-items: center;
+}
+.creature-card .hp-line {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+}
+.creature-card .small-bar {
+  max-width: none;
+  width: 100%;
+}
+.creature-card:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.creature-card.given {
+  opacity: 1;
+  border-color: var(--leaf);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--leaf) 35%, transparent);
+}
+.item-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  text-align: left;
+}
+.item-btn .item-icon {
+  flex: none;
+}
+.item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
 .creature-row-main {
   display: flex;
   flex-direction: column;
@@ -321,10 +382,37 @@
   opacity: 0.45;
 }
 .guide-step {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 4;
   display: flex;
   justify-content: space-between;
   gap: var(--sp-2);
-  margin-top: var(--sp-4);
+  padding: var(--sp-2) var(--sp-3) calc(var(--sp-2) + env(safe-area-inset-bottom));
+  background: var(--paper);
+  border-top: 2px solid var(--line);
+}
+/* room under the content for the pinned buttons */
+[data-testid='screen-guide-entry'] {
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+}
+.heat-map {
+  display: block;
+  max-width: 100%;
+  margin: 0 auto var(--sp-2);
+  border-radius: var(--r-md);
+  background: var(--card);
+  border: 2px solid var(--line);
+}
+.guide-hints {
+  height: 6.5em;
+  overflow-y: auto;
+  padding-right: var(--sp-1);
+}
+.guide-hints p {
+  margin: 0 0 var(--sp-1);
 }
 .guide-entry img.unseen,
 .guide-row-card img.unseen {
@@ -361,6 +449,19 @@
 }
 .badge-slot:not(.earned) figcaption {
   color: var(--ink-3);
+}
+/* an unnumbered empty slot (open regions): a faint ring where a badge will go */
+.badge-blank {
+  display: block;
+  width: 70%;
+  max-width: 56px;
+  aspect-ratio: 1;
+  margin: 4px auto;
+  border-radius: 50%;
+  border: 2px dashed var(--line);
+}
+.badges-sheet .badge-grid {
+  padding: 0 var(--sp-4) var(--sp-4);
 }
 .toggle-row,
 .setting {
@@ -594,6 +695,8 @@ html[data-theme='night'] .arena-field {
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 .hpfill {
+  /* a block: the menus build the bar from spans, and an inline span ignores its width */
+  display: block;
   height: 100%;
   border-radius: inherit;
   transition:
@@ -1452,13 +1555,19 @@ html[data-theme='night'] .arena-field {
   animation: bob 1.6s ease-in-out infinite;
 }
 
-.maplibregl-ctrl-attrib {
+/* The map credits follow the day and night palettes (owner: black text was hard to read at
+   night). MapLibre's own sheet is loaded later and sets dark text, so these are explicit. */
+.maplibregl-ctrl.maplibregl-ctrl-attrib {
   font-size: 10px;
-  background: color-mix(in srgb, var(--card) 85%, transparent) !important;
-  color: var(--ink-2);
+  background: color-mix(in srgb, var(--card) 92%, transparent) !important;
+  color: var(--ink) !important;
 }
-.maplibregl-ctrl-attrib a {
-  color: var(--ink-2);
+.maplibregl-ctrl.maplibregl-ctrl-attrib a,
+.maplibregl-ctrl-attrib .maplibregl-ctrl-attrib-inner {
+  color: var(--ink) !important;
+}
+html[data-theme='night'] .maplibregl-ctrl-attrib-button {
+  filter: invert(1);
 }
 /* Play view: the credits button sits above the game's buttons (the bottom HUD row covered
    it and took its taps), clear of the phone's navigation bar; open, the credits lie on top
@@ -1499,8 +1608,48 @@ html[data-theme='night'] .arena-field {
   position: absolute;
   left: var(--sp-3);
   right: var(--sp-3);
-  bottom: calc(var(--sp-4) + env(safe-area-inset-bottom));
+  /* above the tool bar */
+  bottom: calc(var(--sp-4) + 72px + env(safe-area-inset-bottom));
   z-index: 2;
+}
+/* Owner: the Town Map's tools, labelled, at the bottom within thumb reach. */
+.town-map-tools {
+  position: absolute;
+  left: var(--sp-3);
+  right: var(--sp-3);
+  bottom: calc(var(--sp-3) + env(safe-area-inset-bottom));
+  z-index: 3;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-1);
+  padding: var(--sp-1);
+  border-radius: var(--r-md);
+  background: var(--hud);
+  border: 2px solid var(--line-strong);
+  box-shadow: var(--shadow-2);
+}
+.tm-tool {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  min-height: 52px;
+  padding: var(--sp-1);
+  border: 0;
+  border-radius: var(--r-sm);
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  cursor: pointer;
+}
+.tm-tool svg {
+  width: 22px;
+  height: 22px;
+}
+.tm-tool.on {
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 .town-map-card .poi-card {
   align-items: flex-start;
@@ -1581,8 +1730,8 @@ html[data-theme='night'] .arena-field {
 }
 .town-map-filter {
   position: absolute;
-  top: calc(var(--sp-3) + env(safe-area-inset-top) + 64px);
-  right: var(--sp-3);
+  bottom: calc(var(--sp-3) + 76px + env(safe-area-inset-bottom));
+  left: var(--sp-3);
   z-index: 3;
   display: grid;
   gap: var(--sp-1);
@@ -2037,4 +2186,68 @@ img.shiny,
   .shiny-mark {
     animation: none;
   }
+}
+
+/* ---------- creature detail: strengths and move info (owner) ---------- */
+.iv-block {
+  margin: var(--sp-2) 0 var(--sp-3);
+}
+.iv-row {
+  display: grid;
+  grid-template-columns: 5.5em 1fr 3.2em;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: 4px 0;
+  font-size: var(--fs-sm);
+}
+.iv-row .small {
+  text-align: right;
+  color: var(--ink-2);
+}
+.moves-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.info-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--line-strong);
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  line-height: 1;
+  cursor: pointer;
+}
+.info-btn.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.move-info {
+  display: block;
+  margin-top: 2px;
+  color: var(--ink-2);
+}
+
+/* ---------- install the game (owner) ---------- */
+.install {
+  display: grid;
+  gap: var(--sp-2);
+  margin: var(--sp-3) 0;
+}
+.install-steps {
+  margin: 0;
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-md);
+  background: var(--card);
+  border: 2px solid var(--line);
+}
+
+/* the credits keep their line break (owner) */
+.credits {
+  white-space: pre-line;
 }

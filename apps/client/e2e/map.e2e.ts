@@ -222,7 +222,8 @@ test('play camera: always on the player; drag rotates, zoom tilts (no panning)',
     );
   let cam = await camera(page);
   expect(cam.zoom).toBeCloseTo(17.5, 1);
-  expect(cam.pitch).toBeCloseTo(53, 0); // halfway between 30 (zoomed out) and 76 (zoomed in)
+  // 17.5 of 16.5–18.3: 30 (zoomed out) + 1/1.8 of the way to 76 (zoomed in)
+  expect(cam.pitch).toBeCloseTo(55.6, 0);
   const jump = (o: Record<string, number>) =>
     page.evaluate(
       // returns nothing: jumpTo returns the whole map object, and sending that back to the
@@ -235,7 +236,7 @@ test('play camera: always on the player; drag rotates, zoom tilts (no panning)',
   // zoom limits, and the tilt follows the zoom
   await jump({ zoom: 20 });
   cam = await camera(page);
-  expect(cam.zoom).toBeCloseTo(18.5, 1);
+  expect(cam.zoom).toBeCloseTo(18.3, 1);
   expect(cam.pitch).toBeCloseTo(76, 0);
   await jump({ zoom: 13 });
   cam = await camera(page);
@@ -386,8 +387,9 @@ test('fog wall: the ground reaches just past it at every zoom, the sky is behind
   const out = await look(16.5);
   const mid = await look(17.5);
   const inn = await look(18.5);
-  // look-ahead: the player moves down the screen as you zoom in (60% of the way down)
-  expect(out.playerY).toBeLessThan(0.47);
+  // look-ahead: the player stands in the middle zoomed out (owner) and moves down the
+  // screen as you zoom in (72% of the way down)
+  expect(out.playerY).toBeCloseTo(0.5, 1);
   expect(mid.playerY).toBeGreaterThan(out.playerY + 0.03);
   expect(inn.playerY).toBeGreaterThan(0.58);
   // the ground is drawn to just past the 1.2 km wall (50 m), or to the top of the screen
@@ -523,11 +525,14 @@ test('Fyn map: the regions of Fyn, Odense and Svendborg open; badges grey until 
   await expect(page.getByTestId('tm-player')).toHaveCount(0);
   await page.getByTestId('tm-arena-1').click();
   await expect(page.getByTestId('townmap-card')).toContainText('Frederiksø');
-  // the top bar's badges button opens the badges of the region the map shows
+  // the tool bar's badges button opens a sheet with the badges of the region the map shows
   await page.getByTestId('townmap-badges').click();
-  await expect(page.locator('.badge-grid')).toHaveAttribute('data-region', 'svendborg');
-  await page.getByTestId('screen-back').click();
-  await expect(page.getByTestId('screen-badges')).toHaveCount(0);
+  const sheet = page.getByTestId('townmap-badges-sheet');
+  await expect(sheet.locator('.badge-grid')).toHaveAttribute('data-region', 'svendborg');
+  await expect(sheet.locator('[data-testid=badge-empty]')).toHaveCount(8);
+  await expect(page.getByTestId('town-map')).toBeVisible();
+  await sheet.getByRole('button', { name: 'Close' }).click();
+  await expect(sheet).toHaveCount(0);
   expect(await dev(page, 'save').then((x) => (x as { region: string }).region)).toBe('odense');
   await page.getByTestId('townmap-fyn').click();
   await page.getByTestId('fyn-badges-odense').click();
@@ -1303,7 +1308,9 @@ test('Settings end with the credits line', async ({ page }) => {
   await page.getByTestId('menu-button').click();
   await page.getByTestId('menu-settings').click();
   const credits = page.getByTestId('settings-credits');
-  await expect(credits).toHaveText('Developed by Christian Bröchner Rasmussen with Claude');
+  await expect(credits).toHaveText(/^Developed with Claude\s+by Christian Bröchner Rasmussen$/);
+  // two lines (owner)
+  expect((await credits.boundingBox())!.height).toBeGreaterThan(24);
   // the very last thing on the screen
   const last = await page.evaluate(() => {
     const screen = document.querySelector('[data-testid="screen-settings"]')!;

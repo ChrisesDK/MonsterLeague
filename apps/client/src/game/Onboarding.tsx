@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { InstallButton } from '../ui/InstallButton';
 import { spriteUrl } from '@oml/art';
 import type { Dex } from '@oml/data';
 import type { Translate } from '../i18n';
@@ -60,6 +61,7 @@ export function WelcomeScreen({ t, onContinue }: { t: Translate; onContinue: () 
         )}
         <li>{t('welcome.export')}</li>
       </ul>
+      <InstallButton t={t} />
       <h2>{t('welcome.feedbackTitle')}</h2>
       <ul className="welcome-list">
         <li>{t('welcome.feedback')}</li>

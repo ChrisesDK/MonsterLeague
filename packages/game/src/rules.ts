@@ -568,7 +568,8 @@ export function finishBattle(
       }
       if (trainer?.tier === 'leader' && trainer.arena && !next.badges.includes(trainer.arena)) {
         badge = trainer.arena;
-        next = { ...next, badges: [...next.badges, badge].sort((a, b) => a - b) };
+        // in the order won (owner: the first arena beaten is the first badge shown)
+        next = { ...next, badges: [...next.badges, badge] };
       }
     }
   }

@@ -171,6 +171,15 @@ const PATHS = {
       <path d="M4 5l16 14" />
     </>
   ),
+  /** Travelling faster than walking: a gauge with its needle far over. */
+  speed: (
+    <>
+      <path d="M4 16a8 8 0 1 1 16 0" />
+      <path d="M12 16l4.6-4.4" />
+      <circle cx="12" cy="16" r="1.2" fill="currentColor" />
+      <path d="M2.5 20h19" />
+    </>
+  ),
   moon: <path d="M19 15.5A8 8 0 0 1 8.5 5a7.5 7.5 0 1 0 10.5 10.5Z" />,
   sun: (
     <>

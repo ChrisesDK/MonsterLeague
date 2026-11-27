@@ -1,7 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import maplibregl, { type Map as MlMap, type StyleSpecification } from 'maplibre-gl';
 import { badgeUrl } from '@oml/art';
-import { PLAYABLE_MUNICIPALITIES, type MunicipalityId, type RegionId } from '@oml/data';
+import {
+  PLAYABLE_MUNICIPALITIES,
+  REGION_IDS,
+  regions,
+  type MunicipalityId,
+  type RegionId,
+} from '@oml/data';
 import fynRaw from '@oml/data/content/shared/fyn.geojson?raw';
 import type { SaveGame } from '@oml/game';
 import type { Translate } from '../i18n';
@@ -56,6 +62,21 @@ function appBase(): string {
 
 const playable = (id: string) => (PLAYABLE_MUNICIPALITIES as readonly string[]).includes(id);
 
+/**
+ * A light sketch of each playable region (owner: the solid green hid the badges): its game
+ * routes as faint lines, walked or sailed, nothing else.
+ */
+const routeSketch: GeoJSON.FeatureCollection = {
+  type: 'FeatureCollection',
+  features: REGION_IDS.filter(playable).flatMap((r) =>
+    Object.values(regions[r].routes).map((route) => ({
+      type: 'Feature' as const,
+      properties: { ferry: route.kind === 'ferry' },
+      geometry: { type: 'LineString' as const, coordinates: route.path },
+    })),
+  ),
+};
+
 function fynStyle(
   base: string,
   p: Palette,
@@ -66,6 +87,7 @@ function fynStyle(
     glyphs: `${base}fonts/{fontstack}/{range}.pbf`,
     sources: {
       fyn: { type: 'geojson', data: fyn },
+      sketch: { type: 'geojson', data: routeSketch },
       labels: {
         type: 'geojson',
         data: {
@@ -84,13 +106,38 @@ function fynStyle(
         id: 'land',
         type: 'fill',
         source: 'fyn',
+        paint: { 'fill-color': p.earth },
+      },
+      {
+        id: 'playable-tint',
+        type: 'fill',
+        source: 'fyn',
+        filter: ['in', ['get', 'id'], ['literal', PLAYABLE_MUNICIPALITIES]],
+        paint: { 'fill-color': p.park, 'fill-opacity': 0.28 },
+      },
+      {
+        id: 'sketch',
+        type: 'line',
+        source: 'sketch',
+        filter: ['!', ['get', 'ferry']],
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
         paint: {
-          'fill-color': [
-            'case',
-            ['in', ['get', 'id'], ['literal', PLAYABLE_MUNICIPALITIES]],
-            p.park,
-            p.earth,
-          ],
+          'line-color': p.route,
+          'line-width': ['interpolate', ['linear'], ['zoom'], 8, 0.6, 10, 1.4],
+          'line-opacity': 0.5,
+        },
+      },
+      {
+        id: 'sketch-ferry',
+        type: 'line',
+        source: 'sketch',
+        filter: ['get', 'ferry'],
+        layout: { 'line-cap': 'round' },
+        paint: {
+          'line-color': p.route,
+          'line-width': ['interpolate', ['linear'], ['zoom'], 8, 0.6, 10, 1.4],
+          'line-opacity': 0.4,
+          'line-dasharray': [1, 3],
         },
       },
       {

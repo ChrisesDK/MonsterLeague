@@ -66,7 +66,7 @@ test('feedback, version, save export and import, home hints in the field guide',
   // a Glimmer lead: a sparkle after its name; its Glimmer form opens in the field guide
   await dev(page, 'makeGlimmer');
   await page.getByTestId('menu-team').click();
-  await expect(page.locator('.creature-row').first()).toContainText('✦');
+  await expect(page.getByTestId('team-0')).toContainText('✦');
   await page.getByTestId('screen-back').click();
   await page.getByTestId('menu-guide').click();
   await page.getByTestId('guide-gnistkat').click();
@@ -89,8 +89,13 @@ test('feedback, version, save export and import, home hints in the field guide',
   // the Glimmer form is greyed out until one is met; previous and next step through the list
   await expect(page.getByTestId('guide-form-glimmer')).toBeDisabled();
   const title = await page.locator('[data-testid=screen-guide-entry] h1').textContent();
+  // a heat map of where it lives; previous / next stay put at the bottom (owner)
+  await expect(page.getByTestId('guide-heat-map')).toHaveAttribute('data-ready', 'true');
+  const at = async () => (await page.getByTestId('guide-next').boundingBox())!.y;
+  const y0 = await at();
   await page.getByTestId('guide-next').click();
   await expect(page.locator('[data-testid=screen-guide-entry] h1')).not.toHaveText(title ?? '');
+  expect(Math.abs((await at()) - y0)).toBeLessThan(2);
   await page.getByTestId('guide-prev').click();
   await expect(page.locator('[data-testid=screen-guide-entry] h1')).toHaveText(title ?? '');
   await page.getByTestId('screen-back').click();

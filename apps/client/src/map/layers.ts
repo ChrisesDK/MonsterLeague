@@ -166,6 +166,52 @@ function setPatterns(map: MlMap, p: Palette) {
   }
 }
 
+type RouteFeatures = GeoJSON.FeatureCollection<GeoJSON.LineString, { id: string; kind: string }>;
+
+/**
+ * The route network for the dashed lines (owner request): routes that share a stretch of path
+ * would each draw their own dashes there, out of step, and the stretch looked solid. Every
+ * shared segment is kept once (main routes first, then alt, then explore), and each route's
+ * remaining segments are joined into as few lines as possible so the dashes run on.
+ */
+export function routeNetwork(routes: RouteFeatures): RouteFeatures {
+  const order = ['main', 'alt', 'explore'];
+  const rank = (k: string) => (order.includes(k) ? order.indexOf(k) : order.length);
+  const sorted = routes.features
+    .filter((f) => f.properties.kind !== 'ferry')
+    .sort((a, b) => rank(a.properties.kind) - rank(b.properties.kind));
+  const key = (p: GeoJSON.Position) => `${p[0]!.toFixed(6)},${p[1]!.toFixed(6)}`;
+  const used = new Set<string>();
+  const out: RouteFeatures['features'] = [];
+  for (const f of sorted) {
+    const path = f.geometry.coordinates;
+    let line: GeoJSON.Position[] = [];
+    const flush = () => {
+      if (line.length > 1)
+        out.push({
+          type: 'Feature',
+          properties: f.properties,
+          geometry: { type: 'LineString', coordinates: line },
+        });
+      line = [];
+    };
+    for (let i = 1; i < path.length; i++) {
+      const a = key(path[i - 1]!);
+      const b = key(path[i]!);
+      const k = a < b ? `${a}|${b}` : `${b}|${a}`;
+      if (used.has(k)) {
+        flush();
+        continue;
+      }
+      used.add(k);
+      if (line.length === 0) line.push(path[i - 1]!);
+      line.push(path[i]!);
+    }
+    flush();
+  }
+  return { type: 'FeatureCollection', features: out };
+}
+
 /** Adds the game layers to a loaded map. `mode` decides labels and widths. */
 export function addWorldLayers(
   map: MlMap,
@@ -229,33 +275,37 @@ export function addWorldLayers(
   // one line in the region's borders.geojson, so no two lines lie on top of each other.
   map.addSource('borders', { type: 'geojson', data: geo.borders });
   const dotted = { 'line-cap': 'round', 'line-join': 'round' } as const;
-  map.addLayer({
-    id: 'zone-edges',
-    type: 'line',
-    source: 'borders',
-    filter: ['==', ['get', 'kind'], 'zone'],
-    minzoom: opts.mode === 'town' ? 11.5 : 0,
-    layout: dotted,
-    paint: {
-      'line-color': p.district,
-      'line-width': opts.mode === 'town' ? 1.5 : 2,
-      'line-dasharray': [0.1, 3],
-      'line-opacity': 0.55,
-    },
-  });
-  map.addLayer({
-    id: 'district-edges',
-    type: 'line',
-    source: 'borders',
-    filter: ['==', ['get', 'kind'], 'district'],
-    layout: dotted,
-    paint: {
-      'line-color': p.district,
-      'line-width': opts.mode === 'town' ? 3 : 3.5,
-      'line-dasharray': [0.1, 2],
-      'line-opacity': 0.85,
-    },
-  });
+  // P28 (owner): in an open region nothing is unlocked by area, so no lines inside it.
+  const inner = !regions[opts.region].open;
+  if (inner)
+    map.addLayer({
+      id: 'zone-edges',
+      type: 'line',
+      source: 'borders',
+      filter: ['==', ['get', 'kind'], 'zone'],
+      minzoom: opts.mode === 'town' ? 11.5 : 0,
+      layout: dotted,
+      paint: {
+        'line-color': p.district,
+        'line-width': opts.mode === 'town' ? 1.5 : 2,
+        'line-dasharray': [0.1, 3],
+        'line-opacity': 0.55,
+      },
+    });
+  if (inner)
+    map.addLayer({
+      id: 'district-edges',
+      type: 'line',
+      source: 'borders',
+      filter: ['==', ['get', 'kind'], 'district'],
+      layout: dotted,
+      paint: {
+        'line-color': p.district,
+        'line-width': opts.mode === 'town' ? 3 : 3.5,
+        'line-dasharray': [0.1, 2],
+        'line-opacity': 0.85,
+      },
+    });
   map.addLayer({
     id: 'region-border',
     type: 'line',
@@ -291,11 +341,14 @@ export function addWorldLayers(
       'line-opacity': 0.8,
     },
   });
+  map.addSource('route-network', {
+    type: 'geojson',
+    data: routeNetwork(geo.routes as unknown as RouteFeatures),
+  });
   map.addLayer({
     id: 'routes',
     type: 'line',
-    source: 'routes',
-    filter: ['!=', ['get', 'kind'], 'ferry'],
+    source: 'route-network',
     layout: { 'line-cap': 'butt', 'line-join': 'round' },
     paint: {
       'line-color': ['case', ['==', ['get', 'kind'], 'explore'], p.routeExplore, p.route],

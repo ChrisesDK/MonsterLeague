@@ -1,7 +1,21 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { badgeUrl, spriteUrl } from '@oml/art';
-import { content, PLAYABLE_MUNICIPALITIES, regions, type Dex, type RegionId } from '@oml/data';
-import { getMaxHp, getStats, xpForLevel, type CreatureInstance } from '@oml/engine';
+import {
+  content,
+  PLAYABLE_MUNICIPALITIES,
+  regions,
+  type Dex,
+  type Move,
+  type RegionId,
+} from '@oml/data';
+import {
+  AVERAGE_IVS,
+  getMaxHp,
+  getStats,
+  IV_MAX,
+  xpForLevel,
+  type CreatureInstance,
+} from '@oml/engine';
 import {
   canTeach,
   canUseItem,
@@ -9,7 +23,6 @@ import {
   marketStock,
   sellItem,
   sellPrice,
-  challengeTier,
   fieldAbilitiesUnlocked,
   forgetFieldAbility,
   guideHints,
@@ -28,10 +41,15 @@ import {
   RECOVERY_SECONDS,
   type Goal,
   type SaveGame,
+  distanceM,
+  type LatLng,
 } from '@oml/game';
 import { creatureName } from '../eventText';
 import { Button, ListRow, ProgressBar, Pill, Tabs } from '../ui/components';
 import { Icon, type IconName } from '../ui/icons';
+import { ItemIcon } from '../ui/itemIcons';
+import { InstallButton } from '../ui/InstallButton';
+import { SpawnHeatMap } from './SpawnHeatMap';
 import { useBackHandler } from '../ui/backStack';
 import { goalProgress, goalTitle } from './goalText';
 import { makeT, type Translate } from '../i18n';
@@ -42,6 +60,8 @@ import { WelcomeScreen } from './Onboarding';
 export type ScreenId =
   | 'menu'
   | 'journal'
+  /** The Goals opened from the menu (back returns to the menu). */
+  | 'goals'
   | 'team'
   | 'storage'
   | 'bag'
@@ -59,6 +79,7 @@ export type ScreenId =
  * view). Used for the back gesture (owner: in a menu it goes back a level).
  */
 export function previousScreen(screen: ScreenId, save: SaveGame): ScreenId | null {
+  // the Goals opened from the map's goal card go back to the map, from the menu to the menu
   if (screen === 'menu' || screen === 'journal' || screen.startsWith('market:')) return null;
   if (screen.startsWith('creature:')) {
     const uid = screen.slice('creature:'.length);
@@ -76,6 +97,8 @@ interface Props {
   devTools: boolean;
   gate3: ReactNode;
   onClose: () => void;
+  /** The player's last position (memory only), to sort the Goals by distance. */
+  position?: LatLng | null;
 }
 
 function Shell({
@@ -87,25 +110,54 @@ function Shell({
 }: {
   t: Translate;
   title: string;
-  onBack: () => void;
+  /** Leave out for a screen whose only way out is elsewhere (the menu's map button). */
+  onBack?: () => void;
   children: ReactNode;
   testId: string;
 }) {
   return (
     <main className="setup screen" data-testid={testId}>
       <div className="screen-top">
-        <Button
-          round
-          icon="back"
-          data-testid="screen-back"
-          aria-label={t('ui.back')}
-          onClick={onBack}
-        />
+        {onBack && (
+          <Button
+            round
+            icon="back"
+            data-testid="screen-back"
+            aria-label={t('ui.back')}
+            onClick={onBack}
+          />
+        )}
         <h1>{title}</h1>
       </div>
       {children}
     </main>
   );
+}
+
+/** What a move does, in words, from its data (owner: a button explains the moves). */
+export function moveInfo(m: Move, t: Translate): string {
+  const parts: string[] = [];
+  parts.push(m.power > 0 ? t('moveInfo.power', { power: m.power }) : t('moveInfo.noDamage'));
+  parts.push(
+    m.accuracy === null ? t('moveInfo.alwaysHits') : t('moveInfo.accuracy', { acc: m.accuracy }),
+  );
+  if (m.priority > 0) parts.push(t('moveInfo.first'));
+  if (m.priority < 0) parts.push(t('moveInfo.last'));
+  for (const e of m.effects) {
+    if (e.kind === 'status')
+      parts.push(t('moveInfo.status', { chance: e.chance, status: t(`status.${e.status}`) }));
+    if (e.kind === 'stat') {
+      const what = t(e.stages > 0 ? 'moveInfo.raises' : 'moveInfo.lowers', {
+        who: t(e.target === 'self' ? 'moveInfo.own' : 'moveInfo.foe'),
+        stat: t(`stat.${e.stat}`),
+        n: Math.abs(e.stages),
+      });
+      parts.push(e.chance < 100 ? t('moveInfo.chance', { chance: e.chance, what }) : what);
+    }
+    if (e.kind === 'heal') parts.push(t('moveInfo.heal', { pct: e.percent }));
+    if (e.kind === 'recoil') parts.push(t('moveInfo.recoil', { pct: e.percent }));
+  }
+  return parts.join(' · ');
 }
 
 /** Fainted creatures' recovery clock (save.faintedSince), for the HP lines. */
@@ -148,14 +200,21 @@ function CreatureRow({
   t,
   onClick,
   testId,
+  card = false,
 }: {
   c: CreatureInstance;
   t: Translate;
   onClick: () => void;
   testId?: string;
+  /** A card in a two-column grid, sprite on top (owner: the team screen). */
+  card?: boolean;
 }) {
   return (
-    <button className="btn list-btn creature-row" data-testid={testId} onClick={onClick}>
+    <button
+      className={card ? 'creature-card' : 'btn list-btn creature-row'}
+      data-testid={testId}
+      onClick={onClick}
+    >
       <img src={spriteUrl(c.speciesId)} alt="" className={c.shiny ? 'shiny' : ''} />
       <span className="creature-row-main">
         <strong>
@@ -185,12 +244,22 @@ export function Screens(props: Props) {
   );
 }
 
-function ScreensInner({ t, screen, onScreen, save, update, devTools, gate3, onClose }: Props) {
+function ScreensInner({
+  t,
+  screen,
+  onScreen,
+  save,
+  update,
+  devTools,
+  gate3,
+  onClose,
+  position = null,
+}: Props) {
   const back = () => onScreen('menu');
 
   if (screen === 'menu') {
     const items: { id: ScreenId; label: string; icon: IconName }[] = [
-      { id: 'journal', label: t('menu.journal'), icon: 'journal' },
+      { id: 'goals', label: t('menu.journal'), icon: 'journal' },
       { id: 'team', label: t('menu.team'), icon: 'team' },
       { id: 'bag', label: t('menu.bag'), icon: 'bag' },
       { id: 'guide', label: t('menu.guide'), icon: 'guide' },
@@ -200,7 +269,8 @@ function ScreensInner({ t, screen, onScreen, save, update, devTools, gate3, onCl
       { id: 'feedback', label: t('menu.feedback'), icon: 'feedback' },
     ];
     return (
-      <Shell t={t} title={t('menu.title')} onBack={onClose} testId="screen-menu">
+      // one way out: the big "back to the map" button (owner)
+      <Shell t={t} title={t('menu.title')} testId="screen-menu">
         <nav className="menu-list">
           {items.map((i) => (
             <Button
@@ -227,18 +297,22 @@ function ScreensInner({ t, screen, onScreen, save, update, devTools, gate3, onCl
     );
   }
 
-  if (screen === 'journal') return <JournalScreen t={t} save={save} onBack={onClose} />;
+  if (screen === 'journal')
+    return <JournalScreen t={t} save={save} position={position} onBack={onClose} />;
+  if (screen === 'goals')
+    return <JournalScreen t={t} save={save} position={position} onBack={back} />;
 
   if (screen === 'team') {
     return (
       <Shell t={t} title={t('menu.team')} onBack={back} testId="screen-team">
         <p className="muted small">{t('team.obedience', { level: obedienceLevel(save.badges) })}</p>
-        <div className="list-panel">
+        <div className="creature-grid">
           {save.team.map((c, i) => (
             <CreatureRow
               key={c.uid}
               c={c}
               t={t}
+              card
               testId={`team-${i}`}
               onClick={() => onScreen(`creature:${c.uid}`)}
             />
@@ -299,6 +373,7 @@ function CreatureDetail({
 }) {
   const dex = useContext(RegionDex);
   const [forgetFor, setForgetFor] = useState<string | null>(null);
+  const [movesInfo, setMovesInfo] = useState(false);
   const c = [...save.team, ...save.storage].find((x) => x.uid === uid);
   if (!c) return null;
   const species = dex.species[c.speciesId]!;
@@ -333,20 +408,47 @@ function CreatureDetail({
           </p>
         </div>
       </div>
+      {/* HP is beside the sprite already (owner) */}
       <dl className="stat-grid">
-        {(['hp', 'atk', 'def', 'spd'] as const).map((k) => (
+        {(['atk', 'def', 'spd'] as const).map((k) => (
           <div key={k}>
             <dt>{t(`stat.${k}`)}</dt>
             <dd>{stats[k]}</dd>
           </div>
         ))}
       </dl>
-      <p className="muted small" data-testid="detail-ivs">
-        {c.ivs
-          ? t('detail.ivs', { hp: c.ivs.hp, atk: c.ivs.atk, def: c.ivs.def })
-          : t('detail.ivsAverage')}
-      </p>
-      <h2>{t('detail.moves')}</h2>
+      {/* owner: the strengths as bars, each out of its maximum */}
+      <section className="iv-block" data-testid="detail-ivs">
+        <p className="panel-title small">
+          {t('detail.ivsTitle')}
+          {!c.ivs && ` · ${t('detail.ivsAverage')}`}
+        </p>
+        {(['hp', 'atk', 'def'] as const).map((k) => {
+          const v = (c.ivs ?? AVERAGE_IVS)[k];
+          return (
+            <div key={k} className="iv-row" data-testid={`iv-${k}`}>
+              <span>{t(`stat.${k}`)}</span>
+              <ProgressBar value={v} max={IV_MAX} tone="gold" label={t(`stat.${k}`)} />
+              <span className="small">
+                {v}/{IV_MAX}
+              </span>
+            </div>
+          );
+        })}
+      </section>
+      <h2 className="moves-head">
+        {t('detail.moves')}
+        <button
+          type="button"
+          className={`info-btn${movesInfo ? ' on' : ''}`}
+          data-testid="moves-info"
+          aria-label={t('detail.movesInfo')}
+          aria-pressed={movesInfo}
+          onClick={() => setMovesInfo((v) => !v)}
+        >
+          ?
+        </button>
+      </h2>
       <ul className="move-list">
         {c.moves.map((m) => (
           <li key={m.moveId}>
@@ -355,6 +457,11 @@ function CreatureDetail({
               {t(`type.${dex.moves[m.moveId]!.type}.name`)} ·{' '}
               {t('ui.pp', { pp: m.pp, max: dex.moves[m.moveId]!.pp })}
             </span>
+            {movesInfo && (
+              <span className="move-info small" data-testid={`move-info-${m.moveId}`}>
+                {moveInfo(dex.moves[m.moveId]!, t)}
+              </span>
+            )}
           </li>
         ))}
         {c.fieldAbility && (
@@ -514,7 +621,16 @@ function BagScreen({
 }) {
   const dex = useContext(RegionDex);
   const [using, setUsing] = useState<string | null>(null);
-  const [msg, setMsg] = useState<string | null>(null);
+  /** The creature just given an item: its HP bar fills up, then the picker closes. */
+  const [given, setGiven] = useState<string | null>(null);
+  useEffect(() => {
+    if (!given) return;
+    const id = setTimeout(() => {
+      setGiven(null);
+      setUsing(null);
+    }, 1400);
+    return () => clearTimeout(id);
+  }, [given]);
   const items = Object.entries(save.bag).filter(([, n]) => n > 0);
   const targets = [...save.team, ...save.storage];
   return (
@@ -522,11 +638,6 @@ function BagScreen({
       <p className="coins-line" data-testid="bag-coins">
         <Icon name="coin" /> {t('coins.amount', { n: save.coins })}
       </p>
-      {msg && (
-        <p className="notice" role="status">
-          {msg}
-        </p>
-      )}
       {items.length === 0 && <p className="muted">{t('ui.emptyBag')}</p>}
       <div className="list-panel">
         {items.map(([id, n]) => {
@@ -534,16 +645,19 @@ function BagScreen({
           return (
             <button
               key={id}
-              className="btn list-btn"
+              className="btn list-btn item-btn"
               data-testid={`bag-${id}`}
               disabled={!usable}
               onClick={() => setUsing(id)}
             >
-              <span>
-                {t(`item.${id}.name`)} <span className="muted">×{n}</span>
-              </span>
-              <span className="muted small">
-                {usable ? t(`item.${id}.desc`) : t('bag.charmHint')}
+              <ItemIcon id={id} />
+              <span className="item-text">
+                <span>
+                  {t(`item.${id}.name`)} <span className="muted">×{n}</span>
+                </span>
+                <span className="muted small">
+                  {usable ? t(`item.${id}.desc`) : t('bag.charmHint')}
+                </span>
               </span>
             </button>
           );
@@ -553,25 +667,26 @@ function BagScreen({
         <div className="modal" role="dialog" aria-modal="true">
           <div className="modal-card">
             <h2>{t('bag.useOn', { item: t(`item.${using}.name`) })}</h2>
-            {targets.map((c) => (
-              <button
-                key={c.uid}
-                className="btn list-btn"
-                data-testid={`use-on-${c.uid}`}
-                disabled={!canUseItem(c, using, dex)}
-                onClick={() => {
-                  update((s) => applyItem(s, using, c.uid));
-                  setMsg(
-                    t('bag.used', { item: t(`item.${using}.name`), name: creatureName(c, t) }),
-                  );
-                  setUsing(null);
-                }}
-              >
-                <span>{creatureName(c, t)}</span>
-                <HpLine c={c} t={t} />
-              </button>
-            ))}
-            <button className="btn" onClick={() => setUsing(null)}>
+            {/* owner: sprites in two columns; using an item shows the HP going up, no notice */}
+            <div className="creature-grid">
+              {targets.map((c) => (
+                <button
+                  key={c.uid}
+                  className={`creature-card${given === c.uid ? ' given' : ''}`}
+                  data-testid={`use-on-${c.uid}`}
+                  disabled={given !== null || !canUseItem(c, using, dex)}
+                  onClick={() => {
+                    update((s) => applyItem(s, using, c.uid));
+                    setGiven(c.uid);
+                  }}
+                >
+                  <img src={spriteUrl(c.speciesId)} alt="" className={c.shiny ? 'shiny' : ''} />
+                  <strong>{creatureName(c, t)}</strong>
+                  <HpLine c={c} t={t} />
+                </button>
+              ))}
+            </div>
+            <button className="btn" disabled={given !== null} onClick={() => setUsing(null)}>
               {t('ui.back')}
             </button>
           </div>
@@ -906,12 +1021,17 @@ function GuideScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBack
           </p>
         </div>
         <h2 className="guide-where">{t('guide.where')}</h2>
-        {dex.starters.includes(s.id) && <p className="muted">{t('guide.starter')}</p>}
-        {hintText(tr, s.id, dex).map((h) => (
-          <p key={h} className="muted">
-            {h}
-          </p>
-        ))}
+        {/* owner: a heat map and a fixed-height text box, so the page keeps its shape */}
+        <SpawnHeatMap regionId={region} speciesId={s.id} dex={dex} label={t('guide.where')} />
+        <div className="guide-hints" data-testid="guide-hints">
+          {dex.starters.includes(s.id) && <p className="muted">{t('guide.starter')}</p>}
+          {hintText(tr, s.id, dex).map((h) => (
+            <p key={h} className="muted">
+              {h}
+            </p>
+          ))}
+        </div>
+        {/* previous / next stay at the bottom of the screen (owner) */}
         <nav className="guide-step">
           <Button
             icon="back"
@@ -1007,6 +1127,55 @@ function RegionTabs({
  * (another region's is parked; nothing before the first visit). Also opened from the Town
  * Map's top bar, on the region the map shows.
  */
+/**
+ * A region's 8 badge slots. In an open region (owner request) the badges won come first, in
+ * the order they were won, and the empty slots carry no arena number.
+ */
+export function BadgeGrid({
+  t,
+  tr,
+  region,
+  badges,
+  ordered,
+}: {
+  t: Translate;
+  tr: Translate;
+  region: RegionId;
+  badges: readonly number[];
+  ordered: boolean;
+}) {
+  const slots: (number | null)[] = ordered
+    ? [...badges, ...Array.from({ length: Math.max(0, 8 - badges.length) }, () => null)]
+    : [1, 2, 3, 4, 5, 6, 7, 8];
+  return (
+    <div className="badge-grid" data-region={region}>
+      {slots.map((a, i) => {
+        const earned = a !== null && badges.includes(a);
+        return (
+          <figure
+            key={a ?? `empty-${i}`}
+            className={`badge-slot${earned ? ' earned' : ''}`}
+            data-testid={a === null ? 'badge-empty' : `badge-${a}`}
+          >
+            {a === null ? (
+              <span className="badge-blank" aria-hidden />
+            ) : (
+              <img src={badgeUrl(a, earned, region)} alt="" />
+            )}
+            <figcaption className="small">
+              {earned
+                ? tr(`badge.${a}.name`)
+                : a === null
+                  ? t('badges.notWon')
+                  : t('badges.empty', { n: a })}
+            </figcaption>
+          </figure>
+        );
+      })}
+    </div>
+  );
+}
+
 export function BadgesScreen({
   t,
   save,
@@ -1027,28 +1196,12 @@ export function BadgesScreen({
   return (
     <Shell t={t} title={t('menu.badges')} onBack={onBack} testId="screen-badges">
       <RegionTabs t={t} region={region} onRegion={setRegion} testId="badges-tab" />
-      <div className="badge-grid" data-region={region}>
-        {[1, 2, 3, 4, 5, 6, 7, 8].map((a) => {
-          const earned = view.badges.includes(a);
-          return (
-            <figure
-              key={a}
-              className={`badge-slot${earned ? ' earned' : ''}`}
-              data-testid={`badge-${a}`}
-            >
-              <img src={badgeUrl(a, earned, region)} alt="" />
-              <figcaption className="small">
-                {earned ? tr(`badge.${a}.name`) : t('badges.empty', { n: a })}
-              </figcaption>
-            </figure>
-          );
-        })}
-      </div>
+      <BadgeGrid t={t} tr={tr} region={region} badges={view.badges} ordered={dex.open} />
       <p>
         {next === null
           ? t('badges.all')
           : dex.open
-            ? t('badges.anyOrder', { n: challengeTier(view.badges) })
+            ? t('badges.anyOrder')
             : arenaPoi
               ? t('badges.next', { name: tr(`poi.${arenaPoi.id}.name`) })
               : t('badges.nextUnknown', { n: next })}
@@ -1060,9 +1213,6 @@ export function BadgesScreen({
             n: Object.keys(dex.zones).filter((z) => isZoneOpen(view, z)).length,
             of: Object.keys(dex.zones).length,
           })}`}
-      </p>
-      <p className="muted small" data-testid="badges-trainers">
-        {t('badges.trainers', { n: view.defeatedTrainers.length })}
       </p>
     </Shell>
   );
@@ -1211,6 +1361,12 @@ function SettingsScreen({
       </section>
 
       {gate3}
+
+      <section className="panel-section" data-testid="setting-install">
+        <h2>{t('install.title')}</h2>
+        <p className="muted small">{t('install.help')}</p>
+        <InstallButton t={t} showInstalled />
+      </section>
 
       <section className="panel-section">
         <h2>{t('settings.save')}</h2>
@@ -1400,9 +1556,37 @@ function GoalRow({ g, t, current }: { g: Goal; t: Translate; current?: boolean }
   );
 }
 
-function JournalScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBack: () => void }) {
+/**
+ * Goals (owner: "Journal" read like a diary): main and side goals per district. With a
+ * position, the districts nearest the player come first; a district with every goal done
+ * keeps its name with an "all done" label and moves to the end.
+ */
+function JournalScreen({
+  t,
+  save,
+  position,
+  onBack,
+}: {
+  t: Translate;
+  save: SaveGame;
+  position: LatLng | null;
+  onBack: () => void;
+}) {
+  const dex = useContext(RegionDex);
   const [tab, setTab] = useState<'goals' | 'done'>('goals');
-  const j = journal(save, null);
+  const j = journal(save, position);
+  const away = (d: number) =>
+    position
+      ? Math.min(
+          ...Object.values(dex.zones)
+            .filter((z) => z.district === d)
+            .map((z) => distanceM(position, z)),
+        )
+      : d;
+  const allDone = (d: (typeof j.districts)[number]) => [...d.main, ...d.side].every((g) => g.done);
+  const districts = [...j.districts].sort(
+    (a, b) => Number(allDone(a)) - Number(allDone(b)) || away(a.district) - away(b.district),
+  );
   return (
     <Shell t={t} title={t('journal.title')} onBack={onBack} testId="screen-journal">
       <section className="card accent journal-current" data-testid="journal-current">
@@ -1417,12 +1601,14 @@ function JournalScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBa
         </div>
       </section>
       <p className="muted small" data-testid="journal-region">
-        {t('journal.region', {
-          routes: j.routesDone,
-          routesTotal: j.routesTotal,
-          zones: j.zonesOpen,
-          zonesTotal: j.zonesTotal,
-        })}
+        {dex.open
+          ? t('journal.regionOpen', { routes: j.routesDone, routesTotal: j.routesTotal })
+          : t('journal.region', {
+              routes: j.routesDone,
+              routesTotal: j.routesTotal,
+              zones: j.zonesOpen,
+              zonesTotal: j.zonesTotal,
+            })}
       </p>
       <Tabs
         tabs={[
@@ -1433,10 +1619,10 @@ function JournalScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBa
         onChange={setTab}
       />
       {tab === 'goals' ? (
-        [...j.districts].reverse().map((d) => (
+        districts.map((d) => (
           <section
             key={d.district}
-            className="journal-section"
+            className={`journal-section${allDone(d) ? ' all-done' : ''}`}
             data-testid={`journal-district-${d.district}`}
           >
             <h2>
@@ -1444,15 +1630,24 @@ function JournalScreen({ t, save, onBack }: { t: Translate; save: SaveGame; onBa
               {!isDistrictOpen(save, d.district) && (
                 <Pill tone="warn">{t('journal.lockedZone')}</Pill>
               )}
+              {allDone(d) && (
+                <span data-testid="journal-all-done">
+                  <Pill tone="leaf">{t('journal.allDone')}</Pill>
+                </span>
+              )}
             </h2>
-            {d.main.length > 0 && <p className="panel-title small">{t('journal.main')}</p>}
-            {d.main.map((g) => (
-              <GoalRow key={g.id} g={g} t={t} current={g.id === j.current?.id} />
-            ))}
-            <p className="panel-title small">{t('journal.side')}</p>
-            {d.side.map((g) => (
-              <GoalRow key={g.id} g={g} t={t} />
-            ))}
+            {!allDone(d) && (
+              <>
+                {d.main.length > 0 && <p className="panel-title small">{t('journal.main')}</p>}
+                {d.main.map((g) => (
+                  <GoalRow key={g.id} g={g} t={t} current={g.id === j.current?.id} />
+                ))}
+                <p className="panel-title small">{t('journal.side')}</p>
+                {d.side.map((g) => (
+                  <GoalRow key={g.id} g={g} t={t} />
+                ))}
+              </>
+            )}
           </section>
         ))
       ) : j.completed.length === 0 ? (

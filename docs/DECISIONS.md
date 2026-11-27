@@ -1972,3 +1972,49 @@ length, position resolution and spawn tables>`.
   storm) plus Havnekat and Hareling lines. All 128 balance tests (both regions) pass. Known
   swings for the walk test: at 1 badge the stone starter wins 90–100 % against the fire,
   folk and spirit leaders.
+- **D196. UI round after the open region** (owner requests, GDD v1.26).
+  - Town Map: title and close at the top; Filter, Badges and Fyn in a labelled bottom tool
+    bar; badges in a `Sheet` with a shared `BadgeGrid`. No `zone-edges`/`district-edges` layers
+    in open regions. `routeNetwork` draws each shared route segment once (keys rounded to 6
+    decimals; main, alt, explore in that order; each route's remaining segments joined into
+    as few lines as possible), so shared stretches keep their dashes.
+  - Fyn map: playable regions a light park tint plus their routes as faint lines (ferries
+    dotted, a separate layer: MapLibre's dash patterns aren't data-driven).
+  - Map credits: explicit colours (MapLibre's own sheet set dark text in both themes); the
+    "i" button inverted at night. Night itself stays at the real sunset (owner): 16:00 in
+    late November is the sunset in Odense, not a time zone error.
+  - Goals (renamed Journal): the menu entry is its own screen id `goals` (back returns to the
+    menu; the map's goal card keeps `journal`, back returns to the map; before, both closed
+    the menu). Districts sorted by distance from the player's last position (handed from the
+    map to the menus in memory, never saved); finished districts last with "All done".
+  - Badges are stored in the order won (`finishBattle` no longer sorts); open regions show
+    them in that order with unnumbered empty slots. "Trainers beaten" removed.
+  - Bag: item icons (`ui/itemIcons.tsx`, own drawings), the creature picker as two-column
+    sprite cards; after an item the card's HP bar fills (1.4 s) and the picker closes, no
+    notice. The HP bar in menus was always empty: `.hpfill` was an inline span, which
+    ignores `width`; it is a block now. Team as two-column cards.
+  - Creature detail: Attack/Defence/Speed (HP is by the sprite); strengths as three bars out
+    of `IV_MAX`; a "?" button shows `moveInfo` (power, accuracy, priority, effects) per move.
+  - The menu has one way out, the big "Back to the map" button (no back arrow on the menu
+    itself; the phone's back gesture still works).
+  - Camera: `LOOK_AHEAD` puts the player in the middle zoomed out and 72 % down (never within
+    220 px of the bottom) zoomed in; `maxZoom` 18.3.
+  - Too fast: a modal after 15 s of fast travel, once per journey; a journey ends after 10
+    minutes at walking speed; meanwhile a small speed icon (tap: the modal). Memory only.
+  - Install: `ui/install.ts` keeps the browser's `beforeinstallprompt` (registered before
+    React mounts); `InstallButton` opens it, or shows the steps on iPhone/iPad (no API) and
+    other browsers; hidden once installed. On the welcome screen and in Settings.
+  - Settings credits on two lines ("Developed with Claude / by …").
+  - Field guide entry: `SpawnHeatMap` draws the region outline and, per region cell, the
+    species' share of the spawn weight (`entryWeight`) times `cellDensity` (day and night
+    together, field-ability layers included) on a 320 × 200 canvas; hints in a 6.5 em
+    scroll box; previous / next fixed at the bottom, so they never move between entries.
+- **D197. The coast** (owner request with a plan, GDD v1.26). `coast.ts`: unclaimed land
+  within 1 km of the municipality border (H3 res-11 samples that are not water and lie in no
+  other Fyn municipality, from `fyn.geojson`) joins where it touches the region; the result
+  grows 200 m and the neighbours are cut away; then the usual 400 m inlet closing. Only in
+  that new band (outside the old land outline), a water spawn position counts as blocked
+  unless land lies within 40 m (`farFromShore`): applying it everywhere blocked arena 4's
+  cell, which the map data calls water. Both region files rebuilt (Worker redeployed by CI);
+  Svendborg's route 31 now runs along shore cells that are in the region, its wild share
+  updated to 0.14.

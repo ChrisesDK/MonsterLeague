@@ -102,7 +102,7 @@ Region `svendborg`: 44 zones in 8 districts, 45 walking routes (165.1 km), 3 fer
 | 28 | Tved | Hovgård woods | alt | 4.6 km | 10 % |
 | 29 | Valdemars Slot | The Kohave woods | explore | 2.9 km | 79 % |
 | 30 | Bregninge | Lundby and Landet | explore | 3.3 km | 25 % |
-| 31 | Lundby and Landet | Bjerreby and Tvede woods | explore | 3.0 km | 7 % |
+| 31 | Lundby and Landet | Bjerreby and Tvede woods | explore | 3.0 km | 14 % |
 | 32 | Lundby and Landet | Vårø and Skovballe woods | explore | 5.8 km | 1 % |
 | 33 | Lundby and Landet | Vejlen marsh | explore | 5.1 km | 10 % |
 | 34 | Egebjerg | Svinehaverne woods | explore | 3.4 km | 63 % |

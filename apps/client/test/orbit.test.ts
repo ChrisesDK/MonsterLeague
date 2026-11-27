@@ -37,7 +37,7 @@ describe('tilt follows the zoom', () => {
   it('30 degrees zoomed out, 76 zoomed in', () => {
     expect(pitchForZoom(ORBIT.minZoom)).toBe(30);
     expect(pitchForZoom(ORBIT.maxZoom)).toBe(76);
-    expect(pitchForZoom(17.5)).toBeCloseTo(53);
+    expect(pitchForZoom((ORBIT.minZoom + ORBIT.maxZoom) / 2)).toBeCloseTo(53);
     expect(pitchForZoom(10)).toBe(30);
   });
 });
@@ -119,10 +119,10 @@ describe('the ground reaches past the fog at every tilt (owner report)', () => {
   };
   const m = metresPerPx(55.4, ORBIT.maxZoom);
 
-  it("MapLibre's own horizon stops the ground about 850 m ahead when zoomed in", () => {
+  it("MapLibre's own horizon stops the ground about 1 km ahead when zoomed in", () => {
     const own = Math.tan(((90 - 76) * Math.PI) / 180) * f * 0.85;
     expect(reachedM(76, own, m)).toBeGreaterThan(700);
-    expect(reachedM(76, own, m)).toBeLessThan(1000);
+    expect(reachedM(76, own, m)).toBeLessThan(1200);
   });
   // look-ahead puts the centre at or below the screen's middle when tilted (offset ≥ 0)
   it('the replacement draws the ground to the requested distance, with the look-ahead padding', () => {
@@ -142,18 +142,18 @@ describe('the ground reaches past the fog at every tilt (owner report)', () => {
 });
 
 describe('look-ahead: the player sits lower on the screen when zoomed in', () => {
-  it('zoomed out it stands where it always did, zoomed in 60% of the way down', () => {
+  it('zoomed out it stands in the middle (owner), zoomed in 72% of the way down', () => {
     const y = (zoom: number) => {
       const p = lookAheadPadding(zoom, 844);
       return (844 + p.top - p.bottom) / 2;
     };
-    expect(y(ORBIT.minZoom)).toBe(372);
-    expect(Math.abs(y(ORBIT.maxZoom) - 0.6 * 844)).toBeLessThanOrEqual(1);
-    expect(y(17.5)).toBeGreaterThan(372);
-    expect(y(17.5)).toBeLessThan(0.6 * 844);
+    expect(y(ORBIT.minZoom)).toBe(422);
+    expect(Math.abs(y(ORBIT.maxZoom) - 0.72 * 844)).toBeLessThanOrEqual(1);
+    expect(y(17.4)).toBeGreaterThan(422);
+    expect(y(17.4)).toBeLessThan(0.72 * 844);
   });
-  it('stays above the bottom HUD on a short screen', () => {
+  it('stays above the open Nearby strip on a short screen', () => {
     const p = lookAheadPadding(ORBIT.maxZoom, 600);
-    expect((600 + p.top - p.bottom) / 2).toBeLessThanOrEqual(600 - 230 - 50);
+    expect((600 + p.top - p.bottom) / 2).toBeLessThanOrEqual(600 - 220);
   });
 });

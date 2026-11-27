@@ -10,7 +10,8 @@ import type { Map as MlMap } from 'maplibre-gl';
  */
 export const ORBIT = {
   minZoom: 16.5,
-  maxZoom: 18.5,
+  /** Owner: 18.5 put the camera too close to the ground. */
+  maxZoom: 18.3,
   zoom: 17.5,
   /** Tilt when zoomed all the way out … */
   minPitch: 30,
@@ -226,12 +227,11 @@ export function horizonForReach(
 /**
  * Look ahead when zoomed in (owner idea): the camera still looks at the player, but the
  * player sits lower on the screen the further you zoom in, leaving more of the screen for
- * the ground ahead and the sky. Zoomed out the player stands where it always did (between
- * the HUD rows); zoomed all the way in, 60% of the way down: clear of the place card at the
- * bottom (an arena's card reaches up to about two thirds of the screen), and kept above the
- * bottom HUD on short screens.
+ * the ground ahead and the sky. Zoomed out the player stands in the middle of the screen
+ * (owner: higher up, it showed too much of the ground behind); zoomed all the way in, 72 %
+ * of the way down, just above the open Nearby strip (`clear` px kept free at the bottom).
  */
-export const LOOK_AHEAD = { top: 130, bottom: 230, playerIn: 0.6, hudGap: 50 };
+export const LOOK_AHEAD = { bottom: 230, playerIn: 0.72, clear: 220 };
 
 /** MapLibre padding for a zoom and screen height (the player is drawn at the padded centre). */
 export function lookAheadPadding(
@@ -239,9 +239,9 @@ export function lookAheadPadding(
   height: number,
 ): { top: number; bottom: number; left: number; right: number } {
   const t = Math.max(0, Math.min(1, (zoom - ORBIT.minZoom) / (ORBIT.maxZoom - ORBIT.minZoom)));
-  const { top, bottom, playerIn, hudGap } = LOOK_AHEAD;
-  const yOut = (height + top - bottom) / 2;
-  const yIn = Math.max(yOut, Math.min(height * playerIn, height - bottom - hudGap));
+  const { bottom, playerIn, clear } = LOOK_AHEAD;
+  const yOut = height / 2;
+  const yIn = Math.max(yOut, Math.min(height * playerIn, height - clear));
   const y = yOut + t * (yIn - yOut);
   return { top: Math.round(2 * y - height + bottom), bottom, left: 0, right: 0 };
 }

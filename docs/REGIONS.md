@@ -36,8 +36,8 @@ if two regions overlap.
 
 | Region                   | Level | State                                                                                     | GDD   | Region data                         | Basemap                    | Testers                          |
 | ------------------------ | ----- | ----------------------------------------------------------------------------------------- | ----- | ----------------------------------- | -------------------------- | -------------------------------- |
-| Odense                   | R1.21 | Playable: open region (P28), arenas 1–8 in any order                                      | v1.19 | d67730978603                        | 24 Nov 2026 build, 16.2 MB | Odense residents (from Nov 2026) |
-| Svendborg                | R1.3  | Playable (D181): open region (D195), arenas 1–8 in any order, 55 creatures, ferry islands | v1.19 | see `region/svendborg/version.json` | 24 Nov 2026 build, 12.1 MB | Svendborg residents (after R1)   |
+| Odense                   | R1.22 | Playable: open region (P28), arenas 1–8 in any order                                      | v1.19 | a38b19ead5ca                        | 24 Nov 2026 build, 16.2 MB | Odense residents (from Nov 2026) |
+| Svendborg                | R1.4  | Playable (D181): open region (D195), arenas 1–8 in any order, 55 creatures, ferry islands | v1.19 | see `region/svendborg/version.json` | 24 Nov 2026 build, 12.1 MB | Svendborg residents (after R1)   |
 | Other Fyn municipalities | —     | Shown on the Fyn map, not playable                                                        | —     | —                                   | —                          | —                                |
 
 **Region level** `R<major>.<minor>`: the major number goes up when a region reaches a new
@@ -84,6 +84,8 @@ Statuses: `pending` · `apply` · `adapt` · `done` · `skip` · `n/a` (a note m
 | D189 Glimmer forms in the field guide, previous/next; save v12                              | shared    | 2026-11-26 | done                                                          | done                          |
 | D190 Leaders heal and lower stats by chance; leaders re-tuned                               | shared    | 2026-11-26 | done                                                          | done                          |
 | D191–D194 Open region (P28): no locks, scaled leaders and trainers, route finds and bonus   | odense    | 2026-11-26 | done                                                          | done (D195)                   |
+| D196 UI round: Town Map tools, Goals by distance, bag, detail, camera, too-fast, install    | shared    | 2026-11-27 | done                                                          | done                          |
+| D197 The coast: unclaimed coastal land and 200 m of sea in the outline                      | shared    | 2026-11-27 | done                                                          | done                          |
 
 ## Features
 

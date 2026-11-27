@@ -17,9 +17,10 @@ import type { Region } from '@oml/spawn';
 import { makeT, type Translate } from '../i18n';
 import { formatM, routePercent } from '../game/goalText';
 import { loadRegion } from '../game/region';
-import { BadgesScreen } from '../game/Screens';
+import { BadgeGrid } from '../game/Screens';
 import { useBackHandler } from '../ui/backStack';
-import { Button } from '../ui/components';
+import { Button, Sheet } from '../ui/components';
+import { Icon } from '../ui/icons';
 import { FynMap } from './FynMap';
 import { addWorldLayers, setLockedZones, setRouteProgress, setWild, setZoneLabels } from './layers';
 import { markerElement, PLAYER_SVG, STAR_SVG, addAttribution, regionStart } from './markers';
@@ -172,9 +173,22 @@ export function TownMap({
         />
       )}
       {badges && (
-        // the badges of the region the map shows (owner request)
-        <div className="screen-overlay">
-          <BadgesScreen t={t} save={save} initialRegion={view} onBack={() => setBadges(false)} />
+        // the badges of the region the map shows, in a sheet over the map (owner request)
+        <div className="badges-sheet">
+          <Sheet
+            title={t('townMap.badgesOf', { region: t(`municipality.${view}.name`) })}
+            closeLabel={t('townMap.close')}
+            onClose={() => setBadges(false)}
+            testId="townmap-badges-sheet"
+          >
+            <BadgeGrid
+              t={t}
+              tr={tr}
+              region={view}
+              badges={viewSave.badges}
+              ordered={regions[view].open}
+            />
+          </Sheet>
         </div>
       )}
     </>
@@ -503,39 +517,10 @@ function RegionTownMap({
       aria-label={t('townMap.title')}
     >
       <div ref={ref} className="map" />
+      {/* Owner: the four buttons crowded the top bar. The top keeps the title and the way out;
+          the three tools sit at the bottom, labelled, within thumb reach. */}
       <header className="town-map-head">
-        <h1>{t('townMap.title')}</h1>
-        <Button
-          round
-          variant={filterOpen ? 'primary' : 'ghost'}
-          icon="filter"
-          data-testid="townmap-filter"
-          aria-label={t('townMap.filter')}
-          aria-expanded={filterOpen}
-          onClick={() => setFilterOpen((o) => !o)}
-        />
-        <Button
-          round
-          variant="ghost"
-          icon="badge"
-          data-testid="townmap-badges"
-          aria-label={t('menu.badges')}
-          onClick={() => {
-            setSelected(null);
-            onBadges();
-          }}
-        />
-        <Button
-          variant="ghost"
-          icon="map"
-          data-testid="townmap-fyn"
-          onClick={() => {
-            setSelected(null);
-            onFyn();
-          }}
-        >
-          {t('townMap.fyn')}
-        </Button>
+        <h1>{t(`municipality.${save.region}.name`)}</h1>
         <Button
           round
           variant="ghost"
@@ -545,6 +530,44 @@ function RegionTownMap({
           onClick={onClose}
         />
       </header>
+      <nav className="town-map-tools" aria-label={t('townMap.title')}>
+        <button
+          type="button"
+          className={`tm-tool${filterOpen ? ' on' : ''}`}
+          data-testid="townmap-filter"
+          aria-expanded={filterOpen}
+          onClick={() => setFilterOpen((o) => !o)}
+        >
+          <Icon name="filter" />
+          <span>{t('townMap.tool.filter')}</span>
+        </button>
+        <button
+          type="button"
+          className="tm-tool"
+          data-testid="townmap-badges"
+          onClick={() => {
+            setSelected(null);
+            setFilterOpen(false);
+            onBadges();
+          }}
+        >
+          <Icon name="badge" />
+          <span>{t('townMap.tool.badges')}</span>
+        </button>
+        <button
+          type="button"
+          className="tm-tool"
+          data-testid="townmap-fyn"
+          onClick={() => {
+            setSelected(null);
+            setFilterOpen(false);
+            onFyn();
+          }}
+        >
+          <Icon name="map" />
+          <span>{t('townMap.fyn')}</span>
+        </button>
+      </nav>
       {filterOpen && (
         <div
           className="town-map-filter"

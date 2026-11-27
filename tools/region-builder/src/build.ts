@@ -3,7 +3,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { bboxPolygon, booleanPointInPolygon, simplify as simplifyGeo } from '@turf/turf';
-import type { FeatureCollection, Geometry, MultiPolygon } from 'geojson';
+import type { Feature, FeatureCollection, Geometry, MultiPolygon, Position } from 'geojson';
 import {
   cellToChildren,
   cellToLatLng,
@@ -34,6 +34,7 @@ import { segmentDistM, type LngLat } from './route-lib';
 import { basemapWater } from './basemap-water';
 import { buildExtraQuery, buildQuery, fetchOverpassTiled } from './overpass';
 import { closeBorder, zoneEdges } from './borders';
+import { coastOutline, farFromShore } from './coast';
 
 const cacheDir = fileURLToPath(new URL('../cache', import.meta.url));
 // P27: everything is read from and written to the selected region's own folders.
@@ -103,9 +104,26 @@ console.log(`Basemap water polygons: ${water.length}`);
  */
 const zonesFile = ZonesFileSchema.parse(JSON.parse(readFileSync(ZONES, 'utf8')));
 const zoneList = zonesFile.zones;
-/** The municipality border with the harbour, the canal and small inlets filled in (borders.ts). */
+/**
+ * The region's outline (owner request, GDD v1.26): the municipality border with unclaimed
+ * coastal land taken in and 200 m of sea (coast.ts), then the harbour, the canal and small
+ * inlets filled in (borders.ts).
+ */
+const isWater = (p: Position) => index.query(p).biomes.has('water');
+const neighbours = (
+  JSON.parse(
+    readFileSync(
+      fileURLToPath(new URL('../../../packages/data/content/shared/fyn.geojson', import.meta.url)),
+      'utf8',
+    ),
+  ) as FeatureCollection<MultiPolygon, { id: string }>
+).features.filter((f) => f.properties.id !== REGION.id) as Feature<MultiPolygon>[];
+const municipality = (JSON.parse(readFileSync(BOUNDARY, 'utf8')) as FeatureCollection<MultiPolygon>)
+  .features[0]!;
+/** The land as before (the shore rule applies only to the new band out at sea). */
+const landBorder = closeBorder(municipality);
 const boundary = closeBorder(
-  (JSON.parse(readFileSync(BOUNDARY, 'utf8')) as FeatureCollection<MultiPolygon>).features[0]!,
+  coastOutline(municipality, neighbours, isWater, (s) => console.log(s)),
 );
 const kLng = 111_320 * Math.cos((55.39 * Math.PI) / 180);
 function nearestZone(lat: number, lng: number): number {
@@ -193,6 +211,12 @@ for (const cell of cells.sort()) {
   }
   if (flags & FLAG.wild) wildCells++;
   if (flags & FLAG.route) routeCells++;
+  // in the band out at sea, spawns stand within reach of the shore (owner request, v1.26)
+  if (c.shares.water && !booleanPointInPolygon([lng, lat], landBorder))
+    cellToChildren(cell, REGION.sampleRes).forEach((kid, i) => {
+      const [y, x] = cellToLatLng(kid);
+      if (!c.blocked.includes(i) && farFromShore([x, y], isWater)) c.blocked.push(i);
+    });
   const row = [district, zoneIdx, flags, ...BIOMES.map((b) => c.shares[b] ?? 0)];
   // Blocked spawn positions (P10/P11) as an optional 11th column; omitted when none.
   if (!c.noSpawn && c.blocked.length > 0) {

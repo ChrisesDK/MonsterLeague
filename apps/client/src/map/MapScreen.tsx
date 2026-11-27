@@ -53,7 +53,7 @@ import type { Translate } from '../i18n';
 import { districtAt, levelBands, loadRegion, zoneAt } from '../game/region';
 import { regionAt } from './regionGeo';
 import { formatM, goalTitle } from '../game/goalText';
-import { Button, Toast } from '../ui/components';
+import { Button, Modal, Toast } from '../ui/components';
 import { buzz } from '../ui/feedback';
 import { Icon } from '../ui/icons';
 import {
@@ -136,6 +136,8 @@ interface Props {
   /** Opens the market screen for a market POI (D165). */
   onMarket?: (poiId: string) => void;
   onJournal: () => void;
+  /** The player's last position, for the menu's Goals (kept in memory only, never saved). */
+  onPosition?: (p: LatLng | null) => void;
   onBadge: (arena: number) => void;
   night: boolean;
   /** Gate 3 session counters (only called while a test session runs). */
@@ -202,6 +204,11 @@ interface Seen {
   level: number;
 }
 
+/** How long fast travel lasts before the "too fast" modal shows (a GPS jump is shorter). */
+const FAST_MODAL_DELAY_MS = 15_000;
+/** Walking this long in a row ends a journey: the next fast ride shows the modal again. */
+const JOURNEY_END_MS = 10 * 60_000;
+
 export function MapScreen({
   t,
   devTools,
@@ -210,6 +217,7 @@ export function MapScreen({
   onMenu,
   onMarket,
   onJournal,
+  onPosition,
   onBadge,
   night,
   onGate3,
@@ -223,6 +231,28 @@ export function MapScreen({
   const [lastGood, setLastGood] = useState<Fix | null>(null);
   const [gpsError, setGpsError] = useState<string | null>(null);
   const [fast, setFast] = useState(false);
+  /**
+   * Owner: the "too fast" banner covered the view for a whole tram ride. Now a modal says it
+   * once per journey (after 15 s of fast travel, so a GPS jump doesn't); after OK it stays
+   * away until the player has walked for 10 minutes in a row (a tram stop or a red light
+   * doesn't bring it back). Meanwhile a small icon says that play is paused. Memory only.
+   */
+  const [fastModal, setFastModal] = useState(false);
+  const fastSeen = useRef(false);
+  useEffect(() => {
+    if (fast) {
+      if (fastSeen.current) return;
+      const id = setTimeout(() => setFastModal(true), FAST_MODAL_DELAY_MS);
+      return () => clearTimeout(id);
+    }
+    setFastModal(false);
+    const id = setTimeout(() => (fastSeen.current = false), JOURNEY_END_MS);
+    return () => clearTimeout(id);
+  }, [fast]);
+  const closeFastModal = () => {
+    fastSeen.current = true;
+    setFastModal(false);
+  };
   const [toast, setToast] = useState<string | null>(null);
   const [inBattle, setInBattle] = useState(false);
   const [region, setRegion] = useState<Region | null>(null);
@@ -325,6 +355,7 @@ export function MapScreen({
     [posLat, posLng],
   );
   const service = useSpawns(position, save.region);
+  useEffect(() => onPosition?.(position), [position, onPosition]);
 
   // P27: the campaign follows the region the player walks in.
   useEffect(() => {
@@ -1466,13 +1497,11 @@ export function MapScreen({
         ? t('map.gps.denied')
         : !goodFix
           ? null // no or weak GPS: a small signal icon instead (below)
-          : fast
-            ? t('map.tooFast')
-            : status === 'no-signal'
-              ? t('map.noSignal')
-              : status === 'cached'
-                ? t('map.cached')
-                : null;
+          : status === 'no-signal'
+            ? t('map.noSignal')
+            : status === 'cached'
+              ? t('map.cached')
+              : null;
   /** Poor or missing GPS (owner feedback: an icon, not a sentence). */
   const poorSignal =
     gpsError !== 'denied' && !goodFix
@@ -1545,6 +1574,18 @@ export function MapScreen({
             aria-label={t('hud.townMap')}
             onClick={() => setTownMap(true)}
           />
+          {fast && goodFix && (
+            <button
+              type="button"
+              className="signal-icon fast-icon"
+              data-testid="fast-icon"
+              aria-label={t('map.fastPaused')}
+              title={t('map.fastPaused')}
+              onClick={() => setFastModal(true)}
+            >
+              <Icon name="speed" size={24} />
+            </button>
+          )}
           {poorSignal && (
             <span
               className="signal-icon"
@@ -1558,6 +1599,19 @@ export function MapScreen({
           )}
         </div>
       </div>
+      {fastModal && (
+        <Modal
+          title={t('map.fastTitle')}
+          testId="fast-modal"
+          actions={
+            <Button variant="primary" data-testid="fast-ok" onClick={closeFastModal}>
+              {t('ui.ok')}
+            </Button>
+          }
+        >
+          <p>{t('map.tooFast')}</p>
+        </Modal>
+      )}
       {devTools && versionDrift.length > 0 && (
         <div className="dev-warning" role="status" data-testid="version-drift">
           {t('dev.versionMismatch', { fields: versionDrift.join(', ') })}
