@@ -1447,3 +1447,33 @@ test('a steady player: GPS drift under 3 m is ignored, the figure holds still wh
   const range = await page.locator('.scan-ring path.range').getAttribute('d');
   expect((range ?? '').length).toBeGreaterThan(20);
 });
+
+test('a creature page explains one move at a time; storage is where creatures go in and out', async ({
+  page,
+}) => {
+  await startDone(page);
+  await dev(page, 'addCreature', 'torvdue', 5);
+  await page.getByTestId('menu-button').click();
+  await page.getByTestId('menu-team').click();
+  await page.getByTestId('team-0').click();
+  // the moves two by two, each with its own "?" opening a small window about that move
+  const first = page.locator('.move-card').first();
+  await expect(page.locator('.move-card')).toHaveCount(3);
+  await first.locator('.info-btn').click();
+  await expect(page.getByTestId('move-modal')).toBeVisible();
+  await expect(page.getByTestId('move-modal').locator('li').first()).toBeVisible();
+  await page.getByTestId('move-modal-ok').click();
+  await expect(page.getByTestId('move-modal')).toHaveCount(0);
+  // no storage buttons on the creature page (owner)
+  await expect(page.getByRole('button', { name: 'Move to storage' })).toHaveCount(0);
+  await page.getByTestId('screen-back').click();
+  await page.getByTestId('screen-back').click();
+  // the Storage menu: put one in, take it out again
+  await page.getByTestId('menu-storage').click();
+  const uid = ((await dev(page, 'save')) as { team: { uid: string }[] }).team[1]!.uid;
+  await page.getByTestId(`check-in-${uid}`).click();
+  await expect(page.getByTestId(`check-out-${uid}`)).toBeVisible();
+  expect(((await dev(page, 'save')) as { storage: { uid: string }[] }).storage[0]!.uid).toBe(uid);
+  await page.getByTestId(`check-out-${uid}`).click();
+  await expect(page.getByTestId(`check-in-${uid}`)).toBeVisible();
+});

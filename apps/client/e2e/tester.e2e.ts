@@ -92,9 +92,9 @@ test('feedback, version, save export and import, home hints in the field guide',
   await page.getByTestId('guide-mosling').click();
   // seen: the same as the pocket guide: types, stats, the map, and its home as a label
   await expect(page.getByTestId('type-chips')).toContainText('Grove');
-  // no stats in the field guide (owner); "Lives at" once, then the places
+  // no stats in the field guide (owner); "Found at" on its own line, the places below
   await expect(page.getByTestId('base-stats')).toHaveCount(0);
-  await expect(page.getByTestId('habitat-chips')).toContainText('Lives at');
+  await expect(page.getByTestId('habitat-lead')).toHaveText('Found at');
   await expect(page.getByTestId('habitat-chips')).toContainText('Kirkendrup Skov');
   await expect(page.getByTestId('state-chip')).toHaveText('seen');
   // the Glimmer form is greyed out until one is met; previous and next step through the list

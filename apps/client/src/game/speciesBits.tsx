@@ -104,11 +104,19 @@ export function HabitatChips({
   // owner: "Lives at" once, then the places
   const places = [...homes, ...others].slice(0, 3);
   const plain = hints.filter((h) => !h.requires);
-  if (plain.length > 0 && plain.every((h) => h.time === 'night'))
-    chips.push({ key: 'night', text: t('guide.cond.night') });
-  else if (plain.length > 0 && plain.every((h) => h.time === 'day'))
-    chips.push({ key: 'day', text: t('guide.cond.day') });
-  else if (plain.some((h) => h.time === 'night'))
+  const nightOnly = plain.length > 0 && plain.every((h) => h.time === 'night');
+  const dayOnly = plain.length > 0 && plain.every((h) => h.time === 'day');
+  // owner: "Found at" (at night / by day when so) on its own line, the places below
+  const lead = nightOnly
+    ? 'guide.cond.foundAtNight'
+    : dayOnly
+      ? 'guide.cond.foundAtDay'
+      : 'guide.cond.foundAt';
+  if (places.length === 0) {
+    if (nightOnly) chips.push({ key: 'night', text: t('guide.cond.night') });
+    if (dayOnly) chips.push({ key: 'day', text: t('guide.cond.day') });
+  }
+  if (!nightOnly && !dayOnly && plain.some((h) => h.time === 'night'))
     chips.push({ key: 'moreNight', text: t('guide.cond.moreNight') });
   for (const a of [...new Set(hints.flatMap((h) => (h.requires ? [h.requires] : [])))])
     chips.push({
@@ -117,19 +125,32 @@ export function HabitatChips({
         ability: t(`fieldAbility.${a}.name`),
       }),
     });
+  if (places.length === 0 && chips.length === 0) return null;
   return (
-    <div className="habitat-chips" data-testid="habitat-chips">
-      {places.length > 0 && <span className="habitat-label">{t('guide.cond.livesAt')}</span>}
-      {places.map((z) => (
-        <span key={z} className="habitat-chip">
-          {tr(`zone.${z}.name`)}
-        </span>
-      ))}
-      {chips.map((c) => (
-        <span key={c.key} className="habitat-chip">
-          {c.text}
-        </span>
-      ))}
+    <div className="habitat" data-testid="habitat-chips">
+      {places.length > 0 && (
+        <>
+          <p className="habitat-label" data-testid="habitat-lead">
+            {t(lead)}
+          </p>
+          <div className="habitat-row">
+            {places.map((z) => (
+              <span key={z} className="habitat-chip">
+                {tr(`zone.${z}.name`)}
+              </span>
+            ))}
+          </div>
+        </>
+      )}
+      {chips.length > 0 && (
+        <div className="habitat-row">
+          {chips.map((c) => (
+            <span key={c.key} className="habitat-chip">
+              {c.text}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

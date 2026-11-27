@@ -2527,3 +2527,52 @@ img.shiny,
   font-size: var(--fs-xs);
   font-weight: 700;
 }
+
+/* habitat: "Found at" on its own line, the places below (owner) */
+.habitat {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-1);
+  margin: var(--sp-1) 0;
+}
+.habitat .habitat-label {
+  margin: 0;
+}
+.habitat-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-1);
+}
+/* moves two by two, each with its own "?" (owner) */
+.move-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+.move-card {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  padding: var(--sp-2) 40px var(--sp-2) var(--sp-3);
+  border-radius: var(--r-md);
+  border: 2px solid var(--line);
+  border-left: 6px solid var(--type-color);
+  background: var(--card);
+}
+.move-card .info-btn {
+  position: absolute;
+  top: 50%;
+  right: var(--sp-2);
+  transform: translateY(-50%);
+}
+.move-facts {
+  margin: var(--sp-2) 0;
+  padding-left: 1.2em;
+  text-align: left;
+}
+.storage-head {
+  font-size: var(--fs-md);
+  margin: var(--sp-3) 0 var(--sp-2);
+}

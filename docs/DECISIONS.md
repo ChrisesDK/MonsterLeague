@@ -2083,3 +2083,9 @@ length, position resolution and spawn tables>`.
     any creature has at that level); the strengths (IVs) are no longer listed on their own.
     The field guides show no stats (`BaseStats` removed); seen / caught is a plain line under
     the type labels; the homes read "Lives at" once, then the place names.
+  - Second round (owner): the habitat block says "Found at" (at night / by day when every
+    plain entry is) on its own line, the places below, other labels after. A creature's
+    moves are a 2 × 2 grid with a "?" each that opens a `Modal` about that move only
+    (`moveFacts`), so no text appears in the page and moves the rest. The creature page has
+    no storage buttons; the Storage menu lists the team ("Put in storage", not for the last
+    one) and the stored creatures ("Take out", or swap when the team is full).

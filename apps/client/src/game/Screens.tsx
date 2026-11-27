@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useContext, useState, type CSSProperties, type ReactNode } from 'react';
 import { badgeUrl, spriteUrl } from '@oml/art';
 import {
   content,
@@ -45,7 +45,7 @@ import {
   type LatLng,
 } from '@oml/game';
 import { creatureName } from '../eventText';
-import { Button, ListRow, ProgressBar, Pill, Tabs } from '../ui/components';
+import { Button, ListRow, Modal, ProgressBar, Pill, Tabs } from '../ui/components';
 import { Icon, type IconName } from '../ui/icons';
 import { ItemIcon } from '../ui/itemIcons';
 import { InstallButton } from '../ui/InstallButton';
@@ -139,7 +139,7 @@ function Shell({
 /** The highest base stat any creature has: the stat bars are drawn against it. */
 const STAT_TOP = 140;
 
-export function moveInfo(m: Move, t: Translate): string {
+export function moveFacts(m: Move, t: Translate): string[] {
   const parts: string[] = [];
   parts.push(m.power > 0 ? t('moveInfo.power', { power: m.power }) : t('moveInfo.noDamage'));
   parts.push(
@@ -161,7 +161,7 @@ export function moveInfo(m: Move, t: Translate): string {
     if (e.kind === 'heal') parts.push(t('moveInfo.heal', { pct: e.percent }));
     if (e.kind === 'recoil') parts.push(t('moveInfo.recoil', { pct: e.percent }));
   }
-  return parts.join(' · ');
+  return parts;
 }
 
 /** Fainted creatures' recovery clock (save.faintedSince), for the HP lines. */
@@ -377,7 +377,8 @@ function CreatureDetail({
 }) {
   const dex = useContext(RegionDex);
   const [forgetFor, setForgetFor] = useState<string | null>(null);
-  const [movesInfo, setMovesInfo] = useState(false);
+  const [moveOpen, setMoveOpen] = useState<string | null>(null);
+  useBackHandler(moveOpen !== null, () => setMoveOpen(null));
   const c = [...save.team, ...save.storage].find((x) => x.uid === uid);
   if (!c) return null;
   const species = dex.species[c.speciesId]!;
@@ -428,34 +429,55 @@ function CreatureDetail({
           );
         })}
       </section>
-      <h2 className="moves-head">
-        {t('detail.moves')}
-        <button
-          type="button"
-          className={`info-btn${movesInfo ? ' on' : ''}`}
-          data-testid="moves-info"
-          aria-label={t('detail.movesInfo')}
-          aria-pressed={movesInfo}
-          onClick={() => setMovesInfo((v) => !v)}
-        >
-          ?
-        </button>
-      </h2>
-      <ul className="move-list">
-        {c.moves.map((m) => (
-          <li key={m.moveId}>
-            {t(`move.${m.moveId}.name`)}{' '}
-            <span className="muted small">
-              {t(`type.${dex.moves[m.moveId]!.type}.name`)} ·{' '}
-              {t('ui.pp', { pp: m.pp, max: dex.moves[m.moveId]!.pp })}
-            </span>
-            {movesInfo && (
-              <span className="move-info small" data-testid={`move-info-${m.moveId}`}>
-                {moveInfo(dex.moves[m.moveId]!, t)}
+      {/* owner: the moves two by two, each with its own "?" that explains only that move in
+          a small window (text appearing in the page moved everything and lost the reader) */}
+      <h2>{t('detail.moves')}</h2>
+      <div className="move-grid">
+        {c.moves.map((m) => {
+          const mv = dex.moves[m.moveId]!;
+          return (
+            <div
+              key={m.moveId}
+              className="move-card"
+              data-testid={`move-${m.moveId}`}
+              style={{ '--type-color': dex.typeColors[mv.type] } as CSSProperties}
+            >
+              <strong>{t(`move.${m.moveId}.name`)}</strong>
+              <span className="muted small">
+                {t(`type.${mv.type}.name`)} · {t('ui.pp', { pp: m.pp, max: mv.pp })}
               </span>
-            )}
-          </li>
-        ))}
+              <button
+                type="button"
+                className="info-btn"
+                data-testid={`move-info-${m.moveId}`}
+                aria-label={t('detail.movesInfo')}
+                onClick={() => setMoveOpen(m.moveId)}
+              >
+                ?
+              </button>
+            </div>
+          );
+        })}
+      </div>
+      {moveOpen && (
+        <Modal
+          title={t(`move.${moveOpen}.name`)}
+          testId="move-modal"
+          actions={
+            <Button variant="primary" data-testid="move-modal-ok" onClick={() => setMoveOpen(null)}>
+              {t('ui.ok')}
+            </Button>
+          }
+        >
+          <p className="muted">{t(`type.${dex.moves[moveOpen]!.type}.name`)}</p>
+          <ul className="move-facts">
+            {moveFacts(dex.moves[moveOpen]!, t).map((f) => (
+              <li key={f}>{f}</li>
+            ))}
+          </ul>
+        </Modal>
+      )}
+      <ul className="move-list">
         {c.fieldAbility && (
           <li data-testid="detail-ability">
             {t(`fieldAbility.${c.fieldAbility}.name`)}{' '}
@@ -520,22 +542,6 @@ function CreatureDetail({
             {t('detail.lead')}
           </button>
         )}
-        {inTeam && save.team.length > 1 && (
-          <button
-            className="btn"
-            onClick={() => {
-              update((s) => moveToStorage(s, uid));
-              onBack();
-            }}
-          >
-            {t('detail.toStorage')}
-          </button>
-        )}
-        {!inTeam && save.team.length < 6 && (
-          <button className="btn" onClick={() => update((s) => moveToTeam(s, uid))}>
-            {t('detail.toTeam')}
-          </button>
-        )}
       </div>
     </Shell>
   );
@@ -555,16 +561,38 @@ function StorageScreen({
   onScreen: (s: ScreenId) => void;
 }) {
   const [swap, setSwap] = useState<string | null>(null);
+  // owner: creatures go in and out of storage only here (not from a creature's page)
   return (
     <Shell t={t} title={t('menu.storage')} onBack={onBack} testId="screen-storage">
+      <h2 className="storage-head">{t('storage.team')}</h2>
+      <div className="storage-grid">
+        {save.team.map((c) => (
+          <div key={c.uid} className="storage-cell">
+            <CreatureRow c={c} t={t} onClick={() => onScreen(`creature:${c.uid}`)} />
+            <button
+              className="btn small-btn"
+              data-testid={`check-in-${c.uid}`}
+              disabled={save.team.length <= 1}
+              onClick={() => update((s) => moveToStorage(s, c.uid))}
+            >
+              {t('storage.checkIn')}
+            </button>
+          </div>
+        ))}
+      </div>
+      <h2 className="storage-head">{t('storage.stored')}</h2>
       {save.storage.length === 0 && <p className="muted">{t('storage.empty')}</p>}
       <div className="storage-grid">
         {save.storage.map((c) => (
           <div key={c.uid} className="storage-cell">
             <CreatureRow c={c} t={t} onClick={() => onScreen(`creature:${c.uid}`)} />
             {save.team.length < 6 ? (
-              <button className="btn small-btn" onClick={() => update((s) => moveToTeam(s, c.uid))}>
-                {t('detail.toTeam')}
+              <button
+                className="btn small-btn"
+                data-testid={`check-out-${c.uid}`}
+                onClick={() => update((s) => moveToTeam(s, c.uid))}
+              >
+                {t('storage.checkOut')}
               </button>
             ) : (
               <button className="btn small-btn" onClick={() => setSwap(c.uid)}>

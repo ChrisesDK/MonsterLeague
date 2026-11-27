@@ -583,7 +583,7 @@
   "townMap.tool.filter": "Filter",
   "townMap.tool.badges": "Badges",
   "detail.ivsTitle": "Strengths",
-  "detail.movesInfo": "What the moves do",
+  "detail.movesInfo": "What this move does",
   "moveInfo.power": "Power {power}",
   "moveInfo.noDamage": "No damage",
   "moveInfo.alwaysHits": "Always hits",
@@ -629,5 +629,11 @@
   "guide.cond.moreNight": "More at night",
   "guide.cond.needs": "Needs {ability}",
   "guide.cond.moreWith": "More with {ability}",
-  "guide.cond.livesAt": "Lives at"
+  "guide.cond.foundAt": "Found at",
+  "guide.cond.foundAtNight": "Found at night at",
+  "guide.cond.foundAtDay": "Found by day at",
+  "storage.team": "On the team",
+  "storage.stored": "In storage",
+  "storage.checkIn": "Put in storage",
+  "storage.checkOut": "Take out"
 }

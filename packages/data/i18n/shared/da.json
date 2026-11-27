@@ -583,7 +583,7 @@
   "townMap.tool.filter": "Filter",
   "townMap.tool.badges": "Mærker",
   "detail.ivsTitle": "Styrker",
-  "detail.movesInfo": "Hvad angrebene gør",
+  "detail.movesInfo": "Hvad angrebet gør",
   "moveInfo.power": "Kraft {power}",
   "moveInfo.noDamage": "Ingen skade",
   "moveInfo.alwaysHits": "Rammer altid",
@@ -629,5 +629,11 @@
   "guide.cond.moreNight": "Flere om natten",
   "guide.cond.needs": "Kræver {ability}",
   "guide.cond.moreWith": "Flere med {ability}",
-  "guide.cond.livesAt": "Bor ved"
+  "guide.cond.foundAt": "Findes ved",
+  "guide.cond.foundAtNight": "Findes om natten ved",
+  "guide.cond.foundAtDay": "Findes om dagen ved",
+  "storage.team": "På holdet",
+  "storage.stored": "I opbevaring",
+  "storage.checkIn": "Sæt i opbevaring",
+  "storage.checkOut": "Tag ud"
 }
