@@ -67,26 +67,26 @@ Statuses: `pending` · `apply` · `adapt` · `done` · `skip` · `n/a` (a note m
 
 ## Update queue
 
-| Update                                                                                                | From      | Date       | Odense                                                        | Svendborg                     |
-| ----------------------------------------------------------------------------------------------------- | --------- | ---------- | ------------------------------------------------------------- | ----------------------------- |
-| D177 One folder per region, id prefixes, separation checks, per-region tools and docs                 | shared    | 2026-11-25 | done                                                          | done                          |
-| D178 Every badge its own design (outline, emblem, colour)                                             | shared    | 2026-11-25 | done                                                          | done                          |
-| D179 Ferry crossings (dotted, over water) to islands that open on arrival                             | svendborg | 2026-11-25 | n/a: Odense has no ferry islands                              | done                          |
-| D170 More no-spawn areas (golf, allotments, care homes, worship, prisons, campsites)                  | odense    | 2026-11-25 | done                                                          | done: built in from the start |
-| D180 Campaigns per region (save v11, region from position, island arrival)                            | shared    | 2026-11-26 | done                                                          | done                          |
-| D181 Svendborg playable: roster, spawns, trainers, balance; sim and spawn report per region           | svendborg | 2026-11-26 | n/a: Svendborg content; the per-region tools cover Odense too | done                          |
-| D182 Field guide by region (numbered list, tabs); arena stamps on the Town Map                        | shared    | 2026-11-26 | done                                                          | done                          |
-| D183 The Fyn map opens other regions' Town Maps to look at                                            | shared    | 2026-11-26 | done                                                          | done                          |
-| D184 Town Map icons at every zoom; route labels filter                                                | shared    | 2026-11-26 | done                                                          | done                          |
-| D185 Badges per region (tabs, Town Map button); field guide entry pages                               | shared    | 2026-11-26 | done                                                          | done                          |
-| D186 AI heal and stat-lowering moves; leaders re-tuned                                                | shared    | 2026-11-26 | done                                                          | done                          |
-| D187 Individual values; D188 Glimmer creatures                                                        | shared    | 2026-11-26 | done                                                          | done                          |
-| D189 Glimmer forms in the field guide, previous/next; save v12                                        | shared    | 2026-11-26 | done                                                          | done                          |
-| D190 Leaders heal and lower stats by chance; leaders re-tuned                                         | shared    | 2026-11-26 | done                                                          | done                          |
-| D191–D194 Open region (P28): no locks, scaled leaders and trainers, route finds and bonus             | odense    | 2026-11-26 | done                                                          | done (D195)                   |
-| D196 UI round: Town Map tools, Goals by distance, bag, detail, camera, too-fast, install              | shared    | 2026-11-27 | done                                                          | done                          |
-| D197 The coast: unclaimed coastal land and 200 m of sea in the outline                                | shared    | 2026-11-27 | done                                                          | done                          |
-| D203 One-hour creatures and a personal hold (spawn algorithm 7); storage, team order and battle menus | shared    | 2026-11-28 | done                                                          | done                          |
+| Update                                                                                      | From      | Date       | Odense                                                        | Svendborg                     |
+| ------------------------------------------------------------------------------------------- | --------- | ---------- | ------------------------------------------------------------- | ----------------------------- |
+| D177 One folder per region, id prefixes, separation checks, per-region tools and docs       | shared    | 2026-11-25 | done                                                          | done                          |
+| D178 Every badge its own design (outline, emblem, colour)                                   | shared    | 2026-11-25 | done                                                          | done                          |
+| D179 Ferry crossings (dotted, over water) to islands that open on arrival                   | svendborg | 2026-11-25 | n/a: Odense has no ferry islands                              | done                          |
+| D170 More no-spawn areas (golf, allotments, care homes, worship, prisons, campsites)        | odense    | 2026-11-25 | done                                                          | done: built in from the start |
+| D180 Campaigns per region (save v11, region from position, island arrival)                  | shared    | 2026-11-26 | done                                                          | done                          |
+| D181 Svendborg playable: roster, spawns, trainers, balance; sim and spawn report per region | svendborg | 2026-11-26 | n/a: Svendborg content; the per-region tools cover Odense too | done                          |
+| D182 Field guide by region (numbered list, tabs); arena stamps on the Town Map              | shared    | 2026-11-26 | done                                                          | done                          |
+| D183 The Fyn map opens other regions' Town Maps to look at                                  | shared    | 2026-11-26 | done                                                          | done                          |
+| D184 Town Map icons at every zoom; route labels filter                                      | shared    | 2026-11-26 | done                                                          | done                          |
+| D185 Badges per region (tabs, Town Map button); field guide entry pages                     | shared    | 2026-11-26 | done                                                          | done                          |
+| D186 AI heal and stat-lowering moves; leaders re-tuned                                      | shared    | 2026-11-26 | done                                                          | done                          |
+| D187 Individual values; D188 Glimmer creatures                                              | shared    | 2026-11-26 | done                                                          | done                          |
+| D189 Glimmer forms in the field guide, previous/next; save v12                              | shared    | 2026-11-26 | done                                                          | done                          |
+| D190 Leaders heal and lower stats by chance; leaders re-tuned                               | shared    | 2026-11-26 | done                                                          | done                          |
+| D191–D194 Open region (P28): no locks, scaled leaders and trainers, route finds and bonus   | odense    | 2026-11-26 | done                                                          | done (D195)                   |
+| D196 UI round: Town Map tools, Goals by distance, bag, detail, camera, too-fast, install    | shared    | 2026-11-27 | done                                                          | done                          |
+| D197 The coast: unclaimed coastal land and 200 m of sea in the outline                      | shared    | 2026-11-27 | done                                                          | done                          |
+| D203 One-hour creatures (spawn algorithm 7); storage, team order and battle menus           | shared    | 2026-11-28 | done                                                          | done                          |
 
 ## Features
 

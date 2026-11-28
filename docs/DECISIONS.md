@@ -2102,7 +2102,7 @@ length, position resolution and spawn tables>`.
   quieter, since it lasts). The top keeps the goal card, compass and Town Map buttons (the
   always-visible ones) and the small status icons; the too-fast window stays a centred
   modal (owner's earlier request).
-- **D203. One-hour creatures with a personal hold, and menus that close when the player is done** (owner, GDD
+- **D203. One-hour creatures, and menus that close when the player is done** (owner, GDD
   v1.31).
   - Spawns: `computeAliveSpawns` returns what is alive in a window: the spawns made in each
     of the last `SPAWN_LIFE_WINDOWS` (4) windows, each window at 1/4 of the density, each
@@ -2112,13 +2112,12 @@ length, position resolution and spawn tables>`.
     creatures at a time is unchanged, so `spawn:report` (per-window generation) still
     measures density. GPS: the last good fix is kept 90 s (`GPS_GRACE_MS`), which is why
     10 s with GPS off changed nothing.
-  - Personal hold (`apps/client/src/map/holds.ts`, owner): a spawn within `SHOW_RADIUS_M`
-    (200 m, the farthest a creature is drawn) is held `HOLD_SECONDS` (30 min) from then;
-    released beyond `RELEASE_M` (400 m, owner: walked well out of view), when the hold ends, or in another region; at most
-    `MAX_HOLDS` (10), the newest kept. Held spawns are merged into the map's list with
-    `expiresAt` at least the hold's end (so the used-spawn bookkeeping lasts too); used ones
-    drop out as before. Kept in memory and IndexedDB (`oml-holds`, creature data like the
-    cached spawn lists), never in the save, never sent.
+  - No hold (owner): a phone-only hold (30 min from first sight, released beyond 400 m) and
+    a server-side keep that sighting players lengthen were built or weighed and dropped.
+    Every player must see the same creatures for the same time (groups taking turns with the
+    app open; a rare one for all), and a keep would send finer positions than res-7 and need
+    stored server state. The staggered 1-hour life alone handles "everything vanished at
+    once".
   - The 40 m ring's dashes: `pathLength="96"` with `1.2 0.8` = always 48 dashes (they
     scaled in screen pixels before, so their number changed with zoom and one rolled in).
   - One-finger zoom: sideways now turns the same way as a normal drag low on the screen.
