@@ -919,33 +919,36 @@ test('one hand: tap, then tap and hold and drag zooms (down in, up out) and turn
       type: type as 'touchStart',
       touchPoints: pt ? [{ x: pt[0], y: pt[1], id: 1 }] : [],
     });
+  /** Tap, tap again and hold, drag. On a slow CI runner the two taps may land further
+   *  apart than DOUBLE_TAP_MS (then it was a plain drag): wait and try again. */
+  const tapHoldDrag = async (
+    from: [number, number],
+    step: [number, number],
+    done: (c: { zoom: number; bearing: number }) => boolean,
+  ) => {
+    for (let attempt = 0; attempt < 4; attempt++) {
+      await touch('touchStart', from);
+      await touch('touchEnd', null);
+      await touch('touchStart', from);
+      for (let i = 1; i <= 10; i++) {
+        await touch('touchMove', [from[0] + i * step[0], from[1] + i * step[1]]);
+        await page.waitForTimeout(16);
+      }
+      await touch('touchEnd', null);
+      await page.waitForTimeout(300);
+      const c = await cam();
+      if (done(c)) return c;
+      await page.waitForTimeout(500);
+    }
+    return cam();
+  };
   const start = await cam();
   // tap, then tap again and hold, drag down: zoom in
-  await touch('touchStart', [195, 300]);
-  await touch('touchEnd', null);
-  await page.waitForTimeout(80);
-  await touch('touchStart', [195, 300]);
-  for (let i = 1; i <= 10; i++) {
-    await touch('touchMove', [195, 300 + i * 10]);
-    await page.waitForTimeout(16);
-  }
-  await touch('touchEnd', null);
-  await page.waitForTimeout(300);
-  const zoomedIn = await cam();
+  const zoomedIn = await tapHoldDrag([195, 300], [0, 10], (c) => c.zoom > start.zoom + 0.3);
   expect(zoomedIn.zoom).toBeGreaterThan(start.zoom + 0.3);
   // again, dragging up and sideways: zoom out and turn
   await page.waitForTimeout(500);
-  await touch('touchStart', [195, 400]);
-  await touch('touchEnd', null);
-  await page.waitForTimeout(80);
-  await touch('touchStart', [195, 400]);
-  for (let i = 1; i <= 10; i++) {
-    await touch('touchMove', [195 + i * 8, 400 - i * 10]);
-    await page.waitForTimeout(16);
-  }
-  await touch('touchEnd', null);
-  await page.waitForTimeout(300);
-  const after = await cam();
+  const after = await tapHoldDrag([195, 400], [8, -10], (c) => c.zoom < zoomedIn.zoom - 0.3);
   expect(after.zoom).toBeLessThan(zoomedIn.zoom - 0.3);
   // sideways turns the same way as a normal drag low on the screen (owner)
   const turn = (a: number, b: number) => ((((b - a) % 360) + 540) % 360) - 180;
@@ -960,17 +963,12 @@ test('one hand: tap, then tap and hold and drag zooms (down in, up out) and turn
   const dragTurn = turn(b0, (await cam()).bearing);
   await page.waitForTimeout(500);
   const b1 = (await cam()).bearing;
-  await touch('touchStart', [300, 500]);
-  await touch('touchEnd', null);
-  await page.waitForTimeout(80);
-  await touch('touchStart', [300, 500]);
-  for (let i = 1; i <= 10; i++) {
-    await touch('touchMove', [300 - i * 15, 500]);
-    await page.waitForTimeout(16);
-  }
-  await touch('touchEnd', null);
-  await page.waitForTimeout(300);
-  const oneTurn = turn(b1, (await cam()).bearing);
+  const z1 = (await cam()).zoom;
+  // a little downward too: only the one-finger mode zooms, so a missed double tap (a plain
+  // drag, which turns as well) is told apart and tried again
+  const oneHand = await tapHoldDrag([300, 500], [-15, 2], (c) => c.zoom > z1 + 0.05);
+  expect(oneHand.zoom).toBeGreaterThan(z1 + 0.05);
+  const oneTurn = turn(b1, oneHand.bearing);
   expect(Math.sign(oneTurn)).toBe(Math.sign(dragTurn));
   expect(Math.abs(((after.bearing - zoomedIn.bearing + 540) % 360) - 180)).toBeGreaterThan(10);
 });
